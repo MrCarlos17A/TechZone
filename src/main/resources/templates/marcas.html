@@ -1,0 +1,41 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/plantilla :: cabecera('TechZone - Marcas')}"></head>
+
+<body>
+    <header th:replace="~{fragments/plantilla :: barra-navegacion('marcas')}"></header>
+
+    <main class="container my-4">
+        <h1 class="text-center mb-4">Nuestras Marcas</h1>
+
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            <div class="col" th:each="marca : ${marcas}">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body text-center">
+                        <img th:if="${marca.imagen != null and !marca.imagen.isEmpty()}" th:src="${marca.imagen}"
+                            th:alt="${marca.nombre}" class="img-fluid mb-3"
+                            style="max-height: 120px; object-fit: contain;">
+                        <i th:unless="${marca.imagen != null and !marca.imagen.isEmpty()}"
+                            class="bi bi-box-seam display-3 text-primary"></i>
+                        <h5 class="mt-3" th:text="${marca.nombre}">Marca</h5>
+                        <p class="text-muted">Productos de calidad de <span th:text="${marca.nombre}">Marca</span></p>
+                    </div>
+                    <div class="card-footer text-center">
+                        <span class="badge" th:classappend="${marca.estadoMarca} ? 'bg-success' : 'bg-secondary'"
+                            th:text="${marca.estadoMarca} ? 'Activa' : 'Inactiva'">Activa</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center py-5" th:if="${marcas.isEmpty()}">
+            <i class="bi bi-building display-1 text-muted"></i>
+            <h3 class="text-muted mt-3">No hay marcas registradas</h3>
+        </div>
+    </main>
+
+    <footer th:replace="~{fragments/plantilla :: pie}"></footer>
+</body>
+
+</html>

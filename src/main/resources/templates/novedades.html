@@ -1,0 +1,51 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/plantilla :: cabecera('TechZone - Novedades')}"></head>
+<body>
+    <header th:replace="~{fragments/plantilla :: barra-navegacion('novedades')}"></header>
+
+    <main class="container my-4">
+        <div class="text-center mb-5 p-4 bg-primary text-white rounded-3">
+            <h1 class="display-5 fw-bold">Novedades</h1>
+            <p class="lead">Las ultimas tarjetas graficas y componentes</p>
+        </div>
+
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+            <div class="col" th:each="producto : ${productos}">
+                <div class="card h-100 shadow-sm border-primary">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <span><i class="bi bi-stars"></i> Nuevo</span>
+                        <span class="badge" th:classappend="${producto.stock > 0} ? 'bg-success' : 'bg-danger'"
+                            th:text="${producto.stock > 0} ? 'Disponible' : 'Sin stock'">Disponible</span>
+                    </div>
+                    <img th:if="${producto.imagen != null}" th:src="${producto.imagen}" class="card-img-top" th:alt="${producto.nombre}">
+                    <div class="card-body d-flex flex-column">
+                        <span class="badge bg-secondary mb-2" th:text="${producto.marca.nombre}">Marca</span>
+                        <h5 class="card-title" th:text="${producto.nombre}">Producto</h5>
+                        <p class="card-text text-muted small" th:text="${producto.descripcion}">Descripcion</p>
+                        <div class="mt-auto">
+                            <p class="fw-bold text-primary fs-4" th:text="'S/ ' + ${#numbers.formatDecimal(producto.precio, 1, 2)}">S/ 0.00</p>
+                        </div>
+                        <button class="btn btn-primary mt-2 agregar-carrito"
+                                th:data-id="${producto.idProducto}"
+                                th:data-nombre="${producto.nombre}"
+                                th:data-precio="${producto.precio}"
+                                th:data-imagen="${producto.imagen}">
+                            <i class="bi bi-cart-plus"></i> Agregar al Carrito
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center py-5" th:if="${productos.isEmpty()}">
+            <i class="bi bi-megaphone display-1 text-muted"></i>
+            <h3 class="text-muted mt-3">No hay novedades por el momento</h3>
+        </div>
+    </main>
+
+    <footer th:replace="~{fragments/plantilla :: pie}"></footer>
+
+    <script th:src="@{/js/carrito.js}"></script>
+</body>
+</html>

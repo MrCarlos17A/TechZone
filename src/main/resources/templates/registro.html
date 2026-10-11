@@ -1,0 +1,147 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/plantilla :: cabecera('TechZone - Crear Cuenta')}"></head>
+
+<body>
+    <header th:replace="~{fragments/plantilla :: barra-navegacion('')}"></header>
+
+    <main class="container my-4">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="card shadow">
+                    <div class="card-body p-4">
+                        <h2 class="text-center mb-4"><i class="bi bi-person-plus"></i> Crear Cuenta</h2>
+
+                        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="bi bi-exclamation-triangle"></i> <span th:text="${error}">Error</span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+
+                        <div th:if="${exito}" class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="bi bi-check-circle"></i> <span th:text="${exito}">Exito</span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+
+                        <form th:action="@{/registro}" method="post" id="formRegistro" novalidate>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="nombres" class="form-label">Nombres</label>
+                                    <input type="text" class="form-control" id="nombres" name="nombres" required
+                                        placeholder="Tus nombres">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="apellidos" class="form-label">Apellidos</label>
+                                    <input type="text" class="form-control" id="apellidos" name="apellidos" required
+                                        placeholder="Tus apellidos">
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="correo" class="form-label">Correo electronico</label>
+                                <input type="email" class="form-control" id="correo" name="correo" required
+                                    placeholder="tu@correo.com" pattern="[^@\s]+@[^@\s]+\.[^@\s]+"
+                                    title="Ingresa un correo valido que contenga @">
+                                <div class="invalid-feedback">Ingresa un correo valido que contenga @</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="telefono" class="form-label">Telefono</label>
+                                <input type="tel" class="form-control" id="telefono" name="telefono" required
+                                    placeholder="999888777" pattern="[0-9]{9}" maxlength="9"
+                                    title="Ingresa 9 digitos">
+                                <div class="invalid-feedback">El telefono debe tener 9 digitos</div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="password" class="form-label">Contrasena</label>
+                                    <div class="input-group">
+                                        <input type="password" class="form-control" id="password" name="password" required
+                                            placeholder="Minimo 6 caracteres" minlength="6">
+                                        <button class="btn btn-outline-secondary" type="button" id="togglePassword" title="Mostrar / ocultar contrasena">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="passwordConfirmar" class="form-label">Confirmar Contrasena</label>
+                                    <div class="input-group">
+                                        <input type="password" class="form-control" id="passwordConfirmar" name="passwordConfirmar" required
+                                            placeholder="Repite tu contrasena" minlength="6">
+                                        <button class="btn btn-outline-secondary" type="button" id="togglePasswordConfirmar" title="Mostrar / ocultar contrasena">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary w-100 mb-3">
+                                <i class="bi bi-person-check"></i> Crear Cuenta
+                            </button>
+                        </form>
+
+                        <div class="text-center">
+                            <p class="mb-0">Ya tienes una cuenta? <a th:href="@{/login}" class="text-primary fw-bold">Iniciar Sesion</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer th:replace="~{fragments/plantilla :: pie}"></footer>
+
+    <script>
+        function setupToggle(toggleId, inputId) {
+            var btn = document.getElementById(toggleId);
+            if (!btn) return;
+            btn.addEventListener('click', function () {
+                var input = document.getElementById(inputId);
+                var icon = this.querySelector('i');
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.classList.remove('bi-eye');
+                    icon.classList.add('bi-eye-slash');
+                } else {
+                    input.type = 'password';
+                    icon.classList.remove('bi-eye-slash');
+                    icon.classList.add('bi-eye');
+                }
+            });
+        }
+        setupToggle('togglePassword', 'password');
+        setupToggle('togglePasswordConfirmar', 'passwordConfirmar');
+
+        document.getElementById('formRegistro').addEventListener('submit', function (e) {
+            var ok = true;
+            var correo = document.getElementById('correo');
+            if (correo.value.indexOf('@') === -1) {
+                correo.classList.add('is-invalid');
+                ok = false;
+            } else {
+                correo.classList.remove('is-invalid');
+            }
+            var tel = document.getElementById('telefono');
+            if (!/^[0-9]{9}$/.test(tel.value)) {
+                tel.classList.add('is-invalid');
+                ok = false;
+            } else {
+                tel.classList.remove('is-invalid');
+            }
+            var p1 = document.getElementById('password');
+            var p2 = document.getElementById('passwordConfirmar');
+            if (p1.value !== p2.value) {
+                p2.classList.add('is-invalid');
+                ok = false;
+            } else {
+                p2.classList.remove('is-invalid');
+            }
+            if (!ok) {
+                e.preventDefault();
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,74 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/plantilla :: cabecera('Admin - Formulario Pedido')}"></head>
+
+<body>
+    <div class="admin-shell" id="paginaAdmin">
+        <div th:insert="~{fragments/admin :: barra-lateral('pedidos')}"></div>
+        <div class="admin-principal">
+            <header th:replace="~{fragments/plantilla-admin :: barra-superior}"></header>
+            <main class="admin-contenido container-fluid py-4">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow">
+                    <div class="card-header bg-danger text-white">
+                        <h4 class="mb-0">
+                            <i class="bi bi-receipt"></i>
+                            <span
+                                th:text="${pedido.idPedido != null} ? 'Editar Pedido' : 'Nuevo Pedido'">Formulario</span>
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <form
+                            th:action="${pedido.idPedido != null} ? @{/admin/pedidos/actualizar/{id}(id=${pedido.idPedido})} : @{/admin/pedidos/guardar}"
+                            method="post">
+                            <div class="mb-3">
+                                <label class="form-label">Usuario</label>
+                                <input type="text" class="form-control"
+                                    th:value="${pedido.usuario != null ? pedido.usuario.nombres + ' ' + pedido.usuario.apellidos : '-'}"
+                                    readonly disabled>
+                                <small class="text-muted">El cliente no se puede cambiar, es quien realizo la compra.</small>
+                            </div>
+                            <div class="mb-3">
+                                <label for="total" class="form-label">Total (S/)</label>
+                                <input type="text" class="form-control" id="total"
+                                    th:value="${pedido.total != null ? 'S/ ' + #numbers.formatDecimal(pedido.total, 1, 2) : 'S/ 0.00'}"
+                                    readonly disabled>
+                                <small class="text-muted">El total se calcula automaticamente desde los detalles del pedido.</small>
+                            </div>
+                            <div class="mb-3">
+                                <label for="estado" class="form-label">Estado</label>
+                                <select class="form-select" id="estado" name="estado" required>
+                                    <option value="PENDIENTE" th:selected="${pedido.estado?.name() == 'PENDIENTE'}">
+                                        Pendiente</option>
+                                    <option value="PROCESADO" th:selected="${pedido.estado?.name() == 'PROCESADO'}">
+                                        Procesado</option>
+                                    <option value="ENVIADO" th:selected="${pedido.estado?.name() == 'ENVIADO'}">Enviado
+                                    </option>
+                                    <option value="ENTREGADO" th:selected="${pedido.estado?.name() == 'ENTREGADO'}">
+                                        Entregado</option>
+                                    <option value="CANCELADO" th:selected="${pedido.estado?.name() == 'CANCELADO'}">
+                                        Cancelado</option>
+                                </select>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-danger">
+                                    <i class="bi bi-save"></i> Guardar
+                                </button>
+                                <a th:href="@{/admin/pedidos}" class="btn btn-secondary">
+                                    <i class="bi bi-arrow-left"></i> Cancelar
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+            </main>
+            <footer th:replace="~{fragments/plantilla-admin :: pie-admin}"></footer>
+        </div>
+    </div>
+</body>
+
+</html>

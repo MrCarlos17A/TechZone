@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body>
+    <nav th:fragment="barra-lateral(activo)" class="barra-lateral-admin p-3 shadow">
+        <div class="d-flex justify-content-start align-items-center mb-3 px-1">
+            <a th:href="@{/admin}" class="d-flex align-items-center gap-2 text-white text-decoration-none">
+                <img th:src="@{/Assets/IMG/Logo/TechZone.png}" alt="TechZone" style="height: 34px;">
+                <span class="texto-barra fw-bold fs-5">TechZone</span>
+            </a>
+        </div>
+        <div class="list-group list-group-flush menu-lateral">
+            <div class="categoria-barra">Principal</div>
+            <a th:href="@{/admin}" class="list-group-item list-group-item-action"
+                th:classappend="${activo == 'dashboard'} ? ' active'" title="Dashboard">
+                <i class="bi bi-speedometer2"></i> <span class="texto-barra">Dashboard</span>
+            </a>
+            <div class="categoria-barra">Catalogo</div>
+            <a th:href="@{/admin/productos}" class="list-group-item list-group-item-action"
+                th:classappend="${activo == 'productos'} ? ' active'" title="Gestor de Productos">
+                <i class="bi bi-box-seam"></i> <span class="texto-barra">Gestor de Productos</span>
+            </a>
+            <a th:href="@{/admin/marcas}" class="list-group-item list-group-item-action"
+                th:classappend="${activo == 'marcas'} ? ' active'" title="Gestor de Marcas">
+                <i class="bi bi-building"></i> <span class="texto-barra">Gestor de Marcas</span>
+            </a>
+            <a th:href="@{/admin/categorias}" class="list-group-item list-group-item-action"
+                th:classappend="${activo == 'categorias'} ? ' active'" title="Gestor de Categorias">
+                <i class="bi bi-tags"></i> <span class="texto-barra">Gestor de Categorias</span>
+            </a>
+            <div class="categoria-barra">Ventas</div>
+            <a th:href="@{/admin/pedidos}" class="list-group-item list-group-item-action"
+                th:classappend="${activo == 'pedidos'} ? ' active'" title="Gestor de Pedidos">
+                <i class="bi bi-receipt"></i> <span class="texto-barra">Gestor de Pedidos</span>
+            </a>
+            <a th:href="@{/admin/detalles-pedido}" class="list-group-item list-group-item-action"
+                th:classappend="${activo == 'detalles'} ? ' active'" title="Detalles de Pedido">
+                <i class="bi bi-list-check"></i> <span class="texto-barra">Detalles de Pedido</span>
+            </a>
+            <div class="categoria-barra">Sistema</div>
+            <a th:href="@{/admin/usuarios}" class="list-group-item list-group-item-action"
+                th:classappend="${activo == 'usuarios'} ? ' active'" title="Gestor de Usuarios">
+                <i class="bi bi-people"></i> <span class="texto-barra">Gestor de Usuarios</span>
+            </a>
+            <a th:href="@{/admin/roles}" class="list-group-item list-group-item-action"
+                th:classappend="${activo == 'roles'} ? ' active'" title="Gestor de Roles">
+                <i class="bi bi-shield-lock"></i> <span class="texto-barra">Gestor de Roles</span>
+            </a>
+        </div>
+        <hr class="separador-barra mt-auto">
+        <div class="d-grid gap-2">
+            <a th:href="@{/}" class="btn btn-outline-light btn-sm" title="Ir al Inicio">
+                <i class="bi bi-house"></i> <span class="texto-barra">Ir al Inicio</span>
+            </a>
+            <form th:action="@{/logout}" method="post" class="d-grid">
+                <button type="submit" class="btn btn-danger btn-sm" title="Cerrar Sesion">
+                    <i class="bi bi-box-arrow-right"></i> <span class="texto-barra">Cerrar Sesion</span>
+                </button>
+            </form>
+        </div>
+    </nav>
+</body>
+
+</html>

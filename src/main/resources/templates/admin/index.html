@@ -1,0 +1,217 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/plantilla :: cabecera('Admin - Dashboard')}"></head>
+<body>
+    <div class="admin-shell" id="paginaAdmin">
+        <div th:insert="~{fragments/admin :: barra-lateral('dashboard')}"></div>
+        <div class="admin-principal">
+            <header th:replace="~{fragments/plantilla-admin :: barra-superior}"></header>
+            <main class="admin-contenido container-fluid py-4">
+                <h1 class="mb-4"><i class="bi bi-speedometer2"></i> Dashboard</h1>
+
+                <div th:if="${pedidosPendientes > 0}" class="alert alert-warning" role="alert">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    Tienes <strong th:text="${pedidosPendientes}">0</strong> pedido(s) pendiente(s) por atender.
+                    <a th:href="@{/admin/pedidos}" class="alert-link">Ver pedidos</a>
+                </div>
+
+                <!-- Tarjetas de resumen -->
+                <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3 mb-4">
+                    <div class="col">
+                        <a th:href="@{/admin/productos}" class="text-decoration-none">
+                            <div class="card tarjeta-resumen bg-primary text-white h-100 shadow-sm">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h2 class="mb-0" th:text="${totalProductos}">0</h2>
+                                            <p class="mb-0">Productos</p>
+                                        </div>
+                                        <i class="bi bi-box-seam display-4 opacity-50"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col">
+                        <a th:href="@{/admin/marcas}" class="text-decoration-none">
+                            <div class="card tarjeta-resumen bg-success text-white h-100 shadow-sm">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h2 class="mb-0" th:text="${totalMarcas}">0</h2>
+                                            <p class="mb-0">Marcas</p>
+                                        </div>
+                                        <i class="bi bi-building display-4 opacity-50"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col">
+                        <a th:href="@{/admin/categorias}" class="text-decoration-none">
+                            <div class="card tarjeta-resumen bg-info text-white h-100 shadow-sm">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h2 class="mb-0" th:text="${totalCategorias}">0</h2>
+                                            <p class="mb-0">Categorias</p>
+                                        </div>
+                                        <i class="bi bi-tags display-4 opacity-50"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col">
+                        <a th:href="@{/admin/pedidos}" class="text-decoration-none">
+                            <div class="card tarjeta-resumen bg-danger text-white h-100 shadow-sm">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h2 class="mb-0" th:text="${totalPedidos}">0</h2>
+                                            <p class="mb-0">Pedidos</p>
+                                        </div>
+                                        <i class="bi bi-receipt display-4 opacity-50"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col">
+                        <a th:href="@{/admin/usuarios}" class="text-decoration-none">
+                            <div class="card tarjeta-resumen bg-warning text-dark h-100 shadow-sm">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h2 class="mb-0" th:text="${totalUsuarios}">0</h2>
+                                            <p class="mb-0">Usuarios</p>
+                                        </div>
+                                        <i class="bi bi-people display-4 opacity-50"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col">
+                        <a th:href="@{/admin/roles}" class="text-decoration-none">
+                            <div class="card tarjeta-resumen bg-secondary text-white h-100 shadow-sm">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h2 class="mb-0" th:text="${totalRoles}">0</h2>
+                                            <p class="mb-0">Roles</p>
+                                        </div>
+                                        <i class="bi bi-shield-lock display-4 opacity-50"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Grafico de pedidos -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-graph-up"></i> Pedidos de los ultimos 7 dias</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="graficoPedidos" height="90"></canvas>
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    <!-- Ultimos pedidos -->
+                    <div class="col-lg-7">
+                        <div class="card shadow-sm">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0"><i class="bi bi-receipt"></i> Ultimos Pedidos</h5>
+                                <a th:href="@{/admin/pedidos}" class="btn btn-sm btn-outline-primary">Ver todos</a>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Cliente</th>
+                                            <th>Total</th>
+                                            <th>Estado</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="pedido : ${ultimosPedidos}">
+                                            <td th:text="${pedido.idPedido}">1</td>
+                                            <td th:text="${pedido.usuario.nombres + ' ' + pedido.usuario.apellidos}">Cliente</td>
+                                            <td th:text="'S/ ' + ${#numbers.formatDecimal(pedido.total, 1, 2)}">S/ 0.00</td>
+                                            <td>
+                                                <span class="badge"
+                                                    th:classappend="${pedido.estado.name() == 'PENDIENTE' ? 'bg-warning text-dark' : (pedido.estado.name() == 'CANCELADO' ? 'bg-danger' : (pedido.estado.name() == 'ENTREGADO' ? 'bg-success' : 'bg-info'))}"
+                                                    th:text="${pedido.estado}">PENDIENTE</span>
+                                            </td>
+                                        </tr>
+                                        <tr th:if="${#lists.isEmpty(ultimosPedidos)}">
+                                            <td colspan="4" class="text-center text-muted">No hay pedidos registrados</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stock bajo -->
+                    <div class="col-lg-5">
+                        <div class="card shadow-sm">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0"><i class="bi bi-exclamation-triangle"></i> Stock Bajo</h5>
+                                <a th:href="@{/admin/productos}" class="btn btn-sm btn-outline-primary">Ver todos</a>
+                            </div>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex justify-content-between align-items-center"
+                                    th:each="prod : ${stockBajo}">
+                                    <span th:text="${prod.nombre}">Producto</span>
+                                    <span class="badge bg-danger" th:text="${prod.stock} + ' und.'">0 und.</span>
+                                </li>
+                                <li class="list-group-item text-center text-muted" th:if="${#lists.isEmpty(stockBajo)}">
+                                    Todo el stock esta en niveles normales
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </main>
+            <footer th:replace="~{fragments/plantilla-admin :: pie-admin}"></footer>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script th:inline="javascript">
+        (function () {
+            var lienzo = document.getElementById('graficoPedidos');
+            if (!lienzo || typeof Chart === 'undefined') return;
+            var etiquetas = /*[[${etiquetasPedidos}]]*/ [];
+            var valores = /*[[${valoresPedidos}]]*/ [];
+            new Chart(lienzo, {
+                type: 'line',
+                data: {
+                    labels: etiquetas,
+                    datasets: [{
+                        label: 'Pedidos',
+                        data: valores,
+                        borderColor: '#5885d9',
+                        backgroundColor: 'rgba(88, 133, 217, 0.2)',
+                        fill: true,
+                        tension: 0.35,
+                        pointBackgroundColor: '#5885d9',
+                        pointRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: { beginAtZero: true, ticks: { stepSize: 1 } }
+                    }
+                }
+            });
+        })();
+    </script>
+</body>
+</html>

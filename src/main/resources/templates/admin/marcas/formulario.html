@@ -1,0 +1,88 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/plantilla :: cabecera('Admin - Formulario Marca')}"></head>
+
+<body>
+    <div class="admin-shell" id="paginaAdmin">
+        <div th:insert="~{fragments/admin :: barra-lateral('marcas')}"></div>
+        <div class="admin-principal">
+            <header th:replace="~{fragments/plantilla-admin :: barra-superior}"></header>
+            <main class="admin-contenido container-fluid py-4">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card shadow">
+                    <div class="card-header bg-success text-white">
+                        <h4 class="mb-0">
+                            <i class="bi bi-building"></i>
+                            <span th:text="${marca.idMarca != null} ? 'Editar Marca' : 'Nueva Marca'">Formulario</span>
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <form
+                            th:action="${marca.idMarca != null} ? @{/admin/marcas/actualizar/{id}(id=${marca.idMarca})} : @{/admin/marcas/guardar}"
+                            method="post" enctype="multipart/form-data">
+                            <div class="mb-3">
+                                <label for="nombre" class="form-label">Nombre de la Marca</label>
+                                <input type="text" class="form-control" id="nombre" name="nombre"
+                                    th:value="${marca.nombre}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Imagen actual</label>
+                                <div>
+                                    <img th:if="${marca.imagen != null and !marca.imagen.isEmpty()}" th:src="${marca.imagen}"
+                                        alt="Logo de la marca" class="img-thumbnail mb-2" style="max-height: 80px;">
+                                    <span th:unless="${marca.imagen != null and !marca.imagen.isEmpty()}" class="text-muted small">Sin imagen</span>
+                                </div>
+                                <img id="vistaPreviaNueva" alt="Vista previa" class="img-thumbnail mt-2"
+                                    style="display:none; max-height: 80px;">
+                            </div>
+                            <div class="mb-3">
+                                <label for="archivoImagen" class="form-label">Seleccionar archivo</label>
+                                <input type="file" class="form-control" id="archivoImagen" name="archivoImagen"
+                                    accept="image/png,image/jpeg,image/webp,image/gif">
+                                <input type="hidden" name="imagen" th:value="${marca.imagen}">
+                                <small class="text-muted">Elige el logo desde tu equipo (PNG, JPG o WEBP, max. 5MB). Se guardara en la carpeta de marcas.</small>
+                            </div>
+                            <div class="mb-3">
+                                <label for="estadoMarca" class="form-label">Estado</label>
+                                <select class="form-select" id="estadoMarca" name="estadoMarca">
+                                    <option value="true" th:selected="${marca.estadoMarca}">Activa</option>
+                                    <option value="false" th:selected="${marca.estadoMarca != null and !marca.estadoMarca}">
+                                        Inactiva</option>
+                                </select>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-success">
+                                    <i class="bi bi-save"></i> Guardar
+                                </button>
+                                <a th:href="@{/admin/marcas}" class="btn btn-secondary">
+                                    <i class="bi bi-arrow-left"></i> Cancelar
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+            </main>
+            <footer th:replace="~{fragments/plantilla-admin :: pie-admin}"></footer>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('archivoImagen').addEventListener('change', function (e) {
+            var archivo = e.target.files[0];
+            var vista = document.getElementById('vistaPreviaNueva');
+            if (!archivo || !vista) return;
+            var lector = new FileReader();
+            lector.onload = function (ev) {
+                vista.src = ev.target.result;
+                vista.style.display = 'block';
+            };
+            lector.readAsDataURL(archivo);
+        });
+    </script>
+</body>
+
+</html>

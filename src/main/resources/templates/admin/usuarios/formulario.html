@@ -1,0 +1,97 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/plantilla :: cabecera('Admin - Formulario Usuario')}"></head>
+
+<body>
+    <div class="admin-shell" id="paginaAdmin">
+        <div th:insert="~{fragments/admin :: barra-lateral('usuarios')}"></div>
+        <div class="admin-principal">
+            <header th:replace="~{fragments/plantilla-admin :: barra-superior}"></header>
+            <main class="admin-contenido container-fluid py-4">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow">
+                    <div class="card-header bg-warning text-dark">
+                        <h4 class="mb-0">
+                            <i class="bi bi-people"></i>
+                            <span
+                                th:text="${usuario.idUsuario != null} ? 'Editar Usuario' : 'Nuevo Usuario'">Formulario</span>
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <form
+                            th:action="${usuario.idUsuario != null} ? @{/admin/usuarios/actualizar/{id}(id=${usuario.idUsuario})} : @{/admin/usuarios/guardar}"
+                            method="post">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="nombres" class="form-label">Nombres</label>
+                                    <input type="text" class="form-control" id="nombres" name="nombres"
+                                        th:value="${usuario.nombres}" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="apellidos" class="form-label">Apellidos</label>
+                                    <input type="text" class="form-control" id="apellidos" name="apellidos"
+                                        th:value="${usuario.apellidos}" required>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="correo" class="form-label">Correo electronico</label>
+                                <input type="email" class="form-control" id="correo" name="correo"
+                                    th:value="${usuario.correo}" required
+                                    pattern="[^@\s]+@[^@\s]+\.[^@\s]+"
+                                    title="Ingresa un correo valido que contenga @">
+                            </div>
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Contrasena</label>
+                                <input type="password" class="form-control" id="password" name="password"
+                                    th:required="${usuario.idUsuario == null}" minlength="6"
+                                    placeholder="Minimo 6 caracteres">
+                                <small class="text-muted" th:if="${usuario.idUsuario != null}">Dejar vacio para mantener la actual</small>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="telefono" class="form-label">Telefono</label>
+                                    <input type="tel" class="form-control" id="telefono" name="telefono"
+                                        th:value="${usuario.telefono}" required
+                                        pattern="[0-9]{9}" maxlength="9"
+                                        title="El telefono debe tener 9 digitos">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="rol" class="form-label">Rol</label>
+                                    <select class="form-select" id="rol" name="rol" required>
+                                        <option value="">Seleccionar rol...</option>
+                                        <option th:each="r : ${roles}" th:value="${r.idRol}" th:text="${r.nombre}"
+                                            th:selected="${usuario.rol != null and usuario.rol.idRol == r.idRol}">
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="estadoUsuario" class="form-label">Estado</label>
+                                <select class="form-select" id="estadoUsuario" name="estadoUsuario">
+                                    <option value="true" th:selected="${usuario.estadoUsuario}">Activo</option>
+                                    <option value="false" th:selected="${usuario.estadoUsuario != null and !usuario.estadoUsuario}">
+                                        Inactivo</option>
+                                </select>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-warning text-dark">
+                                    <i class="bi bi-save"></i> Guardar
+                                </button>
+                                <a th:href="@{/admin/usuarios}" class="btn btn-secondary">
+                                    <i class="bi bi-arrow-left"></i> Cancelar
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+            </main>
+            <footer th:replace="~{fragments/plantilla-admin :: pie-admin}"></footer>
+        </div>
+    </div>
+</body>
+
+</html>

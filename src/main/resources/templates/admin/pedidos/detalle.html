@@ -1,0 +1,66 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/plantilla :: cabecera('Admin - Detalle Pedido')}"></head>
+
+<body>
+    <div class="admin-shell" id="paginaAdmin">
+        <div th:insert="~{fragments/admin :: barra-lateral('pedidos')}"></div>
+        <div class="admin-principal">
+            <header th:replace="~{fragments/plantilla-admin :: barra-superior}"></header>
+            <main class="admin-contenido container-fluid py-4">
+        <h1 class="mb-4"><i class="bi bi-receipt"></i> Detalle Pedido #<span th:text="${pedido.idPedido}">1</span></h1>
+
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5>Informacion del Pedido</h5>
+                        <p><strong>Usuario:</strong> <span
+                                th:text="${pedido.usuario.nombres + ' ' + pedido.usuario.apellidos}">Usuario</span></p>
+                        <p><strong>Fecha:</strong> <span
+                                th:text="${#temporals.format(pedido.fechaPedido, 'dd/MM/yyyy HH:mm')}">Fecha</span></p>
+                        <p><strong>Estado:</strong>
+                            <span class="badge"
+                                th:classappend="${pedido.estado.name() == 'PENDIENTE'} ? 'bg-warning text-dark' : 'bg-info'"
+                                th:text="${pedido.estado}">Estado</span>
+                        </p>
+                        <p><strong>Total:</strong> <span class="text-primary fw-bold"
+                                th:text="'S/ ' + ${#numbers.formatDecimal(pedido.total, 1, 2)}">S/ 0.00</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h3>Productos del Pedido</h3>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Producto</th>
+                        <th>Precio Unitario</th>
+                        <th>Cantidad</th>
+                        <th>Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="detalle : ${detalles}">
+                        <td th:text="${detalle.producto.nombre}">Producto</td>
+                        <td th:text="'S/ ' + ${#numbers.formatDecimal(detalle.precioUnitario, 1, 2)}">S/ 0.00</td>
+                        <td th:text="${detalle.cantidad}">1</td>
+                        <td th:text="'S/ ' + ${#numbers.formatDecimal(detalle.subtotal, 1, 2)}">S/ 0.00</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <a th:href="@{/admin/pedidos}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Volver
+        </a>
+            </main>
+            <footer th:replace="~{fragments/plantilla-admin :: pie-admin}"></footer>
+        </div>
+    </div>
+</body>
+
+</html>

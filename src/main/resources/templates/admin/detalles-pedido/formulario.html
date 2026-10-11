@@ -1,0 +1,79 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/plantilla :: cabecera('Admin - Formulario Detalle Pedido')}"></head>
+<body>
+    <div class="admin-shell" id="paginaAdmin">
+        <div th:insert="~{fragments/admin :: barra-lateral('detalles')}"></div>
+        <div class="admin-principal">
+            <header th:replace="~{fragments/plantilla-admin :: barra-superior}"></header>
+            <main class="admin-contenido container-fluid py-4">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow">
+                    <div class="card-header bg-dark text-white">
+                        <h4 class="mb-0">
+                            <i class="bi bi-list-check"></i>
+                            <span th:text="${detalle.idDetalle != null} ? 'Editar Detalle' : 'Nuevo Detalle'">Formulario</span>
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="${detalle.idDetalle != null} ? @{/admin/detalles-pedido/actualizar/{id}(id=${detalle.idDetalle})} : @{/admin/detalles-pedido/guardar}"
+                              method="post">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="pedido" class="form-label">Pedido</label>
+                                    <select class="form-select" id="pedido" name="pedido" required>
+                                        <option value="">Seleccionar pedido...</option>
+                                        <option th:each="p : ${pedidos}" th:value="${p.idPedido}"
+                                                th:text="'Pedido #' + ${p.idPedido}"
+                                                th:selected="${detalle.pedido != null and detalle.pedido.idPedido == p.idPedido}">
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="producto" class="form-label">Producto</label>
+                                    <select class="form-select" id="producto" name="producto" required>
+                                        <option value="">Seleccionar producto...</option>
+                                        <option th:each="prod : ${productos}" th:value="${prod.idProducto}"
+                                                th:text="${prod.nombre}"
+                                                th:selected="${detalle.producto != null and detalle.producto.idProducto == prod.idProducto}">
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label for="cantidad" class="form-label">Cantidad</label>
+                                    <input type="number" class="form-control" id="cantidad" name="cantidad"
+                                           th:value="${detalle.cantidad}" required>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="precioUnitario" class="form-label">Precio Unitario (S/)</label>
+                                    <input type="number" class="form-control" id="precioUnitario" name="precioUnitario"
+                                           step="0.01" th:value="${detalle.precioUnitario}" required>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="subtotal" class="form-label">Subtotal (S/)</label>
+                                    <input type="number" class="form-control" id="subtotal" name="subtotal"
+                                           step="0.01" th:value="${detalle.subtotal}" required>
+                                </div>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-dark">
+                                    <i class="bi bi-save"></i> Guardar
+                                </button>
+                                <a th:href="@{/admin/detalles-pedido}" class="btn btn-secondary">
+                                    <i class="bi bi-arrow-left"></i> Cancelar
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+            </main>
+            <footer th:replace="~{fragments/plantilla-admin :: pie-admin}"></footer>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <header th:fragment="barra-superior">
+        <nav class="navbar navbar-expand-lg navbar-dark barra-superior-admin">
+            <div class="container-fluid">
+                <button class="btn btn-outline-light boton-contraer" title="Contraer / expandir menu">
+                    <i class="bi bi-list"></i>
+                </button>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuAdmin">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="menuAdmin">
+                    <div class="d-flex align-items-center gap-2 ms-auto">
+                        <span class="text-light" th:if="${usuarioLogueado.isPresent()}">
+                            <i class="bi bi-person-check"></i>
+                            <span th:text="${usuarioLogueado.get().nombres + ' ' + usuarioLogueado.get().apellidos}">Admin</span>
+                            <small class="badge bg-info ms-1" th:text="${usuarioLogueado.get().rol.nombre}">Rol</small>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <footer th:fragment="pie-admin">
+        <div class="pie-admin text-light py-3 mt-5">
+            <div class="container-fluid">
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+                    <p class="small mb-0">
+                        <img th:src="@{/Assets/IMG/Logo/TechZone.png}" alt="TechZone" style="height: 24px;">
+                        <strong>TechZone</strong> - Panel de Administracion
+                    </p>
+                    <p class="small mb-0">&copy; 2026 TECHZONE. Todos los derechos reservados.</p>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
+            (function () {
+                var pagina = document.getElementById('paginaAdmin');
+                var icono = document.getElementById('iconoContraer');
+                if (!pagina) return;
+                function aplicar(contraido) {
+                    pagina.classList.toggle('contraido', contraido);
+                    if (icono) {
+                        icono.className = contraido ? 'bi bi-chevron-right' : 'bi bi-chevron-left';
+                    }
+                    try {
+                        localStorage.setItem('barraContraida', contraido ? '1' : '0');
+                    } catch (e) { /* sin almacenamiento */ }
+                }
+                var inicial = false;
+                try {
+                    inicial = localStorage.getItem('barraContraida') === '1';
+                } catch (e) { /* sin almacenamiento */ }
+                aplicar(inicial);
+                document.querySelectorAll('.boton-contraer').forEach(function (boton) {
+                    boton.addEventListener('click', function () {
+                        aplicar(!pagina.classList.contains('contraido'));
+                    });
+                });
+            })();
+        </script>
+        <!-- Modal confirmar eliminacion -->
+        <div class="modal fade" id="modalEliminar" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header bg-danger text-white">
+                        <h5 class="modal-title"><i class="bi bi-exclamation-triangle"></i> Confirmar eliminacion</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p class="mb-1">Estas seguro de eliminar <strong id="nombreEliminar">este registro</strong>?</p>
+                        <p class="text-muted small mb-0">Esta accion no se puede deshacer.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <a href="#" id="btnConfirmarEliminar" class="btn btn-danger">Aceptar</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            document.addEventListener('click', function (e) {
+                var boton = e.target.closest('[data-eliminar]');
+                if (!boton) return;
+                e.preventDefault();
+                document.getElementById('nombreEliminar').textContent = boton.dataset.nombre || 'este registro';
+                document.getElementById('btnConfirmarEliminar').href = boton.getAttribute('href');
+                new bootstrap.Modal(document.getElementById('modalEliminar')).show();
+            });
+        </script>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,71 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/plantilla :: cabecera('Admin - Listar Roles')}"></head>
+
+<body>
+    <div class="admin-shell" id="paginaAdmin">
+        <div th:insert="~{fragments/admin :: barra-lateral('roles')}"></div>
+        <div class="admin-principal">
+            <header th:replace="~{fragments/plantilla-admin :: barra-superior}"></header>
+            <main class="admin-contenido container-fluid py-4">
+        <div th:if="${exito}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle"></i> <span th:text="${exito}">Exito</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle"></i> <span th:text="${error}">Error</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1><i class="bi bi-shield-lock"></i> Roles</h1>
+            <a th:href="@{/admin/roles/nuevo}" class="btn btn-success">
+                <i class="bi bi-plus-circle"></i> Nuevo Rol
+            </a>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Descripcion</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="rol : ${roles}">
+                        <td th:text="${rol.idRol}">1</td>
+                        <td th:text="${rol.nombre}">Rol</td>
+                        <td th:text="${rol.descripcion}">Descripcion</td>
+                        <td>
+                            <span class="badge" th:classappend="${rol.estadoRol} ? 'bg-success' : 'bg-secondary'"
+                                th:text="${rol.estadoRol} ? 'Activo' : 'Inactivo'">Activo</span>
+                        </td>
+                        <td>
+                            <a th:href="@{/admin/roles/editar/{id}(id=${rol.idRol})}" class="btn btn-sm btn-warning">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <a th:href="@{/admin/roles/eliminar/{id}(id=${rol.idRol})}" class="btn btn-sm btn-danger"
+                                data-eliminar title="Eliminar"
+                                th:attr="data-nombre=${rol.nombre}">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="text-center py-4" th:if="${#lists.isEmpty(roles)}">
+            <p class="text-muted">No hay roles registrados</p>
+        </div>
+            </main>
+            <footer th:replace="~{fragments/plantilla-admin :: pie-admin}"></footer>
+        </div>
+    </div>
+</body>
+
+</html>
