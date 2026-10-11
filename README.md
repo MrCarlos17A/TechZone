@@ -11,7 +11,7 @@
 | N° | Apellidos y Nombres | Código Universitario |
 | :---: | :--- | :---: |
 | 1 | Arroyo Vega, Carlos Felipe | U23214686 |
-
+| 2 | Santamaria Damian, Jose Jhonatan | U23222412 |
 ---
 
 ## Descripción del Proyecto
