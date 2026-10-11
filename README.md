@@ -62,3 +62,17 @@ spring.datasource.username=root
 spring.datasource.password=tu_password
 spring.jpa.hibernate.ddl-auto=update
 spring.jpa.show-sql=true
+```
+
+### 3. Compilación y ejecución
+Desde la terminal en la raíz del proyecto:
+
+```bash
+# Compilar y empaquetar el proyecto
+./mvnw clean package -DskipTests
+
+# Ejecutar la aplicación
+./mvnw spring-boot:run
+```
+
+La aplicación estará accesible en: `http://localhost:8080`
