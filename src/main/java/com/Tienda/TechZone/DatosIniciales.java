@@ -40,29 +40,21 @@ public class DatosIniciales implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) {
-        // ══════════════════════════════════════════════
-        // 1. ELIMINAR DATOS INNECESARIOS (solo admin)
-        // ══════════════════════════════════════════════
+
         limpiarDatosInnecesarios();
 
-        // ══════════════════════════════════════════════
-        // 2. ROLES
-        // ══════════════════════════════════════════════
         if (rolRepository.count() == 0) {
             rolRepository.save(Rol.builder().idRol(1).nombre("Administrador").vigente(true).build());
             rolRepository.save(Rol.builder().idRol(2).nombre("Trabajador").vigente(true).build());
             rolRepository.save(Rol.builder().idRol(3).nombre("Cliente").vigente(true).build());
         }
 
-        // ══════════════════════════════════════════════
-        // 3. TIPOS DE DOCUMENTO (solo DNI, RUC, Pasaporte)
-        // ══════════════════════════════════════════════
         if (tipoDocumentoRepository.count() == 0) {
             tipoDocumentoRepository.save(TipoDocumento.builder().idTipoDocumento(1).nombre("DNI").vigente(true).build());
             tipoDocumentoRepository.save(TipoDocumento.builder().idTipoDocumento(3).nombre("RUC").vigente(true).build());
             tipoDocumentoRepository.save(TipoDocumento.builder().idTipoDocumento(4).nombre("Pasaporte").vigente(true).build());
         } else {
-            // Eliminar tipos que no sean DNI, RUC ni Pasaporte
+
             for (TipoDocumento td : tipoDocumentoRepository.findAll()) {
                 String n = td.getNombre() == null ? "" : td.getNombre().trim();
                 if (!n.equals("DNI") && !n.equals("RUC") && !n.equals("Pasaporte")) {
@@ -80,9 +72,6 @@ public class DatosIniciales implements CommandLineRunner {
             }
         }
 
-        // ══════════════════════════════════════════════
-        // 4. MEDIOS DE PAGO
-        // ══════════════════════════════════════════════
         if (medioPagoRepository.count() == 0) {
             medioPagoRepository.save(MedioPago.builder().idMedioPago(1).nombre("Efectivo").vigente(true).build());
             medioPagoRepository.save(MedioPago.builder().idMedioPago(2).nombre("Yape").vigente(true).build());
@@ -93,9 +82,6 @@ public class DatosIniciales implements CommandLineRunner {
             medioPagoRepository.save(MedioPago.builder().idMedioPago(7).nombre("PagoEfectivo").vigente(true).build());
         }
 
-        // ══════════════════════════════════════════════
-        // 5. UBIGEOS - Lima, Callao, Lambayeque completo
-        // ══════════════════════════════════════════════
         if (ubigeoRepository.count() == 0) {
             ubigeoRepository.save(Ubigeo.builder().idUbigeo(150101).departamento("Lima").provincia("Lima").distrito("Lima").vigente(true).build());
             ubigeoRepository.save(Ubigeo.builder().idUbigeo(150103).departamento("Lima").provincia("Lima").distrito("Ate").vigente(true).build());
@@ -168,9 +154,6 @@ public class DatosIniciales implements CommandLineRunner {
             }
         });
 
-        // ══════════════════════════════════════════════
-        // 6. MARCAS
-        // ══════════════════════════════════════════════
         if (marcaRepository.count() == 0) {
             marcaRepository.save(Marca.builder().idMarca(1).nombre("ASUS").vigente(true).build());
             marcaRepository.save(Marca.builder().idMarca(2).nombre("MSI").vigente(true).build());
@@ -184,17 +167,11 @@ public class DatosIniciales implements CommandLineRunner {
             marcaRepository.save(Marca.builder().idMarca(10).nombre("MICRONICS").vigente(true).build());
         }
 
-        // ══════════════════════════════════════════════
-        // 7. CATEGORIAS
-        // ══════════════════════════════════════════════
         if (categoriaRepository.count() == 0) {
             categoriaRepository.save(Categoria.builder().idCategoria(1).nombre("Monitores").vigente(true).build());
             categoriaRepository.save(Categoria.builder().idCategoria(2).nombre("Tarjetas de Video").vigente(true).build());
         }
 
-        // ══════════════════════════════════════════════
-        // 8. PRODUCTOS
-        // ══════════════════════════════════════════════
         if (productoRepository.count() == 0) {
             Marca asus = marcaRepository.findById(1).orElse(null);
             Marca msi = marcaRepository.findById(2).orElse(null);
@@ -243,7 +220,6 @@ public class DatosIniciales implements CommandLineRunner {
             }
         }
 
-        // Backfill SKU para productos existentes sin codigo
         List<Producto> sinSku = productoRepository.findAll().stream()
                 .filter(p -> p.getCodigoSku() == null || p.getCodigoSku().isBlank())
                 .toList();
@@ -265,9 +241,6 @@ public class DatosIniciales implements CommandLineRunner {
             productoRepository.save(p);
         }
 
-        // ══════════════════════════════════════════════
-        // 9. PROVEEDORES (20 distribuidores reales)
-        // ══════════════════════════════════════════════
         if (proveedorRepository.count() < 20) {
             TipoDocumento ruc = tipoDocumentoRepository.findById(3).orElse(null);
             if (ruc != null) {
@@ -305,12 +278,10 @@ public class DatosIniciales implements CommandLineRunner {
             }
         }
 
-        // ══════════════════════════════════════════════
-        // 10. UNICO USUARIO: ADMIN CARLOS FELIPE ARROYO VEGA
-        // ══════════════════════════════════════════════
+
         Rol admin = rolRepository.findById(1).orElse(null);
 
-        // Si no existe el admin, crearlo
+        // Si no existe el admin
         if (usuarioRepository.findByCorreo("admin@techzone.com").isEmpty()) {
             Ubigeo ubigeoTuman = ubigeoRepository.findById(140122).orElse(null);
             TipoDocumento tipoDni = tipoDocumentoRepository.findById(1).orElse(null);
@@ -362,15 +333,8 @@ public class DatosIniciales implements CommandLineRunner {
         }
     }
 
-    /**
-     * Elimina todos los datos innecesarios:
-     * - Usuarios que no sean admin@techzone.com
-     * - Ventas, detalles de venta, pagos
-     * - Carritos y detalles de carrito
-     * - Clientes y empleados no admin
-     */
     private void limpiarDatosInnecesarios() {
-        // Eliminar ventas y dependencias
+
         List<Venta> ventas = ventaRepository.findAll();
         if (!ventas.isEmpty()) {
             detalleVentaRepository.deleteAll();
@@ -378,22 +342,19 @@ public class DatosIniciales implements CommandLineRunner {
             ventaRepository.deleteAll();
         }
 
-        // Eliminar carritos y dependencias
         List<Carrito> carritos = carritoRepository.findAll();
         if (!carritos.isEmpty()) {
             detalleCarritoRepository.deleteAll();
             carritoRepository.deleteAll();
         }
 
-        // Eliminar clientes y empleados
         clienteRepository.deleteAll();
         empleadoRepository.deleteAll();
 
-        // Eliminar usuarios que no sean admin
         List<Usuario> usuarios = usuarioRepository.findAll();
         for (Usuario u : usuarios) {
             if (!"admin@techzone.com".equals(u.getCorreo())) {
-                // Eliminar persona asociada si existe
+
                 if (u.getPersona() != null) {
                     personaRepository.delete(u.getPersona());
                 }
