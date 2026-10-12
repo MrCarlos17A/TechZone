@@ -57,11 +57,23 @@ TechZone es una aplicación web integral diseñada para la gestión, control de 
 Asegúrate de ajustar las credenciales de conexión en `src/main/resources/application.properties`:
 
 ```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/techzone_db?useSSL=false&serverTimezone=UTC
+spring.datasource.url=jdbc:mysql://localhost:3307/BD_Techzone?createDatabaseIfNotExist=true
 spring.datasource.username=root
-spring.datasource.password=tu_password
+spring.datasource.password=123456
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+
 spring.jpa.hibernate.ddl-auto=update
 spring.jpa.show-sql=true
+
+spring.sql.init.mode=never
+
+spring.thymeleaf.cache=false
+
+spring.servlet.multipart.max-file-size=5MB
+spring.servlet.multipart.max-request-size=5MB
+
+dni.api.url=https://api.apis.net.pe/v1/dni
+dni.api.token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo2NDQsImV4cCI6MTc2NTUwMjk2OX0.u-EQv5frP4I97ssdCDJ7bgFCuZlRNDEzi5RLVvz1RCs
 ```
 
 ### 3. Compilación y ejecución
