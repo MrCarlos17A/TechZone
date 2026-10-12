@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/plantilla :: cabecera('Admin - Formulario Tipo Documento')}"></head>
+<body>
+    <div class="admin-shell" id="paginaAdmin">
+        <div th:insert="~{fragments/admin :: barra-lateral('tipos-doc')}"></div>
+        <div class="admin-principal">
+            <header th:replace="~{fragments/plantilla-admin :: barra-superior}"></header>
+            <main class="admin-contenido container-fluid py-4">
+                <div class="row justify-content-center">
+                    <div class="col-md-6">
+                        <div class="card shadow">
+                            <div class="card-header bg-success text-white">
+                                <h4 class="mb-0"><i class="bi bi-file-earmark-text"></i>
+                                    <span th:text="${tipoDocumento.idTipoDocumento != null} ? 'Editar Tipo' : 'Nuevo Tipo'">Formulario</span>
+                                </h4>
+                            </div>
+                            <div class="card-body">
+                                <form th:action="${tipoDocumento.idTipoDocumento != null} ? @{/admin/tipos-documento/actualizar/{id}(id=${tipoDocumento.idTipoDocumento})} : @{/admin/tipos-documento/guardar}" method="post">
+                                    <div class="mb-3">
+                                        <label class="form-label">Nombre</label>
+                                        <input type="text" class="form-control" name="nombre" th:value="${tipoDocumento.nombre}" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Estado</label>
+                                        <select class="form-select" name="vigente">
+                                            <option value="true" th:selected="${tipoDocumento.vigente == null or tipoDocumento.vigente}">Activo</option>
+                                            <option value="false" th:selected="${tipoDocumento.vigente != null and !tipoDocumento.vigente}">Inactivo</option>
+                                        </select>
+                                    </div>
+                                    <div class="d-flex gap-2">
+                                        <button type="submit" class="btn btn-success"><i class="bi bi-save"></i> Guardar</button>
+                                        <a th:href="@{/admin/tipos-documento}" class="btn btn-secondary"><i class="bi bi-arrow-left"></i> Cancelar</a>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+            <footer th:replace="~{fragments/plantilla-admin :: pie-admin}"></footer>
+        </div>
+    </div>
+</body>
+</html>

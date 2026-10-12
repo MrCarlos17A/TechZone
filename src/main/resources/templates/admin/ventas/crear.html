@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/plantilla :: cabecera('Admin - Nueva Venta')}"></head>
+
+<body>
+    <div class="admin-shell" id="paginaAdmin">
+        <div th:insert="~{fragments/admin :: barra-lateral('ventas')}"></div>
+        <div class="admin-principal">
+            <header th:replace="~{fragments/plantilla-admin :: barra-superior}"></header>
+            <main class="admin-contenido container-fluid py-4">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card shadow">
+                    <div class="card-header bg-success text-white">
+                        <h4 class="mb-0"><i class="bi bi-receipt"></i> Nueva Venta</h4>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/admin/ventas/guardar}" method="post">
+                            <div class="mb-3">
+                                <label for="idCliente" class="form-label">Cliente</label>
+                                <select class="form-select" id="idCliente" name="idCliente" required>
+                                    <option value="">Seleccionar cliente...</option>
+                                    <option th:each="c : ${clientes}" th:value="${c.idCliente}"
+                                        th:text="${c.persona != null ? c.persona.nombres + ' ' + c.persona.apellidoPaterno : 'Cliente ' + c.idCliente}">
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="idEmpleado" class="form-label">Empleado</label>
+                                <select class="form-select" id="idEmpleado" name="idEmpleado" required>
+                                    <option value="">Seleccionar empleado...</option>
+                                    <option th:each="e : ${empleados}" th:value="${e.idEmpleado}"
+                                        th:text="${e.persona != null ? e.persona.nombres + ' ' + e.persona.apellidoPaterno : 'Empleado ' + e.idEmpleado}">
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="estado" class="form-label">Estado</label>
+                                <select class="form-select" id="estado" name="estado">
+                                    <option value="PENDIENTE">PENDIENTE</option>
+                                    <option value="COMPLETADA">COMPLETADA</option>
+                                    <option value="CANCELADA">CANCELADA</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="direccionEnvio" class="form-label">Direccion de Envio</label>
+                                <input type="text" class="form-control" id="direccionEnvio" name="direccionEnvio"
+                                    maxlength="255">
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-success">
+                                    <i class="bi bi-save"></i> Guardar
+                                </button>
+                                <a th:href="@{/admin/ventas}" class="btn btn-secondary">
+                                    <i class="bi bi-arrow-left"></i> Cancelar
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+            </main>
+            <footer th:replace="~{fragments/plantilla-admin :: pie-admin}"></footer>
+        </div>
+    </div>
+</body>
+
+</html>

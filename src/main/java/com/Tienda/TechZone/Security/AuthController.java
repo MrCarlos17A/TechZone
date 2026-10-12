@@ -2,6 +2,7 @@ package com.Tienda.TechZone.Security;
 
 import com.Tienda.TechZone.Model.Usuario;
 import com.Tienda.TechZone.Repository.UsuarioRepository;
+import com.Tienda.TechZone.Repository.MedioPagoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,6 +16,7 @@ import java.util.Optional;
 public class AuthController {
 
     private final UsuarioRepository usuarioRepository;
+    private final MedioPagoRepository medioPagoRepository;
 
     @ModelAttribute("usuarioLogueado")
     public Optional<Usuario> usuarioLogueado() {
@@ -23,6 +25,11 @@ public class AuthController {
             return usuarioRepository.findByCorreo(auth.getName());
         }
         return Optional.empty();
+    }
+
+    @ModelAttribute("mediosPago")
+    public java.util.List<com.Tienda.TechZone.Model.MedioPago> mediosPago() {
+        return medioPagoRepository.findAllByVigenteTrue();
     }
 
     @ModelAttribute("esAdmin")

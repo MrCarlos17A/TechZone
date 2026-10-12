@@ -30,7 +30,6 @@
                     <tr>
                         <th>ID</th>
                         <th>Nombre</th>
-                        <th>Descripcion</th>
                         <th>Estado</th>
                         <th>Acciones</th>
                     </tr>
@@ -39,10 +38,9 @@
                     <tr th:each="rol : ${roles}">
                         <td th:text="${rol.idRol}">1</td>
                         <td th:text="${rol.nombre}">Rol</td>
-                        <td th:text="${rol.descripcion}">Descripcion</td>
                         <td>
-                            <span class="badge" th:classappend="${rol.estadoRol} ? 'bg-success' : 'bg-secondary'"
-                                th:text="${rol.estadoRol} ? 'Activo' : 'Inactivo'">Activo</span>
+                            <span class="badge" th:classappend="${rol.vigente} ? 'bg-success' : 'bg-secondary'"
+                                th:text="${rol.vigente} ? 'Activo' : 'Inactivo'">Activo</span>
                         </td>
                         <td>
                             <a th:href="@{/admin/roles/editar/{id}(id=${rol.idRol})}" class="btn btn-sm btn-warning">

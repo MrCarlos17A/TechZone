@@ -9,10 +9,10 @@
             <main class="admin-contenido container-fluid py-4">
                 <h1 class="mb-4"><i class="bi bi-speedometer2"></i> Dashboard</h1>
 
-                <div th:if="${pedidosPendientes > 0}" class="alert alert-warning" role="alert">
+                <div th:if="${ventasPendientes > 0}" class="alert alert-warning" role="alert">
                     <i class="bi bi-exclamation-triangle"></i>
-                    Tienes <strong th:text="${pedidosPendientes}">0</strong> pedido(s) pendiente(s) por atender.
-                    <a th:href="@{/admin/pedidos}" class="alert-link">Ver pedidos</a>
+                    Tienes <strong th:text="${ventasPendientes}">0</strong> venta(s) pendiente(s) por atender.
+                    <a th:href="@{/admin/ventas}" class="alert-link">Ver ventas</a>
                 </div>
 
                 <!-- Tarjetas de resumen -->
@@ -63,13 +63,13 @@
                         </a>
                     </div>
                     <div class="col">
-                        <a th:href="@{/admin/pedidos}" class="text-decoration-none">
+                        <a th:href="@{/admin/ventas}" class="text-decoration-none">
                             <div class="card tarjeta-resumen bg-danger text-white h-100 shadow-sm">
                                 <div class="card-body">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <div>
-                                            <h2 class="mb-0" th:text="${totalPedidos}">0</h2>
-                                            <p class="mb-0">Pedidos</p>
+                                            <h2 class="mb-0" th:text="${totalVentas}">0</h2>
+                                            <p class="mb-0">Ventas</p>
                                         </div>
                                         <i class="bi bi-receipt display-4 opacity-50"></i>
                                     </div>
@@ -109,23 +109,23 @@
                     </div>
                 </div>
 
-                <!-- Grafico de pedidos -->
+                <!-- Grafico de ventas -->
                 <div class="card shadow-sm mb-4">
                     <div class="card-header">
-                        <h5 class="mb-0"><i class="bi bi-graph-up"></i> Pedidos de los ultimos 7 dias</h5>
+                        <h5 class="mb-0"><i class="bi bi-graph-up"></i> Ventas de los ultimos 7 dias</h5>
                     </div>
                     <div class="card-body">
-                        <canvas id="graficoPedidos" height="90"></canvas>
+                        <canvas id="graficoVentas" height="90"></canvas>
                     </div>
                 </div>
 
                 <div class="row g-4">
-                    <!-- Ultimos pedidos -->
+                    <!-- Ultimas ventas -->
                     <div class="col-lg-7">
                         <div class="card shadow-sm">
                             <div class="card-header d-flex justify-content-between align-items-center">
-                                <h5 class="mb-0"><i class="bi bi-receipt"></i> Ultimos Pedidos</h5>
-                                <a th:href="@{/admin/pedidos}" class="btn btn-sm btn-outline-primary">Ver todos</a>
+                                <h5 class="mb-0"><i class="bi bi-receipt"></i> Ultimas Ventas</h5>
+                                <a th:href="@{/admin/ventas}" class="btn btn-sm btn-outline-primary">Ver todas</a>
                             </div>
                             <div class="table-responsive">
                                 <table class="table table-hover mb-0">
@@ -138,18 +138,18 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr th:each="pedido : ${ultimosPedidos}">
-                                            <td th:text="${pedido.idPedido}">1</td>
-                                            <td th:text="${pedido.usuario.nombres + ' ' + pedido.usuario.apellidos}">Cliente</td>
-                                            <td th:text="'S/ ' + ${#numbers.formatDecimal(pedido.total, 1, 2)}">S/ 0.00</td>
+                                        <tr th:each="venta : ${ultimasVentas}">
+                                            <td th:text="${venta.idVenta}">1</td>
+                                            <td th:text="${venta.cliente != null and venta.cliente.persona != null ? venta.cliente.persona.nombres + ' ' + venta.cliente.persona.apellidoPaterno : 'Sin cliente'}">Cliente</td>
+                                            <td th:text="'S/ ' + ${#numbers.formatDecimal(venta.total, 1, 2)}">S/ 0.00</td>
                                             <td>
                                                 <span class="badge"
-                                                    th:classappend="${pedido.estado.name() == 'PENDIENTE' ? 'bg-warning text-dark' : (pedido.estado.name() == 'CANCELADO' ? 'bg-danger' : (pedido.estado.name() == 'ENTREGADO' ? 'bg-success' : 'bg-info'))}"
-                                                    th:text="${pedido.estado}">PENDIENTE</span>
+                                                    th:classappend="${venta.estado == 'PENDIENTE' ? 'bg-warning text-dark' : (venta.estado == 'CANCELADO' ? 'bg-danger' : (venta.estado == 'ENTREGADO' ? 'bg-success' : 'bg-info'))}"
+                                                    th:text="${venta.estado}">PENDIENTE</span>
                                             </td>
                                         </tr>
-                                        <tr th:if="${#lists.isEmpty(ultimosPedidos)}">
-                                            <td colspan="4" class="text-center text-muted">No hay pedidos registrados</td>
+                                        <tr th:if="${#lists.isEmpty(ultimasVentas)}">
+                                            <td colspan="4" class="text-center text-muted">No hay ventas registradas</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -185,16 +185,16 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <script th:inline="javascript">
         (function () {
-            var lienzo = document.getElementById('graficoPedidos');
+            var lienzo = document.getElementById('graficoVentas');
             if (!lienzo || typeof Chart === 'undefined') return;
-            var etiquetas = /*[[${etiquetasPedidos}]]*/ [];
-            var valores = /*[[${valoresPedidos}]]*/ [];
+            var etiquetas = /*[[${etiquetasVentas}]]*/ [];
+            var valores = /*[[${valoresVentas}]]*/ [];
             new Chart(lienzo, {
                 type: 'line',
                 data: {
                     labels: etiquetas,
                     datasets: [{
-                        label: 'Pedidos',
+                        label: 'Ventas',
                         data: valores,
                         borderColor: '#5885d9',
                         backgroundColor: 'rgba(88, 133, 217, 0.2)',

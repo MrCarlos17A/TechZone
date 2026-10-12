@@ -3,6 +3,7 @@ package com.Tienda.TechZone.Controller;
 import com.Tienda.TechZone.Model.Usuario;
 import com.Tienda.TechZone.Service.UsuarioService;
 import com.Tienda.TechZone.Service.RolService;
+import com.Tienda.TechZone.Service.PersonaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,6 +17,7 @@ public class UsuarioController {
 
     private final UsuarioService usuarioService;
     private final RolService rolService;
+    private final PersonaService personaService;
 
     @GetMapping
     public String ListarUsuarios(Model model) {
@@ -27,6 +29,7 @@ public class UsuarioController {
     public String FormularioNuevo(Model model) {
         model.addAttribute("usuario", new Usuario());
         model.addAttribute("roles", rolService.ListarRoles());
+        model.addAttribute("personas", personaService.ListarPersonas());
         return "admin/usuarios/formulario";
     }
 
@@ -45,6 +48,7 @@ public class UsuarioController {
     public String FormularioEditar(@PathVariable Long id, Model model) {
         model.addAttribute("usuario", usuarioService.ObtenerUsuarioPorId(id));
         model.addAttribute("roles", rolService.ListarRoles());
+        model.addAttribute("personas", personaService.ListarPersonas());
         return "admin/usuarios/formulario";
     }
 
@@ -63,7 +67,7 @@ public class UsuarioController {
     public String EliminarUsuario(@PathVariable Long id, RedirectAttributes flash) {
         try {
             Usuario usuario = usuarioService.ObtenerUsuarioPorId(id);
-            usuario.setEstadoUsuario(false);
+            usuario.setEstado("inactivo");
             usuarioService.ActualizarUsuario(id, usuario);
             flash.addFlashAttribute("exito", "Usuario deshabilitado correctamente");
         } catch (RuntimeException e) {

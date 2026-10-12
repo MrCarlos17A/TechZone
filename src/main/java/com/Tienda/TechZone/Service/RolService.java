@@ -19,29 +19,34 @@ public class RolService {
 
     public Rol CrearRol(Rol rol) {
         validarRol(rol);
-        if (rol.getEstadoRol() == null) {
-            rol.setEstadoRol(true);
+        if (rol.getVigente() == null) {
+            rol.setVigente(true);
+        }
+        if (rol.getIdRol() == null) {
+            rol.setIdRol(rolRepository.findAll().stream()
+                    .map(Rol::getIdRol)
+                    .max(Integer::compareTo)
+                    .orElse(0) + 1);
         }
         return rolRepository.save(rol);
     }
 
-    public Rol ActualizarRol(Long id, Rol rol) {
+    public Rol ActualizarRol(Integer id, Rol rol) {
         Rol existente = rolRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Rol no encontrado con id: " + id));
         existente.setNombre(rol.getNombre().trim());
-        existente.setDescripcion(rol.getDescripcion());
-        if (rol.getEstadoRol() != null) {
-            existente.setEstadoRol(rol.getEstadoRol());
+        if (rol.getVigente() != null) {
+            existente.setVigente(rol.getVigente());
         }
         validarRol(existente);
         return rolRepository.save(existente);
     }
 
-    public void EliminarRol(Long id) {
+    public void EliminarRol(Integer id) {
         rolRepository.deleteById(id);
     }
 
-    public Rol ObtenerRolPorId(Long id) {
+    public Rol ObtenerRolPorId(Integer id) {
         return rolRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Rol no encontrado con id: " + id));
     }

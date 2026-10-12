@@ -12,17 +12,13 @@ import lombok.*;
 public class Marca {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_marca")
-    private Long idMarca;
+    @Column(name = "id_marca", nullable = false)
+    private Integer idMarca;
 
-    @Column(nullable = false, length = 80)
+    @Column(length = 20)
     private String nombre;
 
-    @Column(length = 255)
-    private String imagen;
-
-    @Column(name = "estado", nullable = false)
+    @Column(name = "vigente")
     @Builder.Default
-    private Boolean estadoMarca = true;
+    private Boolean vigente = true;
 }

@@ -1,8 +1,9 @@
 package com.Tienda.TechZone.Controller;
 
-import com.Tienda.TechZone.Model.Pedido;
 import com.Tienda.TechZone.Model.Producto;
+import com.Tienda.TechZone.Model.Venta;
 import com.Tienda.TechZone.Service.*;
+import com.Tienda.TechZone.Repository.VentaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,25 +27,25 @@ public class AdminController {
     private final CategoriaService categoriaService;
     private final UsuarioService usuarioService;
     private final RolService rolService;
-    private final PedidoService pedidoService;
+    private final VentaRepository ventaRepository;
 
     @GetMapping
     public String Dashboard(Model model) {
         List<Producto> productos = productoService.ListarProductos();
-        List<Pedido> pedidos = pedidoService.ListarPedidos();
+        List<Venta> ventas = ventaRepository.findAll();
 
         long totalProductos = productos.size();
         long totalMarcas = marcaService.ListarMarcas().size();
         long totalCategorias = categoriaService.ListarCategorias().size();
         long totalUsuarios = usuarioService.ListarUsuarios().size();
         long totalRoles = rolService.ListarRoles().size();
-        long totalPedidos = pedidos.size();
-        long pedidosPendientes = pedidos.stream()
-                .filter(p -> p.getEstado() == Pedido.EstadoPedido.PENDIENTE)
+        long totalVentas = ventas.size();
+        long ventasPendientes = ventas.stream()
+                .filter(v -> "PENDIENTE".equalsIgnoreCase(v.getEstado()))
                 .count();
 
-        List<Pedido> ultimosPedidos = pedidos.stream()
-                .sorted(Comparator.comparing(Pedido::getIdPedido).reversed())
+        List<Venta> ultimasVentas = ventas.stream()
+                .sorted(Comparator.comparing(Venta::getIdVenta).reversed())
                 .limit(5)
                 .collect(Collectors.toList());
 
@@ -54,17 +55,17 @@ public class AdminController {
                 .limit(5)
                 .collect(Collectors.toList());
 
-        Map<java.time.LocalDate, Long> conteoPorDia = pedidos.stream()
-                .filter(p -> p.getFechaPedido() != null)
-                .collect(Collectors.groupingBy(p -> p.getFechaPedido().toLocalDate(), Collectors.counting()));
+        Map<LocalDate, Long> conteoPorDia = ventas.stream()
+                .filter(v -> v.getFechaVenta() != null)
+                .collect(Collectors.groupingBy(v -> v.getFechaVenta().toLocalDate(), Collectors.counting()));
 
         LocalDate hoy = LocalDate.now();
-        List<String> etiquetasPedidos = new ArrayList<>();
-        List<Long> valoresPedidos = new ArrayList<>();
+        List<String> etiquetasVentas = new ArrayList<>();
+        List<Long> valoresVentas = new ArrayList<>();
         for (int i = 6; i >= 0; i--) {
             LocalDate dia = hoy.minusDays(i);
-            etiquetasPedidos.add(dia.getDayOfMonth() + "/" + dia.getMonthValue());
-            valoresPedidos.add(conteoPorDia.getOrDefault(dia, 0L));
+            etiquetasVentas.add(dia.getDayOfMonth() + "/" + dia.getMonthValue());
+            valoresVentas.add(conteoPorDia.getOrDefault(dia, 0L));
         }
 
         model.addAttribute("totalProductos", totalProductos);
@@ -72,12 +73,12 @@ public class AdminController {
         model.addAttribute("totalCategorias", totalCategorias);
         model.addAttribute("totalUsuarios", totalUsuarios);
         model.addAttribute("totalRoles", totalRoles);
-        model.addAttribute("totalPedidos", totalPedidos);
-        model.addAttribute("pedidosPendientes", pedidosPendientes);
-        model.addAttribute("ultimosPedidos", ultimosPedidos);
+        model.addAttribute("totalVentas", totalVentas);
+        model.addAttribute("ventasPendientes", ventasPendientes);
+        model.addAttribute("ultimasVentas", ultimasVentas);
         model.addAttribute("stockBajo", stockBajo);
-        model.addAttribute("etiquetasPedidos", etiquetasPedidos);
-        model.addAttribute("valoresPedidos", valoresPedidos);
+        model.addAttribute("etiquetasVentas", etiquetasVentas);
+        model.addAttribute("valoresVentas", valoresVentas);
         return "admin/index";
     }
 

@@ -14,7 +14,7 @@
                     <div class="d-flex align-items-center gap-2 ms-auto">
                         <span class="text-light" th:if="${usuarioLogueado.isPresent()}">
                             <i class="bi bi-person-check"></i>
-                            <span th:text="${usuarioLogueado.get().nombres + ' ' + usuarioLogueado.get().apellidos}">Admin</span>
+                            <span th:text="${usuarioLogueado.get().persona != null ? usuarioLogueado.get().persona.nombres + ' ' + usuarioLogueado.get().persona.apellidoPaterno : usuarioLogueado.get().correo}">Admin</span>
                             <small class="badge bg-info ms-1" th:text="${usuarioLogueado.get().rol.nombre}">Rol</small>
                         </span>
                     </div>

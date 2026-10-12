@@ -12,17 +12,13 @@ import lombok.*;
 public class Rol {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_rol")
-    private Long idRol;
+    @Column(name = "id_rol", nullable = false)
+    private Integer idRol;
 
-    @Column(nullable = false, length = 50)
+    @Column(length = 20)
     private String nombre;
 
-    @Column(length = 150)
-    private String descripcion;
-
-    @Column(name = "estado", nullable = false)
+    @Column(name = "vigente")
     @Builder.Default
-    private Boolean estadoRol = true;
+    private Boolean vigente = true;
 }

@@ -19,29 +19,34 @@ public class CategoriaService {
 
     public Categoria CrearCategoria(Categoria categoria) {
         validarCategoria(categoria);
-        if (categoria.getEstadoCategoria() == null) {
-            categoria.setEstadoCategoria(true);
+        if (categoria.getVigente() == null) {
+            categoria.setVigente(true);
+        }
+        if (categoria.getIdCategoria() == null) {
+            categoria.setIdCategoria(categoriaRepository.findAll().stream()
+                    .map(Categoria::getIdCategoria)
+                    .max(Integer::compareTo)
+                    .orElse(0) + 1);
         }
         return categoriaRepository.save(categoria);
     }
 
-    public Categoria ActualizarCategoria(Long id, Categoria categoria) {
+    public Categoria ActualizarCategoria(Integer id, Categoria categoria) {
         Categoria existente = categoriaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Categoria no encontrada con id: " + id));
         existente.setNombre(categoria.getNombre().trim());
-        existente.setDescripcion(categoria.getDescripcion());
-        if (categoria.getEstadoCategoria() != null) {
-            existente.setEstadoCategoria(categoria.getEstadoCategoria());
+        if (categoria.getVigente() != null) {
+            existente.setVigente(categoria.getVigente());
         }
         validarCategoria(existente);
         return categoriaRepository.save(existente);
     }
 
-    public void EliminarCategoria(Long id) {
+    public void EliminarCategoria(Integer id) {
         categoriaRepository.deleteById(id);
     }
 
-    public Categoria ObtenerCategoriaPorId(Long id) {
+    public Categoria ObtenerCategoriaPorId(Integer id) {
         return categoriaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Categoria no encontrada con id: " + id));
     }

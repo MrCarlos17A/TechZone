@@ -48,7 +48,7 @@ public class SecurityConfig {
                 .requestMatchers("/", "/productos", "/novedades", "/marcas", "/buscar").permitAll()
                 .requestMatchers("/login", "/registro", "/acceso-denegado", "/debug/**", "/api/login").permitAll()
                 .requestMatchers("/css/**", "/js/**", "/assets/**", "/Assets/**", "/uploads/**", "/favicon.ico", "/images/**").permitAll()
-                .requestMatchers("/api/carrito/**").permitAll()
+                .requestMatchers("/api/carrito/**", "/api/ubigeos").permitAll()
                 .requestMatchers("/mi-perfil", "/mis-pedidos", "/actualizar-perfil", "/checkout").authenticated()
                 .requestMatchers("/admin/usuarios/**", "/admin/roles/**").hasRole("Administrador")
                 .requestMatchers("/admin/productos/**", "/admin/marcas/**", "/admin/categorias/**").hasAnyRole("Administrador", "Trabajador")
@@ -85,7 +85,35 @@ public class SecurityConfig {
     private AuthenticationSuccessHandler successHandler() {
         return (HttpServletRequest request, HttpServletResponse response, Authentication authentication) -> {
             log.info("LOGIN EXITOSO: {} | Roles: {}", authentication.getName(), authentication.getAuthorities());
-            response.sendRedirect("/");
+            String referencia = request.getHeader("Referer");
+            String destino = "/";
+            if (referencia != null && !referencia.isEmpty()) {
+                try {
+                    java.net.URI uri = java.net.URI.create(referencia);
+                    destino = uri.getRawPath();
+                    String query = uri.getQuery();
+                    if (query != null && !query.isEmpty()) {
+                        StringBuilder limpio = new StringBuilder();
+                        for (String par : query.split("&")) {
+                            if (!par.startsWith("error=") && !par.startsWith("abrirLogin=")
+                                    && !par.startsWith("exitosa=")) {
+                                if (limpio.length() > 0) limpio.append('&');
+                                limpio.append(par);
+                            }
+                        }
+                        if (limpio.length() > 0) {
+                            destino += "?" + limpio;
+                        }
+                    }
+                    if (destino.equals("/login") || destino.equals("/registro")
+                            || destino.startsWith("/login?") || destino.startsWith("/registro?")) {
+                        destino = "/";
+                    }
+                } catch (Exception e) {
+                    destino = "/";
+                }
+            }
+            response.sendRedirect(destino);
         };
     }
 
@@ -112,12 +140,19 @@ public class SecurityConfig {
 
     private AuthenticationFailureHandler failureHandler() {
         return (HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) -> {
-            log.error("LOGIN FALLIDO: {} | Razon: {}", request.getParameter("username"), exception.getMessage());
+            log.warn("LOGIN FALLIDO");
             String referencia = request.getHeader("Referer");
             String destino = "/?error=true";
             if (referencia != null && !referencia.isEmpty()) {
-                String limpio = referencia.replaceAll("[?&]error=true", "");
-                destino = limpio + (limpio.contains("?") ? "&error=true" : "?error=true");
+                try {
+                    java.net.URI uri = java.net.URI.create(referencia);
+                    destino = uri.getRawPath() + "?error=true";
+                    if (destino.startsWith("/login") || destino.startsWith("/registro")) {
+                        destino = "/?error=true";
+                    }
+                } catch (Exception e) {
+                    destino = "/?error=true";
+                }
             }
             response.sendRedirect(destino);
         };

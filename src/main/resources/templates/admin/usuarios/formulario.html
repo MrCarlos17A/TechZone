@@ -23,17 +23,15 @@
                         <form
                             th:action="${usuario.idUsuario != null} ? @{/admin/usuarios/actualizar/{id}(id=${usuario.idUsuario})} : @{/admin/usuarios/guardar}"
                             method="post">
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="nombres" class="form-label">Nombres</label>
-                                    <input type="text" class="form-control" id="nombres" name="nombres"
-                                        th:value="${usuario.nombres}" required>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="apellidos" class="form-label">Apellidos</label>
-                                    <input type="text" class="form-control" id="apellidos" name="apellidos"
-                                        th:value="${usuario.apellidos}" required>
-                                </div>
+                            <div class="mb-3">
+                                <label for="persona" class="form-label">Persona</label>
+                                <select class="form-select" id="persona" name="persona" required>
+                                    <option value="">Seleccionar persona...</option>
+                                    <option th:each="p : ${personas}" th:value="${p.idPersona}"
+                                        th:text="${p.nombres + ' ' + p.apellidoPaterno + ' ' + p.apellidoMaterno}"
+                                        th:selected="${usuario.persona != null and usuario.persona.idPersona == p.idPersona}">
+                                    </option>
+                                </select>
                             </div>
                             <div class="mb-3">
                                 <label for="correo" class="form-label">Correo electronico</label>
@@ -49,29 +47,20 @@
                                     placeholder="Minimo 6 caracteres">
                                 <small class="text-muted" th:if="${usuario.idUsuario != null}">Dejar vacio para mantener la actual</small>
                             </div>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="telefono" class="form-label">Telefono</label>
-                                    <input type="tel" class="form-control" id="telefono" name="telefono"
-                                        th:value="${usuario.telefono}" required
-                                        pattern="[0-9]{9}" maxlength="9"
-                                        title="El telefono debe tener 9 digitos">
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="rol" class="form-label">Rol</label>
-                                    <select class="form-select" id="rol" name="rol" required>
-                                        <option value="">Seleccionar rol...</option>
-                                        <option th:each="r : ${roles}" th:value="${r.idRol}" th:text="${r.nombre}"
-                                            th:selected="${usuario.rol != null and usuario.rol.idRol == r.idRol}">
-                                        </option>
-                                    </select>
-                                </div>
+                            <div class="mb-3">
+                                <label for="rol" class="form-label">Rol</label>
+                                <select class="form-select" id="rol" name="rol" required>
+                                    <option value="">Seleccionar rol...</option>
+                                    <option th:each="r : ${roles}" th:value="${r.idRol}" th:text="${r.nombre}"
+                                        th:selected="${usuario.rol != null and usuario.rol.idRol == r.idRol}">
+                                    </option>
+                                </select>
                             </div>
                             <div class="mb-3">
-                                <label for="estadoUsuario" class="form-label">Estado</label>
-                                <select class="form-select" id="estadoUsuario" name="estadoUsuario">
-                                    <option value="true" th:selected="${usuario.estadoUsuario}">Activo</option>
-                                    <option value="false" th:selected="${usuario.estadoUsuario != null and !usuario.estadoUsuario}">
+                                <label for="estado" class="form-label">Estado</label>
+                                <select class="form-select" id="estado" name="estado">
+                                    <option value="activo" th:selected="${usuario.estado == 'activo' or usuario.estado == null}">Activo</option>
+                                    <option value="inactivo" th:selected="${usuario.estado == 'inactivo'}">
                                         Inactivo</option>
                                 </select>
                             </div>

@@ -22,45 +22,41 @@
                     <div class="card-body">
                         <form
                             th:action="${producto.idProducto != null} ? @{/admin/productos/actualizar/{id}(id=${producto.idProducto})} : @{/admin/productos/guardar}"
-                            method="post" enctype="multipart/form-data">
+                            method="post">
                             <div class="mb-3">
                                 <label for="nombre" class="form-label">Nombre del Producto</label>
                                 <input type="text" class="form-control" id="nombre" name="nombre"
                                     th:value="${producto.nombre}" required>
                             </div>
                             <div class="mb-3">
+                                <label for="codigoSku" class="form-label">Codigo SKU</label>
+                                <input type="text" class="form-control" id="codigoSku" name="codigoSku"
+                                    th:value="${producto.codigoSku}" readonly
+                                    placeholder="Se genera automaticamente al guardar">
+                                <small class="text-muted">SKU generado por marca + categoria + correlativo</small>
+                            </div>
+                            <div class="mb-3">
                                 <label for="descripcion" class="form-label">Descripcion</label>
                                 <textarea class="form-control" id="descripcion" name="descripcion" rows="3"
                                     th:text="${producto.descripcion}"></textarea>
                             </div>
+                            <div class="mb-3">
+                                <label for="caracteristicas" class="form-label">Caracteristicas (JSON)</label>
+                                <textarea class="form-control" id="caracteristicas" name="caracteristicas" rows="2"
+                                    th:text="${producto.caracteristicas}"
+                                    placeholder='{"color":"negro","ram":"16GB"}'></textarea>
+                            </div>
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label for="precio" class="form-label">Precio (S/)</label>
-                                    <input type="number" class="form-control" id="precio" name="precio" step="0.01" min="0"
-                                        th:value="${producto.precio}" required>
+                                    <label for="precioVenta" class="form-label">Precio de Venta (S/)</label>
+                                    <input type="number" class="form-control" id="precioVenta" name="precioVenta" step="0.01" min="0"
+                                        th:value="${producto.precioVenta}" required>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="stock" class="form-label">Stock</label>
                                     <input type="number" class="form-control" id="stock" name="stock" min="0"
                                         th:value="${producto.stock}" required>
                                 </div>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Imagen actual</label>
-                                <div>
-                                    <img th:if="${producto.imagen != null and !producto.imagen.isEmpty()}" th:src="${producto.imagen}"
-                                        alt="Imagen del producto" class="img-thumbnail mb-2" style="max-height: 100px;">
-                                    <span th:unless="${producto.imagen != null and !producto.imagen.isEmpty()}" class="text-muted small">Sin imagen</span>
-                                </div>
-                                <img id="vistaPreviaNueva" alt="Vista previa" class="img-thumbnail mt-2"
-                                    style="display:none; max-height: 100px;">
-                            </div>
-                            <div class="mb-3">
-                                <label for="archivoImagen" class="form-label">Seleccionar archivo</label>
-                                <input type="file" class="form-control" id="archivoImagen" name="archivoImagen"
-                                    accept="image/png,image/jpeg,image/webp,image/gif">
-                                <input type="hidden" name="imagen" th:value="${producto.imagen}">
-                                <small class="text-muted">Elige la imagen desde tu equipo (PNG, JPG o WEBP, max. 5MB). Se guardara en la carpeta de productos.</small>
                             </div>
                             <div class="row">
                                 <div class="col-md-6 mb-3">
@@ -84,10 +80,10 @@
                                 </div>
                             </div>
                             <div class="mb-3">
-                                <label for="estadoProducto" class="form-label">Estado</label>
-                                <select class="form-select" id="estadoProducto" name="estadoProducto">
-                                    <option value="true" th:selected="${producto.estadoProducto}">Activo</option>
-                                    <option value="false" th:selected="${producto.estadoProducto != null and !producto.estadoProducto}">
+                                <label for="vigente" class="form-label">Estado</label>
+                                <select class="form-select" id="vigente" name="vigente">
+                                    <option value="true" th:selected="${producto.vigente == null or producto.vigente}">Activo</option>
+                                    <option value="false" th:selected="${producto.vigente != null and !producto.vigente}">
                                         Inactivo</option>
                                 </select>
                             </div>
@@ -108,20 +104,6 @@
             <footer th:replace="~{fragments/plantilla-admin :: pie-admin}"></footer>
         </div>
     </div>
-
-    <script>
-        document.getElementById('archivoImagen').addEventListener('change', function (e) {
-            var archivo = e.target.files[0];
-            var vista = document.getElementById('vistaPreviaNueva');
-            if (!archivo || !vista) return;
-            var lector = new FileReader();
-            lector.onload = function (ev) {
-                vista.src = ev.target.result;
-                vista.style.display = 'block';
-            };
-            lector.readAsDataURL(archivo);
-        });
-    </script>
 </body>
 
 </html>

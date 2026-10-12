@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/plantilla :: cabecera('Admin - Formulario Ubigeo')}"></head>
+<body>
+    <div class="admin-shell" id="paginaAdmin">
+        <div th:insert="~{fragments/admin :: barra-lateral('ubigeos')}"></div>
+        <div class="admin-principal">
+            <header th:replace="~{fragments/plantilla-admin :: barra-superior}"></header>
+            <main class="admin-contenido container-fluid py-4">
+                <div class="row justify-content-center">
+                    <div class="col-md-6">
+                        <div class="card shadow">
+                            <div class="card-header bg-success text-white">
+                                <h4 class="mb-0"><i class="bi bi-geo-alt"></i>
+                                    <span th:text="${ubigeo.idUbigeo != null} ? 'Editar Ubigeo' : 'Nuevo Ubigeo'">Formulario</span>
+                                </h4>
+                            </div>
+                            <div class="card-body">
+                                <form th:action="${ubigeo.idUbigeo != null} ? @{/admin/ubigeos/actualizar/{id}(id=${ubigeo.idUbigeo})} : @{/admin/ubigeos/guardar}" method="post">
+                                    <div class="mb-3">
+                                        <label class="form-label">ID (Codigo INEI)</label>
+                                        <input type="number" class="form-control" name="idUbigeo" th:value="${ubigeo.idUbigeo}" required th:readonly="${ubigeo.idUbigeo != null}">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Departamento</label>
+                                        <input type="text" class="form-control" name="departamento" th:value="${ubigeo.departamento}" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Provincia</label>
+                                        <input type="text" class="form-control" name="provincia" th:value="${ubigeo.provincia}" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Distrito</label>
+                                        <input type="text" class="form-control" name="distrito" th:value="${ubigeo.distrito}" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Estado</label>
+                                        <select class="form-select" name="vigente">
+                                            <option value="true" th:selected="${ubigeo.vigente == null or ubigeo.vigente}">Activo</option>
+                                            <option value="false" th:selected="${ubigeo.vigente != null and !ubigeo.vigente}">Inactivo</option>
+                                        </select>
+                                    </div>
+                                    <div class="d-flex gap-2">
+                                        <button type="submit" class="btn btn-success"><i class="bi bi-save"></i> Guardar</button>
+                                        <a th:href="@{/admin/ubigeos}" class="btn btn-secondary"><i class="bi bi-arrow-left"></i> Cancelar</a>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+            <footer th:replace="~{fragments/plantilla-admin :: pie-admin}"></footer>
+        </div>
+    </div>
+</body>
+</html>

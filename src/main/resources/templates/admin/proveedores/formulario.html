@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/plantilla :: cabecera('Admin - Formulario Proveedor')}"></head>
+<body>
+    <div class="admin-shell" id="paginaAdmin">
+        <div th:insert="~{fragments/admin :: barra-lateral('proveedores')}"></div>
+        <div class="admin-principal">
+            <header th:replace="~{fragments/plantilla-admin :: barra-superior}"></header>
+            <main class="admin-contenido container-fluid py-4">
+                <div class="row justify-content-center">
+                    <div class="col-md-8">
+                        <div class="card shadow">
+                            <div class="card-header bg-success text-white">
+                                <h4 class="mb-0"><i class="bi bi-truck"></i>
+                                    <span th:text="${proveedor.idProveedor != null} ? 'Editar Proveedor' : 'Nuevo Proveedor'">Formulario</span>
+                                </h4>
+                            </div>
+                            <div class="card-body">
+                                <form th:action="${proveedor.idProveedor != null} ? @{/admin/proveedores/actualizar/{id}(id=${proveedor.idProveedor})} : @{/admin/proveedores/guardar}" method="post">
+                                    <div class="mb-3">
+                                        <label class="form-label">Razon Social</label>
+                                        <input type="text" class="form-control" name="razonSocial" th:value="${proveedor.razonSocial}" required>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Tipo Documento</label>
+                                            <select class="form-select" name="tipoDocumento">
+                                                <option value="">Seleccionar...</option>
+                                                <option th:each="td : ${tiposDocumento}" th:value="${td.idTipoDocumento}" th:text="${td.nombre}"
+                                                    th:selected="${proveedor.tipoDocumento != null and proveedor.tipoDocumento.idTipoDocumento == td.idTipoDocumento}"></option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Numero Documento</label>
+                                            <input type="text" class="form-control" name="numeroDocumento" th:value="${proveedor.numeroDocumento}" maxlength="20">
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Telefono</label>
+                                            <input type="text" class="form-control" name="telefonoContacto" th:value="${proveedor.telefonoContacto}" maxlength="12">
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Correo</label>
+                                            <input type="email" class="form-control" name="correo" th:value="${proveedor.correo}">
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Nombre Encargado</label>
+                                            <input type="text" class="form-control" name="nombreEncargado" th:value="${proveedor.nombreEncargado}">
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Estado</label>
+                                            <select class="form-select" name="vigente">
+                                                <option value="true" th:selected="${proveedor.vigente == null or proveedor.vigente}">Activo</option>
+                                                <option value="false" th:selected="${proveedor.vigente != null and !proveedor.vigente}">Inactivo</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex gap-2">
+                                        <button type="submit" class="btn btn-success"><i class="bi bi-save"></i> Guardar</button>
+                                        <a th:href="@{/admin/proveedores}" class="btn btn-secondary"><i class="bi bi-arrow-left"></i> Cancelar</a>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+            <footer th:replace="~{fragments/plantilla-admin :: pie-admin}"></footer>
+        </div>
+    </div>
+</body>
+</html>

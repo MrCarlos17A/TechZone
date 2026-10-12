@@ -15,42 +15,41 @@
                 <div class="filter-container p-3 rounded-3 shadow-sm">
                     <div class="d-flex flex-wrap gap-2 align-items-center">
                         <span class="filter-label me-2"><i class="bi bi-funnel"></i> Filtrar:</span>
-                        <a th:href="@{/productos}"
-                            class="btn btn-sm rounded-pill"
-                            th:classappend="${categoriaSeleccionada == null} ? 'btn-primary' : 'btn-outline-primary'">
-                            Todos
-                        </a>
-                        <a th:each="cat : ${categorias}" th:href="@{/productos?categoria=} + ${cat.idCategoria}"
-                            class="btn btn-sm rounded-pill"
-                            th:classappend="${categoriaSeleccionada != null and categoriaSeleccionada == cat.idCategoria} ? 'btn-primary' : 'btn-outline-primary'"
-                            th:text="${cat.nombre}">Categoria</a>
+                        <div class="btn-group btn-group-sm">
+                            <button id="btn-todos" type="button" class="btn btn-outline-primary active"
+                                onclick="filtrarProductos(null)">Todos</button>
+                            <button th:each="cat : ${categorias}" th:id="'btn-cat-' + ${cat.idCategoria}"
+                                type="button" class="btn btn-outline-primary"
+                                th:onclick="|filtrarProductos(${cat.idCategoria})|"
+                                th:text="${cat.nombre}">Categoria</button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
-            <div class="col" th:each="producto : ${productos}">
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4" id="contenedorProductos">
+            <div class="col" th:each="producto : ${productos}" th:attr="data-categoria=${producto.categoria.idCategoria}">
                 <div class="card h-100 shadow-sm">
-                    <img th:if="${producto.imagen != null}" th:src="${producto.imagen}" class="card-img-top"
-                        th:alt="${producto.nombre}">
+                    <img th:if="${producto.imagenPrincipal != null}" th:src="${producto.imagenPrincipal}"
+                        class="card-img-top" th:alt="${producto.nombre}" style="height: 200px; object-fit: contain; padding: 1rem;">
+                    <div th:unless="${producto.imagenPrincipal != null}" class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                        <i class="bi bi-box-seam display-4 text-muted"></i>
+                    </div>
                     <div class="card-body d-flex flex-column">
                         <div class="d-flex justify-content-between align-items-start mb-2">
                             <span class="badge bg-secondary" th:text="${producto.marca.nombre}">Marca</span>
-                            <span class="badge bg-info" th:text="${producto.categoria.nombre}">Categoria</span>
+                            <span class="badge" th:classappend="${producto.stock > 5} ? 'bg-success' : (${producto.stock > 0} ? 'bg-warning text-dark' : 'bg-danger')"
+                                th:text="${producto.stock > 0} ? 'Stock: ' + ${producto.stock} : 'Sin stock'">Stock</span>
                         </div>
                         <h5 class="card-title" th:text="${producto.nombre}">Producto</h5>
                         <p class="card-text text-muted small" th:text="${producto.descripcion}">Descripcion</p>
                         <div class="mt-auto">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <p class="fw-bold text-primary fs-4 mb-0" th:text="'S/ ' + ${#numbers.formatDecimal(producto.precio, 1, 2)}">S/ 0.00</p>
-                                <span class="badge" th:classappend="${producto.stock > 0} ? 'bg-success' : 'bg-danger'"
-                                    th:text="${producto.stock > 0} ? 'Disponible (' + ${producto.stock} + ')' : 'Sin stock'">Disponible</span>
-                            </div>
+                            <p class="fw-bold text-primary fs-4 mb-0" th:text="'S/ ' + ${#numbers.formatDecimal(producto.precioVenta, 1, 2)}">S/ 0.00</p>
                         </div>
                         <button class="btn btn-primary mt-2 agregar-carrito" th:data-id="${producto.idProducto}"
-                            th:data-nombre="${producto.nombre}" th:data-precio="${producto.precio}"
-                            th:data-imagen="${producto.imagen}">
+                            th:data-nombre="${producto.nombre}" th:data-precio="${producto.precioVenta}"
+                            th:data-imagen="${producto.imagenPrincipal}">
                             <i class="bi bi-cart-plus"></i> Agregar al Carrito
                         </button>
                     </div>
@@ -60,14 +59,29 @@
 
         <div class="text-center py-5" th:if="${productos.isEmpty()}">
             <i class="bi bi-box-seam display-1 text-muted"></i>
-            <h3 class="text-muted mt-3">No hay productos en esta categoria</h3>
+            <h3 class="text-muted mt-3">No hay productos disponibles</h3>
             <a th:href="@{/productos}" class="btn btn-primary mt-3">Ver todos los productos</a>
         </div>
+
+        <script>
+            function filtrarProductos(categoriaId) {
+                const productos = document.querySelectorAll('#contenedorProductos .col');
+                productos.forEach(producto => {
+                    const productoCategoria = producto.getAttribute('data-categoria');
+                    if (categoriaId === null || productoCategoria == categoriaId) {
+                        producto.style.display = '';
+                    } else {
+                        producto.style.display = 'none';
+                    }
+                });
+            }
+        </script>
     </main>
 
     <footer th:replace="~{fragments/plantilla :: pie}"></footer>
 
     <script th:src="@{/js/carrito.js}"></script>
+    <script th:src="@{/js/checkout.js}"></script>
 </body>
 
 </html>

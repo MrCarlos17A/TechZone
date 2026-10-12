@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/plantilla :: cabecera('Admin - Detalle de Venta')}"></head>
+
+<body>
+    <div class="admin-shell" id="paginaAdmin">
+        <div th:insert="~{fragments/admin :: barra-lateral('ventas')}"></div>
+        <div class="admin-principal">
+            <header th:replace="~{fragments/plantilla-admin :: barra-superior}"></header>
+            <main class="admin-contenido container-fluid py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1><i class="bi bi-receipt"></i> Venta #<span th:text="${venta.idVenta}">1</span></h1>
+            <a th:href="@{/admin/ventas}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Informacion de la Venta</h5>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Cliente:</strong> <span
+                                th:text="${venta.cliente != null and venta.cliente.persona != null ? venta.cliente.persona.nombres + ' ' + venta.cliente.persona.apellidoPaterno : 'Sin cliente'}">Cliente</span>
+                        </p>
+                        <p><strong>Empleado:</strong> <span
+                                th:text="${venta.empleado != null and venta.empleado.persona != null ? venta.empleado.persona.nombres + ' ' + venta.empleado.persona.apellidoPaterno : 'Sin empleado'}">Empleado</span>
+                        </p>
+                        <p><strong>Fecha:</strong> <span
+                                th:text="${venta.fechaVenta != null ? #temporals.format(venta.fechaVenta, 'dd/MM/yyyy HH:mm') : '-'}">Fecha</span>
+                        </p>
+                        <p><strong>Estado:</strong> <span class="badge"
+                                th:classappend="${venta.estado == 'PENDIENTE' ? 'bg-warning text-dark' : (venta.estado == 'CANCELADA' ? 'bg-danger' : 'bg-success')}"
+                                th:text="${venta.estado}">PENDIENTE</span></p>
+                        <p th:if="${venta.direccionEnvio != null}"><strong>Direccion de envio:</strong> <span
+                                th:text="${venta.direccionEnvio}">Direccion</span></p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">Totales</h5>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Subtotal:</strong> <span
+                                th:text="'S/ ' + ${#numbers.formatDecimal(venta.subtotal, 1, 2)}">S/ 0.00</span></p>
+                        <p><strong>IGV (18%):</strong> <span
+                                th:text="'S/ ' + ${#numbers.formatDecimal(venta.igv, 1, 2)}">S/ 0.00</span></p>
+                        <hr>
+                        <p class="fs-5"><strong>Total:</strong> <span class="text-primary fw-bold"
+                                th:text="'S/ ' + ${#numbers.formatDecimal(venta.total, 1, 2)}">S/ 0.00</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+            </main>
+            <footer th:replace="~{fragments/plantilla-admin :: pie-admin}"></footer>
+        </div>
+    </div>
+</body>
+
+</html>

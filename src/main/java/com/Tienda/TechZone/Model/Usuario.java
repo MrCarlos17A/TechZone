@@ -14,39 +14,30 @@ public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_usuario")
+    @Column(name = "id_usuario", nullable = false)
     private Long idUsuario;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_rol", nullable = false)
+    @JoinColumn(name = "id_persona")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Persona persona;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_rol")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private Rol rol;
 
-    @Column(nullable = false, length = 100)
-    private String nombres;
-
-    @Column(nullable = false, length = 100)
-    private String apellidos;
-
-    @Column(nullable = false, length = 150, unique = true)
+    @Column(length = 100)
     private String correo;
 
-    @Column(nullable = false)
+    @Column(name = "contrasena", length = 60)
     private String password;
 
-    @Column(length = 20)
-    private String telefono;
+    @Column(name = "fecha_ultimo_acceso")
+    private LocalDateTime fechaUltimoAcceso;
 
-    @Column(name = "estado", nullable = false)
-    @Builder.Default
-    private Boolean estadoUsuario = true;
-
-    @Column(name = "fecha_registro", nullable = false, updatable = false)
-    private LocalDateTime fechaRegistro;
-
-    @PrePersist
-    protected void onCreate() {
-        fechaRegistro = LocalDateTime.now();
-    }
+    @Column(name = "estado", length = 20)
+    private String estado;
 }

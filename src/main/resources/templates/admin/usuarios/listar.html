@@ -29,10 +29,8 @@
                 <thead class="table-dark">
                     <tr>
                         <th>ID</th>
-                        <th>Nombres</th>
-                        <th>Apellidos</th>
+                        <th>Persona</th>
                         <th>Correo</th>
-                        <th>Telefono</th>
                         <th>Rol</th>
                         <th>Estado</th>
                         <th>Acciones</th>
@@ -41,14 +39,12 @@
                 <tbody>
                     <tr th:each="usuario : ${usuarios}">
                         <td th:text="${usuario.idUsuario}">1</td>
-                        <td th:text="${usuario.nombres}">Nombres</td>
-                        <td th:text="${usuario.apellidos}">Apellidos</td>
+                        <td th:text="${usuario.persona != null ? usuario.persona.nombres + ' ' + usuario.persona.apellidoPaterno + ' ' + usuario.persona.apellidoMaterno : 'Sin persona'}">Persona</td>
                         <td th:text="${usuario.correo}">correo@correo.com</td>
-                        <td th:text="${usuario.telefono}">Telefono</td>
-                        <td th:text="${usuario.rol.nombre}">Rol</td>
+                        <td th:text="${usuario.rol != null ? usuario.rol.nombre : 'Sin rol'}">Rol</td>
                         <td>
-                            <span class="badge" th:classappend="${usuario.estadoUsuario} ? 'bg-success' : 'bg-secondary'"
-                                th:text="${usuario.estadoUsuario} ? 'Activo' : 'Inactivo'">Activo</span>
+                            <span class="badge" th:classappend="${usuario.estado == 'activo'} ? 'bg-success' : 'bg-secondary'"
+                                th:text="${usuario.estado == 'activo'} ? 'Activo' : 'Inactivo'">Activo</span>
                         </td>
                         <td>
                             <a th:href="@{/admin/usuarios/editar/{id}(id=${usuario.idUsuario})}"
@@ -57,7 +53,7 @@
                             </a>
                             <a th:href="@{/admin/usuarios/eliminar/{id}(id=${usuario.idUsuario})}"
                                 class="btn btn-sm btn-danger" data-eliminar title="Eliminar"
-                                th:attr="data-nombre=${usuario.nombres + ' ' + usuario.apellidos}">
+                                th:attr="data-nombre=${usuario.correo}">
                                 <i class="bi bi-trash"></i>
                             </a>
                         </td>

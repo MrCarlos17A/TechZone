@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/plantilla :: cabecera('Admin - Formulario Persona')}"></head>
+<body>
+    <div class="admin-shell" id="paginaAdmin">
+        <div th:insert="~{fragments/admin :: barra-lateral('personas')}"></div>
+        <div class="admin-principal">
+            <header th:replace="~{fragments/plantilla-admin :: barra-superior}"></header>
+            <main class="admin-contenido container-fluid py-4">
+                <div class="row justify-content-center">
+                    <div class="col-md-8">
+                        <div class="card shadow">
+                            <div class="card-header bg-success text-white">
+                                <h4 class="mb-0"><i class="bi bi-person"></i>
+                                    <span th:text="${persona.idPersona != null} ? 'Editar Persona' : 'Nueva Persona'">Formulario</span>
+                                </h4>
+                            </div>
+                            <div class="card-body">
+                                <form th:action="${persona.idPersona != null} ? @{/admin/personas/actualizar/{id}(id=${persona.idPersona})} : @{/admin/personas/guardar}" method="post">
+                                    <div class="row">
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Nombres</label>
+                                            <input type="text" class="form-control" name="nombres" th:value="${persona.nombres}" required>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Apellido Paterno</label>
+                                            <input type="text" class="form-control" name="apellidoPaterno" th:value="${persona.apellidoPaterno}">
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Apellido Materno</label>
+                                            <input type="text" class="form-control" name="apellidoMaterno" th:value="${persona.apellidoMaterno}">
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Tipo Documento</label>
+                                            <select class="form-select" name="tipoDocumento">
+                                                <option value="">Seleccionar...</option>
+                                                <option th:each="td : ${tiposDocumento}" th:value="${td.idTipoDocumento}" th:text="${td.nombre}"
+                                                    th:selected="${persona.tipoDocumento != null and persona.tipoDocumento.idTipoDocumento == td.idTipoDocumento}"></option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Numero Documento</label>
+                                            <input type="text" class="form-control" name="numeroDocumento" th:value="${persona.numeroDocumento}" maxlength="20">
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Telefono</label>
+                                            <input type="text" class="form-control" name="telefono" th:value="${persona.telefono}" maxlength="12">
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Departamento</label>
+                                            <select class="form-select" id="departamentoPersona"
+                                                th:attr="data-actual=${persona.ubigeo != null ? persona.ubigeo.departamento : ''}">
+                                                <option value="">Seleccionar...</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Provincia</label>
+                                            <select class="form-select" id="provinciaPersona" disabled
+                                                th:attr="data-actual=${persona.ubigeo != null ? persona.ubigeo.provincia : ''}">
+                                                <option value="">Seleccionar...</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Distrito</label>
+                                            <select class="form-select" name="ubigeo" id="distritoPersona" disabled
+                                                th:attr="data-actual=${persona.ubigeo != null ? persona.ubigeo.idUbigeo : ''}">
+                                                <option value="">Seleccionar...</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Codigo Ubigeo</label>
+                                            <input type="text" class="form-control" id="codigoUbigeoPersona" inputmode="numeric" maxlength="6"
+                                                th:value="${persona.ubigeo != null ? persona.ubigeo.idUbigeo : ''}"
+                                                placeholder="Ej: 140112">
+                                            <small class="text-muted">Escribe el codigo (6 digitos) o elige distrito</small>
+                                        </div>
+                                        <div class="col-md-8 mb-3">
+                                            <label class="form-label">Direccion</label>
+                                            <input type="text" class="form-control" name="direccion" th:value="${persona.direccion}" maxlength="255">
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Referencia</label>
+                                            <input type="text" class="form-control" name="referencia" th:value="${persona.referencia}" maxlength="255">
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <label class="form-label">Fecha Nacimiento</label>
+                                            <input type="date" class="form-control" name="fechaNacimiento" th:value="${persona.fechaNacimiento}">
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <label class="form-label">Estado</label>
+                                            <select class="form-select" name="vigente">
+                                                <option value="true" th:selected="${persona.vigente == null or persona.vigente}">Activa</option>
+                                                <option value="false" th:selected="${persona.vigente != null and !persona.vigente}">Inactiva</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex gap-2">
+                                        <button type="submit" class="btn btn-success"><i class="bi bi-save"></i> Guardar</button>
+                                        <a th:href="@{/admin/personas}" class="btn btn-secondary"><i class="bi bi-arrow-left"></i> Cancelar</a>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+            <footer th:replace="~{fragments/plantilla-admin :: pie-admin}"></footer>
+        </div>
+    </div>
+    <script th:src="@{/js/ubigeo-cascada.js}"></script>
+    <script>document.addEventListener('DOMContentLoaded', function () { initCascadaUbigeo('Persona'); });</script>
+</body>
+</html>

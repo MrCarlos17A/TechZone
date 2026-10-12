@@ -521,3 +521,303 @@ footer .small {
     background-color: #5885d9 !important;
     color: white !important;
 }
+
+/* ============================================================
+   LEYES DE GESTALT — Mejoras de consistencia global
+   ============================================================ */
+
+/* --- 1. SIMILITUD: Unificar encabezados de tarjetas en admin --- */
+/* Todos los card-header del panel usan el color primario de la marca */
+.admin-contenido .card-header {
+    background-color: var(--primario) !important;
+    color: #fff !important;
+    border-bottom: none;
+    font-weight: 600;
+}
+
+.admin-contenido .card-header h4,
+.admin-contenido .card-header h5 {
+    color: #fff !important;
+}
+
+/* Las tarjetas de resumen del dashboard conservan su color codificado */
+.admin-contenido .card.tarjeta-resumen .card-body h2 {
+    font-weight: 700;
+    line-height: 1;
+}
+
+/* --- 2. SIMILITUD: Unificar botones de formulario en admin --- */
+/* Guardar siempre en primario, sin importar la clase original */
+.admin-contenido form .btn-success[type="submit"],
+.admin-contenido form .btn-info[type="submit"],
+.admin-contenido form .btn-warning[type="submit"],
+.admin-contenido form .btn-secondary[type="submit"] {
+    background-color: var(--primario);
+    border-color: var(--primario);
+    color: #fff;
+}
+
+.admin-contenido form .btn-success[type="submit"]:hover,
+.admin-contenido form .btn-info[type="submit"]:hover,
+.admin-contenido form .btn-warning[type="submit"]:hover,
+.admin-contenido form .btn-secondary[type="submit"]:hover {
+    background-color: #4a75c9;
+    border-color: #4a75c9;
+    color: #fff;
+}
+
+/* Cancelar siempre outline secundario consistente */
+.admin-contenido form a.btn-secondary,
+.admin-contenido form a.btn-outline-secondary {
+    background-color: transparent;
+    border-color: var(--shade-4);
+    color: var(--shade-6);
+    font-weight: 500;
+}
+
+.admin-contenido form a.btn-secondary:hover,
+.admin-contenido form a.btn-outline-secondary:hover {
+    background-color: var(--shade-4);
+    border-color: var(--shade-4);
+    color: #fff;
+}
+
+/* --- 3. CONTINUIDAD: Encabezados de página unificados --- */
+main h1,
+.admin-contenido h1 {
+    font-weight: 700;
+    color: var(--shade-9);
+    letter-spacing: -0.5px;
+}
+
+.admin-contenido h1 {
+    font-size: 1.7rem;
+}
+
+main h1 i,
+.admin-contenido h1 i {
+    color: var(--primario);
+}
+
+[data-bs-theme="dark"] main h1,
+[data-bs-theme="dark"] .admin-contenido h1 {
+    color: #f0f0f0;
+}
+
+[data-bs-theme="dark"] main h1 i,
+[data-bs-theme="dark"] .admin-contenido h1 i {
+    color: var(--primario);
+}
+
+/* --- 4. PROXIMIDAD: Espaciado consistente en formularios admin --- */
+.admin-contenido .card form .mb-3 {
+    margin-bottom: 1rem;
+}
+
+.admin-contenido .card form .form-label {
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--shade-7);
+    margin-bottom: 0.3rem;
+}
+
+.admin-contenido .card form .d-flex.gap-2 {
+    margin-top: 1.25rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+[data-bs-theme="dark"] .admin-contenido .card form .d-flex.gap-2 {
+    border-top-color: rgba(255, 255, 255, 0.08);
+}
+
+/* --- 5. FIGURA-FONDO: Foco visible y contraste mejorado --- */
+.form-control:focus,
+.form-select:focus,
+.form-check-input:focus {
+    border-color: var(--primario);
+    box-shadow: 0 0 0 0.2rem rgba(88, 133, 217, 0.25);
+}
+
+.btn:focus-visible {
+    box-shadow: 0 0 0 0.2rem rgba(88, 133, 217, 0.35);
+}
+
+/* --- 6. SIMILITUD: Tablas admin consistentes --- */
+.admin-contenido .table thead th {
+    background-color: var(--shade-9);
+    color: #fff;
+    border-bottom: 2px solid var(--primario);
+    font-weight: 600;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    padding: 0.7rem 0.9rem;
+    white-space: nowrap;
+}
+
+.admin-contenido .table tbody td {
+    vertical-align: middle;
+    padding: 0.6rem 0.9rem;
+    font-size: 0.9rem;
+}
+
+.admin-contenido .table-hover > tbody > tr:hover > * {
+    background-color: rgba(88, 133, 217, 0.07);
+    color: var(--shade-10);
+}
+
+[data-bs-theme="dark"] .admin-contenido .table-hover > tbody > tr:hover > * {
+    background-color: rgba(88, 133, 217, 0.15);
+    color: #f0f0f0;
+}
+
+/* Tablas públicas (mis-pedidos, etc.) también consistentes */
+main .table thead th {
+    background-color: var(--shade-9);
+    color: #fff;
+    border-bottom: 2px solid var(--primario);
+    font-weight: 600;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+/* --- 7. CONTINUIDAD: Estados vacíos con estilo uniforme --- */
+main .text-center.py-4,
+main .text-center.py-5,
+.admin-contenido .text-center.py-4 {
+    color: var(--shade-5);
+}
+
+main .text-center.py-5 i.display-1,
+main .text-center.py-5 i.display-4 {
+    opacity: 0.4;
+    color: var(--primario);
+}
+
+/* --- 8. DESTINO COMÚN: Transiciones suaves en elementos interactivos --- */
+.btn,
+.list-group-item,
+.card,
+.nav-link,
+.form-control,
+.form-select {
+    transition: all 0.2s ease;
+}
+
+/* --- 9. CIERRE: Badges de estado más legibles y consistentes --- */
+.badge {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    padding: 0.35em 0.65em;
+}
+
+/* --- 10. PROXIMIDAD: Tarjetas de producto consistentes entre páginas --- */
+main .card.h-100.shadow-sm .card-body {
+    display: flex;
+    flex-direction: column;
+}
+
+main .card.h-100.shadow-sm .card-title {
+    font-weight: 600;
+    color: var(--shade-9);
+    font-size: 1rem;
+    line-height: 1.3;
+    margin-bottom: 0.4rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+[data-bs-theme="dark"] main .card.h-100.shadow-sm .card-title {
+    color: #f0f0f0;
+}
+
+main .card.h-100.shadow-sm .fw-bold.text-primary.fs-4 {
+    font-size: 1.25rem !important;
+    color: var(--primario) !important;
+}
+
+/* Precio consistente en todas las tarjetas de producto */
+main .card .fw-bold.text-primary {
+    color: var(--primario);
+}
+
+/* --- 11. SIMILITUD: Encabezados de sección en tienda pública --- */
+main .category-header .category-title,
+main > .container > h1.text-center {
+    color: var(--shade-9);
+}
+
+[data-bs-theme="dark"] main .category-header .category-title,
+[data-bs-theme="dark"] main > .container > h1.text-center {
+    color: #f0f0f0;
+}
+
+/* Filtros: mejor agrupación visual */
+.filter-container {
+    border-radius: var(--radius-md);
+    padding: 0.75rem 1rem;
+}
+
+.filter-container .filter-label {
+    color: var(--shade-7);
+}
+
+/* --- 12. FIGURA-FONDO: Controles de acción en tablas más claros --- */
+.admin-contenido .table .btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+    border-radius: var(--radius-sm);
+}
+
+.admin-contenido .table .btn-sm + .btn-sm {
+    margin-left: 0.25rem;
+}
+
+/* --- 13. CONTINUIDAD: Alertas consistentes en admin y tienda --- */
+.admin-contenido .alert,
+main .alert {
+    border-radius: var(--radius-md);
+    font-size: 0.92rem;
+}
+
+.admin-contenido .alert i,
+main .alert i {
+    margin-right: 0.25rem;
+}
+
+/* --- 14. PROXIMIDAD: Espaciado superior del contenido admin --- */
+.admin-contenido > .d-flex.justify-content-between,
+.admin-contenido > h1 {
+    margin-bottom: 1.5rem;
+}
+
+/* Ajustar tema oscuro para nuevos estilos */
+[data-bs-theme="dark"] .admin-contenido .card-header {
+    background-color: var(--primario) !important;
+    color: #fff !important;
+}
+
+[data-bs-theme="dark"] .admin-contenido .table thead th {
+    background-color: #0f3460;
+    border-bottom-color: var(--primario);
+}
+
+[data-bs-theme="dark"] main .table thead th {
+    background-color: #0f3460;
+    border-bottom-color: var(--primario);
+}
+
+[data-bs-theme="dark"] .admin-contenido .card form .form-label {
+    color: #a0a0a0;
+}
+
+[data-bs-theme="dark"] .form-control:focus,
+[data-bs-theme="dark"] .form-select:focus {
+    border-color: var(--primario);
+    box-shadow: 0 0 0 0.2rem rgba(88, 133, 217, 0.35);
+}

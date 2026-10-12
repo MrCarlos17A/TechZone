@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/plantilla :: cabecera('Admin - Detalle de Venta')}"></head>
+<body>
+    <div class="admin-shell" id="paginaAdmin">
+        <div th:insert="~{fragments/admin :: barra-lateral('detalles-venta')}"></div>
+        <div class="admin-principal">
+            <header th:replace="~{fragments/plantilla-admin :: barra-superior}"></header>
+            <main class="admin-contenido container-fluid py-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1><i class="bi bi-list-check"></i> Detalle #<span th:text="${detalle.idDetalleVenta}">1</span></h1>
+                    <a th:href="@{/admin/detalles-venta}" class="btn btn-secondary"><i class="bi bi-arrow-left"></i> Volver</a>
+                </div>
+                <div class="card shadow-sm" style="max-width: 600px;">
+                    <div class="card-body">
+                        <p><strong>Venta:</strong> <span th:text="${detalle.venta != null ? 'Venta #' + detalle.venta.idVenta : '-'}"></span></p>
+                        <p><strong>Producto:</strong> <span th:text="${detalle.producto != null ? detalle.producto.nombre : '-'}"></span></p>
+                        <p><strong>Cantidad:</strong> <span th:text="${detalle.cantidad}"></span></p>
+                        <p><strong>Precio Unitario:</strong> <span th:text="'S/ ' + ${#numbers.formatDecimal(detalle.precioUnitario, 1, 2)}"></span></p>
+                        <p><strong>Subtotal:</strong> <span th:text="'S/ ' + ${#numbers.formatDecimal(detalle.subTotalVenta, 1, 2)}"></span></p>
+                    </div>
+                </div>
+            </main>
+            <footer th:replace="~{fragments/plantilla-admin :: pie-admin}"></footer>
+        </div>
+    </div>
+</body>
+</html>

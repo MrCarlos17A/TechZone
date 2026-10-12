@@ -8,7 +8,7 @@
 
     <main class="container my-4">
         <div class="row justify-content-center">
-            <div class="col-md-8">
+            <div class="col-md-10">
                 <h1 class="mb-4"><i class="bi bi-person-circle"></i> Mi Perfil</h1>
 
                 <div th:if="${exito}" class="alert alert-success alert-dismissible fade show" role="alert">
@@ -21,54 +21,112 @@
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
 
-                <div class="card shadow">
+                <div class="card shadow mb-4">
                     <div class="card-header bg-primary text-white">
-                        <h5 class="mb-0"><i class="bi bi-pencil-square"></i> Editar mis datos</h5>
+                        <h5 class="mb-0"><i class="bi bi-person-vcard"></i> Datos Personales</h5>
                     </div>
                     <div class="card-body">
                         <form th:action="@{/actualizar-perfil}" method="post">
                             <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Nombres</label>
+                                    <input type="text" class="form-control" name="nombres"
+                                        th:value="${usuario.persona != null ? usuario.persona.nombres : ''}" required maxlength="100">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Apellido Paterno</label>
+                                    <input type="text" class="form-control" name="apellidoPaterno"
+                                        th:value="${usuario.persona != null ? usuario.persona.apellidoPaterno : ''}" maxlength="50">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Apellido Materno</label>
+                                    <input type="text" class="form-control" name="apellidoMaterno"
+                                        th:value="${usuario.persona != null ? usuario.persona.apellidoMaterno : ''}" maxlength="50">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label">Tipo Documento</label>
+                                    <select class="form-select" name="idTipoDocumento">
+                                        <option value="">Seleccionar...</option>
+                                        <option th:each="td : ${tiposDocumento}" th:value="${td.idTipoDocumento}" th:text="${td.nombre}"
+                                            th:selected="${usuario.persona != null and usuario.persona.tipoDocumento != null and usuario.persona.tipoDocumento.idTipoDocumento == td.idTipoDocumento}"></option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label">Numero Documento</label>
+                                    <input type="text" class="form-control" name="numeroDocumento"
+                                        th:value="${usuario.persona != null ? usuario.persona.numeroDocumento : ''}" maxlength="20">
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label">Telefono</label>
+                                    <input type="text" class="form-control" name="telefono"
+                                        th:value="${usuario.persona != null ? usuario.persona.telefono : ''}" maxlength="12">
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label">Fecha Nacimiento</label>
+                                    <input type="date" class="form-control" name="fechaNacimiento"
+                                        th:value="${usuario.persona != null ? usuario.persona.fechaNacimiento : ''}">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label">Departamento</label>
+                                    <select class="form-select" id="departamentoPerfil" name="departamento">
+                                        <option value="">Seleccionar...</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label">Provincia</label>
+                                    <select class="form-select" id="provinciaPerfil" name="provincia" disabled>
+                                        <option value="">Seleccionar...</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label">Distrito</label>
+                                    <select class="form-select" id="distritoPerfil" name="ubigeo" disabled>
+                                        <option value="">Seleccionar...</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label">Direccion</label>
+                                    <input type="text" class="form-control" name="direccion"
+                                        th:value="${usuario.persona != null ? usuario.persona.direccion : ''}" maxlength="255">
+                                </div>
+                            </div>
+                            <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label for="nombres" class="form-label">Nombres</label>
-                                    <input type="text" class="form-control" id="nombres" name="nombres"
-                                        th:value="${usuario.nombres}" required>
+                                    <label class="form-label">Referencia</label>
+                                    <input type="text" class="form-control" name="referencia"
+                                        th:value="${usuario.persona != null ? usuario.persona.referencia : ''}" maxlength="255">
+                                </div>
+                            </div>
+
+                            <hr>
+                            <h5><i class="bi bi-envelope"></i> Datos de Cuenta</h5>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Correo electronico</label>
+                                    <input type="email" class="form-control" th:value="${usuario.correo}" disabled>
+                                    <small class="text-muted">El correo no se puede modificar</small>
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <label for="apellidos" class="form-label">Apellidos</label>
-                                    <input type="text" class="form-control" id="apellidos" name="apellidos"
-                                        th:value="${usuario.apellidos}" required>
+                                    <label class="form-label">Rol</label>
+                                    <input type="text" class="form-control" th:value="${usuario.rol != null ? usuario.rol.nombre : ''}" disabled>
                                 </div>
-                            </div>
-                            <div class="mb-3">
-                                <label for="correo" class="form-label">Correo electronico</label>
-                                <input type="email" class="form-control" id="correo" th:value="${usuario.correo}"
-                                    disabled>
-                                <small class="text-muted">El correo no se puede modificar</small>
-                            </div>
-                            <div class="mb-3">
-                                <label for="telefono" class="form-label">Telefono</label>
-                                <input type="text" class="form-control" id="telefono" name="telefono"
-                                    th:value="${usuario.telefono}">
-                            </div>
-                            <div class="mb-3">
-                                <label for="rol" class="form-label">Rol</label>
-                                <input type="text" class="form-control" th:value="${usuario.rol.nombre}" disabled>
                             </div>
 
                             <hr>
                             <h5><i class="bi bi-lock"></i> Cambiar contrasena</h5>
-                            <small class="text-muted mb-3 d-block">Deja en blanco si no deseas cambiar la
-                                contrasena</small>
-
+                            <small class="text-muted mb-3 d-block">Deja en blanco si no deseas cambiar la contrasena</small>
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label for="passwordActual" class="form-label">Contrasena actual</label>
-                                    <input type="password" class="form-control" id="passwordActual"
-                                        name="passwordActual">
+                                    <label class="form-label">Contrasena actual</label>
+                                    <input type="password" class="form-control" name="passwordActual">
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <label for="passwordNuevo" class="form-label">Nueva contrasena</label>
-                                    <input type="password" class="form-control" id="passwordNuevo" name="passwordNuevo">
+                                    <label class="form-label">Nueva contrasena</label>
+                                    <input type="password" class="form-control" name="passwordNuevo" minlength="6">
                                 </div>
                             </div>
 
@@ -83,6 +141,91 @@
     </main>
 
     <footer th:replace="~{fragments/plantilla :: pie}"></footer>
+
+    <script th:inline="javascript">
+    (function () {
+        var ubigeos = /*[[${ubigeos}]]*/ [];
+        var idActual = /*[[${usuario.persona != null and usuario.persona.ubigeo != null ? usuario.persona.ubigeo.idUbigeo : ''}]]*/ '';
+
+        var selDep = document.getElementById('departamentoPerfil');
+        var selProv = document.getElementById('provinciaPerfil');
+        var selDist = document.getElementById('distritoPerfil');
+
+        if (!selDep || !ubigeos || ubigeos.length === 0) return;
+
+        var deptos = [];
+        ubigeos.forEach(function (u) {
+            if (deptos.indexOf(u.departamento) === -1) deptos.push(u.departamento);
+        });
+        deptos.sort();
+        deptos.forEach(function (d) {
+            var opt = document.createElement('option');
+            opt.value = d;
+            opt.textContent = d;
+            selDep.appendChild(opt);
+        });
+
+        function poblarProvincias(depto) {
+            selProv.innerHTML = '<option value="">Seleccionar...</option>';
+            selProv.disabled = true;
+            selDist.innerHTML = '<option value="">Seleccionar...</option>';
+            selDist.disabled = true;
+            if (!depto) return;
+            var provs = [];
+            ubigeos.forEach(function (u) {
+                if (u.departamento === depto && provs.indexOf(u.provincia) === -1) provs.push(u.provincia);
+            });
+            provs.sort();
+            provs.forEach(function (p) {
+                var opt = document.createElement('option');
+                opt.value = p;
+                opt.textContent = p;
+                selProv.appendChild(opt);
+            });
+            selProv.disabled = false;
+        }
+
+        function poblarDistritos(depto, prov) {
+            selDist.innerHTML = '<option value="">Seleccionar...</option>';
+            selDist.disabled = true;
+            if (!depto || !prov) return;
+            var dists = [];
+            ubigeos.forEach(function (u) {
+                if (u.departamento === depto && u.provincia === prov) dists.push({ id: u.idUbigeo, nombre: u.distrito });
+            });
+            dists.sort(function (a, b) { return a.nombre.localeCompare(b.nombre); });
+            dists.forEach(function (d) {
+                var opt = document.createElement('option');
+                opt.value = d.id;
+                opt.textContent = d.nombre;
+                selDist.appendChild(opt);
+            });
+            selDist.disabled = false;
+        }
+
+        selDep.addEventListener('change', function () {
+            poblarProvincias(this.value);
+        });
+        selProv.addEventListener('change', function () {
+            poblarDistritos(selDep.value, this.value);
+        });
+
+        // Restaurar valores actuales
+        if (idActual) {
+            var actual = null;
+            ubigeos.forEach(function (u) {
+                if (String(u.idUbigeo) === String(idActual)) actual = u;
+            });
+            if (actual) {
+                selDep.value = actual.departamento;
+                poblarProvincias(actual.departamento);
+                selProv.value = actual.provincia;
+                poblarDistritos(actual.departamento, actual.provincia);
+                selDist.value = String(actual.id);
+            }
+        }
+    })();
+    </script>
 </body>
 
 </html>

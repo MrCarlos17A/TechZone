@@ -19,24 +19,34 @@ public class MarcaService {
 
     public Marca CrearMarca(Marca marca) {
         validarMarca(marca);
+        if (marca.getVigente() == null) {
+            marca.setVigente(true);
+        }
+        if (marca.getIdMarca() == null) {
+            marca.setIdMarca(marcaRepository.findAll().stream()
+                    .map(Marca::getIdMarca)
+                    .max(Integer::compareTo)
+                    .orElse(0) + 1);
+        }
         return marcaRepository.save(marca);
     }
 
-    public Marca ActualizarMarca(Long id, Marca marca) {
+    public Marca ActualizarMarca(Integer id, Marca marca) {
         Marca existente = marcaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Marca no encontrada con id: " + id));
         existente.setNombre(marca.getNombre().trim());
-        existente.setImagen(marca.getImagen());
-        existente.setEstadoMarca(marca.getEstadoMarca());
+        if (marca.getVigente() != null) {
+            existente.setVigente(marca.getVigente());
+        }
         validarMarca(existente);
         return marcaRepository.save(existente);
     }
 
-    public void EliminarMarca(Long id) {
+    public void EliminarMarca(Integer id) {
         marcaRepository.deleteById(id);
     }
 
-    public Marca ObtenerMarcaPorId(Long id) {
+    public Marca ObtenerMarcaPorId(Integer id) {
         return marcaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Marca no encontrada con id: " + id));
     }

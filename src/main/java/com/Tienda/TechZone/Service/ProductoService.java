@@ -4,7 +4,7 @@ import com.Tienda.TechZone.Model.Producto;
 import com.Tienda.TechZone.Repository.ProductoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
@@ -13,12 +13,17 @@ public class ProductoService {
 
     private final ProductoRepository productoRepository;
 
+    @Transactional(readOnly = true)
     public List<Producto> ListarProductos() {
         return productoRepository.findAll();
     }
 
     public Producto CrearProducto(Producto producto) {
         validarPrecioStock(producto);
+        if (producto.getVigente() == null) {
+            producto.setVigente(true);
+        }
+        producto.setCodigoSku(generarSku(producto));
         return productoRepository.save(producto);
     }
 
@@ -27,12 +32,14 @@ public class ProductoService {
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado con id: " + id));
         existente.setNombre(producto.getNombre());
         existente.setDescripcion(producto.getDescripcion());
-        existente.setPrecio(producto.getPrecio());
+        existente.setPrecioVenta(producto.getPrecioVenta());
         existente.setStock(producto.getStock());
-        existente.setImagen(producto.getImagen());
-        existente.setEstadoProducto(producto.getEstadoProducto());
         existente.setMarca(producto.getMarca());
         existente.setCategoria(producto.getCategoria());
+        existente.setCaracteristicas(producto.getCaracteristicas());
+        if (producto.getVigente() != null) {
+            existente.setVigente(producto.getVigente());
+        }
         validarPrecioStock(existente);
         return productoRepository.save(existente);
     }
@@ -53,11 +60,11 @@ public class ProductoService {
         return productoRepository.buscarPorTexto(texto.trim());
     }
 
-    public List<Producto> ListarProductosPorCategoria(Long idCategoria) {
+    public List<Producto> ListarProductosPorCategoria(Integer idCategoria) {
         return productoRepository.findByCategoriaIdCategoria(idCategoria);
     }
 
-    public List<Producto> ListarProductosPorMarca(Long idMarca) {
+    public List<Producto> ListarProductosPorMarca(Integer idMarca) {
         return productoRepository.findByMarcaIdMarca(idMarca);
     }
 
@@ -71,15 +78,45 @@ public class ProductoService {
         if (producto.getCategoria() == null) {
             throw new RuntimeException("Selecciona una categoria para el producto");
         }
-        if (producto.getPrecio() == null) {
-            throw new RuntimeException("El precio es obligatorio");
+        if (producto.getPrecioVenta() == null) {
+            throw new RuntimeException("El precio de venta es obligatorio");
         }
-        if (producto.getPrecio().compareTo(java.math.BigDecimal.ZERO) < 0) {
-            throw new RuntimeException("El precio no puede ser negativo");
+        if (producto.getPrecioVenta().compareTo(java.math.BigDecimal.ZERO) < 0) {
+            throw new RuntimeException("El precio de venta no puede ser negativo");
         }
-        producto.setPrecio(producto.getPrecio().setScale(2, java.math.RoundingMode.HALF_UP));
+        producto.setPrecioVenta(producto.getPrecioVenta().setScale(2, java.math.RoundingMode.HALF_UP));
         if (producto.getStock() == null || producto.getStock() < 0) {
             throw new RuntimeException("El stock no puede ser negativo");
         }
+    }
+
+    private String generarSku(Producto producto) {
+        String marcaNombre = producto.getMarca() != null ? producto.getMarca().getNombre() : "";
+        String categoriaNombre = producto.getCategoria() != null ? producto.getCategoria().getNombre() : "";
+        String preMarca = prefijo(marcaNombre, 2);
+        String preCategoria = prefijo(categoriaNombre, 2);
+        long idMarca = producto.getMarca() != null && producto.getMarca().getIdMarca() != null
+                ? producto.getMarca().getIdMarca() : 0;
+        long idCategoria = producto.getCategoria() != null && producto.getCategoria().getIdCategoria() != null
+                ? producto.getCategoria().getIdCategoria() : 0;
+        long correlativo = productoRepository.countByMarcaIdMarcaAndCategoriaIdCategoria(
+                (int) idMarca, (int) idCategoria) + 1;
+        String sku;
+        do {
+            sku = preMarca + preCategoria + String.format("%02d", correlativo);
+            correlativo++;
+        } while (productoRepository.existsByCodigoSku(sku));
+        return sku;
+    }
+
+    private String prefijo(String texto, int longitud) {
+        if (texto == null || texto.isBlank()) {
+            return "XX";
+        }
+        String limpio = texto.replaceAll("[^a-zA-Z]", "").toUpperCase();
+        if (limpio.length() >= longitud) {
+            return limpio.substring(0, longitud);
+        }
+        return String.format("%-2s", limpio).replace(' ', 'X');
     }
 }

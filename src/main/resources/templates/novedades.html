@@ -5,32 +5,35 @@
     <header th:replace="~{fragments/plantilla :: barra-navegacion('novedades')}"></header>
 
     <main class="container my-4">
-        <div class="text-center mb-5 p-4 bg-primary text-white rounded-3">
-            <h1 class="display-5 fw-bold">Novedades</h1>
-            <p class="lead">Las ultimas tarjetas graficas y componentes</p>
+        <div class="text-center mb-5 p-4 rounded-3 shadow-sm" style="background: linear-gradient(135deg, var(--primario) 0%, #3a63ad 100%);">
+            <h1 class="display-5 fw-bold text-white mb-2">Novedades</h1>
+            <p class="lead mb-0" style="color: rgba(255,255,255,0.85);">Las ultimas tarjetas graficas y componentes</p>
         </div>
 
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
             <div class="col" th:each="producto : ${productos}">
-                <div class="card h-100 shadow-sm border-primary">
-                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                        <span><i class="bi bi-stars"></i> Nuevo</span>
-                        <span class="badge" th:classappend="${producto.stock > 0} ? 'bg-success' : 'bg-danger'"
-                            th:text="${producto.stock > 0} ? 'Disponible' : 'Sin stock'">Disponible</span>
+                <div class="card h-100 shadow-sm">
+                    <img th:if="${producto.imagenPrincipal != null}" th:src="${producto.imagenPrincipal}"
+                        class="card-img-top" th:alt="${producto.nombre}" style="height: 200px; object-fit: contain; padding: 1rem;">
+                    <div th:unless="${producto.imagenPrincipal != null}" class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                        <i class="bi bi-box-seam display-4 text-muted"></i>
                     </div>
-                    <img th:if="${producto.imagen != null}" th:src="${producto.imagen}" class="card-img-top" th:alt="${producto.nombre}">
                     <div class="card-body d-flex flex-column">
-                        <span class="badge bg-secondary mb-2" th:text="${producto.marca.nombre}">Marca</span>
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <span class="badge bg-secondary" th:text="${producto.marca.nombre}">Marca</span>
+                            <span class="badge" th:classappend="${producto.stock > 5} ? 'bg-success' : (${producto.stock > 0} ? 'bg-warning text-dark' : 'bg-danger')"
+                                th:text="${producto.stock > 0} ? 'Stock: ' + ${producto.stock} : 'Sin stock'">Stock</span>
+                        </div>
                         <h5 class="card-title" th:text="${producto.nombre}">Producto</h5>
                         <p class="card-text text-muted small" th:text="${producto.descripcion}">Descripcion</p>
                         <div class="mt-auto">
-                            <p class="fw-bold text-primary fs-4" th:text="'S/ ' + ${#numbers.formatDecimal(producto.precio, 1, 2)}">S/ 0.00</p>
+                            <p class="fw-bold text-primary fs-4 mb-0" th:text="'S/ ' + ${#numbers.formatDecimal(producto.precioVenta, 1, 2)}">S/ 0.00</p>
                         </div>
                         <button class="btn btn-primary mt-2 agregar-carrito"
                                 th:data-id="${producto.idProducto}"
                                 th:data-nombre="${producto.nombre}"
-                                th:data-precio="${producto.precio}"
-                                th:data-imagen="${producto.imagen}">
+                                th:data-precio="${producto.precioVenta}"
+                                th:data-imagen="${producto.imagenPrincipal}">
                             <i class="bi bi-cart-plus"></i> Agregar al Carrito
                         </button>
                     </div>
@@ -47,5 +50,6 @@
     <footer th:replace="~{fragments/plantilla :: pie}"></footer>
 
     <script th:src="@{/js/carrito.js}"></script>
+    <script th:src="@{/js/checkout.js}"></script>
 </body>
 </html>

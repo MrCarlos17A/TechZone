@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/plantilla :: cabecera('Admin - Nuevo Pago')}"></head>
+<body>
+    <div class="admin-shell" id="paginaAdmin">
+        <div th:insert="~{fragments/admin :: barra-lateral('pagos')}"></div>
+        <div class="admin-principal">
+            <header th:replace="~{fragments/plantilla-admin :: barra-superior}"></header>
+            <main class="admin-contenido container-fluid py-4">
+                <div class="row justify-content-center">
+                    <div class="col-md-6">
+                        <div class="card shadow">
+                            <div class="card-header bg-success text-white">
+                                <h4 class="mb-0"><i class="bi bi-credit-card"></i> Nuevo Pago</h4>
+                            </div>
+                            <div class="card-body">
+                                <form th:action="@{/admin/pagos/guardar}" method="post">
+                                    <div class="mb-3">
+                                        <label class="form-label">Venta</label>
+                                        <select class="form-select" name="idVenta" required>
+                                            <option value="">Seleccionar venta...</option>
+                                            <option th:each="v : ${ventas}" th:value="${v.idVenta}" th:text="'Venta #' + ${v.idVenta} + ' - S/ ' + ${#numbers.formatDecimal(v.total, 1, 2)}"></option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Medio de Pago</label>
+                                        <select class="form-select" name="idMedioPago" required>
+                                            <option value="">Seleccionar medio...</option>
+                                            <option th:each="mp : ${mediosPago}" th:value="${mp.idMedioPago}" th:text="${mp.nombre}"></option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Monto</label>
+                                        <input type="number" class="form-control" name="montoPago" step="0.01" min="0" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Codigo de Operacion</label>
+                                        <input type="text" class="form-control" name="codigoOperacion" maxlength="50">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Estado</label>
+                                        <select class="form-select" name="estadoPago">
+                                            <option value="PENDIENTE">PENDIENTE</option>
+                                            <option value="CONFIRMADO">CONFIRMADO</option>
+                                            <option value="RECHAZADO">RECHAZADO</option>
+                                        </select>
+                                    </div>
+                                    <div class="d-flex gap-2">
+                                        <button type="submit" class="btn btn-success"><i class="bi bi-save"></i> Guardar</button>
+                                        <a th:href="@{/admin/pagos}" class="btn btn-secondary"><i class="bi bi-arrow-left"></i> Cancelar</a>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+            <footer th:replace="~{fragments/plantilla-admin :: pie-admin}"></footer>
+        </div>
+    </div>
+</body>
+</html>

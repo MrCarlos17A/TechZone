@@ -71,7 +71,7 @@
                             <button class="btn btn-outline-light dropdown-toggle" type="button"
                                 data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="bi bi-person-check"></i> <span
-                                    th:text="${usuarioLogueado.get().nombres}">Usuario</span>
+                                    th:text="${usuarioLogueado.get().persona != null ? usuarioLogueado.get().persona.nombres : usuarioLogueado.get().correo}">Usuario</span>
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end">
                                 <li><a class="dropdown-item" th:href="@{/mi-perfil}"><i class="bi bi-person"></i> Mi
@@ -110,20 +110,20 @@
                     </div>
                     <div class="modal-body">
                         <div th:if="${param.error}" class="alert alert-danger" role="alert">
-                            <i class="bi bi-exclamation-triangle"></i> Correo o contrasena incorrectos
+                            <i class="bi bi-exclamation-triangle"></i> Datos invalidos
                         </div>
                         <div th:if="${exito}" class="alert alert-success" role="alert">
                             <i class="bi bi-check-circle"></i> <span th:text="${exito}">Exito</span>
                         </div>
                         <div id="errorLoginModal" class="alert alert-danger d-none" role="alert">
-                            <i class="bi bi-exclamation-triangle"></i> <span id="textoErrorLogin">Correo o contrasena incorrectos</span>
+                            <i class="bi bi-exclamation-triangle"></i> <span id="textoErrorLogin">Datos invalidos</span>
                         </div>
                         <form th:action="@{/login}" method="post" id="formLoginModal" novalidate>
                             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                             <div class="mb-3">
                                 <label for="usuarioModal" class="form-label">Correo electronico</label>
                                 <input type="email" class="form-control" id="usuarioModal" name="username" required
-                                    placeholder="admin@techzone.com" pattern="[^@\s]+@[^@\s]+\.[^@\s]+"
+                                    placeholder="Tu correo" pattern="[^@\s]+@[^@\s]+\.[^@\s]+"
                                     title="Ingresa un correo valido que contenga @">
                                 <div class="invalid-feedback">Ingresa un correo valido que contenga @</div>
                             </div>
@@ -171,7 +171,6 @@
                 var form = document.getElementById('formLoginModal');
                 if (form) {
                     form.addEventListener('submit', function (e) {
-                        e.preventDefault();
                         var email = document.getElementById('usuarioModal');
                         var clave = document.getElementById('claveModal');
                         var cajaError = document.getElementById('errorLoginModal');
@@ -182,27 +181,30 @@
                         }
                         if (cajaError) cajaError.classList.add('d-none');
                         if (email && email.value.indexOf('@') === -1) {
+                            e.preventDefault();
                             email.classList.add('is-invalid');
                             email.focus();
                             return;
                         } else if (email) {
                             email.classList.remove('is-invalid');
                         }
-                        var boton = form.querySelector('button[type="submit"]');
-                        if (boton) {
-                            boton.disabled = true;
-                            boton.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Ingresando...';
-                        }
-                        fetch('/api/login', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                            body: 'username=' + encodeURIComponent(email.value)
-                                + '&password=' + encodeURIComponent(clave.value)
-                        })
-                            .then(function (res) { return res.json(); })
-                            .then(function (data) {
-                                if (data.ok) {
-                                    if (sessionStorage.getItem('checkoutPendiente') === '1') {
+                        if (sessionStorage.getItem('checkoutPendiente') === '1') {
+                            e.preventDefault();
+                            var boton = form.querySelector('button[type="submit"]');
+                            if (boton) {
+                                boton.disabled = true;
+                                boton.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Ingresando...';
+                            }
+                            fetch('/api/login', {
+                                method: 'POST',
+                                credentials: 'same-origin',
+                                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                                body: 'username=' + encodeURIComponent(email.value)
+                                    + '&password=' + encodeURIComponent(clave.value)
+                            })
+                                .then(function (res) { return res.json(); })
+                                .then(function (data) {
+                                    if (data.ok) {
                                         sessionStorage.removeItem('checkoutPendiente');
                                         var caja = document.getElementById('modalLogin');
                                         if (caja && typeof bootstrap !== 'undefined') {
@@ -210,23 +212,21 @@
                                         }
                                         if (window.techZoneFinalizar) {
                                             window.techZoneFinalizar();
-                                            return;
                                         }
+                                    } else {
+                                        mostrarError(data.mensaje || 'Datos invalidos');
                                     }
-                                    window.location.reload();
-                                } else {
-                                    mostrarError(data.mensaje || 'Correo o contrasena incorrectos');
-                                }
-                            })
-                            .catch(function () {
-                                mostrarError('Error de conexion. Intentalo de nuevo.');
-                            })
-                            .finally(function () {
-                                if (boton) {
-                                    boton.disabled = false;
-                                    boton.innerHTML = '<i class="bi bi-box-arrow-in-right"></i> Ingresar';
-                                }
-                            });
+                                })
+                                .catch(function () {
+                                    mostrarError('Error de conexion. Intentalo de nuevo.');
+                                })
+                                .finally(function () {
+                                    if (boton) {
+                                        boton.disabled = false;
+                                        boton.innerHTML = '<i class="bi bi-box-arrow-in-right"></i> Ingresar';
+                                    }
+                                });
+                        }
                     });
                 }
                 window.addEventListener('load', function () {
@@ -235,6 +235,18 @@
                     if (caja && (params.get('error') === 'true' || params.get('abrirLogin') === 'true')) {
                         var modal = new bootstrap.Modal(caja);
                         modal.show();
+                    }
+                    if (caja === null && (params.get('error') === 'true' || params.get('abrirLogin') === 'true')) {
+                        window.history.replaceState({}, '', window.location.pathname);
+                    }
+                    if (sessionStorage.getItem('checkoutPendiente') === '1'
+                        && document.getElementById('modalLogin') === null) {
+                        sessionStorage.removeItem('checkoutPendiente');
+                        setTimeout(function () {
+                            if (typeof window.techZoneAbrirCheckout === 'function') {
+                                window.techZoneAbrirCheckout();
+                            }
+                        }, 500);
                     }
                 });
             })();
@@ -310,7 +322,8 @@
         </div>
 
         <div class="offcanvas offcanvas-end" tabindex="-1" id="drawerCarrito" aria-labelledby="tituloDrawerCarrito"
-            th:attr="data-autenticado=${usuarioLogueado.isPresent()}">
+            th:data-autenticado="${usuarioLogueado.isPresent()}"
+            th:data-usuario="${usuarioLogueado.isPresent() ? usuarioLogueado.get().correo : ''}">
             <div class="offcanvas-header bg-dark text-white">
                 <h5 class="offcanvas-title" id="tituloDrawerCarrito">
                     <i class="bi bi-cart3"></i> Mi Carrito
@@ -342,7 +355,7 @@
                     </div>
                     <div class="d-grid gap-2">
                         <button type="button" class="btn btn-success" id="btnFinalizar">
-                            <i class="bi bi-bag-check"></i> Finalizar Compra
+                            <i class="bi bi-bag-check"></i> Realizar Compra
                         </button>
                         <div class="btn-group">
                             <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="offcanvas">
@@ -356,6 +369,267 @@
                 </div>
             </div>
         </div>
+
+        <!-- Modal Checkout Multi-paso -->
+        <div class="modal fade" id="modalCheckout" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header bg-dark text-white">
+                        <h5 class="modal-title"><i class="bi bi-bag-check"></i> Finalizar Compra</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                            aria-label="Cerrar"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Indicador de pasos -->
+                        <div class="row text-center mb-4" id="pasosCheckout">
+                            <div class="col-3">
+                                <div class="checkout-paso rounded-circle mx-auto d-flex align-items-center justify-content-center"
+                                    data-ind="1">1</div>
+                                <div class="small mt-1 fw-bold">Datos</div>
+                            </div>
+                            <div class="col-3">
+                                <div class="checkout-paso rounded-circle mx-auto d-flex align-items-center justify-content-center"
+                                    data-ind="2">2</div>
+                                <div class="small mt-1">Direccion</div>
+                            </div>
+                            <div class="col-3">
+                                <div class="checkout-paso rounded-circle mx-auto d-flex align-items-center justify-content-center"
+                                    data-ind="3">3</div>
+                                <div class="small mt-1">Pago</div>
+                            </div>
+                            <div class="col-3">
+                                <div class="checkout-paso rounded-circle mx-auto d-flex align-items-center justify-content-center"
+                                    data-ind="4">4</div>
+                                <div class="small mt-1">Resumen</div>
+                            </div>
+                        </div>
+
+                        <div id="alertaCheckout"></div>
+
+                        <!-- PASO 1: Datos personales -->
+                        <div id="pasoCheckout1">
+                            <h6 class="mb-3"><i class="bi bi-person"></i> Datos Personales</h6>
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">DNI <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="dniCheckout" maxlength="8"
+                                            placeholder="8 digitos" pattern="\d{8}">
+                                        <button class="btn btn-outline-primary" type="button" id="btnBuscarDni"
+                                            title="Buscar DNI">
+                                            <i class="bi bi-search"></i>
+                                        </button>
+                                    </div>
+                                    <small class="text-muted" id="mensajeDni"></small>
+                                </div>
+                                <div class="col-md-8 mb-3">
+                                    <label class="form-label">Nombres <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="nombresCheckout" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Apellido Paterno <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="apPaternoCheckout" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Apellido Materno <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="apMaternoCheckout" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Telefono <span class="text-danger">*</span></label>
+                                    <input type="tel" class="form-control" id="telefonoCheckout" maxlength="9"
+                                        placeholder="9 digitos">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Correo electronico <span
+                                            class="text-danger">*</span></label>
+                                    <input type="email" class="form-control" id="correoCheckout">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- PASO 2: Direccion -->
+                        <div id="pasoCheckout2" style="display:none;">
+                            <h6 class="mb-3"><i class="bi bi-geo-alt"></i> Direccion de Envio</h6>
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Departamento <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="departamentoCheckout">
+                                        <option value="">Selecciona...</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Provincia <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="provinciaCheckout" disabled>
+                                        <option value="">Selecciona...</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Distrito <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="distritoCheckout" disabled>
+                                        <option value="">Selecciona...</option>
+                                    </select>
+                                </div>
+                                <div class="col-12 mb-3">
+                                    <label class="form-label">Direccion exacta <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="direccionCheckout"
+                                        placeholder="Av. Los Olivos 123, Urb. El Limon" minlength="10">
+                                    <small class="text-muted">Minimo 10 caracteres</small>
+                                </div>
+                                <div class="col-12 mb-3">
+                                    <label class="form-label">Referencia</label>
+                                    <input type="text" class="form-control" id="referenciaCheckout"
+                                        placeholder="Frente al parque">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- PASO 3: Metodo de pago -->
+                        <div id="pasoCheckout3" style="display:none;">
+                            <h6 class="mb-3"><i class="bi bi-credit-card"></i> Metodo de Pago</h6>
+                            <div class="mb-3">
+                                <div class="form-check" th:each="mp, iter : ${mediosPago}">
+                                    <input class="form-check-input" type="radio" name="medioPagoCheckout"
+                                        th:id="${'mp' + mp.idMedioPago}" th:value="${mp.idMedioPago}"
+                                        th:checked="${iter.index == 0}"
+                                        th:attr="data-nombre=${mp.nombre}">
+                                    <label class="form-check-label" th:for="${'mp' + mp.idMedioPago}"
+                                        th:text="${mp.nombre}">Efectivo</label>
+                                </div>
+                            </div>
+
+                            <div id="grupoEfectivo">
+                                <div class="alert alert-info mb-0">
+                                    <i class="bi bi-info-circle"></i> Pagaras en efectivo al momento de la entrega.
+                                </div>
+                            </div>
+
+                            <div id="grupoYapePlin" style="display:none;">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label" id="labelNumeroYape">Numero de Yape (9 digitos) <span
+                                                class="text-danger">*</span></label>
+                                        <input type="tel" class="form-control" id="celularPago" maxlength="9"
+                                            placeholder="Ej: 987654321">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label" id="labelCodConfirmacion">Codigo de confirmacion (12 caracteres) <span
+                                                class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="codOpPago" maxlength="12"
+                                            placeholder="Ej: ABC123456789">
+                                    </div>
+                                </div>
+                                <div class="alert alert-info">
+                                    <i class="bi bi-info-circle"></i> Abre tu app de Yape o Plin, copia el numero de telefono y el codigo de confirmacion de la operacion.
+                                </div>
+                            </div>
+
+                            <div id="grupoTarjeta" style="display:none;">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Numero de tarjeta (16 digitos) <span
+                                                class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="numTarjeta" maxlength="19"
+                                            placeholder="0000 0000 0000 0000">
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <label class="form-label">Vence (MM/AA) <span
+                                                class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="fechaVence" maxlength="5"
+                                            placeholder="MM/AA">
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <label class="form-label">CVV <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="cvvTarjeta" maxlength="3"
+                                            placeholder="123">
+                                    </div>
+                                    <div class="col-12 mb-3">
+                                        <label class="form-label">Titular de la tarjeta <span
+                                                class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="titularTarjeta"
+                                            placeholder="Como aparece en la tarjeta">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="grupoTransferencia" style="display:none;">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Codigo de operacion <span
+                                                class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="codOpTransferencia"
+                                            maxlength="50">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Banco de origen <span
+                                                class="text-danger">*</span></label>
+                                        <select class="form-select" id="bancoOrigen">
+                                            <option value="">Selecciona un banco</option>
+                                            <option value="BCP">BCP</option>
+                                            <option value="Interbank">Interbank</option>
+                                            <option value="BBVA">BBVA</option>
+                                            <option value="Scotiabank">Scotiabank</option>
+                                            <option value="BanBif">BanBif</option>
+                                            <option value="Caja Piura">Caja Piura</option>
+                                            <option value="Otro">Otro</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="grupoPagoEfectivo" style="display:none;">
+                                <div class="mb-3">
+                                    <label class="form-label">Codigo PPI (8-12 caracteres) <span
+                                            class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="codigoPPI" maxlength="12"
+                                        placeholder="Ej: PPI12345">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- PASO 4: Resumen -->
+                        <div id="pasoCheckout4" style="display:none;">
+                            <h6 class="mb-3"><i class="bi bi-clipboard-check"></i> Resumen del Pedido</h6>
+                            <div id="resumenProductos" class="mb-3"></div>
+                            <hr>
+                            <div id="resumenDatos"></div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" id="btnCheckoutAtras"
+                            style="display:none;">
+                            <i class="bi bi-arrow-left"></i> Atras
+                        </button>
+                        <button type="button" class="btn btn-primary" id="btnCheckoutSiguiente">
+                            Siguiente <i class="bi bi-arrow-right"></i>
+                        </button>
+                        <button type="button" class="btn btn-success" id="btnCheckoutConfirmar"
+                            style="display:none;">
+                            <i class="bi bi-bag-check"></i> Confirmar Pedido
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <style>
+            .checkout-paso {
+                width: 36px;
+                height: 36px;
+                background: #6c757d;
+                color: #fff;
+                font-weight: bold;
+                transition: all .3s;
+            }
+
+            .checkout-paso.activo {
+                background: #0d6efd;
+                transform: scale(1.15);
+            }
+
+            .checkout-paso.completado {
+                background: #198754;
+            }
+        </style>
 
         <!-- Toast de confirmacion -->
         <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1090;">

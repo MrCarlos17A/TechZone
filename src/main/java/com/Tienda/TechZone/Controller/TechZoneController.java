@@ -44,7 +44,7 @@ public class TechZoneController {
     }
 
     @GetMapping("/productos")
-    public String Productos(@RequestParam(value = "categoria", required = false) Long idCategoria, Model model) {
+    public String Productos(@RequestParam(value = "categoria", required = false) Integer idCategoria, Model model) {
         List<Categoria> categorias = categoriaService.ListarCategorias();
         List<Producto> productos;
 
@@ -63,7 +63,7 @@ public class TechZoneController {
     @GetMapping("/novedades")
     public String Novedades(Model model) {
         List<Categoria> categorias = categoriaService.ListarCategorias();
-        Long idCategoriaTarjetas = null;
+        Integer idCategoriaTarjetas = null;
         for (Categoria c : categorias) {
             if (c.getNombre().toLowerCase().contains("tarjeta")) {
                 idCategoriaTarjetas = c.getIdCategoria();

@@ -30,7 +30,6 @@
                     <tr>
                         <th>ID</th>
                         <th>Nombre</th>
-                        <th>Descripcion</th>
                         <th>Estado</th>
                         <th>Acciones</th>
                     </tr>
@@ -39,10 +38,9 @@
                     <tr th:each="cat : ${categorias}">
                         <td th:text="${cat.idCategoria}">1</td>
                         <td th:text="${cat.nombre}">Categoria</td>
-                        <td th:text="${cat.descripcion}">Descripcion</td>
                         <td>
-                            <span class="badge" th:classappend="${cat.estadoCategoria} ? 'bg-success' : 'bg-secondary'"
-                                th:text="${cat.estadoCategoria} ? 'Activa' : 'Inactiva'">Activa</span>
+                            <span class="badge" th:classappend="${cat.vigente} ? 'bg-success' : 'bg-secondary'"
+                                th:text="${cat.vigente} ? 'Activa' : 'Inactiva'">Activa</span>
                         </td>
                         <td>
                             <a th:href="@{/admin/categorias/editar/{id}(id=${cat.idCategoria})}"

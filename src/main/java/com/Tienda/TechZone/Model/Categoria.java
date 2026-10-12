@@ -12,17 +12,13 @@ import lombok.*;
 public class Categoria {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_categoria")
-    private Long idCategoria;
+    @Column(name = "id_categoria", nullable = false)
+    private Integer idCategoria;
 
-    @Column(nullable = false, length = 100)
+    @Column(length = 20)
     private String nombre;
 
-    @Column(length = 255)
-    private String descripcion;
-
-    @Column(name = "estado", nullable = false)
+    @Column(name = "vigente")
     @Builder.Default
-    private Boolean estadoCategoria = true;
+    private Boolean vigente = true;
 }

@@ -39,13 +39,13 @@ public class CategoriaController {
     }
 
     @GetMapping("/editar/{id}")
-    public String FormularioEditar(@PathVariable Long id, Model model) {
+    public String FormularioEditar(@PathVariable Integer id, Model model) {
         model.addAttribute("categoria", categoriaService.ObtenerCategoriaPorId(id));
         return "admin/categorias/formulario";
     }
 
     @PostMapping("/actualizar/{id}")
-    public String ActualizarCategoria(@PathVariable Long id, @ModelAttribute Categoria categoria, RedirectAttributes flash) {
+    public String ActualizarCategoria(@PathVariable Integer id, @ModelAttribute Categoria categoria, RedirectAttributes flash) {
         try {
             categoriaService.ActualizarCategoria(id, categoria);
             flash.addFlashAttribute("exito", "Categoria actualizada correctamente");
@@ -56,7 +56,7 @@ public class CategoriaController {
     }
 
     @GetMapping("/eliminar/{id}")
-    public String EliminarCategoria(@PathVariable Long id, RedirectAttributes flash) {
+    public String EliminarCategoria(@PathVariable Integer id, RedirectAttributes flash) {
         try {
             categoriaService.EliminarCategoria(id);
             flash.addFlashAttribute("exito", "Categoria eliminada correctamente");

@@ -28,15 +28,10 @@
                                     th:value="${rol.nombre}" required>
                             </div>
                             <div class="mb-3">
-                                <label for="descripcion" class="form-label">Descripcion</label>
-                                <textarea class="form-control" id="descripcion" name="descripcion" rows="3"
-                                    th:text="${rol.descripcion}"></textarea>
-                            </div>
-                            <div class="mb-3">
-                                <label for="estadoRol" class="form-label">Estado</label>
-                                <select class="form-select" id="estadoRol" name="estadoRol">
-                                    <option value="true" th:selected="${rol.estadoRol == null or rol.estadoRol}">Activo</option>
-                                    <option value="false" th:selected="${rol.estadoRol != null and !rol.estadoRol}">Inactivo</option>
+                                <label for="vigente" class="form-label">Estado</label>
+                                <select class="form-select" id="vigente" name="vigente">
+                                    <option value="true" th:selected="${rol.vigente == null or rol.vigente}">Activo</option>
+                                    <option value="false" th:selected="${rol.vigente != null and !rol.vigente}">Inactivo</option>
                                 </select>
                             </div>
                             <div class="d-flex gap-2">

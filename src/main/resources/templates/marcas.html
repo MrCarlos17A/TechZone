@@ -13,17 +13,17 @@
             <div class="col" th:each="marca : ${marcas}">
                 <div class="card h-100 shadow-sm">
                     <div class="card-body text-center">
-                        <img th:if="${marca.imagen != null and !marca.imagen.isEmpty()}" th:src="${marca.imagen}"
+                        <img th:src="@{'/Assets/IMG/Marcas/' + ${marca.nombre} + '.png'}"
                             th:alt="${marca.nombre}" class="img-fluid mb-3"
-                            style="max-height: 120px; object-fit: contain;">
-                        <i th:unless="${marca.imagen != null and !marca.imagen.isEmpty()}"
-                            class="bi bi-box-seam display-3 text-primary"></i>
+                            style="max-height: 120px; object-fit: contain;"
+                            onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                        <i class="bi bi-building display-3 text-primary" style="display: none;"></i>
                         <h5 class="mt-3" th:text="${marca.nombre}">Marca</h5>
                         <p class="text-muted">Productos de calidad de <span th:text="${marca.nombre}">Marca</span></p>
                     </div>
                     <div class="card-footer text-center">
-                        <span class="badge" th:classappend="${marca.estadoMarca} ? 'bg-success' : 'bg-secondary'"
-                            th:text="${marca.estadoMarca} ? 'Activa' : 'Inactiva'">Activa</span>
+                        <span class="badge" th:classappend="${marca.vigente} ? 'bg-success' : 'bg-secondary'"
+                            th:text="${marca.vigente} ? 'Activa' : 'Inactiva'">Activa</span>
                     </div>
                 </div>
             </div>

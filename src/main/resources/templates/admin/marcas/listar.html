@@ -39,15 +39,14 @@
                     <tr th:each="marca : ${marcas}">
                         <td th:text="${marca.idMarca}">1</td>
                         <td>
-                            <img th:if="${marca.imagen != null and !marca.imagen.isEmpty()}" th:src="${marca.imagen}"
-                                th:alt="${marca.nombre}" style="height: 40px; object-fit: contain;">
-                            <span th:unless="${marca.imagen != null and !marca.imagen.isEmpty()}" class="text-muted">Sin
-                                imagen</span>
+                            <img th:src="@{'/Assets/IMG/Marcas/' + ${marca.nombre} + '.png'}"
+                                th:alt="${marca.nombre}" style="height: 40px; object-fit: contain;"
+                                onerror="this.style.display='none';">
                         </td>
                         <td th:text="${marca.nombre}">Marca</td>
                         <td>
-                            <span class="badge" th:classappend="${marca.estadoMarca} ? 'bg-success' : 'bg-secondary'"
-                                th:text="${marca.estadoMarca} ? 'Activa' : 'Inactiva'">Activa</span>
+                            <span class="badge" th:classappend="${marca.vigente} ? 'bg-success' : 'bg-secondary'"
+                                th:text="${marca.vigente} ? 'Activa' : 'Inactiva'">Activa</span>
                         </td>
                         <td>
                             <a th:href="@{/admin/marcas/editar/{id}(id=${marca.idMarca})}"

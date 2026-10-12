@@ -12,7 +12,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.Collections;
 
 @Service
@@ -34,14 +33,14 @@ public class UsuarioDetalleService implements UserDetailsService {
                 });
 
         log.info("Usuario encontrado: {} | Estado: {} | Rol: {}",
-                usuario.getCorreo(), usuario.getEstadoUsuario(), usuario.getRol().getNombre());
+                usuario.getCorreo(), usuario.getEstado(), usuario.getRol().getNombre());
 
-        if (!usuario.getEstadoUsuario()) {
+        if (!"activo".equalsIgnoreCase(usuario.getEstado())) {
             log.error("USUARIO DESHABILITADO: {}", correo);
             throw new UsernameNotFoundException("Usuario deshabilitado: " + correo);
         }
 
-        if (usuario.getRol() == null || Boolean.FALSE.equals(usuario.getRol().getEstadoRol())) {
+        if (usuario.getRol() == null || Boolean.FALSE.equals(usuario.getRol().getVigente())) {
             log.error("ROL INACTIVO para el usuario: {}", correo);
             throw new UsernameNotFoundException("Rol deshabilitado: " + correo);
         }

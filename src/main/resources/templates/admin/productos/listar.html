@@ -29,6 +29,8 @@
                 <thead class="table-dark">
                     <tr>
                         <th>ID</th>
+                        <th>Imagen</th>
+                        <th>SKU</th>
                         <th>Nombre</th>
                         <th>Marca</th>
                         <th>Categoria</th>
@@ -41,14 +43,20 @@
                 <tbody>
                     <tr th:each="producto : ${productos}">
                         <td th:text="${producto.idProducto}">1</td>
+                        <td>
+                            <img th:if="${producto.imagenPrincipal != null}" th:src="${producto.imagenPrincipal}"
+                                th:alt="${producto.nombre}" style="height: 40px; object-fit: contain;">
+                            <i th:unless="${producto.imagenPrincipal != null}" class="bi bi-box-seam text-muted"></i>
+                        </td>
+                        <td th:text="${producto.codigoSku}">SKU</td>
                         <td th:text="${producto.nombre}">Producto</td>
                         <td th:text="${producto.marca.nombre}">Marca</td>
                         <td th:text="${producto.categoria.nombre}">Categoria</td>
-                        <td th:text="'S/ ' + ${#numbers.formatDecimal(producto.precio, 1, 2)}">S/ 0.00</td>
+                        <td th:text="'S/ ' + ${#numbers.formatDecimal(producto.precioVenta, 1, 2)}">S/ 0.00</td>
                         <td th:text="${producto.stock}">0</td>
                         <td>
-                            <span class="badge" th:classappend="${producto.estadoProducto} ? 'bg-success' : 'bg-secondary'"
-                                th:text="${producto.estadoProducto} ? 'Activo' : 'Inactivo'">Activo</span>
+                            <span class="badge" th:classappend="${producto.vigente} ? 'bg-success' : 'bg-secondary'"
+                                th:text="${producto.vigente} ? 'Activo' : 'Inactivo'">Activo</span>
                         </td>
                         <td>
                             <a th:href="@{/admin/productos/editar/{id}(id=${producto.idProducto})}"

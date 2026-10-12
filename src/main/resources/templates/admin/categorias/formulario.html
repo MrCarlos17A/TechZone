@@ -29,16 +29,11 @@
                                     th:value="${categoria.nombre}" required>
                             </div>
                             <div class="mb-3">
-                                <label for="descripcion" class="form-label">Descripcion</label>
-                                <textarea class="form-control" id="descripcion" name="descripcion" rows="3"
-                                    th:text="${categoria.descripcion}"></textarea>
-                            </div>
-                            <div class="mb-3">
-                                <label for="estadoCategoria" class="form-label">Estado</label>
-                                <select class="form-select" id="estadoCategoria" name="estadoCategoria">
-                                    <option value="true" th:selected="${categoria.estadoCategoria}">Activa</option>
+                                <label for="vigente" class="form-label">Estado</label>
+                                <select class="form-select" id="vigente" name="vigente">
+                                    <option value="true" th:selected="${categoria.vigente == null or categoria.vigente}">Activa</option>
                                     <option value="false"
-                                        th:selected="${categoria.estadoCategoria != null and !categoria.estadoCategoria}">Inactiva
+                                        th:selected="${categoria.vigente != null and !categoria.vigente}">Inactiva
                                     </option>
                                 </select>
                             </div>

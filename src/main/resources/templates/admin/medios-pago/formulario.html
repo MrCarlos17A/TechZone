@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/plantilla :: cabecera('Admin - Formulario Medio Pago')}"></head>
+<body>
+    <div class="admin-shell" id="paginaAdmin">
+        <div th:insert="~{fragments/admin :: barra-lateral('medios-pago')}"></div>
+        <div class="admin-principal">
+            <header th:replace="~{fragments/plantilla-admin :: barra-superior}"></header>
+            <main class="admin-contenido container-fluid py-4">
+                <div class="row justify-content-center">
+                    <div class="col-md-6">
+                        <div class="card shadow">
+                            <div class="card-header bg-success text-white">
+                                <h4 class="mb-0"><i class="bi bi-wallet2"></i>
+                                    <span th:text="${medioPago.idMedioPago != null} ? 'Editar Medio' : 'Nuevo Medio'">Formulario</span>
+                                </h4>
+                            </div>
+                            <div class="card-body">
+                                <form th:action="${medioPago.idMedioPago != null} ? @{/admin/medios-pago/editar/{id}(id=${medioPago.idMedioPago})} : @{/admin/medios-pago/guardar}" method="post">
+                                    <div class="mb-3">
+                                        <label class="form-label">Nombre</label>
+                                        <input type="text" class="form-control" name="nombre" th:value="${medioPago.nombre}" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Estado</label>
+                                        <select class="form-select" name="vigente">
+                                            <option value="true" th:selected="${medioPago.vigente == null or medioPago.vigente}">Activo</option>
+                                            <option value="false" th:selected="${medioPago.vigente != null and !medioPago.vigente}">Inactivo</option>
+                                        </select>
+                                    </div>
+                                    <div class="d-flex gap-2">
+                                        <button type="submit" class="btn btn-success"><i class="bi bi-save"></i> Guardar</button>
+                                        <a th:href="@{/admin/medios-pago}" class="btn btn-secondary"><i class="bi bi-arrow-left"></i> Cancelar</a>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+            <footer th:replace="~{fragments/plantilla-admin :: pie-admin}"></footer>
+        </div>
+    </div>
+</body>
+</html>

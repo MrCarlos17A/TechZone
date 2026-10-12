@@ -26,8 +26,8 @@ public class UsuarioService {
             throw new RuntimeException("La contrasena debe tener al menos 6 caracteres");
         }
         usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
-        if (usuario.getEstadoUsuario() == null) {
-            usuario.setEstadoUsuario(true);
+        if (usuario.getEstado() == null) {
+            usuario.setEstado("activo");
         }
         return usuarioRepository.save(usuario);
     }
@@ -36,14 +36,16 @@ public class UsuarioService {
         Usuario existente = usuarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado con id: " + id));
         validarUsuario(usuario, id);
-        existente.setNombres(usuario.getNombres().trim());
-        existente.setApellidos(usuario.getApellidos().trim());
         existente.setCorreo(usuario.getCorreo().trim());
-        existente.setTelefono(usuario.getTelefono());
-        if (usuario.getEstadoUsuario() != null) {
-            existente.setEstadoUsuario(usuario.getEstadoUsuario());
+        if (usuario.getPersona() != null) {
+            existente.setPersona(usuario.getPersona());
         }
-        existente.setRol(usuario.getRol());
+        if (usuario.getRol() != null) {
+            existente.setRol(usuario.getRol());
+        }
+        if (usuario.getEstado() != null && !usuario.getEstado().isBlank()) {
+            existente.setEstado(usuario.getEstado());
+        }
         String nuevaClave = usuario.getPassword();
         if (nuevaClave != null && !nuevaClave.isBlank() && !nuevaClave.equals(existente.getPassword())) {
             if (nuevaClave.length() < 6) {
@@ -64,12 +66,6 @@ public class UsuarioService {
     }
 
     private void validarUsuario(Usuario usuario, Long idActual) {
-        if (usuario.getNombres() == null || usuario.getNombres().isBlank()) {
-            throw new RuntimeException("Los nombres son obligatorios");
-        }
-        if (usuario.getApellidos() == null || usuario.getApellidos().isBlank()) {
-            throw new RuntimeException("Los apellidos son obligatorios");
-        }
         if (usuario.getCorreo() == null || !usuario.getCorreo().matches("[^@\\s]+@[^@\\s]+\\.[^@\\s]+")) {
             throw new RuntimeException("Ingresa un correo valido que contenga @");
         }
@@ -77,12 +73,11 @@ public class UsuarioService {
         if (duplicado.isPresent() && (idActual == null || !duplicado.get().getIdUsuario().equals(idActual))) {
             throw new RuntimeException("El correo ya esta registrado");
         }
-        if (usuario.getTelefono() != null && !usuario.getTelefono().isBlank()
-                && !usuario.getTelefono().matches("[0-9]{9}")) {
-            throw new RuntimeException("El telefono debe tener 9 digitos");
-        }
         if (usuario.getRol() == null) {
             throw new RuntimeException("Selecciona un rol para el usuario");
+        }
+        if (usuario.getPersona() == null) {
+            throw new RuntimeException("Selecciona una persona para el usuario");
         }
     }
 }

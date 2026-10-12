@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/plantilla :: cabecera('Admin - Formulario Empleado')}"></head>
+<body>
+    <div class="admin-shell" id="paginaAdmin">
+        <div th:insert="~{fragments/admin :: barra-lateral('empleados')}"></div>
+        <div class="admin-principal">
+            <header th:replace="~{fragments/plantilla-admin :: barra-superior}"></header>
+            <main class="admin-contenido container-fluid py-4">
+                <div class="row justify-content-center">
+                    <div class="col-md-10">
+                        <div class="card shadow">
+                            <div class="card-header bg-success text-white">
+                                <h4 class="mb-0"><i class="bi bi-person-workspace"></i>
+                                    <span th:text="${empleado.idEmpleado != null} ? 'Editar Empleado' : 'Nuevo Empleado'">Formulario</span>
+                                </h4>
+                            </div>
+                            <div class="card-body">
+                                <form th:action="${empleado.idEmpleado != null} ? @{/admin/empleados/actualizar/{id}(id=${empleado.idEmpleado})} : @{/admin/empleados/guardar}" method="post">
+
+                                    <h6 class="border-bottom pb-2 mb-3"><i class="bi bi-person"></i> Datos Personales</h6>
+                                    <div class="row">
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Nombres *</label>
+                                            <input type="text" class="form-control" name="nombres" th:value="${persona.nombres}" required maxlength="100">
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Apellido Paterno</label>
+                                            <input type="text" class="form-control" name="apellidoPaterno" th:value="${persona.apellidoPaterno}" maxlength="50">
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Apellido Materno</label>
+                                            <input type="text" class="form-control" name="apellidoMaterno" th:value="${persona.apellidoMaterno}" maxlength="50">
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-3 mb-3">
+                                            <label class="form-label">Tipo Documento</label>
+                                            <select class="form-select" name="idTipoDocumento">
+                                                <option value="">Seleccionar...</option>
+                                                <option th:each="td : ${tiposDocumento}" th:value="${td.idTipoDocumento}" th:text="${td.nombre}"
+                                                    th:selected="${persona.tipoDocumento != null and persona.tipoDocumento.idTipoDocumento == td.idTipoDocumento}"></option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <label class="form-label">Numero Documento</label>
+                                            <input type="text" class="form-control" name="numeroDocumento" th:value="${persona.numeroDocumento}" maxlength="20">
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <label class="form-label">Telefono</label>
+                                            <input type="text" class="form-control" name="telefono" th:value="${persona.telefono}" maxlength="12">
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <label class="form-label">Fecha Nacimiento</label>
+                                            <input type="date" class="form-control" name="fechaNacimiento" th:value="${persona.fechaNacimiento}">
+                                        </div>
+                                    </div>
+
+                                    <h6 class="border-bottom pb-2 mb-3 mt-3"><i class="bi bi-geo-alt"></i> Direccion</h6>
+                                    <div class="row">
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Departamento</label>
+                                            <select class="form-select" id="departamentoEmpleado"
+                                                th:attr="data-actual=${persona.ubigeo != null ? persona.ubigeo.departamento : ''}">
+                                                <option value="">Seleccionar...</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Provincia</label>
+                                            <select class="form-select" id="provinciaEmpleado" disabled
+                                                th:attr="data-actual=${persona.ubigeo != null ? persona.ubigeo.provincia : ''}">
+                                                <option value="">Seleccionar...</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Distrito</label>
+                                            <select class="form-select" name="ubigeo" id="distritoEmpleado" disabled
+                                                th:attr="data-actual=${persona.ubigeo != null ? persona.ubigeo.idUbigeo : ''}">
+                                                <option value="">Seleccionar...</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-3 mb-3">
+                                            <label class="form-label">Codigo Ubigeo</label>
+                                            <input type="text" class="form-control" id="codigoUbigeoEmpleado" inputmode="numeric" maxlength="6"
+                                                th:value="${persona.ubigeo != null ? persona.ubigeo.idUbigeo : ''}"
+                                                placeholder="Ej: 140112">
+                                            <small class="text-muted">Escribe el codigo (6 digitos) o elige distrito</small>
+                                        </div>
+                                        <div class="col-md-5 mb-3">
+                                            <label class="form-label">Direccion</label>
+                                            <input type="text" class="form-control" name="direccion" th:value="${persona.direccion}" maxlength="255">
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Referencia</label>
+                                            <input type="text" class="form-control" name="referencia" th:value="${persona.referencia}" maxlength="255">
+                                        </div>
+                                    </div>
+
+                                    <h6 class="border-bottom pb-2 mb-3 mt-3"><i class="bi bi-envelope"></i> Cuenta de Acceso</h6>
+                                    <div class="row">
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Correo Electronico *</label>
+                                            <input type="email" class="form-control" name="correo" th:value="${usuario.correo}" required maxlength="100"
+                                                pattern="[^@\s]+@[^@\s]+\.[^@\s]+" title="Ingresa un correo valido que contenga @">
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Contrasena * <small th:if="${empleado.idEmpleado != null}" class="text-muted">(vacío = mantener)</small></label>
+                                            <input type="password" class="form-control" name="password" minlength="6"
+                                                th:required="${empleado.idEmpleado == null}" placeholder="Minimo 6 caracteres">
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Rol *</label>
+                                            <select class="form-select" name="rol" required>
+                                                <option value="">Seleccionar rol...</option>
+                                                <option th:each="r : ${roles}" th:if="${r.idRol == 1 or r.idRol == 2}"
+                                                    th:value="${r.idRol}" th:text="${r.nombre}"
+                                                    th:selected="${usuario.rol != null and usuario.rol.idRol == r.idRol}"></option>
+                                            </select>
+                                            <small class="text-muted">Solo Administrador o Trabajador</small>
+                                        </div>
+                                    </div>
+
+                                    <h6 class="border-bottom pb-2 mb-3 mt-3"><i class="bi bi-briefcase"></i> Datos Laborales</h6>
+                                    <div class="row">
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Fecha de Contrato</label>
+                                            <input type="date" class="form-control" name="fechaContrato" th:value="${empleado.fechaContrato}">
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Salario (S/)</label>
+                                            <input type="number" class="form-control" name="salario" step="0.01" min="0" th:value="${empleado.salario}">
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex gap-2 mt-3">
+                                        <button type="submit" class="btn btn-success"><i class="bi bi-save"></i> Guardar</button>
+                                        <a th:href="@{/admin/empleados}" class="btn btn-secondary"><i class="bi bi-arrow-left"></i> Cancelar</a>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+            <footer th:replace="~{fragments/plantilla-admin :: pie-admin}"></footer>
+        </div>
+    </div>
+    <script th:src="@{/js/ubigeo-cascada.js}"></script>
+    <script>document.addEventListener('DOMContentLoaded', function () { initCascadaUbigeo('Empleado'); });</script>
+</body>
+</html>

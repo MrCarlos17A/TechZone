@@ -1,10 +1,15 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const CLAVE_CARRITO = 'techzone-carrito';
     const ENVIO_GRATIS_DESDE = 500;
+
+    function claveCarrito() {
+        const drawer = document.getElementById('drawerCarrito');
+        const usuario = drawer && drawer.dataset.usuario ? drawer.dataset.usuario : '';
+        return 'techzone-carrito-' + usuario;
+    }
 
     function obtenerCarrito() {
         try {
-            const datos = localStorage.getItem(CLAVE_CARRITO);
+            const datos = localStorage.getItem(claveCarrito());
             return datos ? JSON.parse(datos) : [];
         } catch (e) {
             return [];
@@ -12,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function guardarCarrito(carrito) {
-        localStorage.setItem(CLAVE_CARRITO, JSON.stringify(carrito));
+        localStorage.setItem(claveCarrito(), JSON.stringify(carrito));
         actualizarInsignia();
     }
 
@@ -118,7 +123,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function vaciarCarrito() {
-        localStorage.removeItem(CLAVE_CARRITO);
+        localStorage.removeItem(claveCarrito());
         actualizarInsignia();
         renderizarDrawer();
     }
@@ -211,56 +216,24 @@ document.addEventListener('DOMContentLoaded', function () {
             mostrarAlerta('El carrito esta vacio', 'warning');
             return;
         }
-        if (!estaAutenticado()) {
-            abrirLogin();
-            return;
-        }
-
-        const boton = document.getElementById('btnFinalizar');
-        if (boton) {
-            boton.disabled = true;
-            boton.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Procesando...';
-        }
-
-        const tokenMeta = document.querySelector('meta[name="_csrf"]');
-        const headerMeta = document.querySelector('meta[name="_csrf_header"]');
-        const cabeceras = { 'Content-Type': 'application/json' };
-        if (tokenMeta && headerMeta) {
-            cabeceras[headerMeta.content] = tokenMeta.content;
-        }
-
-        const items = carrito.map(item => ({
-            idProducto: parseInt(item.id, 10),
-            cantidad: parseInt(item.cantidad, 10)
-        }));
-
-        fetch('/checkout', {
-            method: 'POST',
-            headers: cabeceras,
-            body: JSON.stringify(items)
-        })
-            .then(res => res.json())
-            .then(data => {
-                if (data.ok) {
-                    localStorage.removeItem(CLAVE_CARRITO);
-                    actualizarInsignia();
-                    renderizarDrawer();
-                    mostrarAlerta(
-                        '<i class="bi bi-check-circle"></i> Pedido <strong>#' + data.idPedido + '</strong> creado por S/ '
-                        + parseFloat(data.total).toFixed(2)
-                        + '<br><a href="/mis-pedidos" class="alert-link">Ver mis pedidos</a>',
-                        'success'
-                    );
+        fetch('/api/mis-datos', { credentials: 'same-origin' })
+            .then(function (r) {
+                if (r.ok) {
+                    return r.json();
+                }
+                throw new Error('no-auth');
+            })
+            .then(function (data) {
+                if (data && data.ok) {
+                    if (typeof window.techZoneAbrirCheckout === 'function') {
+                        window.techZoneAbrirCheckout();
+                    }
                 } else {
-                    mostrarAlerta(data.mensaje || 'No se pudo crear el pedido');
+                    abrirLogin();
                 }
             })
-            .catch(() => mostrarAlerta('Error de conexion. Intentalo de nuevo.'))
-            .finally(() => {
-                if (boton) {
-                    boton.disabled = false;
-                    boton.innerHTML = '<i class="bi bi-bag-check"></i> Finalizar Compra';
-                }
+            .catch(function () {
+                abrirLogin();
             });
     }
 

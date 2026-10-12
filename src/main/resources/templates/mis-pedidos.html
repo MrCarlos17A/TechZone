@@ -21,30 +21,34 @@
                         <tr>
                             <th># Pedido</th>
                             <th>Fecha</th>
-                            <th>Detalle</th>
+                            <th>Productos</th>
                             <th>Estado</th>
                             <th>Total</th>
+                            <th class="text-center">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr th:each="p : ${pedidos}">
-                            <td th:text="${p.id}"></td>
-                            <td th:text="${p.fecha}"></td>
+                        <tr th:each="p : ${pedidos}" style="cursor: pointer;"
+                            th:onclick="'window.location.href=\'' + @{/mis-pedidos/{id}(id=${p.id})} + '\''">
+                            <td th:text="'#' + ${p.id}">#1</td>
+                            <td th:text="${p.fecha}">01/01/2026</td>
                             <td>
-                                <details>
-                                    <summary class="btn btn-sm btn-outline-primary">Ver items</summary>
-                                    <ul class="mt-2 mb-0 ps-3 small" th:unless="${#lists.isEmpty(p.items)}">
-                                        <li th:each="texto : ${p.items}" th:text="${texto}"></li>
-                                    </ul>
-                                    <span th:if="${#lists.isEmpty(p.items)}" class="small text-muted">Sin items</span>
-                                </details>
+                                <span class="text-muted small" th:if="${#lists.isEmpty(p.items)}">Sin items</span>
+                                <span class="small" th:unless="${#lists.isEmpty(p.items)}"
+                                    th:text="${p.items.size() + ' producto(s)'}">2 producto(s)</span>
                             </td>
                             <td>
                                 <span class="badge"
-                                    th:classappend="${p.estado == 'PENDIENTE' ? 'bg-warning' : (p.estado == 'PROCESADO' ? 'bg-info' : (p.estado == 'ENVIADO' ? 'bg-primary' : (p.estado == 'ENTREGADO' ? 'bg-success' : 'bg-danger')))}"
-                                    th:text="${p.estado}"></span>
+                                    th:classappend="${p.estado == 'PENDIENTE' ? 'bg-warning text-dark' : (p.estado == 'PROCESADO' ? 'bg-info' : (p.estado == 'ENVIADO' ? 'bg-primary' : (p.estado == 'ENTREGADO' ? 'bg-success' : 'bg-danger')))}"
+                                    th:text="${p.estado}">PENDIENTE</span>
                             </td>
-                            <td th:text="${p.total}"></td>
+                            <td class="fw-bold" th:text="'S/ ' + ${p.total}">S/ 0.00</td>
+                            <td class="text-center">
+                                <a th:href="@{/mis-pedidos/{id}(id=${p.id})}" class="btn btn-sm btn-outline-primary"
+                                    onclick="event.stopPropagation()">
+                                    <i class="bi bi-eye"></i> Ver detalle
+                                </a>
+                            </td>
                         </tr>
                     </tbody>
                 </table>

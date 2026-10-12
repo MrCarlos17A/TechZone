@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/plantilla :: cabecera('Admin - Pagos')}"></head>
+<body>
+    <div class="admin-shell" id="paginaAdmin">
+        <div th:insert="~{fragments/admin :: barra-lateral('pagos')}"></div>
+        <div class="admin-principal">
+            <header th:replace="~{fragments/plantilla-admin :: barra-superior}"></header>
+            <main class="admin-contenido container-fluid py-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1><i class="bi bi-credit-card"></i> Pagos</h1>
+                    <a th:href="@{/admin/pagos/nuevo}" class="btn btn-success"><i class="bi bi-plus-circle"></i> Nuevo Pago</a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-dark">
+                            <tr><th>ID</th><th>Venta</th><th>Medio Pago</th><th>Monto</th><th>Fecha</th><th>Codigo Operacion</th><th>Estado</th><th>Acciones</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="p : ${pagos}">
+                                <td th:text="${p.idPago}">1</td>
+                                <td th:text="${p.venta != null ? 'Venta #' + p.venta.idVenta : '-'}">Venta</td>
+                                <td th:text="${p.medioPago != null ? p.medioPago.nombre : '-'}">Medio</td>
+                                <td th:text="'S/ ' + ${#numbers.formatDecimal(p.montoPago, 1, 2)}">S/ 0.00</td>
+                                <td th:text="${p.fechaPago != null ? #temporals.format(p.fechaPago, 'dd/MM/yyyy HH:mm') : '-'}">Fecha</td>
+                                <td th:text="${p.codigoOperacion}">Codigo</td>
+                                <td><span class="badge" th:classappend="${p.estadoPago == 'CONFIRMADO' ? 'bg-success' : (p.estadoPago == 'PENDIENTE' ? 'bg-warning text-dark' : 'bg-danger')}" th:text="${p.estadoPago}">Estado</span></td>
+                                <td>
+                                    <a th:href="@{/admin/pagos/{id}(id=${p.idPago})}" class="btn btn-sm btn-info"><i class="bi bi-eye"></i></a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="text-center py-4" th:if="${#lists.isEmpty(pagos)}"><p class="text-muted">No hay pagos registrados</p></div>
+            </main>
+            <footer th:replace="~{fragments/plantilla-admin :: pie-admin}"></footer>
+        </div>
+    </div>
+</body>
+</html>

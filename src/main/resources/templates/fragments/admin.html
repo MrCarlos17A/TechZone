@@ -15,36 +15,91 @@
                 th:classappend="${activo == 'dashboard'} ? ' active'" title="Dashboard">
                 <i class="bi bi-speedometer2"></i> <span class="texto-barra">Dashboard</span>
             </a>
+
             <div class="categoria-barra">Catalogo</div>
             <a th:href="@{/admin/productos}" class="list-group-item list-group-item-action"
-                th:classappend="${activo == 'productos'} ? ' active'" title="Gestor de Productos">
-                <i class="bi bi-box-seam"></i> <span class="texto-barra">Gestor de Productos</span>
+                th:classappend="${activo == 'productos'} ? ' active'" title="Productos">
+                <i class="bi bi-box-seam"></i> <span class="texto-barra">Productos</span>
             </a>
             <a th:href="@{/admin/marcas}" class="list-group-item list-group-item-action"
-                th:classappend="${activo == 'marcas'} ? ' active'" title="Gestor de Marcas">
-                <i class="bi bi-building"></i> <span class="texto-barra">Gestor de Marcas</span>
+                th:classappend="${activo == 'marcas'} ? ' active'" title="Marcas">
+                <i class="bi bi-building"></i> <span class="texto-barra">Marcas</span>
             </a>
             <a th:href="@{/admin/categorias}" class="list-group-item list-group-item-action"
-                th:classappend="${activo == 'categorias'} ? ' active'" title="Gestor de Categorias">
-                <i class="bi bi-tags"></i> <span class="texto-barra">Gestor de Categorias</span>
+                th:classappend="${activo == 'categorias'} ? ' active'" title="Categorias">
+                <i class="bi bi-tags"></i> <span class="texto-barra">Categorias</span>
             </a>
-            <div class="categoria-barra">Ventas</div>
-            <a th:href="@{/admin/pedidos}" class="list-group-item list-group-item-action"
-                th:classappend="${activo == 'pedidos'} ? ' active'" title="Gestor de Pedidos">
-                <i class="bi bi-receipt"></i> <span class="texto-barra">Gestor de Pedidos</span>
+            <a th:href="@{/admin/imagenes-producto}" class="list-group-item list-group-item-action"
+                th:classappend="${activo == 'imagenes'} ? ' active'" title="Imagenes de Producto">
+                <i class="bi bi-images"></i> <span class="texto-barra">Imagenes</span>
             </a>
-            <a th:href="@{/admin/detalles-pedido}" class="list-group-item list-group-item-action"
-                th:classappend="${activo == 'detalles'} ? ' active'" title="Detalles de Pedido">
-                <i class="bi bi-list-check"></i> <span class="texto-barra">Detalles de Pedido</span>
+            <a th:href="@{/admin/productos-proveedor}" class="list-group-item list-group-item-action"
+                th:classappend="${activo == 'prod-proveedor'} ? ' active'" title="Producto-Proveedor">
+                <i class="bi bi-boxes"></i> <span class="texto-barra">Prod. Proveedor</span>
             </a>
-            <div class="categoria-barra">Sistema</div>
+
+            <div class="categoria-barra">Personas</div>
+            <a th:href="@{/admin/personas}" class="list-group-item list-group-item-action"
+                th:classappend="${activo == 'personas'} ? ' active'" title="Personas">
+                <i class="bi bi-person"></i> <span class="texto-barra">Personas</span>
+            </a>
+            <a th:href="@{/admin/clientes}" class="list-group-item list-group-item-action"
+                th:classappend="${activo == 'clientes'} ? ' active'" title="Clientes">
+                <i class="bi bi-person-badge"></i> <span class="texto-barra">Clientes</span>
+            </a>
+            <a th:href="@{/admin/empleados}" class="list-group-item list-group-item-action"
+                th:classappend="${activo == 'empleados'} ? ' active'" title="Empleados">
+                <i class="bi bi-person-workspace"></i> <span class="texto-barra">Empleados</span>
+            </a>
+            <a th:href="@{/admin/proveedores}" class="list-group-item list-group-item-action"
+                th:classappend="${activo == 'proveedores'} ? ' active'" title="Proveedores">
+                <i class="bi bi-truck"></i> <span class="texto-barra">Proveedores</span>
+            </a>
             <a th:href="@{/admin/usuarios}" class="list-group-item list-group-item-action"
-                th:classappend="${activo == 'usuarios'} ? ' active'" title="Gestor de Usuarios">
-                <i class="bi bi-people"></i> <span class="texto-barra">Gestor de Usuarios</span>
+                th:classappend="${activo == 'usuarios'} ? ' active'" title="Usuarios">
+                <i class="bi bi-people"></i> <span class="texto-barra">Usuarios</span>
             </a>
+
+            <div class="categoria-barra">Ventas</div>
+            <a th:href="@{/admin/ventas}" class="list-group-item list-group-item-action"
+                th:classappend="${activo == 'ventas'} ? ' active'" title="Ventas">
+                <i class="bi bi-receipt"></i> <span class="texto-barra">Ventas</span>
+            </a>
+            <a th:href="@{/admin/detalles-venta}" class="list-group-item list-group-item-action"
+                th:classappend="${activo == 'detalles-venta'} ? ' active'" title="Detalles de Venta">
+                <i class="bi bi-list-check"></i> <span class="texto-barra">Det. Venta</span>
+            </a>
+            <a th:href="@{/admin/pagos}" class="list-group-item list-group-item-action"
+                th:classappend="${activo == 'pagos'} ? ' active'" title="Pagos">
+                <i class="bi bi-credit-card"></i> <span class="texto-barra">Pagos</span>
+            </a>
+            <a th:href="@{/admin/medios-pago}" class="list-group-item list-group-item-action"
+                th:classappend="${activo == 'medios-pago'} ? ' active'" title="Medios de Pago">
+                <i class="bi bi-wallet2"></i> <span class="texto-barra">Medios Pago</span>
+            </a>
+
+            <div class="categoria-barra">Carrito</div>
+            <a th:href="@{/admin/carritos}" class="list-group-item list-group-item-action"
+                th:classappend="${activo == 'carritos'} ? ' active'" title="Carritos">
+                <i class="bi bi-cart3"></i> <span class="texto-barra">Carritos</span>
+            </a>
+            <a th:href="@{/admin/detalles-carrito}" class="list-group-item list-group-item-action"
+                th:classappend="${activo == 'detalles-carrito'} ? ' active'" title="Detalles de Carrito">
+                <i class="bi bi-cart-dash"></i> <span class="texto-barra">Det. Carrito</span>
+            </a>
+
+            <div class="categoria-barra">Configuracion</div>
             <a th:href="@{/admin/roles}" class="list-group-item list-group-item-action"
-                th:classappend="${activo == 'roles'} ? ' active'" title="Gestor de Roles">
-                <i class="bi bi-shield-lock"></i> <span class="texto-barra">Gestor de Roles</span>
+                th:classappend="${activo == 'roles'} ? ' active'" title="Roles">
+                <i class="bi bi-shield-lock"></i> <span class="texto-barra">Roles</span>
+            </a>
+            <a th:href="@{/admin/tipos-documento}" class="list-group-item list-group-item-action"
+                th:classappend="${activo == 'tipos-doc'} ? ' active'" title="Tipos de Documento">
+                <i class="bi bi-file-earmark-text"></i> <span class="texto-barra">Tipos Doc.</span>
+            </a>
+            <a th:href="@{/admin/ubigeos}" class="list-group-item list-group-item-action"
+                th:classappend="${activo == 'ubigeos'} ? ' active'" title="Ubigeos">
+                <i class="bi bi-geo-alt"></i> <span class="texto-barra">Ubigeos</span>
             </a>
         </div>
         <hr class="separador-barra mt-auto">
