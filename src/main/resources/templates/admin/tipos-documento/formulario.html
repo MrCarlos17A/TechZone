@@ -19,7 +19,7 @@
                                 <form th:action="${tipoDocumento.idTipoDocumento != null} ? @{/admin/tipos-documento/actualizar/{id}(id=${tipoDocumento.idTipoDocumento})} : @{/admin/tipos-documento/guardar}" method="post">
                                     <div class="mb-3">
                                         <label class="form-label">Nombre</label>
-                                        <input type="text" class="form-control" name="nombre" th:value="${tipoDocumento.nombre}" required>
+                                        <input type="text" class="form-control" name="nombre" th:value="${tipoDocumento.nombre}" maxlength="50" required>
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label">Estado</label>

@@ -18,8 +18,20 @@ public class ClienteController {
     private final PersonaService personaService;
 
     @GetMapping
-    public String ListarClientes(Model model) {
-        model.addAttribute("clientes", clienteService.ListarClientes());
+    public String ListarClientes(@RequestParam(value = "q", required = false) String q, Model model) {
+        java.util.List<Cliente> clientes = clienteService.ListarClientes();
+        if (q != null && !q.isBlank()) {
+            String t = q.trim().toLowerCase();
+            clientes = clientes.stream().filter(c -> {
+                if (c.getPersona() == null) return false;
+                return (c.getPersona().getNombres() != null && c.getPersona().getNombres().toLowerCase().contains(t))
+                        || (c.getPersona().getApellidoPaterno() != null && c.getPersona().getApellidoPaterno().toLowerCase().contains(t))
+                        || (c.getPersona().getApellidoMaterno() != null && c.getPersona().getApellidoMaterno().toLowerCase().contains(t))
+                        || (c.getPersona().getNumeroDocumento() != null && c.getPersona().getNumeroDocumento().contains(t));
+            }).collect(java.util.stream.Collectors.toList());
+        }
+        model.addAttribute("clientes", clientes);
+        model.addAttribute("q", q);
         return "admin/clientes/listar";
     }
 

@@ -106,11 +106,21 @@ public class ProductoImagenController {
             throw new RuntimeException("El archivo no tiene nombre valido");
         }
         String nombreLimpio = Paths.get(nombreOriginal).getFileName().toString();
-        Path destino = UPLOADS_DIR.resolve(nombreLimpio);
-        if (!Files.exists(destino)) {
-            Files.createDirectories(UPLOADS_DIR);
-            Files.copy(archivo.getInputStream(), destino, StandardCopyOption.REPLACE_EXISTING);
+        String extension = nombreLimpio.contains(".")
+                ? nombreLimpio.substring(nombreLimpio.lastIndexOf('.') + 1).toLowerCase() : "";
+        if (!java.util.Set.of("jpg", "jpeg", "png", "gif", "webp").contains(extension)) {
+            throw new RuntimeException("Formato no valido. Usa JPG, PNG, GIF o WEBP");
         }
-        return "/uploads/" + nombreLimpio;
+        String contentType = archivo.getContentType();
+        if (contentType == null || !contentType.startsWith("image/")) {
+            throw new RuntimeException("El archivo debe ser una imagen");
+        }
+        String nombreUnico = System.currentTimeMillis() + "_" + nombreLimpio.replaceAll("[^a-zA-Z0-9._-]", "_");
+        if (!Files.exists(UPLOADS_DIR)) {
+            Files.createDirectories(UPLOADS_DIR);
+        }
+        Path destino = UPLOADS_DIR.resolve(nombreUnico);
+        Files.copy(archivo.getInputStream(), destino, StandardCopyOption.REPLACE_EXISTING);
+        return "/uploads/" + nombreUnico;
     }
 }

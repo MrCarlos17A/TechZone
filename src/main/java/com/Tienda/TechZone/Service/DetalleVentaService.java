@@ -13,13 +13,13 @@ public class DetalleVentaService {
 
     private final DetalleVentaRepository detalleVentaRepository;
 
-    public List<DetalleVenta> ListarPorVenta(Integer idVenta) {
+    public List<DetalleVenta> ListarPorVenta(Long idVenta) {
         return detalleVentaRepository.findAll().stream()
                 .filter(dv -> dv.getVenta() != null && dv.getVenta().getIdVenta().equals(idVenta))
                 .toList();
     }
 
-    public DetalleVenta ObtenerDetallePorId(Integer id) {
+    public DetalleVenta ObtenerDetallePorId(Long id) {
         return detalleVentaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Detalle no encontrado con id: " + id));
     }

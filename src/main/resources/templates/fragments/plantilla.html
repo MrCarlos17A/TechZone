@@ -9,12 +9,13 @@
     <title th:text="${titulo}">TechZone</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-    <link th:href="@{/css/global.css}" rel="stylesheet">
+    <link th:href="@{/css/global.css?v=9}" rel="stylesheet">
 </head>
 
 <body>
-    <header th:fragment="barra-navegacion(seccion)">
-        <nav class="navbar navbar-expand-lg navbar-dark barra-navegacion-tienda sticky-top">
+    <div th:fragment="barra-navegacion(seccion)">
+        <header class="position-sticky top-0" style="z-index: 1030;">
+            <nav class="navbar navbar-expand-lg navbar-dark barra-navegacion-tienda">
             <div class="container">
                 <a class="navbar-brand fw-bold d-flex align-items-center gap-2" th:href="@{/}">
                     <img th:src="@{/Assets/IMG/Logo/TechZone.png}" alt="TechZone" style="height: 36px;">
@@ -98,6 +99,7 @@
                 </div>
             </div>
         </nav>
+        </header>
 
         <!-- Modal Iniciar Sesion -->
         <div class="modal fade" id="modalLogin" tabindex="-1" aria-labelledby="tituloModalLogin" aria-hidden="true"
@@ -251,7 +253,7 @@
                 });
             })();
         </script>
-    </header>
+    </div>
 
     <footer th:fragment="pie">
         <div class="text-light py-4 mt-5 pie-tienda">
@@ -259,54 +261,59 @@
                 <div class="row">
                     <div class="col-md-4 mb-3">
                         <h5 class="d-flex align-items-center gap-2">
-                            <img th:src="@{/Assets/IMG/Logo/TechZone.png}" alt="TechZone" style="height: 30px;">
-                            TechZone
+                            <img th:src="${configSitio != null ? configSitio.logoUrl : '/Assets/IMG/Logo/TechZone.png'}"
+                                alt="logo" style="height: 30px;" onerror="this.style.display='none'">
+                            <span th:text="${configSitio != null ? configSitio.nombreSitio : 'TechZone'}">TechZone</span>
                         </h5>
-                        <p class="small">Tu tienda de tecnologia de confianza.</p>
+                        <p class="small" th:text="${configSitio != null ? configSitio.tagline : 'Tu tienda de tecnologia de confianza.'}">Tu tienda de tecnologia de confianza.</p>
                         <div class="d-flex gap-3">
-                            <a href="https://www.facebook.com" target="_blank" title="Facebook" class="text-light fs-5"><i class="bi bi-facebook"></i></a>
-                            <a href="https://www.instagram.com" target="_blank" title="Instagram" class="text-light fs-5"><i class="bi bi-instagram"></i></a>
+                            <a th:href="${configSitio != null ? configSitio.facebookUrl : 'https://www.facebook.com'}" target="_blank" title="Facebook" class="text-light fs-5"><i class="bi bi-facebook"></i></a>
+                            <a th:href="${configSitio != null ? configSitio.instagramUrl : 'https://www.instagram.com'}" target="_blank" title="Instagram" class="text-light fs-5"><i class="bi bi-instagram"></i></a>
                         </div>
                     </div>
                     <div class="col-md-4 mb-3">
                         <h5>Contacto</h5>
-                        <div class="card tarjeta-contacto mb-2 shadow-sm">
+                        <div class="card tarjeta-contacto mb-2">
                             <div class="card-body p-2 d-flex align-items-center gap-2">
                                 <div class="contacto-icon-sm">
                                     <i class="bi bi-envelope-at"></i>
                                 </div>
                                 <div class="small">
-                                    <a href="mailto:techzone@outlook.com" class="text-decoration-none fw-bold">techzone@outlook.com</a><br>
+                                    <a th:href="'mailto:' + (${configSitio != null ? configSitio.email : 'techzone@outlook.com'})"
+                                        class="text-decoration-none fw-bold"
+                                        th:text="${configSitio != null ? configSitio.email : 'techzone@outlook.com'}">techzone@outlook.com</a><br>
                                     <span class="text-muted">Estamos para ayudarte</span>
                                 </div>
                             </div>
                         </div>
-                        <div class="card tarjeta-contacto mb-2 shadow-sm">
+                        <div class="card tarjeta-contacto mb-2">
                             <div class="card-body p-2 d-flex align-items-center gap-2">
                                 <div class="contacto-icon-sm">
                                     <i class="bi bi-telephone"></i>
                                 </div>
                                 <div class="small">
-                                    <strong>+51 967 662 103</strong><br>
-                                    <span class="text-muted">Lun - Dom, 09:00 a.m. - 21:00 p.m.</span>
+                                    <strong th:text="${configSitio != null ? configSitio.telefono : '+51 967 662 103'}">+51 967 662 103</strong><br>
+                                    <span class="text-muted" th:text="${configSitio != null ? configSitio.horario : 'Lun - Dom, 09:00 a.m. - 21:00 p.m.'}">Lun - Dom, 09:00 a.m. - 21:00 p.m.</span>
                                 </div>
                             </div>
                         </div>
-                        <div class="card tarjeta-contacto mb-2 shadow-sm">
+                        <div class="card tarjeta-contacto mb-2">
                             <div class="card-body p-2 d-flex align-items-center gap-2">
                                 <div class="contacto-icon-sm">
                                     <i class="bi bi-whatsapp"></i>
                                 </div>
                                 <div class="small">
-                                    <a href="https://wa.me/51967662103" target="_blank" class="text-decoration-none fw-bold">+51 967 662 103</a><br>
-                                    <span class="text-muted">Atencion 24/7</span>
+                                    <a th:href="'https://wa.me/' + ${#strings.replace(configSitio != null ? configSitio.whatsapp : '51967662103', ' ', '')}"
+                                        target="_blank" class="text-decoration-none fw-bold"
+                                        th:text="${configSitio != null ? configSitio.whatsapp : '+51 967 662 103'}">+51 967 662 103</a><br>
+                                    <span class="text-muted" th:text="${configSitio != null ? configSitio.whatsappTexto : 'Atencion 24/7'}">Atencion 24/7</span>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-4 mb-3">
                         <h5>Libro de Reclamaciones</h5>
-                        <a href="#" title="Libro de Reclamaciones">
+                        <a th:href="${configSitio != null ? configSitio.libroReclamacionesUrl : '#'}" title="Libro de Reclamaciones">
                             <img th:src="@{/Assets/IMG/Footer/Libro_de_Reclamaciones.png}" alt="Libro de Reclamaciones"
                                 class="img-fluid rounded" style="max-height: 70px;">
                         </a>
@@ -315,8 +322,8 @@
                     </div>
                 </div>
                 <hr class="border-secondary">
-                <div class="text-center">
-                    <p class="small mb-0">&copy; 2026 TECHZONE. Todos los derechos reservados.</p>
+                <div class="text-center pie-copy">
+                    <p class="small mb-0">&copy; 2026 <span th:text="${configSitio != null ? configSitio.copyright : 'TECHZONE. Todos los derechos reservados.'}">TECHZONE. Todos los derechos reservados.</span></p>
                 </div>
             </div>
         </div>
@@ -334,12 +341,6 @@
             </div>
             <div class="offcanvas-body d-flex flex-column">
                 <div id="alertaDrawer"></div>
-                <div id="bloqueEnvio" class="mb-3">
-                    <p id="textoEnvio" class="small mb-1">Envio gratis desde S/ 500.00</p>
-                    <div class="progress" style="height: 8px;">
-                        <div id="barraEnvio" class="progress-bar bg-success" role="progressbar" style="width: 0%;"></div>
-                    </div>
-                </div>
                 <div id="vacioDrawer" class="text-center py-5">
                     <i class="bi bi-cart-x display-4 text-muted"></i>
                     <p class="text-muted mt-2">Tu carrito esta vacio</p>
@@ -487,13 +488,14 @@
                         <div id="pasoCheckout3" style="display:none;">
                             <h6 class="mb-3"><i class="bi bi-credit-card"></i> Metodo de Pago</h6>
                             <div class="mb-3">
-                                <div class="form-check" th:each="mp, iter : ${mediosPago}">
+                                <div class="form-check" th:each="mp, iter : ${mediosPago}"
+                                    th:if="${!#strings.equalsIgnoreCase(mp.nombre, 'Plin')}">
                                     <input class="form-check-input" type="radio" name="medioPagoCheckout"
                                         th:id="${'mp' + mp.idMedioPago}" th:value="${mp.idMedioPago}"
                                         th:checked="${iter.index == 0}"
-                                        th:attr="data-nombre=${mp.nombre}">
+                                        th:attr="data-nombre=${#strings.equalsIgnoreCase(mp.nombre, 'Yape') ? 'Yape/Plin' : mp.nombre}">
                                     <label class="form-check-label" th:for="${'mp' + mp.idMedioPago}"
-                                        th:text="${mp.nombre}">Efectivo</label>
+                                        th:text="${#strings.equalsIgnoreCase(mp.nombre, 'Yape') ? 'Yape/Plin' : mp.nombre}">Efectivo</label>
                                 </div>
                             </div>
 
@@ -506,20 +508,20 @@
                             <div id="grupoYapePlin" style="display:none;">
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
-                                        <label class="form-label" id="labelNumeroYape">Numero de Yape (9 digitos) <span
+                                        <label class="form-label" id="labelNumeroYape">Numero de Yape/Plin (9 digitos) <span
                                                 class="text-danger">*</span></label>
                                         <input type="tel" class="form-control" id="celularPago" maxlength="9"
-                                            placeholder="Ej: 987654321">
+                                            inputmode="numeric" placeholder="Ej: 987654321">
                                     </div>
                                     <div class="col-md-6 mb-3">
-                                        <label class="form-label" id="labelCodConfirmacion">Codigo de confirmacion (12 caracteres) <span
+                                        <label class="form-label" id="labelCodConfirmacion">Codigo de confirmacion (6 digitos) <span
                                                 class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" id="codOpPago" maxlength="12"
-                                            placeholder="Ej: ABC123456789">
+                                        <input type="text" class="form-control" id="codOpPago" maxlength="6"
+                                            inputmode="numeric" placeholder="Ej: 123456">
                                     </div>
                                 </div>
-                                <div class="alert alert-info">
-                                    <i class="bi bi-info-circle"></i> Abre tu app de Yape o Plin, copia el numero de telefono y el codigo de confirmacion de la operacion.
+                                <div class="alert alert-info mb-0">
+                                    <i class="bi bi-info-circle"></i> Abre tu app de Yape o Plin, copia el numero de telefono y el codigo de 6 digitos de la operacion.
                                 </div>
                             </div>
 

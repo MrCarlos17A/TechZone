@@ -24,8 +24,20 @@ public class EmpleadoController {
     private final UsuarioService usuarioService;
 
     @GetMapping
-    public String ListarEmpleados(Model model) {
-        model.addAttribute("empleados", empleadoService.ListarEmpleados());
+    public String ListarEmpleados(@RequestParam(value = "q", required = false) String q, Model model) {
+        java.util.List<Empleado> empleados = empleadoService.ListarEmpleados();
+        if (q != null && !q.isBlank()) {
+            String t = q.trim().toLowerCase();
+            empleados = empleados.stream().filter(e -> {
+                if (e.getPersona() == null) return false;
+                return (e.getPersona().getNombres() != null && e.getPersona().getNombres().toLowerCase().contains(t))
+                        || (e.getPersona().getApellidoPaterno() != null && e.getPersona().getApellidoPaterno().toLowerCase().contains(t))
+                        || (e.getPersona().getApellidoMaterno() != null && e.getPersona().getApellidoMaterno().toLowerCase().contains(t))
+                        || (e.getPersona().getNumeroDocumento() != null && e.getPersona().getNumeroDocumento().contains(t));
+            }).collect(java.util.stream.Collectors.toList());
+        }
+        model.addAttribute("empleados", empleados);
+        model.addAttribute("q", q);
         return "admin/empleados/listar";
     }
 
@@ -44,16 +56,16 @@ public class EmpleadoController {
     public String CrearEmpleado(@RequestParam(required = false) String nombres,
             @RequestParam(required = false) String apellidoPaterno,
             @RequestParam(required = false) String apellidoMaterno,
-            @RequestParam(required = false) Integer idTipoDocumento,
+            @RequestParam(required = false) Long idTipoDocumento,
             @RequestParam(required = false) String numeroDocumento,
             @RequestParam(required = false) String telefono,
             @RequestParam(required = false) String fechaNacimiento,
             @RequestParam(required = false) String direccion,
             @RequestParam(required = false) String referencia,
-            @RequestParam(required = false) Integer ubigeo,
+            @RequestParam(required = false) Long ubigeo,
             @RequestParam String correo,
             @RequestParam String password,
-            @RequestParam Integer rol,
+            @RequestParam Long rol,
             @RequestParam(required = false) String fechaContrato,
             @RequestParam(required = false) BigDecimal salario,
             RedirectAttributes flash) {
@@ -95,16 +107,16 @@ public class EmpleadoController {
             @RequestParam(required = false) String nombres,
             @RequestParam(required = false) String apellidoPaterno,
             @RequestParam(required = false) String apellidoMaterno,
-            @RequestParam(required = false) Integer idTipoDocumento,
+            @RequestParam(required = false) Long idTipoDocumento,
             @RequestParam(required = false) String numeroDocumento,
             @RequestParam(required = false) String telefono,
             @RequestParam(required = false) String fechaNacimiento,
             @RequestParam(required = false) String direccion,
             @RequestParam(required = false) String referencia,
-            @RequestParam(required = false) Integer ubigeo,
+            @RequestParam(required = false) Long ubigeo,
             @RequestParam(required = false) String correo,
             @RequestParam(required = false) String password,
-            @RequestParam(required = false) Integer rol,
+            @RequestParam(required = false) Long rol,
             @RequestParam(required = false) String fechaContrato,
             @RequestParam(required = false) BigDecimal salario,
             RedirectAttributes flash) {

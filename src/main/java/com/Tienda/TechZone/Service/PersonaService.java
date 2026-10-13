@@ -65,5 +65,44 @@ public class PersonaService {
         if (persona.getNombres() == null || persona.getNombres().isBlank()) {
             throw new RuntimeException("Los nombres son obligatorios");
         }
+        if (persona.getNombres().trim().length() > 100) {
+            throw new RuntimeException("Los nombres no pueden superar 100 caracteres");
+        }
+        if (persona.getApellidoPaterno() == null || persona.getApellidoPaterno().isBlank()) {
+            throw new RuntimeException("El apellido paterno es obligatorio");
+        }
+        if (persona.getApellidoPaterno().trim().length() > 50) {
+            throw new RuntimeException("El apellido paterno no puede superar 50 caracteres");
+        }
+        if (persona.getApellidoMaterno() != null && persona.getApellidoMaterno().trim().length() > 50) {
+            throw new RuntimeException("El apellido materno no puede superar 50 caracteres");
+        }
+        if (persona.getNumeroDocumento() != null && !persona.getNumeroDocumento().isBlank()) {
+            String doc = persona.getNumeroDocumento().trim();
+            if (!doc.matches("\\d{8,15}")) {
+                throw new RuntimeException("El numero de documento debe contener solo digitos (8 a 15)");
+            }
+            persona.setNumeroDocumento(doc);
+        }
+        if (persona.getTelefono() != null && !persona.getTelefono().isBlank()) {
+            String tel = persona.getTelefono().trim();
+            if (!tel.matches("[0-9]{7,15}")) {
+                throw new RuntimeException("El telefono debe contener solo digitos (7 a 15)");
+            }
+            persona.setTelefono(tel);
+        }
+        if (persona.getFechaNacimiento() != null
+                && persona.getFechaNacimiento().isAfter(java.time.LocalDate.now())) {
+            throw new RuntimeException("La fecha de nacimiento no puede ser futura");
+        }
+        if (persona.getNombres() != null) {
+            persona.setNombres(persona.getNombres().trim());
+        }
+        if (persona.getApellidoPaterno() != null) {
+            persona.setApellidoPaterno(persona.getApellidoPaterno().trim());
+        }
+        if (persona.getApellidoMaterno() != null) {
+            persona.setApellidoMaterno(persona.getApellidoMaterno().trim());
+        }
     }
 }

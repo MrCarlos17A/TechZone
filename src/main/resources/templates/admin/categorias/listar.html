@@ -18,15 +18,39 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1><i class="bi bi-tags"></i> Categorias</h1>
+            <div>
+                <h1><i class="bi bi-tags"></i> Categorias</h1>
+                <p class="text-muted mb-0 mt-1" style="font-size:0.88rem;">
+                    <span class="filtro-contador-resultados"><strong th:text="${#lists.size(categorias)}">0</strong> categoria(s)</span>
+                </p>
+            </div>
             <a th:href="@{/admin/categorias/nueva}" class="btn btn-success">
                 <i class="bi bi-plus-circle"></i> Nueva Categoria
             </a>
         </div>
 
+        <!-- Barra de filtro -->
+        <div class="filtro-admin-barra">
+            <form th:action="@{/admin/categorias}" method="get">
+                <div class="row g-2 align-items-end">
+                    <div class="col-md-5">
+                        <label class="form-label filtro-label-admin">Buscar categoria</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-search"></i></span>
+                            <input type="text" class="form-control" name="q" th:value="${q}" placeholder="Nombre de la categoria...">
+                        </div>
+                    </div>
+                    <div class="col-md-3 d-flex gap-2">
+                        <button type="submit" class="btn btn-buscar flex-fill"><i class="bi bi-funnel"></i> Filtrar</button>
+                        <a th:href="@{/admin/categorias}" class="btn btn-limpiar" title="Limpiar"><i class="bi bi-x-lg"></i></a>
+                    </div>
+                </div>
+            </form>
+        </div>
+
         <div class="table-responsive">
             <table class="table table-striped table-hover">
-                <thead class="table-dark">
+                <thead>
                     <tr>
                         <th>ID</th>
                         <th>Nombre</th>
@@ -58,8 +82,13 @@
             </table>
         </div>
 
-        <div class="text-center py-4" th:if="${#lists.isEmpty(categorias)}">
-            <p class="text-muted">No hay categorias registradas</p>
+        <div class="estado-vacio-admin" th:if="${#lists.isEmpty(categorias)}">
+            <i class="bi bi-tags"></i>
+            <h5>No se encontraron categorias</h5>
+            <p th:text="${q != null and q != ''} ? 'Ninguna categoria coincide con la busqueda.' : 'No hay categorias registradas.'">No hay categorias</p>
+            <a th:if="${q != null and q != ''}" th:href="@{/admin/categorias}" class="btn btn-outline-primary btn-sm mt-2">
+                <i class="bi bi-arrow-counterclockwise"></i> Limpiar filtro
+            </a>
         </div>
             </main>
             <footer th:replace="~{fragments/plantilla-admin :: pie-admin}"></footer>

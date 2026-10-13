@@ -84,8 +84,8 @@
             if (tipo === 'yape' || tipo === 'plin') {
                 const cel = $('celularPago').value.trim();
                 const cod = $('codOpPago').value.trim();
-                if (!/^9\d{8}$/.test(cel)) { alerta('El numero de ' + (tipo === 'yape' ? 'Yape' : 'Plin') + ' debe tener 9 digitos'); return false; }
-                if (!/^[A-Za-z0-9]{12}$/.test(cod)) { alerta('El codigo de confirmacion debe tener 12 caracteres'); return false; }
+                if (!/^9\d{8}$/.test(cel)) { alerta('El numero de Yape/Plin debe tener 9 digitos (empieza con 9)'); return false; }
+                if (!/^\d{6}$/.test(cod)) { alerta('El codigo de confirmacion debe tener 6 digitos numericos'); return false; }
             }
             if (tipo === 'tarjeta') {
                 const num = $('numTarjeta').value.replace(/\s/g, '');
@@ -145,10 +145,10 @@
             const lblCod = $('labelCodConfirmacion');
             const inpCel = $('celularPago');
             const inpCod = $('codOpPago');
-            if (lblYape) lblYape.innerHTML = 'Numero de ' + (tipo === 'yape' ? 'Yape' : 'Plin') + ' (9 digitos) <span class="text-danger">*</span>';
-            if (lblCod) lblCod.innerHTML = 'Codigo de confirmacion (12 caracteres) <span class="text-danger">*</span>';
+            if (lblYape) lblYape.innerHTML = 'Numero de Yape/Plin (9 digitos) <span class="text-danger">*</span>';
+            if (lblCod) lblCod.innerHTML = 'Codigo de confirmacion (6 digitos) <span class="text-danger">*</span>';
             if (inpCel) inpCel.placeholder = 'Ej: 987654321';
-            if (inpCod) inpCod.placeholder = 'Ej: ABC123456789';
+            if (inpCod) inpCod.placeholder = 'Ej: 123456';
         }
     }
 
@@ -528,6 +528,15 @@
 
         document.querySelectorAll('input[name="medioPagoCheckout"]').forEach(radio => {
             radio.addEventListener('change', actualizarCamposPago);
+        });
+
+        [['celularPago', 9], ['codOpPago', 6]].forEach(function (par) {
+            var inp = $(par[0]);
+            if (inp) {
+                inp.addEventListener('input', function () {
+                    this.value = this.value.replace(/\D/g, '').slice(0, par[1]);
+                });
+            }
         });
     });
 })();

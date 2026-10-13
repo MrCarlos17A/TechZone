@@ -36,7 +36,7 @@ public class Persona {
     @Column(length = 20)
     private String numeroDocumento;
 
-    @Column(length = 12)
+    @Column(length = 15)
     private String telefono;
 
     @Column(length = 255)

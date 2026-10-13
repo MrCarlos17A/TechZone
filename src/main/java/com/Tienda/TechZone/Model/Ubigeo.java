@@ -13,7 +13,7 @@ public class Ubigeo {
 
     @Id
     @Column(name = "id_ubigeo", nullable = false)
-    private Integer idUbigeo;
+    private Long idUbigeo;
 
     @Column(length = 50)
     private String departamento;

@@ -52,7 +52,7 @@ public class ProductoProveedorController {
     }
 
     @GetMapping("/eliminar/{idProducto}/{idProveedor}")
-    public String EliminarRelacion(@PathVariable Long idProducto, @PathVariable Integer idProveedor,
+    public String EliminarRelacion(@PathVariable Long idProducto, @PathVariable Long idProveedor,
             RedirectAttributes flash) {
         try {
             productoProveedorService.EliminarRelacion(idProducto, idProveedor);

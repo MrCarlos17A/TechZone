@@ -13,7 +13,7 @@ public class Marca {
 
     @Id
     @Column(name = "id_marca", nullable = false)
-    private Integer idMarca;
+    private Long idMarca;
 
     @Column(length = 20)
     private String nombre;

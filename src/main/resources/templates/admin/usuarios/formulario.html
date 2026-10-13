@@ -36,14 +36,14 @@
                             <div class="mb-3">
                                 <label for="correo" class="form-label">Correo electronico</label>
                                 <input type="email" class="form-control" id="correo" name="correo"
-                                    th:value="${usuario.correo}" required
+                                    th:value="${usuario.correo}" required maxlength="100"
                                     pattern="[^@\s]+@[^@\s]+\.[^@\s]+"
                                     title="Ingresa un correo valido que contenga @">
                             </div>
                             <div class="mb-3">
                                 <label for="password" class="form-label">Contrasena</label>
                                 <input type="password" class="form-control" id="password" name="password"
-                                    th:required="${usuario.idUsuario == null}" minlength="6"
+                                    th:required="${usuario.idUsuario == null}" minlength="6" maxlength="60"
                                     placeholder="Minimo 6 caracteres">
                                 <small class="text-muted" th:if="${usuario.idUsuario != null}">Dejar vacio para mantener la actual</small>
                             </div>

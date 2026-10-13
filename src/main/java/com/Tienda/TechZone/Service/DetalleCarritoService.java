@@ -33,6 +33,9 @@ public class DetalleCarritoService {
     public DetalleCarrito ActualizarDetalle(Long id, DetalleCarrito detalle) {
         DetalleCarrito existente = detalleCarritoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Detalle no encontrado con id: " + id));
+        if (detalle.getCantidad() == null || detalle.getCantidad() <= 0) {
+            throw new RuntimeException("La cantidad debe ser mayor a 0");
+        }
         existente.setCantidad(detalle.getCantidad());
         return detalleCarritoRepository.save(existente);
     }

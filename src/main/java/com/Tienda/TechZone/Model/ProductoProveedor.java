@@ -47,7 +47,7 @@ public class ProductoProveedor {
         private Long idProducto;
 
         @Column(name = "id_proveedor")
-        private Integer idProveedor;
+        private Long idProveedor;
 
         @Override
         public boolean equals(Object o) {

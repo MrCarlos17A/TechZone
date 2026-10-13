@@ -39,13 +39,13 @@ public class RolController {
     }
 
     @GetMapping("/editar/{id}")
-    public String FormularioEditar(@PathVariable Integer id, Model model) {
+    public String FormularioEditar(@PathVariable Long id, Model model) {
         model.addAttribute("rol", rolService.ObtenerRolPorId(id));
         return "admin/roles/formulario";
     }
 
     @PostMapping("/actualizar/{id}")
-    public String ActualizarRol(@PathVariable Integer id, @ModelAttribute Rol rol, RedirectAttributes flash) {
+    public String ActualizarRol(@PathVariable Long id, @ModelAttribute Rol rol, RedirectAttributes flash) {
         try {
             rolService.ActualizarRol(id, rol);
             flash.addFlashAttribute("exito", "Rol actualizado correctamente");
@@ -56,7 +56,7 @@ public class RolController {
     }
 
     @GetMapping("/eliminar/{id}")
-    public String EliminarRol(@PathVariable Integer id, RedirectAttributes flash) {
+    public String EliminarRol(@PathVariable Long id, RedirectAttributes flash) {
         try {
             rolService.EliminarRol(id);
             flash.addFlashAttribute("exito", "Rol eliminado correctamente");

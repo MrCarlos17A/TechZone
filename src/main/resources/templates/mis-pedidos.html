@@ -30,7 +30,7 @@
                     <tbody>
                         <tr th:each="p : ${pedidos}" style="cursor: pointer;"
                             th:onclick="'window.location.href=\'' + @{/mis-pedidos/{id}(id=${p.id})} + '\''">
-                            <td th:text="'#' + ${p.id}">#1</td>
+                            <td th:text="'#' + ${p.numero}">#1</td>
                             <td th:text="${p.fecha}">01/01/2026</td>
                             <td>
                                 <span class="text-muted small" th:if="${#lists.isEmpty(p.items)}">Sin items</span>

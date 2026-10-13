@@ -30,7 +30,7 @@ public class PagoController {
     }
 
     @GetMapping("/{id}")
-    public String ver(@PathVariable Integer id, Model model) {
+    public String ver(@PathVariable Long id, Model model) {
         Pago pago = pagoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Pago no encontrado"));
         model.addAttribute("pago", pago);
@@ -46,15 +46,37 @@ public class PagoController {
 
     @PostMapping("/guardar")
     public String guardar(@ModelAttribute Pago pago,
-                          @RequestParam("idVenta") Integer idVenta,
-                          @RequestParam("idMedioPago") Integer idMedioPago) {
-        Venta venta = ventaRepository.findById(idVenta)
-                .orElseThrow(() -> new RuntimeException("Venta no encontrada"));
-        MedioPago medioPago = medioPagoRepository.findById(idMedioPago)
-                .orElseThrow(() -> new RuntimeException("Medio de pago no encontrado"));
-        pago.setVenta(venta);
-        pago.setMedioPago(medioPago);
-        pagoRepository.save(pago);
+                          @RequestParam("idVenta") Long idVenta,
+                          @RequestParam("idMedioPago") Long idMedioPago,
+                          org.springframework.web.servlet.mvc.support.RedirectAttributes flash) {
+        try {
+            Venta venta = ventaRepository.findById(idVenta)
+                    .orElseThrow(() -> new RuntimeException("Venta no encontrada"));
+            MedioPago medioPago = medioPagoRepository.findById(idMedioPago)
+                    .orElseThrow(() -> new RuntimeException("Medio de pago no encontrado"));
+            pago.setVenta(venta);
+            pago.setMedioPago(medioPago);
+            if (pago.getMontoPago() == null) {
+                throw new RuntimeException("El monto de pago es obligatorio");
+            }
+            if (pago.getMontoPago().compareTo(java.math.BigDecimal.ZERO) <= 0) {
+                throw new RuntimeException("El monto de pago debe ser mayor a 0");
+            }
+            if (pago.getEstadoPago() != null && !pago.getEstadoPago().isBlank()
+                    && !java.util.Set.of("CONFIRMADO", "PENDIENTE", "RECHAZADO").contains(pago.getEstadoPago())) {
+                throw new RuntimeException("Estado de pago no valido (CONFIRMADO, PENDIENTE, RECHAZADO)");
+            }
+            if (pago.getCodigoOperacion() != null && pago.getCodigoOperacion().length() > 50) {
+                throw new RuntimeException("El codigo de operacion no puede superar 50 caracteres");
+            }
+            if (pago.getFechaPago() == null) {
+                pago.setFechaPago(java.time.LocalDateTime.now());
+            }
+            pagoRepository.save(pago);
+            flash.addFlashAttribute("exito", "Pago registrado correctamente");
+        } catch (RuntimeException e) {
+            flash.addFlashAttribute("error", "No se pudo registrar el pago: " + e.getMessage());
+        }
         return "redirect:/admin/pagos";
     }
 }

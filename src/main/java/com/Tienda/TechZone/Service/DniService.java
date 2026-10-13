@@ -39,7 +39,7 @@ public class DniService {
 
     public record MisDatos(boolean ok, String dni, String nombres, String apellidoPaterno,
             String apellidoMaterno, String telefono, String correo,
-            Integer idUbigeo, String departamento, String provincia,
+            Long idUbigeo, String departamento, String provincia,
             String distrito, String direccionExacta, String referencia) {
     }
 

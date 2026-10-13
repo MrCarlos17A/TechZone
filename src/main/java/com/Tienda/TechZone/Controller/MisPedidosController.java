@@ -42,10 +42,12 @@ public class MisPedidosController {
         Cliente cliente = ObtenerCliente(userDetails);
         if (cliente != null) {
             List<Venta> ventas = ventaRepository.findByClienteIdCliente(cliente.getIdCliente());
-            ventas.sort((a, b) -> Integer.compare(b.getIdVenta(), a.getIdVenta()));
-            for (Venta venta : ventas) {
-                pedidos.add(ConstruirPedido(venta));
+            ventas.sort(java.util.Comparator.comparingLong(Venta::getIdVenta));
+            int total = ventas.size();
+            for (int i = 0; i < total; i++) {
+                pedidos.add(ConstruirPedido(ventas.get(i), i + 1));
             }
+            java.util.Collections.reverse(pedidos);
         }
 
         model.addAttribute("pedidos", pedidos);
@@ -53,7 +55,7 @@ public class MisPedidosController {
     }
 
     @GetMapping("/mis-pedidos/{id}")
-    public String DetallePedido(@PathVariable Integer id,
+    public String DetallePedido(@PathVariable Long id,
             @AuthenticationPrincipal UserDetails userDetails, Model model) {
         Cliente cliente = ObtenerCliente(userDetails);
         if (cliente == null) {
@@ -69,8 +71,19 @@ public class MisPedidosController {
 
         List<DetalleVenta> detalles = detalleVentaRepository.findByVentaIdVenta(id);
 
+        int numeroPedido = 1;
+        List<Venta> ventasCliente = ventaRepository.findByClienteIdCliente(cliente.getIdCliente());
+        ventasCliente.sort(java.util.Comparator.comparingLong(Venta::getIdVenta));
+        for (int i = 0; i < ventasCliente.size(); i++) {
+            if (ventasCliente.get(i).getIdVenta().equals(id)) {
+                numeroPedido = i + 1;
+                break;
+            }
+        }
+
         model.addAttribute("venta", venta);
         model.addAttribute("detalles", detalles);
+        model.addAttribute("numeroPedido", numeroPedido);
         model.addAttribute("fechaVenta",
                 venta.getFechaVenta() != null ? venta.getFechaVenta().format(FORMATO_FECHA) : "");
         return "mis-pedido-detalle";
@@ -87,9 +100,10 @@ public class MisPedidosController {
         return clienteRepository.findByPersona(usuario.getPersona()).orElse(null);
     }
 
-    private Map<String, Object> ConstruirPedido(Venta venta) {
+    private Map<String, Object> ConstruirPedido(Venta venta, int numeroPedido) {
         Map<String, Object> pedido = new LinkedHashMap<>();
         pedido.put("id", venta.getIdVenta());
+        pedido.put("numero", numeroPedido);
         pedido.put("fecha",
                 venta.getFechaVenta() != null ? venta.getFechaVenta().format(FORMATO_FECHA) : "");
         pedido.put("estado", venta.getEstado());
@@ -100,7 +114,7 @@ public class MisPedidosController {
         for (DetalleVenta dv : detalles) {
             String nombre = dv.getProducto() != null ? dv.getProducto().getNombre() : "Producto";
             BigDecimal subtotal = dv.getSubTotalVenta() != null ? dv.getSubTotalVenta() : BigDecimal.ZERO;
-            items.add(dv.getCantidad() + "x " + nombre + " — S/ " + subtotal);
+            items.add(dv.getCantidad() + "x " + nombre + " â€” S/ " + subtotal);
         }
         pedido.put("items", items);
         return pedido;

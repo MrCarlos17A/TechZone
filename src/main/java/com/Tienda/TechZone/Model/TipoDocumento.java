@@ -13,7 +13,7 @@ public class TipoDocumento {
 
     @Id
     @Column(name = "id_tipo_documento", nullable = false)
-    private Integer idTipoDocumento;
+    private Long idTipoDocumento;
 
     @Column(length = 50)
     private String nombre;

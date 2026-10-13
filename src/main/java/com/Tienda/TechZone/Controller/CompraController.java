@@ -51,10 +51,10 @@ public class CompraController {
             String apellidoMaterno, String telefono, String correo) {
     }
 
-    public record DireccionRequest(Integer idUbigeo, String direccionExacta, String referencia) {
+    public record DireccionRequest(Long idUbigeo, String direccionExacta, String referencia) {
     }
 
-    public record PagoRequest(Integer idMedioPago, String codigoOperacion, String numeroCelular,
+    public record PagoRequest(Long idMedioPago, String codigoOperacion, String numeroCelular,
             String numeroTarjeta, String fechaVence, String cvv,
             String titular, String bancoOrigen, String codigoPPI) {
     }
@@ -226,7 +226,7 @@ public class CompraController {
                 medioPago = medioPagoRepository.findById(pr.idMedioPago()).orElse(null);
             }
             if (medioPago == null) {
-                medioPago = medioPagoRepository.findById(1).orElse(null);
+                medioPago = medioPagoRepository.findById(1L).orElse(null);
             }
 
             if (pr != null) {

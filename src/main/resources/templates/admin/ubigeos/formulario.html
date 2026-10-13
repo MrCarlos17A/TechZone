@@ -19,19 +19,19 @@
                                 <form th:action="${ubigeo.idUbigeo != null} ? @{/admin/ubigeos/actualizar/{id}(id=${ubigeo.idUbigeo})} : @{/admin/ubigeos/guardar}" method="post">
                                     <div class="mb-3">
                                         <label class="form-label">ID (Codigo INEI)</label>
-                                        <input type="number" class="form-control" name="idUbigeo" th:value="${ubigeo.idUbigeo}" required th:readonly="${ubigeo.idUbigeo != null}">
+                                        <input type="number" class="form-control" name="idUbigeo" th:value="${ubigeo.idUbigeo}" min="100000" max="999999" required th:readonly="${ubigeo.idUbigeo != null}">
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label">Departamento</label>
-                                        <input type="text" class="form-control" name="departamento" th:value="${ubigeo.departamento}" required>
+                                        <input type="text" class="form-control" name="departamento" th:value="${ubigeo.departamento}" maxlength="50" required>
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label">Provincia</label>
-                                        <input type="text" class="form-control" name="provincia" th:value="${ubigeo.provincia}" required>
+                                        <input type="text" class="form-control" name="provincia" th:value="${ubigeo.provincia}" maxlength="50" required>
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label">Distrito</label>
-                                        <input type="text" class="form-control" name="distrito" th:value="${ubigeo.distrito}" required>
+                                        <input type="text" class="form-control" name="distrito" th:value="${ubigeo.distrito}" maxlength="50" required>
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label">Estado</label>

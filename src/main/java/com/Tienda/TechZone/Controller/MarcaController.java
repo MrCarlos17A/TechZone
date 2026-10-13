@@ -16,8 +16,16 @@ public class MarcaController {
     private final MarcaService marcaService;
 
     @GetMapping
-    public String ListarMarcas(Model model) {
-        model.addAttribute("marcas", marcaService.ListarMarcas());
+    public String ListarMarcas(@RequestParam(value = "q", required = false) String q, Model model) {
+        java.util.List<Marca> marcas = marcaService.ListarMarcas();
+        if (q != null && !q.isBlank()) {
+            String t = q.trim().toLowerCase();
+            marcas = marcas.stream()
+                    .filter(m -> m.getNombre() != null && m.getNombre().toLowerCase().contains(t))
+                    .collect(java.util.stream.Collectors.toList());
+        }
+        model.addAttribute("marcas", marcas);
+        model.addAttribute("q", q);
         return "admin/marcas/listar";
     }
 
@@ -39,13 +47,13 @@ public class MarcaController {
     }
 
     @GetMapping("/editar/{id}")
-    public String FormularioEditar(@PathVariable Integer id, Model model) {
+    public String FormularioEditar(@PathVariable Long id, Model model) {
         model.addAttribute("marca", marcaService.ObtenerMarcaPorId(id));
         return "admin/marcas/formulario";
     }
 
     @PostMapping("/actualizar/{id}")
-    public String ActualizarMarca(@PathVariable Integer id, @ModelAttribute Marca marca, RedirectAttributes flash) {
+    public String ActualizarMarca(@PathVariable Long id, @ModelAttribute Marca marca, RedirectAttributes flash) {
         try {
             marcaService.ActualizarMarca(id, marca);
             flash.addFlashAttribute("exito", "Marca actualizada correctamente");
@@ -56,7 +64,7 @@ public class MarcaController {
     }
 
     @GetMapping("/eliminar/{id}")
-    public String EliminarMarca(@PathVariable Integer id, RedirectAttributes flash) {
+    public String EliminarMarca(@PathVariable Long id, RedirectAttributes flash) {
         try {
             marcaService.EliminarMarca(id);
             flash.addFlashAttribute("exito", "Marca eliminada correctamente");

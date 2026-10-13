@@ -26,7 +26,7 @@
                                         </div>
                                         <div class="col-md-4 mb-3">
                                             <label class="form-label">Apellido Paterno</label>
-                                            <input type="text" class="form-control" name="apellidoPaterno" th:value="${persona.apellidoPaterno}" maxlength="50">
+                                            <input type="text" class="form-control" name="apellidoPaterno" th:value="${persona.apellidoPaterno}" maxlength="50" required>
                                         </div>
                                         <div class="col-md-4 mb-3">
                                             <label class="form-label">Apellido Materno</label>
@@ -44,11 +44,11 @@
                                         </div>
                                         <div class="col-md-3 mb-3">
                                             <label class="form-label">Numero Documento</label>
-                                            <input type="text" class="form-control" name="numeroDocumento" th:value="${persona.numeroDocumento}" maxlength="20">
+                                            <input type="text" class="form-control" name="numeroDocumento" th:value="${persona.numeroDocumento}" maxlength="15" pattern="[0-9]{8,15}" title="Solo digitos (8 a 15)">
                                         </div>
                                         <div class="col-md-3 mb-3">
                                             <label class="form-label">Telefono</label>
-                                            <input type="text" class="form-control" name="telefono" th:value="${persona.telefono}" maxlength="12">
+                                            <input type="text" class="form-control" name="telefono" th:value="${persona.telefono}" maxlength="15" pattern="[0-9]{7,15}" title="Solo digitos (7 a 15)">
                                         </div>
                                         <div class="col-md-3 mb-3">
                                             <label class="form-label">Fecha Nacimiento</label>
@@ -107,7 +107,7 @@
                                         </div>
                                         <div class="col-md-4 mb-3">
                                             <label class="form-label">Contrasena * <small th:if="${empleado.idEmpleado != null}" class="text-muted">(vacío = mantener)</small></label>
-                                            <input type="password" class="form-control" name="password" minlength="6"
+                                            <input type="password" class="form-control" name="password" minlength="6" maxlength="60"
                                                 th:required="${empleado.idEmpleado == null}" placeholder="Minimo 6 caracteres">
                                         </div>
                                         <div class="col-md-4 mb-3">
@@ -126,11 +126,11 @@
                                     <div class="row">
                                         <div class="col-md-4 mb-3">
                                             <label class="form-label">Fecha de Contrato</label>
-                                            <input type="date" class="form-control" name="fechaContrato" th:value="${empleado.fechaContrato}">
+                                            <input type="date" class="form-control" name="fechaContrato" th:value="${empleado.fechaContrato}" th:max="${#temporals.format(#temporals.createToday(), 'yyyy-MM-dd')}">
                                         </div>
                                         <div class="col-md-4 mb-3">
                                             <label class="form-label">Salario (S/)</label>
-                                            <input type="number" class="form-control" name="salario" step="0.01" min="0" th:value="${empleado.salario}">
+                                            <input type="number" class="form-control" name="salario" step="0.01" min="0" required th:value="${empleado.salario}">
                                         </div>
                                     </div>
 

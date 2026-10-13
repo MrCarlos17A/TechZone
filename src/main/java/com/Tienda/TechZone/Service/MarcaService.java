@@ -25,28 +25,28 @@ public class MarcaService {
         if (marca.getIdMarca() == null) {
             marca.setIdMarca(marcaRepository.findAll().stream()
                     .map(Marca::getIdMarca)
-                    .max(Integer::compareTo)
-                    .orElse(0) + 1);
+                    .max(Long::compareTo)
+                    .orElse(0L) + 1);
         }
         return marcaRepository.save(marca);
     }
 
-    public Marca ActualizarMarca(Integer id, Marca marca) {
+    public Marca ActualizarMarca(Long id, Marca marca) {
         Marca existente = marcaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Marca no encontrada con id: " + id));
+        validarMarca(marca);
         existente.setNombre(marca.getNombre().trim());
         if (marca.getVigente() != null) {
             existente.setVigente(marca.getVigente());
         }
-        validarMarca(existente);
         return marcaRepository.save(existente);
     }
 
-    public void EliminarMarca(Integer id) {
+    public void EliminarMarca(Long id) {
         marcaRepository.deleteById(id);
     }
 
-    public Marca ObtenerMarcaPorId(Integer id) {
+    public Marca ObtenerMarcaPorId(Long id) {
         return marcaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Marca no encontrada con id: " + id));
     }
@@ -54,6 +54,9 @@ public class MarcaService {
     private void validarMarca(Marca marca) {
         if (marca.getNombre() == null || marca.getNombre().isBlank()) {
             throw new RuntimeException("El nombre de la marca es obligatorio");
+        }
+        if (marca.getNombre().trim().length() > 20) {
+            throw new RuntimeException("El nombre de la marca no puede superar 20 caracteres");
         }
     }
 }

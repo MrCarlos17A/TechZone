@@ -13,9 +13,9 @@ public class Categoria {
 
     @Id
     @Column(name = "id_categoria", nullable = false)
-    private Integer idCategoria;
+    private Long idCategoria;
 
-    @Column(length = 20)
+    @Column(length = 50)
     private String nombre;
 
     @Column(name = "vigente")

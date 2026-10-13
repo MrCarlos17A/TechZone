@@ -44,12 +44,19 @@ public class TechZoneController {
     }
 
     @GetMapping("/productos")
-    public String Productos(@RequestParam(value = "categoria", required = false) Integer idCategoria, Model model) {
+    public String Productos(@RequestParam(value = "categoria", required = false) Long idCategoria, Model model) {
         List<Categoria> categorias = categoriaService.ListarCategorias();
         List<Producto> productos;
+        Categoria categoriaActiva = null;
 
         if (idCategoria != null) {
             productos = productoService.ListarProductosPorCategoria(idCategoria);
+            for (Categoria c : categorias) {
+                if (c.getIdCategoria().equals(idCategoria)) {
+                    categoriaActiva = c;
+                    break;
+                }
+            }
         } else {
             productos = productoService.ListarProductos();
         }
@@ -57,13 +64,15 @@ public class TechZoneController {
         model.addAttribute("productos", productos);
         model.addAttribute("categorias", categorias);
         model.addAttribute("categoriaSeleccionada", idCategoria);
+        model.addAttribute("categoriaActiva", categoriaActiva);
+        model.addAttribute("tituloPagina", categoriaActiva != null ? categoriaActiva.getNombre() : "Todos los Productos");
         return "productos";
     }
 
     @GetMapping("/novedades")
     public String Novedades(Model model) {
         List<Categoria> categorias = categoriaService.ListarCategorias();
-        Integer idCategoriaTarjetas = null;
+        Long idCategoriaTarjetas = null;
         for (Categoria c : categorias) {
             if (c.getNombre().toLowerCase().contains("tarjeta")) {
                 idCategoriaTarjetas = c.getIdCategoria();

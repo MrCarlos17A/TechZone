@@ -16,8 +16,16 @@ public class CategoriaController {
     private final CategoriaService categoriaService;
 
     @GetMapping
-    public String ListarCategorias(Model model) {
-        model.addAttribute("categorias", categoriaService.ListarCategorias());
+    public String ListarCategorias(@RequestParam(value = "q", required = false) String q, Model model) {
+        java.util.List<Categoria> categorias = categoriaService.ListarCategorias();
+        if (q != null && !q.isBlank()) {
+            String t = q.trim().toLowerCase();
+            categorias = categorias.stream()
+                    .filter(c -> c.getNombre() != null && c.getNombre().toLowerCase().contains(t))
+                    .collect(java.util.stream.Collectors.toList());
+        }
+        model.addAttribute("categorias", categorias);
+        model.addAttribute("q", q);
         return "admin/categorias/listar";
     }
 
@@ -39,13 +47,13 @@ public class CategoriaController {
     }
 
     @GetMapping("/editar/{id}")
-    public String FormularioEditar(@PathVariable Integer id, Model model) {
+    public String FormularioEditar(@PathVariable Long id, Model model) {
         model.addAttribute("categoria", categoriaService.ObtenerCategoriaPorId(id));
         return "admin/categorias/formulario";
     }
 
     @PostMapping("/actualizar/{id}")
-    public String ActualizarCategoria(@PathVariable Integer id, @ModelAttribute Categoria categoria, RedirectAttributes flash) {
+    public String ActualizarCategoria(@PathVariable Long id, @ModelAttribute Categoria categoria, RedirectAttributes flash) {
         try {
             categoriaService.ActualizarCategoria(id, categoria);
             flash.addFlashAttribute("exito", "Categoria actualizada correctamente");
@@ -56,7 +64,7 @@ public class CategoriaController {
     }
 
     @GetMapping("/eliminar/{id}")
-    public String EliminarCategoria(@PathVariable Integer id, RedirectAttributes flash) {
+    public String EliminarCategoria(@PathVariable Long id, RedirectAttributes flash) {
         try {
             categoriaService.EliminarCategoria(id);
             flash.addFlashAttribute("exito", "Categoria eliminada correctamente");

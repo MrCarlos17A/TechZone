@@ -39,13 +39,13 @@ public class TipoDocumentoController {
     }
 
     @GetMapping("/editar/{id}")
-    public String FormularioEditar(@PathVariable Integer id, Model model) {
+    public String FormularioEditar(@PathVariable Long id, Model model) {
         model.addAttribute("tipoDocumento", tipoDocumentoService.ObtenerTipoDocumentoPorId(id));
         return "admin/tipos-documento/formulario";
     }
 
     @PostMapping("/actualizar/{id}")
-    public String ActualizarTipoDocumento(@PathVariable Integer id, @ModelAttribute TipoDocumento tipoDocumento,
+    public String ActualizarTipoDocumento(@PathVariable Long id, @ModelAttribute TipoDocumento tipoDocumento,
             RedirectAttributes flash) {
         try {
             tipoDocumentoService.ActualizarTipoDocumento(id, tipoDocumento);
@@ -57,7 +57,7 @@ public class TipoDocumentoController {
     }
 
     @GetMapping("/eliminar/{id}")
-    public String EliminarTipoDocumento(@PathVariable Integer id, RedirectAttributes flash) {
+    public String EliminarTipoDocumento(@PathVariable Long id, RedirectAttributes flash) {
         try {
             tipoDocumentoService.EliminarTipoDocumento(id);
             flash.addFlashAttribute("exito", "Tipo de documento eliminado correctamente");

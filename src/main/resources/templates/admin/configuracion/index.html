@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/plantilla :: cabecera('Admin - Configuracion del Sitio')}"></head>
+
+<body>
+    <div class="admin-shell" id="paginaAdmin">
+        <div th:insert="~{fragments/admin :: barra-lateral('config-sitio')}"></div>
+        <div class="admin-principal">
+            <header th:replace="~{fragments/plantilla-admin :: barra-superior}"></header>
+            <main class="admin-contenido container-fluid py-4">
+
+                <div th:if="${exito}" class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="bi bi-check-circle"></i> <span th:text="${exito}">Exito</span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="bi bi-exclamation-triangle"></i> <span th:text="${error}">Error</span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h1><i class="bi bi-sliders"></i> Configuracion del Sitio</h1>
+                        <p class="text-muted mb-0 mt-1" style="font-size:0.9rem;">Administra los datos generales de la tienda: identidad, contacto y pie de pagina.</p>
+                    </div>
+                </div>
+
+                <form th:action="@{/admin/configuracion/guardar}" method="post" enctype="multipart/form-data">
+
+                    <!-- Identidad -->
+                    <div class="card config-card mb-4">
+                        <div class="card-header config-card-header">
+                            <i class="bi bi-palette-fill"></i> Identidad del Sitio
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Nombre del sitio</label>
+                                    <input type="text" class="form-control" name="nombreSitio"
+                                        th:value="${configuracion.nombreSitio}" maxlength="80" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Logo del sitio</label>
+                                    <div class="logo-upload-area">
+                                        <div class="logo-preview-wrapper">
+                                            <img id="logoPreview" th:src="${configuracion.logoUrl}" alt="Logo actual"
+                                                class="logo-preview-img" onerror="this.src='/Assets/IMG/Logo/TechZone.png'">
+                                        </div>
+                                        <div class="logo-upload-controls">
+                                            <input type="file" class="form-control" id="archivoLogo" name="archivoLogo"
+                                                accept="image/*" onchange="previsualizarLogo(event)">
+                                            <small class="text-muted">PNG, JPG o SVG. Se guardara en /uploads/</small>
+                                            <div class="mt-1">
+                                                <small class="text-muted">Actual: </small>
+                                                <code th:text="${configuracion.logoUrl}">/Assets/IMG/Logo/TechZone.png</code>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" name="logoUrl" th:value="${configuracion.logoUrl}">
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Frase (tagline)</label>
+                                    <input type="text" class="form-control" name="tagline"
+                                        th:value="${configuracion.tagline}" maxlength="160">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Copyright</label>
+                                    <input type="text" class="form-control" name="copyright"
+                                        th:value="${configuracion.copyright}" maxlength="120">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contacto -->
+                    <div class="card config-card mb-4">
+                        <div class="card-header config-card-header">
+                            <i class="bi bi-envelope-paper-fill"></i> Datos de Contacto
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label class="form-label">Correo electronico</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                        <input type="email" class="form-control" name="email"
+                                            th:value="${configuracion.email}" maxlength="100">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Telefono</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-telephone"></i></span>
+                                        <input type="text" class="form-control" name="telefono"
+                                            th:value="${configuracion.telefono}" maxlength="20">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Horario de atencion</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-clock"></i></span>
+                                        <input type="text" class="form-control" name="horario"
+                                            th:value="${configuracion.horario}" maxlength="60">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Numero de WhatsApp</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-whatsapp"></i></span>
+                                        <input type="text" class="form-control" name="whatsapp"
+                                            th:value="${configuracion.whatsapp}" maxlength="20">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Texto WhatsApp</label>
+                                    <input type="text" class="form-control" name="whatsappTexto"
+                                        th:value="${configuracion.whatsappTexto}" maxlength="60">
+                                    <small class="text-muted">Ej: Atencion 24/7</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Redes sociales -->
+                    <div class="card config-card mb-4">
+                        <div class="card-header config-card-header">
+                            <i class="bi bi-share-fill"></i> Redes Sociales
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">URL de Facebook</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-facebook"></i></span>
+                                        <input type="url" class="form-control" name="facebookUrl"
+                                            th:value="${configuracion.facebookUrl}" maxlength="255">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">URL de Instagram</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-instagram"></i></span>
+                                        <input type="url" class="form-control" name="instagramUrl"
+                                            th:value="${configuracion.instagramUrl}" maxlength="255">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Libro de reclamaciones -->
+                    <div class="card config-card mb-4">
+                        <div class="card-header config-card-header">
+                            <i class="bi bi-journal-bookmark-fill"></i> Libro de Reclamaciones
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label class="form-label">URL del Libro de Reclamaciones</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-link-45deg"></i></span>
+                                        <input type="text" class="form-control" name="libroReclamacionesUrl"
+                                            th:value="${configuracion.libroReclamacionesUrl}" maxlength="255">
+                                    </div>
+                                    <small class="text-muted">Enlace externo o imagen. Dejar "#" si aun no esta disponible.</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Vista previa del footer -->
+                    <div class="card config-card mb-4">
+                        <div class="card-header config-card-header">
+                            <i class="bi bi-eye-fill"></i> Vista Previa del Pie de Pagina
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="config-preview">
+                                <div class="row text-white">
+                                    <div class="col-md-4 p-4">
+                                        <h6 class="fw-bold d-flex align-items-center gap-2 mb-2">
+                                            <img th:src="${configuracion.logoUrl}" alt="logo" style="height:24px;"
+                                                onerror="this.style.display='none'">
+                                            <span th:text="${configuracion.nombreSitio}">TechZone</span>
+                                        </h6>
+                                        <p class="small mb-2" style="color:rgba(255,255,255,0.7)"
+                                            th:text="${configuracion.tagline}">Tagline</p>
+                                        <div class="d-flex gap-3">
+                                            <a th:href="${configuracion.facebookUrl}" class="text-white"><i class="bi bi-facebook fs-5"></i></a>
+                                            <a th:href="${configuracion.instagramUrl}" class="text-white"><i class="bi bi-instagram fs-5"></i></a>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 p-4">
+                                        <h6 class="fw-bold mb-2">Contacto</h6>
+                                        <p class="small mb-1"><i class="bi bi-envelope me-1"></i>
+                                            <span th:text="${configuracion.email}">email</span></p>
+                                        <p class="small mb-1"><i class="bi bi-telephone me-1"></i>
+                                            <span th:text="${configuracion.telefono}">tel</span></p>
+                                        <p class="small mb-1"><i class="bi bi-clock me-1"></i>
+                                            <span th:text="${configuracion.horario}">horario</span></p>
+                                        <p class="small mb-0"><i class="bi bi-whatsapp me-1"></i>
+                                            <span th:text="${configuracion.whatsapp}">wpp</span> &mdash;
+                                            <span th:text="${configuracion.whatsappTexto}">texto</span></p>
+                                    </div>
+                                    <div class="col-md-4 p-4">
+                                        <h6 class="fw-bold mb-2">Libro de Reclamaciones</h6>
+                                        <p class="small" style="color:rgba(255,255,255,0.7)">Consulta y reclama a traves de nuestros canales oficiales.</p>
+                                    </div>
+                                </div>
+                                <div class="text-center py-2" style="border-top:1px solid rgba(255,255,255,0.1);">
+                                    <small style="color:rgba(255,255,255,0.5)"
+                                        th:text="'&copy; 2026 ' + ${configuracion.copyright}">&copy; 2026</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2 mb-4">
+                        <a th:href="@{/admin}" class="btn btn-secondary">
+                            <i class="bi bi-x-circle"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-check-circle"></i> Guardar Configuracion
+                        </button>
+                    </div>
+
+                </form>
+
+            </main>
+            <footer th:replace="~{fragments/plantilla-admin :: pie-admin}"></footer>
+        </div>
+    </div>
+    <script>
+        function previsualizarLogo(event) {
+            const archivo = event.target.files[0];
+            if (!archivo) return;
+            const lector = new FileReader();
+            lector.onload = function (e) {
+                document.getElementById('logoPreview').src = e.target.result;
+            };
+            lector.readAsDataURL(archivo);
+        }
+    </script>
+</body>
+
+</html>

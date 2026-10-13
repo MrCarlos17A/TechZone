@@ -9,6 +9,10 @@
         <div class="admin-principal">
             <header th:replace="~{fragments/plantilla-admin :: barra-superior}"></header>
             <main class="admin-contenido container-fluid py-4">
+                <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="bi bi-exclamation-triangle"></i> <span th:text="${error}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
         <div class="row justify-content-center">
             <div class="col-md-6">
                 <div class="card shadow">

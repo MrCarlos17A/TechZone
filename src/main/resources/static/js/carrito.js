@@ -1,6 +1,4 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const ENVIO_GRATIS_DESDE = 500;
-
     function claveCarrito() {
         const drawer = document.getElementById('drawerCarrito');
         const usuario = drawer && drawer.dataset.usuario ? drawer.dataset.usuario : '';
@@ -134,23 +132,10 @@ document.addEventListener('DOMContentLoaded', function () {
         const items = document.getElementById('itemsDrawer');
         const pie = document.getElementById('pieDrawer');
         const subtotalEl = document.getElementById('subtotalDrawer');
-        const barra = document.getElementById('barraEnvio');
-        const textoEnvio = document.getElementById('textoEnvio');
 
         if (!items) return;
 
         const total = calcularTotal();
-
-        if (textoEnvio && barra) {
-            const porcentaje = Math.min(100, Math.round((total / ENVIO_GRATIS_DESDE) * 100));
-            barra.style.width = porcentaje + '%';
-            if (total >= ENVIO_GRATIS_DESDE) {
-                textoEnvio.innerHTML = '<i class="bi bi-truck"></i> <strong>Tienes envio gratis</strong>';
-            } else {
-                const falta = (ENVIO_GRATIS_DESDE - total).toFixed(2);
-                textoEnvio.textContent = 'Te faltan S/ ' + falta + ' para el envio gratis';
-            }
-        }
 
         if (carrito.length === 0) {
             if (vacio) vacio.style.display = 'block';

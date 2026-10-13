@@ -25,28 +25,28 @@ public class CategoriaService {
         if (categoria.getIdCategoria() == null) {
             categoria.setIdCategoria(categoriaRepository.findAll().stream()
                     .map(Categoria::getIdCategoria)
-                    .max(Integer::compareTo)
-                    .orElse(0) + 1);
+                    .max(Long::compareTo)
+                    .orElse(0L) + 1);
         }
         return categoriaRepository.save(categoria);
     }
 
-    public Categoria ActualizarCategoria(Integer id, Categoria categoria) {
+    public Categoria ActualizarCategoria(Long id, Categoria categoria) {
         Categoria existente = categoriaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Categoria no encontrada con id: " + id));
+        validarCategoria(categoria);
         existente.setNombre(categoria.getNombre().trim());
         if (categoria.getVigente() != null) {
             existente.setVigente(categoria.getVigente());
         }
-        validarCategoria(existente);
         return categoriaRepository.save(existente);
     }
 
-    public void EliminarCategoria(Integer id) {
+    public void EliminarCategoria(Long id) {
         categoriaRepository.deleteById(id);
     }
 
-    public Categoria ObtenerCategoriaPorId(Integer id) {
+    public Categoria ObtenerCategoriaPorId(Long id) {
         return categoriaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Categoria no encontrada con id: " + id));
     }
@@ -54,6 +54,9 @@ public class CategoriaService {
     private void validarCategoria(Categoria categoria) {
         if (categoria.getNombre() == null || categoria.getNombre().isBlank()) {
             throw new RuntimeException("El nombre de la categoria es obligatorio");
+        }
+        if (categoria.getNombre().trim().length() > 50) {
+            throw new RuntimeException("El nombre no puede superar 50 caracteres");
         }
     }
 }

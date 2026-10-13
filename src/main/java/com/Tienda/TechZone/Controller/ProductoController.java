@@ -20,8 +20,38 @@ public class ProductoController {
     private final CategoriaService categoriaService;
 
     @GetMapping
-    public String ListarProductos(Model model) {
-        model.addAttribute("productos", productoService.ListarProductos());
+    public String ListarProductos(@RequestParam(value = "q", required = false) String q,
+                                  @RequestParam(value = "marca", required = false) Long idMarca,
+                                  @RequestParam(value = "categoria", required = false) Long idCategoria,
+                                  Model model) {
+        java.util.List<Producto> productos = productoService.ListarProductos();
+        boolean hayFiltro = (q != null && !q.isBlank()) || idMarca != null || idCategoria != null;
+        if (hayFiltro) {
+            productos = productos.stream()
+                    .filter(p -> {
+                        if (q != null && !q.isBlank()) {
+                            String t = q.trim().toLowerCase();
+                            boolean coincide = (p.getNombre() != null && p.getNombre().toLowerCase().contains(t))
+                                    || (p.getCodigoSku() != null && p.getCodigoSku().toLowerCase().contains(t))
+                                    || (p.getDescripcion() != null && p.getDescripcion().toLowerCase().contains(t))
+                                    || (p.getMarca() != null && p.getMarca().getNombre() != null
+                                            && p.getMarca().getNombre().toLowerCase().contains(t));
+                            if (!coincide) return false;
+                        }
+                        if (idMarca != null && (p.getMarca() == null
+                                || !idMarca.equals(p.getMarca().getIdMarca()))) return false;
+                        if (idCategoria != null && (p.getCategoria() == null
+                                || !idCategoria.equals(p.getCategoria().getIdCategoria()))) return false;
+                        return true;
+                    })
+                    .collect(java.util.stream.Collectors.toList());
+        }
+        model.addAttribute("productos", productos);
+        model.addAttribute("marcas", marcaService.ListarMarcas());
+        model.addAttribute("categorias", categoriaService.ListarCategorias());
+        model.addAttribute("q", q);
+        model.addAttribute("marcaSel", idMarca);
+        model.addAttribute("categoriaSel", idCategoria);
         return "admin/productos/listar";
     }
 

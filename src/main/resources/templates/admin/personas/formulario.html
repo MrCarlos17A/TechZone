@@ -20,15 +20,15 @@
                                     <div class="row">
                                         <div class="col-md-4 mb-3">
                                             <label class="form-label">Nombres</label>
-                                            <input type="text" class="form-control" name="nombres" th:value="${persona.nombres}" required>
+                                            <input type="text" class="form-control" name="nombres" th:value="${persona.nombres}" maxlength="100" required>
                                         </div>
                                         <div class="col-md-4 mb-3">
                                             <label class="form-label">Apellido Paterno</label>
-                                            <input type="text" class="form-control" name="apellidoPaterno" th:value="${persona.apellidoPaterno}">
+                                            <input type="text" class="form-control" name="apellidoPaterno" th:value="${persona.apellidoPaterno}" maxlength="50" required>
                                         </div>
                                         <div class="col-md-4 mb-3">
                                             <label class="form-label">Apellido Materno</label>
-                                            <input type="text" class="form-control" name="apellidoMaterno" th:value="${persona.apellidoMaterno}">
+                                            <input type="text" class="form-control" name="apellidoMaterno" th:value="${persona.apellidoMaterno}" maxlength="50">
                                         </div>
                                     </div>
                                     <div class="row">
@@ -42,11 +42,11 @@
                                         </div>
                                         <div class="col-md-4 mb-3">
                                             <label class="form-label">Numero Documento</label>
-                                            <input type="text" class="form-control" name="numeroDocumento" th:value="${persona.numeroDocumento}" maxlength="20">
+                                            <input type="text" class="form-control" name="numeroDocumento" th:value="${persona.numeroDocumento}" maxlength="15" pattern="[0-9]{8,15}" title="Solo digitos (8 a 15)">
                                         </div>
                                         <div class="col-md-4 mb-3">
                                             <label class="form-label">Telefono</label>
-                                            <input type="text" class="form-control" name="telefono" th:value="${persona.telefono}" maxlength="12">
+                                            <input type="text" class="form-control" name="telefono" th:value="${persona.telefono}" maxlength="15" pattern="[0-9]{7,15}" title="Solo digitos (7 a 15)">
                                         </div>
                                     </div>
                                     <div class="row">
@@ -92,7 +92,7 @@
                                         </div>
                                         <div class="col-md-3 mb-3">
                                             <label class="form-label">Fecha Nacimiento</label>
-                                            <input type="date" class="form-control" name="fechaNacimiento" th:value="${persona.fechaNacimiento}">
+                                            <input type="date" class="form-control" name="fechaNacimiento" th:value="${persona.fechaNacimiento}" th:max="${#temporals.format(#temporals.createToday(), 'yyyy-MM-dd')}">
                                         </div>
                                         <div class="col-md-3 mb-3">
                                             <label class="form-label">Estado</label>

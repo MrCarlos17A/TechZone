@@ -20,8 +20,26 @@ public class UsuarioController {
     private final PersonaService personaService;
 
     @GetMapping
-    public String ListarUsuarios(Model model) {
-        model.addAttribute("usuarios", usuarioService.ListarUsuarios());
+    public String ListarUsuarios(@RequestParam(value = "q", required = false) String q, Model model) {
+        java.util.List<Usuario> usuarios = usuarioService.ListarUsuarios();
+        if (q != null && !q.isBlank()) {
+            String t = q.trim().toLowerCase();
+            usuarios = usuarios.stream().filter(u -> {
+                boolean ok = (u.getCorreo() != null && u.getCorreo().toLowerCase().contains(t))
+                        || (u.getEstado() != null && u.getEstado().toLowerCase().contains(t));
+                if (!ok && u.getPersona() != null) {
+                    ok = (u.getPersona().getNombres() != null && u.getPersona().getNombres().toLowerCase().contains(t))
+                            || (u.getPersona().getApellidoPaterno() != null && u.getPersona().getApellidoPaterno().toLowerCase().contains(t))
+                            || (u.getPersona().getApellidoMaterno() != null && u.getPersona().getApellidoMaterno().toLowerCase().contains(t));
+                }
+                if (!ok && u.getRol() != null) {
+                    ok = u.getRol().getNombre() != null && u.getRol().getNombre().toLowerCase().contains(t);
+                }
+                return ok;
+            }).collect(java.util.stream.Collectors.toList());
+        }
+        model.addAttribute("usuarios", usuarios);
+        model.addAttribute("q", q);
         return "admin/usuarios/listar";
     }
 

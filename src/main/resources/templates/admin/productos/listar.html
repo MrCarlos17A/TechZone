@@ -18,15 +18,62 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1><i class="bi bi-box-seam"></i> Productos</h1>
+            <div>
+                <h1><i class="bi bi-box-seam"></i> Productos</h1>
+                <p class="text-muted mb-0 mt-1" style="font-size:0.88rem;">
+                    <span class="filtro-contador-resultados"><strong th:text="${#lists.size(productos)}">0</strong> producto(s) registrado(s)</span>
+                </p>
+            </div>
             <a th:href="@{/admin/productos/nuevo}" class="btn btn-success">
                 <i class="bi bi-plus-circle"></i> Nuevo Producto
             </a>
         </div>
 
+        <!-- Barra de filtros -->
+        <div class="filtro-admin-barra">
+            <form th:action="@{/admin/productos}" method="get">
+                <div class="row g-2 align-items-end">
+                    <div class="col-md-4">
+                        <label class="form-label filtro-label-admin">Buscar</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-search"></i></span>
+                            <input type="text" class="form-control" name="q" th:value="${q}"
+                                placeholder="Nombre, SKU, descripcion, marca...">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label filtro-label-admin">Marca</label>
+                        <select class="form-select" name="marca">
+                            <option value="">Todas las marcas</option>
+                            <option th:each="m : ${marcas}" th:value="${m.idMarca}"
+                                th:text="${m.nombre}"
+                                th:selected="${marcaSel != null and marcaSel == m.idMarca}">Marca</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label filtro-label-admin">Categoria</label>
+                        <select class="form-select" name="categoria">
+                            <option value="">Todas las categorias</option>
+                            <option th:each="c : ${categorias}" th:value="${c.idCategoria}"
+                                th:text="${c.nombre}"
+                                th:selected="${categoriaSel != null and categoriaSel == c.idCategoria}">Categoria</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 d-flex gap-2">
+                        <button type="submit" class="btn btn-buscar flex-fill">
+                            <i class="bi bi-funnel"></i> Filtrar
+                        </button>
+                        <a th:href="@{/admin/productos}" class="btn btn-limpiar" title="Limpiar filtros">
+                            <i class="bi bi-x-lg"></i>
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+
         <div class="table-responsive">
             <table class="table table-striped table-hover">
-                <thead class="table-dark">
+                <thead>
                     <tr>
                         <th>ID</th>
                         <th>Imagen</th>
@@ -74,8 +121,14 @@
             </table>
         </div>
 
-        <div class="text-center py-4" th:if="${#lists.isEmpty(productos)}">
-            <p class="text-muted">No hay productos registrados</p>
+        <div class="estado-vacio-admin" th:if="${#lists.isEmpty(productos)}">
+            <i class="bi bi-box-seam"></i>
+            <h5>No se encontraron productos</h5>
+            <p th:if="${q != null or marcaSel != null or categoriaSel != null}">Ningun producto coincide con los filtros aplicados.</p>
+            <p th:unless="${q != null or marcaSel != null or categoriaSel != null}">No hay productos registrados.</p>
+            <a th:href="@{/admin/productos}" class="btn btn-outline-primary btn-sm mt-2" th:if="${q != null or marcaSel != null or categoriaSel != null}">
+                <i class="bi bi-arrow-counterclockwise"></i> Limpiar filtros
+            </a>
         </div>
             </main>
             <footer th:replace="~{fragments/plantilla-admin :: pie-admin}"></footer>

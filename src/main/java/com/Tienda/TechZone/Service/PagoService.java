@@ -24,7 +24,7 @@ public class PagoService {
         return pagoRepository.findAll();
     }
 
-    public Pago ObtenerPagoPorId(Integer id) {
+    public Pago ObtenerPagoPorId(Long id) {
         return pagoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Pago no encontrado con id: " + id));
     }
@@ -54,7 +54,7 @@ public class PagoService {
         return pagoRepository.save(pago);
     }
 
-    public Pago CambiarEstado(Integer idPago, String estado) {
+    public Pago CambiarEstado(Long idPago, String estado) {
         Pago pago = ObtenerPagoPorId(idPago);
         pago.setEstadoPago(estado);
         return pagoRepository.save(pago);

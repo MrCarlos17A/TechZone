@@ -203,7 +203,7 @@ public class LoginController {
         }
         if (idTipoDocumento != null && !idTipoDocumento.isBlank() && usuario.getPersona() != null) {
             try {
-                int idTd = Integer.parseInt(idTipoDocumento.trim());
+                long idTd = Long.parseLong(idTipoDocumento.trim());
                 tipoDocumentoRepository.findById(idTd)
                         .ifPresent(td -> usuario.getPersona().setTipoDocumento(td));
             } catch (NumberFormatException ignored) {
@@ -226,13 +226,17 @@ public class LoginController {
         }
         if (ubigeo != null && !ubigeo.isBlank() && usuario.getPersona() != null) {
             try {
-                int idUbi = Integer.parseInt(ubigeo.trim());
+                long idUbi = Long.parseLong(ubigeo.trim());
                 ubigeoRepository.findById(idUbi).ifPresent(u -> usuario.getPersona().setUbigeo(u));
             } catch (NumberFormatException ignored) {
             }
         }
 
         if (passwordNuevo != null && !passwordNuevo.isEmpty()) {
+            if (passwordNuevo.length() < 6) {
+                flash.addFlashAttribute("error", "La nueva contrasena debe tener al menos 6 caracteres");
+                return "redirect:/mi-perfil";
+            }
             if (passwordActual == null || !passwordEncoder.matches(passwordActual, usuario.getPassword())) {
                 flash.addFlashAttribute("error", "La contrasena actual es incorrecta");
                 return "redirect:/mi-perfil";

@@ -20,7 +20,7 @@ public class ProductoProveedorService {
                 .toList();
     }
 
-    public List<ProductoProveedor> ListarPorProveedor(Integer idProveedor) {
+    public List<ProductoProveedor> ListarPorProveedor(Long idProveedor) {
         return productoProveedorRepository.findAll().stream()
                 .filter(pp -> pp.getId().getIdProveedor().equals(idProveedor))
                 .toList();
@@ -36,6 +36,12 @@ public class ProductoProveedorService {
         if (productoProveedor.getPrecioCompra() == null) {
             throw new RuntimeException("El precio de compra es obligatorio");
         }
+        if (productoProveedor.getPrecioCompra().compareTo(java.math.BigDecimal.ZERO) <= 0) {
+            throw new RuntimeException("El precio de compra debe ser mayor a 0");
+        }
+        if (productoProveedor.getTiempoPedidoDias() != null && productoProveedor.getTiempoPedidoDias() < 0) {
+            throw new RuntimeException("El tiempo de pedido no puede ser negativo");
+        }
         Id id = new Id();
         id.setIdProducto(productoProveedor.getProducto().getIdProducto());
         id.setIdProveedor(productoProveedor.getProveedor().getIdProveedor());
@@ -43,7 +49,7 @@ public class ProductoProveedorService {
         return productoProveedorRepository.save(productoProveedor);
     }
 
-    public void EliminarRelacion(Long idProducto, Integer idProveedor) {
+    public void EliminarRelacion(Long idProducto, Long idProveedor) {
         Id id = new Id();
         id.setIdProducto(idProducto);
         id.setIdProveedor(idProveedor);

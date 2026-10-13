@@ -39,13 +39,13 @@ public class UbigeoController {
     }
 
     @GetMapping("/editar/{id}")
-    public String FormularioEditar(@PathVariable Integer id, Model model) {
+    public String FormularioEditar(@PathVariable Long id, Model model) {
         model.addAttribute("ubigeo", ubigeoService.ObtenerUbigeoPorId(id));
         return "admin/ubigeos/formulario";
     }
 
     @PostMapping("/actualizar/{id}")
-    public String ActualizarUbigeo(@PathVariable Integer id, @ModelAttribute Ubigeo ubigeo, RedirectAttributes flash) {
+    public String ActualizarUbigeo(@PathVariable Long id, @ModelAttribute Ubigeo ubigeo, RedirectAttributes flash) {
         try {
             ubigeoService.ActualizarUbigeo(id, ubigeo);
             flash.addFlashAttribute("exito", "Ubigeo actualizado correctamente");
@@ -56,7 +56,7 @@ public class UbigeoController {
     }
 
     @GetMapping("/eliminar/{id}")
-    public String EliminarUbigeo(@PathVariable Integer id, RedirectAttributes flash) {
+    public String EliminarUbigeo(@PathVariable Long id, RedirectAttributes flash) {
         try {
             ubigeoService.EliminarUbigeo(id);
             flash.addFlashAttribute("exito", "Ubigeo eliminado correctamente");

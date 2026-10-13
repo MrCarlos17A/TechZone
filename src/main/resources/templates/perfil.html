@@ -3,140 +3,430 @@
 
 <head th:replace="~{fragments/plantilla :: cabecera('TechZone - Mi Perfil')}"></head>
 
+<style>
+    .perfil-wrapper {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+
+    .perfil-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .perfil-avatar {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #4e73df, #224abe);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-size: 1.8rem;
+        flex-shrink: 0;
+    }
+
+    .perfil-header-text h1 {
+        font-size: 1.5rem;
+        margin: 0;
+        font-weight: 700;
+        color: #1a202c;
+    }
+
+    .perfil-header-text p {
+        margin: 0.15rem 0 0;
+        color: #64748b;
+        font-size: 0.9rem;
+    }
+
+    .perfil-tabs {
+        display: flex;
+        gap: 0.25rem;
+        border-bottom: 2px solid #e2e8f0;
+        margin-bottom: 0;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .perfil-tabs::-webkit-scrollbar {
+        display: none;
+    }
+
+    .perfil-tab {
+        padding: 0.7rem 1.2rem;
+        border: none;
+        background: none;
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: #64748b;
+        cursor: pointer;
+        border-bottom: 3px solid transparent;
+        margin-bottom: -2px;
+        white-space: nowrap;
+        transition: color 0.2s, border-color 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    .perfil-tab:hover {
+        color: #4e73df;
+    }
+
+    .perfil-tab.active {
+        color: #4e73df;
+        border-bottom-color: #4e73df;
+        font-weight: 600;
+    }
+
+    .perfil-card {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 1.75rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        margin-top: 0;
+    }
+
+    .perfil-seccion-titulo {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: #1a202c;
+        margin-bottom: 1.25rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid #f1f5f9;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .perfil-campo {
+        margin-bottom: 1.1rem;
+    }
+
+    .perfil-campo label {
+        display: block;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #475569;
+        margin-bottom: 0.35rem;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+    }
+
+    .perfil-campo input,
+    .perfil-campo select {
+        width: 100%;
+        padding: 0.6rem 0.85rem;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        color: #1a202c;
+        background: #fff;
+        transition: border-color 0.2s, box-shadow 0.2s;
+        box-sizing: border-box;
+    }
+
+    .perfil-campo input:focus,
+    .perfil-campo select:focus {
+        outline: none;
+        border-color: #4e73df;
+        box-shadow: 0 0 0 3px rgba(78, 115, 223, 0.15);
+    }
+
+    .perfil-campo input:disabled,
+    .perfil-campo select:disabled {
+        background: #f8fafc;
+        color: #94a3b8;
+        cursor: not-allowed;
+        border-color: #e2e8f0;
+    }
+
+    .perfil-campo input:disabled:focus,
+    .perfil-campo select:disabled:focus {
+        box-shadow: none;
+    }
+
+    .perfil-readonly {
+        width: 100%;
+        padding: 0.6rem 0.85rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        color: #475569;
+        background: #f8fafc;
+        box-sizing: border-box;
+    }
+
+    .perfil-nota {
+        font-size: 0.78rem;
+        color: #94a3b8;
+        margin-top: 0.3rem;
+    }
+
+    .perfil-btn-acciones {
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.5rem;
+        margin-top: 1.5rem;
+        padding-top: 1.25rem;
+        border-top: 1px solid #f1f5f9;
+    }
+
+    .btn-perfil-editar {
+        background: #4e73df;
+        color: #fff;
+        border: none;
+        padding: 0.55rem 1.2rem;
+        border-radius: 8px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        transition: background 0.2s;
+    }
+
+    .btn-perfil-editar:hover {
+        background: #3b5dc9;
+        color: #fff;
+    }
+
+    .btn-perfil-guardar {
+        background: #10b981;
+        color: #fff;
+        border: none;
+        padding: 0.55rem 1.2rem;
+        border-radius: 8px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        transition: background 0.2s;
+    }
+
+    .btn-perfil-guardar:hover {
+        background: #059669;
+        color: #fff;
+    }
+
+    .btn-perfil-cancelar {
+        background: #fff;
+        color: #64748b;
+        border: 1px solid #d1d5db;
+        padding: 0.55rem 1.2rem;
+        border-radius: 8px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        transition: background 0.2s;
+    }
+
+    .btn-perfil-cancelar:hover {
+        background: #f8fafc;
+    }
+
+    @media (max-width: 768px) {
+        .perfil-header {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .perfil-card {
+            padding: 1.25rem;
+        }
+
+        .perfil-tabs {
+            justify-content: flex-start;
+        }
+
+        .perfil-tab {
+            padding: 0.6rem 0.9rem;
+            font-size: 0.82rem;
+        }
+    }
+</style>
+
 <body>
     <header th:replace="~{fragments/plantilla :: barra-navegacion('')}"></header>
 
-    <main class="container my-4">
-        <div class="row justify-content-center">
-            <div class="col-md-10">
-                <h1 class="mb-4"><i class="bi bi-person-circle"></i> Mi Perfil</h1>
-
-                <div th:if="${exito}" class="alert alert-success alert-dismissible fade show" role="alert">
-                    <i class="bi bi-check-circle"></i> <span th:text="${exito}">Exito</span>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    <main class="my-4">
+        <div class="perfil-wrapper">
+            <!-- HEADER -->
+            <div class="perfil-header">
+                <div class="perfil-avatar">
+                    <i class="bi bi-person-fill"></i>
                 </div>
-
-                <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <i class="bi bi-exclamation-triangle"></i> <span th:text="${error}">Error</span>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-
-                <div class="card shadow mb-4">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="mb-0"><i class="bi bi-person-vcard"></i> Datos Personales</h5>
-                    </div>
-                    <div class="card-body">
-                        <form th:action="@{/actualizar-perfil}" method="post">
-                            <div class="row">
-                                <div class="col-md-4 mb-3">
-                                    <label class="form-label">Nombres</label>
-                                    <input type="text" class="form-control" name="nombres"
-                                        th:value="${usuario.persona != null ? usuario.persona.nombres : ''}" required maxlength="100">
-                                </div>
-                                <div class="col-md-4 mb-3">
-                                    <label class="form-label">Apellido Paterno</label>
-                                    <input type="text" class="form-control" name="apellidoPaterno"
-                                        th:value="${usuario.persona != null ? usuario.persona.apellidoPaterno : ''}" maxlength="50">
-                                </div>
-                                <div class="col-md-4 mb-3">
-                                    <label class="form-label">Apellido Materno</label>
-                                    <input type="text" class="form-control" name="apellidoMaterno"
-                                        th:value="${usuario.persona != null ? usuario.persona.apellidoMaterno : ''}" maxlength="50">
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-3 mb-3">
-                                    <label class="form-label">Tipo Documento</label>
-                                    <select class="form-select" name="idTipoDocumento">
-                                        <option value="">Seleccionar...</option>
-                                        <option th:each="td : ${tiposDocumento}" th:value="${td.idTipoDocumento}" th:text="${td.nombre}"
-                                            th:selected="${usuario.persona != null and usuario.persona.tipoDocumento != null and usuario.persona.tipoDocumento.idTipoDocumento == td.idTipoDocumento}"></option>
-                                    </select>
-                                </div>
-                                <div class="col-md-3 mb-3">
-                                    <label class="form-label">Numero Documento</label>
-                                    <input type="text" class="form-control" name="numeroDocumento"
-                                        th:value="${usuario.persona != null ? usuario.persona.numeroDocumento : ''}" maxlength="20">
-                                </div>
-                                <div class="col-md-3 mb-3">
-                                    <label class="form-label">Telefono</label>
-                                    <input type="text" class="form-control" name="telefono"
-                                        th:value="${usuario.persona != null ? usuario.persona.telefono : ''}" maxlength="12">
-                                </div>
-                                <div class="col-md-3 mb-3">
-                                    <label class="form-label">Fecha Nacimiento</label>
-                                    <input type="date" class="form-control" name="fechaNacimiento"
-                                        th:value="${usuario.persona != null ? usuario.persona.fechaNacimiento : ''}">
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-3 mb-3">
-                                    <label class="form-label">Departamento</label>
-                                    <select class="form-select" id="departamentoPerfil" name="departamento">
-                                        <option value="">Seleccionar...</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-3 mb-3">
-                                    <label class="form-label">Provincia</label>
-                                    <select class="form-select" id="provinciaPerfil" name="provincia" disabled>
-                                        <option value="">Seleccionar...</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-3 mb-3">
-                                    <label class="form-label">Distrito</label>
-                                    <select class="form-select" id="distritoPerfil" name="ubigeo" disabled>
-                                        <option value="">Seleccionar...</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-3 mb-3">
-                                    <label class="form-label">Direccion</label>
-                                    <input type="text" class="form-control" name="direccion"
-                                        th:value="${usuario.persona != null ? usuario.persona.direccion : ''}" maxlength="255">
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Referencia</label>
-                                    <input type="text" class="form-control" name="referencia"
-                                        th:value="${usuario.persona != null ? usuario.persona.referencia : ''}" maxlength="255">
-                                </div>
-                            </div>
-
-                            <hr>
-                            <h5><i class="bi bi-envelope"></i> Datos de Cuenta</h5>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Correo electronico</label>
-                                    <input type="email" class="form-control" th:value="${usuario.correo}" disabled>
-                                    <small class="text-muted">El correo no se puede modificar</small>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Rol</label>
-                                    <input type="text" class="form-control" th:value="${usuario.rol != null ? usuario.rol.nombre : ''}" disabled>
-                                </div>
-                            </div>
-
-                            <hr>
-                            <h5><i class="bi bi-lock"></i> Cambiar contrasena</h5>
-                            <small class="text-muted mb-3 d-block">Deja en blanco si no deseas cambiar la contrasena</small>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Contrasena actual</label>
-                                    <input type="password" class="form-control" name="passwordActual">
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Nueva contrasena</label>
-                                    <input type="password" class="form-control" name="passwordNuevo" minlength="6">
-                                </div>
-                            </div>
-
-                            <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-save"></i> Guardar Cambios
-                            </button>
-                        </form>
-                    </div>
+                <div class="perfil-header-text">
+                    <h1 th:text="${usuario.persona != null ? usuario.persona.nombres + ' ' + (usuario.persona.apellidoPaterno != null ? usuario.persona.apellidoPaterno : '') : 'Mi Perfil'}">Mi Perfil</h1>
+                    <p th:text="${usuario.correo}">correo@correo.com</p>
                 </div>
             </div>
+
+            <!-- ALERTAS -->
+            <div th:if="${exito}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle"></i> <span th:text="${exito}">Exito</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle"></i> <span th:text="${error}">Error</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <!-- PESTANAS -->
+            <div class="perfil-tabs" role="tablist">
+                <button class="perfil-tab active" data-tab="datos" type="button">
+                    <i class="bi bi-person-vcard"></i> Datos Personales
+                </button>
+                <button class="perfil-tab" data-tab="ubicacion" type="button">
+                    <i class="bi bi-geo-alt"></i> Ubicacion
+                </button>
+                <button class="perfil-tab" data-tab="seguridad" type="button">
+                    <i class="bi bi-shield-lock"></i> Seguridad
+                </button>
+            </div>
+
+            <form th:action="@{/actualizar-perfil}" method="post" id="formPerfil">
+                <div class="perfil-card">
+
+                    <!-- PESTANA 1: DATOS PERSONALES -->
+                    <div class="tab-contenido" id="tab-datos">
+                        <div class="perfil-seccion-titulo"><i class="bi bi-person-vcard"></i> Informacion Personal</div>
+                        <div class="row">
+                            <div class="col-md-4 col-12 perfil-campo">
+                                <label>Nombres</label>
+                                <input type="text" name="nombres" disabled
+                                    th:value="${usuario.persona != null ? usuario.persona.nombres : ''}" required maxlength="100">
+                            </div>
+                            <div class="col-md-4 col-12 perfil-campo">
+                                <label>Apellido Paterno</label>
+                                <input type="text" name="apellidoPaterno" disabled
+                                    th:value="${usuario.persona != null ? usuario.persona.apellidoPaterno : ''}" maxlength="50">
+                            </div>
+                            <div class="col-md-4 col-12 perfil-campo">
+                                <label>Apellido Materno</label>
+                                <input type="text" name="apellidoMaterno" disabled
+                                    th:value="${usuario.persona != null ? usuario.persona.apellidoMaterno : ''}" maxlength="50">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3 col-6 perfil-campo">
+                                <label>Tipo Documento</label>
+                                <select name="idTipoDocumento" disabled>
+                                    <option value="">Seleccionar...</option>
+                                    <option th:each="td : ${tiposDocumento}" th:value="${td.idTipoDocumento}" th:text="${td.nombre}"
+                                        th:selected="${usuario.persona != null and usuario.persona.tipoDocumento != null and usuario.persona.tipoDocumento.idTipoDocumento == td.idTipoDocumento}"></option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 col-6 perfil-campo">
+                                <label>Numero Documento</label>
+                                <input type="text" name="numeroDocumento" disabled
+                                    th:value="${usuario.persona != null ? usuario.persona.numeroDocumento : ''}" maxlength="20">
+                            </div>
+                            <div class="col-md-3 col-6 perfil-campo">
+                                <label>Telefono</label>
+                                <input type="text" name="telefono" disabled
+                                    th:value="${usuario.persona != null ? usuario.persona.telefono : ''}" maxlength="12">
+                            </div>
+                            <div class="col-md-3 col-6 perfil-campo">
+                                <label>Fecha Nacimiento</label>
+                                <input type="date" name="fechaNacimiento" disabled
+                                    th:value="${usuario.persona != null ? usuario.persona.fechaNacimiento : ''}">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PESTANA 2: UBICACION -->
+                    <div class="tab-contenido" id="tab-ubicacion" style="display:none;">
+                        <div class="perfil-seccion-titulo"><i class="bi bi-geo-alt"></i> Direccion y Ubigeo</div>
+                        <div class="row">
+                            <div class="col-md-3 col-6 perfil-campo">
+                                <label>Departamento</label>
+                                <select id="departamentoPerfil" name="departamento" disabled>
+                                    <option value="">Seleccionar...</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 col-6 perfil-campo">
+                                <label>Provincia</label>
+                                <select id="provinciaPerfil" name="provincia" disabled>
+                                    <option value="">Seleccionar...</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 col-6 perfil-campo">
+                                <label>Distrito</label>
+                                <select id="distritoPerfil" name="ubigeo" disabled>
+                                    <option value="">Seleccionar...</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 col-6 perfil-campo">
+                                <label>Direccion</label>
+                                <input type="text" name="direccion" disabled
+                                    th:value="${usuario.persona != null ? usuario.persona.direccion : ''}" maxlength="255">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 col-12 perfil-campo">
+                                <label>Referencia</label>
+                                <input type="text" name="referencia" disabled
+                                    th:value="${usuario.persona != null ? usuario.persona.referencia : ''}" maxlength="255">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PESTANA 3: SEGURIDAD -->
+                    <div class="tab-contenido" id="tab-seguridad" style="display:none;">
+                        <div class="perfil-seccion-titulo"><i class="bi bi-person-badge"></i> Datos de Cuenta</div>
+                        <div class="row">
+                            <div class="col-md-6 col-12 perfil-campo">
+                                <label>Correo electronico</label>
+                                <div class="perfil-readonly" th:text="${usuario.correo}">correo@correo.com</div>
+                                <div class="perfil-nota">El correo no se puede modificar</div>
+                            </div>
+                            <div class="col-md-6 col-12 perfil-campo">
+                                <label>Rol</label>
+                                <div class="perfil-readonly" th:text="${usuario.rol != null ? usuario.rol.nombre : ''}">Rol</div>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 1rem;"></div>
+                        <div class="perfil-seccion-titulo"><i class="bi bi-key"></i> Cambiar contrasena</div>
+                        <div class="perfil-nota" style="margin-bottom: 1rem;">Deja en blanco si no deseas cambiar la contrasena</div>
+                        <div class="row">
+                            <div class="col-md-6 col-12 perfil-campo">
+                                <label>Contrasena actual</label>
+                                <input type="password" name="passwordActual" disabled>
+                            </div>
+                            <div class="col-md-6 col-12 perfil-campo">
+                                <label>Nueva contrasena</label>
+                                <input type="password" name="passwordNuevo" disabled minlength="6">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- BOTONES -->
+                    <div class="perfil-btn-acciones">
+                        <button type="button" class="btn-perfil-cancelar" id="btnCancelar" style="display:none;">
+                            <i class="bi bi-x-circle"></i> Cancelar
+                        </button>
+                        <button type="submit" class="btn-perfil-guardar" id="btnGuardar" style="display:none;">
+                            <i class="bi bi-check-circle"></i> Guardar Cambios
+                        </button>
+                        <button type="button" class="btn-perfil-editar" id="btnEditar">
+                            <i class="bi bi-pencil-square"></i> Editar datos
+                        </button>
+                    </div>
+                </div>
+            </form>
         </div>
     </main>
 
@@ -144,6 +434,46 @@
 
     <script th:inline="javascript">
     (function () {
+        // === PESTANAS ===
+        var tabs = document.querySelectorAll('.perfil-tab');
+        var contenidos = document.querySelectorAll('.tab-contenido');
+        var btnEditar = document.getElementById('btnEditar');
+        var btnCancelar = document.getElementById('btnCancelar');
+        var btnGuardar = document.getElementById('btnGuardar');
+        var campos = document.querySelectorAll('.perfil-campo input, .perfil-campo select');
+
+        function actualizarBotonEditar(tabActiva) {
+            if (tabActiva === 'seguridad') {
+                btnEditar.innerHTML = '<i class="bi bi-key"></i> Cambiar contrasena';
+            } else {
+                btnEditar.innerHTML = '<i class="bi bi-pencil-square"></i> Editar datos';
+            }
+        }
+
+        tabs.forEach(function (tab) {
+            tab.addEventListener('click', function () {
+                tabs.forEach(function (t) { t.classList.remove('active'); });
+                contenidos.forEach(function (c) { c.style.display = 'none'; });
+                this.classList.add('active');
+                var tabId = this.getAttribute('data-tab');
+                var target = document.getElementById('tab-' + tabId);
+                if (target) target.style.display = '';
+                actualizarBotonEditar(tabId);
+            });
+        });
+
+        // === MODO EDICION ===
+        function modoEdicion(activar) {
+            campos.forEach(function (c) { c.disabled = !activar; });
+            btnEditar.style.display = activar ? 'none' : '';
+            btnGuardar.style.display = activar ? '' : 'none';
+            btnCancelar.style.display = activar ? '' : 'none';
+        }
+
+        btnEditar.addEventListener('click', function () { modoEdicion(true); });
+        btnCancelar.addEventListener('click', function () { modoEdicion(false); });
+
+        // === UBIGEO ===
         var ubigeos = /*[[${ubigeos}]]*/ [];
         var idActual = /*[[${usuario.persona != null and usuario.persona.ubigeo != null ? usuario.persona.ubigeo.idUbigeo : ''}]]*/ '';
 
@@ -167,9 +497,7 @@
 
         function poblarProvincias(depto) {
             selProv.innerHTML = '<option value="">Seleccionar...</option>';
-            selProv.disabled = true;
             selDist.innerHTML = '<option value="">Seleccionar...</option>';
-            selDist.disabled = true;
             if (!depto) return;
             var provs = [];
             ubigeos.forEach(function (u) {
@@ -182,12 +510,10 @@
                 opt.textContent = p;
                 selProv.appendChild(opt);
             });
-            selProv.disabled = false;
         }
 
         function poblarDistritos(depto, prov) {
             selDist.innerHTML = '<option value="">Seleccionar...</option>';
-            selDist.disabled = true;
             if (!depto || !prov) return;
             var dists = [];
             ubigeos.forEach(function (u) {
@@ -200,17 +526,11 @@
                 opt.textContent = d.nombre;
                 selDist.appendChild(opt);
             });
-            selDist.disabled = false;
         }
 
-        selDep.addEventListener('change', function () {
-            poblarProvincias(this.value);
-        });
-        selProv.addEventListener('change', function () {
-            poblarDistritos(selDep.value, this.value);
-        });
+        selDep.addEventListener('change', function () { poblarProvincias(this.value); });
+        selProv.addEventListener('change', function () { poblarDistritos(selDep.value, this.value); });
 
-        // Restaurar valores actuales
         if (idActual) {
             var actual = null;
             ubigeos.forEach(function (u) {
@@ -221,7 +541,7 @@
                 poblarProvincias(actual.departamento);
                 selProv.value = actual.provincia;
                 poblarDistritos(actual.departamento, actual.provincia);
-                selDist.value = String(actual.id);
+                selDist.value = String(actual.idUbigeo);
             }
         }
     })();

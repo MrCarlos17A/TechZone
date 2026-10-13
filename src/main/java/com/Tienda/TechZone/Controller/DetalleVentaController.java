@@ -18,7 +18,7 @@ public class DetalleVentaController {
     private final ProductoService productoService;
 
     @GetMapping
-    public String ListarPorVenta(@RequestParam(required = false) Integer idVenta, Model model) {
+    public String ListarPorVenta(@RequestParam(required = false) Long idVenta, Model model) {
         if (idVenta != null) {
             model.addAttribute("detalles", detalleVentaService.ListarPorVenta(idVenta));
             model.addAttribute("idVenta", idVenta);
@@ -31,7 +31,7 @@ public class DetalleVentaController {
     }
 
     @GetMapping("/ver/{id}")
-    public String VerDetalle(@PathVariable Integer id, Model model) {
+    public String VerDetalle(@PathVariable Long id, Model model) {
         model.addAttribute("detalle", detalleVentaService.ObtenerDetallePorId(id));
         return "admin/detalles-venta/detalle";
     }

@@ -39,9 +39,9 @@ public class EmpleadoService {
 
     @Transactional
     public Empleado CrearEmpleadoCompleto(String nombres, String apellidoPaterno, String apellidoMaterno,
-            Integer idTipoDocumento, String numeroDocumento, String telefono, LocalDate fechaNacimiento,
-            String direccion, String referencia, Integer idUbigeo,
-            String correo, String password, Integer idRol,
+            Long idTipoDocumento, String numeroDocumento, String telefono, LocalDate fechaNacimiento,
+            String direccion, String referencia, Long idUbigeo,
+            String correo, String password, Long idRol,
             LocalDate fechaContrato, BigDecimal salario) {
 
         if (nombres == null || nombres.isBlank()) {
@@ -59,6 +59,7 @@ public class EmpleadoService {
         if (usuarioRepository.findByCorreo(correo.trim()).isPresent()) {
             throw new RuntimeException("El correo ya esta registrado");
         }
+        validarSalario(salario);
 
         TipoDocumento tipoDoc = null;
         if (idTipoDocumento != null) {
@@ -103,9 +104,9 @@ public class EmpleadoService {
 
     @Transactional
     public Empleado ActualizarEmpleadoCompleto(Long id, String nombres, String apellidoPaterno, String apellidoMaterno,
-            Integer idTipoDocumento, String numeroDocumento, String telefono, LocalDate fechaNacimiento,
-            String direccion, String referencia, Integer idUbigeo,
-            String correo, String password, Integer idRol,
+            Long idTipoDocumento, String numeroDocumento, String telefono, LocalDate fechaNacimiento,
+            String direccion, String referencia, Long idUbigeo,
+            String correo, String password, Long idRol,
             LocalDate fechaContrato, BigDecimal salario) {
 
         Empleado empleado = empleadoRepository.findById(id)
@@ -150,18 +151,37 @@ public class EmpleadoService {
             }
         }
 
+        if (fechaContrato != null && fechaContrato.isAfter(LocalDate.now())) {
+            throw new RuntimeException("La fecha de contrato no puede ser futura");
+        }
         empleado.setFechaContrato(fechaContrato != null ? fechaContrato : empleado.getFechaContrato());
-        empleado.setSalario(salario != null ? salario : empleado.getSalario());
+        if (salario != null) {
+        validarSalario(salario);
+        if (fechaContrato != null && fechaContrato.isAfter(LocalDate.now())) {
+            throw new RuntimeException("La fecha de contrato no puede ser futura");
+        }
+            empleado.setSalario(salario);
+        }
         return empleadoRepository.save(empleado);
     }
 
     public Empleado ActualizarEmpleado(Long id, Empleado empleado) {
         Empleado existente = empleadoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Empleado no encontrado con id: " + id));
+        validarSalario(empleado.getSalario());
         existente.setPersona(empleado.getPersona());
         existente.setFechaContrato(empleado.getFechaContrato());
         existente.setSalario(empleado.getSalario());
         return empleadoRepository.save(existente);
+    }
+
+    private void validarSalario(BigDecimal salario) {
+        if (salario == null) {
+            throw new RuntimeException("El salario es obligatorio");
+        }
+        if (salario.compareTo(BigDecimal.ZERO) < 0) {
+            throw new RuntimeException("El salario no puede ser negativo");
+        }
     }
 
     public void EliminarEmpleado(Long id) {

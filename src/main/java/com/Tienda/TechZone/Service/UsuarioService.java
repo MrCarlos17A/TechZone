@@ -69,6 +69,9 @@ public class UsuarioService {
         if (usuario.getCorreo() == null || !usuario.getCorreo().matches("[^@\\s]+@[^@\\s]+\\.[^@\\s]+")) {
             throw new RuntimeException("Ingresa un correo valido que contenga @");
         }
+        if (usuario.getCorreo().trim().length() > 100) {
+            throw new RuntimeException("El correo no puede superar 100 caracteres");
+        }
         Optional<Usuario> duplicado = usuarioRepository.findByCorreo(usuario.getCorreo().trim());
         if (duplicado.isPresent() && (idActual == null || !duplicado.get().getIdUsuario().equals(idActual))) {
             throw new RuntimeException("El correo ya esta registrado");
@@ -78,6 +81,10 @@ public class UsuarioService {
         }
         if (usuario.getPersona() == null) {
             throw new RuntimeException("Selecciona una persona para el usuario");
+        }
+        if (usuario.getEstado() != null && !usuario.getEstado().isBlank()
+                && !usuario.getEstado().equals("activo") && !usuario.getEstado().equals("inactivo")) {
+            throw new RuntimeException("El estado debe ser 'activo' o 'inactivo'");
         }
     }
 }

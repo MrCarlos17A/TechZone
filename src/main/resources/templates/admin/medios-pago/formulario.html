@@ -16,10 +16,11 @@
                                 </h4>
                             </div>
                             <div class="card-body">
-                                <form th:action="${medioPago.idMedioPago != null} ? @{/admin/medios-pago/editar/{id}(id=${medioPago.idMedioPago})} : @{/admin/medios-pago/guardar}" method="post">
+                                <form th:action="@{/admin/medios-pago/guardar}" method="post">
+                                    <input type="hidden" name="idMedioPago" th:value="${medioPago.idMedioPago}">
                                     <div class="mb-3">
                                         <label class="form-label">Nombre</label>
-                                        <input type="text" class="form-control" name="nombre" th:value="${medioPago.nombre}" required>
+                                        <input type="text" class="form-control" name="nombre" th:value="${medioPago.nombre}" maxlength="50" required>
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label">Estado</label>

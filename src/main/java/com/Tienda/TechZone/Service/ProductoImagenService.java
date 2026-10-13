@@ -34,6 +34,9 @@ public class ProductoImagenService {
     public ProductoImagen ActualizarImagen(Long id, ProductoImagen imagen) {
         ProductoImagen existente = productoImagenRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Imagen no encontrada con id: " + id));
+        if (imagen.getUrlImagen() == null || imagen.getUrlImagen().isBlank()) {
+            throw new RuntimeException("La URL de la imagen es obligatoria");
+        }
         existente.setUrlImagen(imagen.getUrlImagen());
         existente.setEsPrincipal(imagen.getEsPrincipal());
         return productoImagenRepository.save(existente);

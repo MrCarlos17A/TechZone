@@ -25,7 +25,7 @@ public class ProveedorService {
         return proveedorRepository.save(proveedor);
     }
 
-    public Proveedor ActualizarProveedor(Integer id, Proveedor proveedor) {
+    public Proveedor ActualizarProveedor(Long id, Proveedor proveedor) {
         Proveedor existente = proveedorRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Proveedor no encontrado con id: " + id));
         existente.setRazonSocial(proveedor.getRazonSocial());
@@ -41,11 +41,11 @@ public class ProveedorService {
         return proveedorRepository.save(existente);
     }
 
-    public void EliminarProveedor(Integer id) {
+    public void EliminarProveedor(Long id) {
         proveedorRepository.deleteById(id);
     }
 
-    public Proveedor ObtenerProveedorPorId(Integer id) {
+    public Proveedor ObtenerProveedorPorId(Long id) {
         return proveedorRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Proveedor no encontrado con id: " + id));
     }

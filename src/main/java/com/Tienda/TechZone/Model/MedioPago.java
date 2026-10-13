@@ -13,9 +13,9 @@ public class MedioPago {
 
     @Id
     @Column(name = "id_medio_pago", nullable = false)
-    private Integer idMedioPago;
+    private Long idMedioPago;
 
-    @Column(length = 20)
+    @Column(length = 50)
     private String nombre;
 
     @Column(name = "vigente")

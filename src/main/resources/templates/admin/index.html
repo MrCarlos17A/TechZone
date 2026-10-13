@@ -77,7 +77,7 @@
                             </div>
                         </a>
                     </div>
-                    <div class="col">
+                    <div class="col" th:if="${esAdmin}">
                         <a th:href="@{/admin/usuarios}" class="text-decoration-none">
                             <div class="card tarjeta-resumen bg-warning text-dark h-100 shadow-sm">
                                 <div class="card-body">
@@ -92,7 +92,7 @@
                             </div>
                         </a>
                     </div>
-                    <div class="col">
+                    <div class="col" th:if="${esAdmin}">
                         <a th:href="@{/admin/roles}" class="text-decoration-none">
                             <div class="card tarjeta-resumen bg-secondary text-white h-100 shadow-sm">
                                 <div class="card-body">

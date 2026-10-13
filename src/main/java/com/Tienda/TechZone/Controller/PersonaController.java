@@ -20,8 +20,21 @@ public class PersonaController {
     private final UbigeoService ubigeoService;
 
     @GetMapping
-    public String ListarPersonas(Model model) {
-        model.addAttribute("personas", personaService.ListarPersonas());
+    public String ListarPersonas(@RequestParam(value = "q", required = false) String q, Model model) {
+        java.util.List<Persona> personas = personaService.ListarPersonas();
+        if (q != null && !q.isBlank()) {
+            String t = q.trim().toLowerCase();
+            personas = personas.stream().filter(p -> {
+                boolean ok = (p.getNombres() != null && p.getNombres().toLowerCase().contains(t))
+                        || (p.getApellidoPaterno() != null && p.getApellidoPaterno().toLowerCase().contains(t))
+                        || (p.getApellidoMaterno() != null && p.getApellidoMaterno().toLowerCase().contains(t))
+                        || (p.getNumeroDocumento() != null && p.getNumeroDocumento().contains(t))
+                        || (p.getTelefono() != null && p.getTelefono().contains(t));
+                return ok;
+            }).collect(java.util.stream.Collectors.toList());
+        }
+        model.addAttribute("personas", personas);
+        model.addAttribute("q", q);
         return "admin/personas/listar";
     }
 

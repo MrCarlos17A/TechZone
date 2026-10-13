@@ -13,7 +13,7 @@ public class Rol {
 
     @Id
     @Column(name = "id_rol", nullable = false)
-    private Integer idRol;
+    private Long idRol;
 
     @Column(length = 20)
     private String nombre;

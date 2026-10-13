@@ -24,19 +24,31 @@ public class VentaController {
 
     @GetMapping
     public String listar(@RequestParam(required = false) String estado,
+            @RequestParam(required = false) String q,
             Model model) {
-        List<Venta> ventas = estado != null && !estado.isBlank()
-                ? ventaRepository.findByEstado(estado)
-                : ventaRepository.findAll();
+        String est = (estado == null || estado.isBlank()) ? null : estado.trim();
+        String busqueda = (q == null || q.isBlank()) ? null : q.trim();
+
+        List<Venta> ventas = ventaRepository.buscar(est, busqueda);
+
         model.addAttribute("ventas", ventas);
-        model.addAttribute("estadosDisponibles",
-                java.util.stream.Stream.of("PENDIENTE", "COMPLETADA", "CANCELADA")
-                        .collect(java.util.stream.Collectors.toList()));
+        model.addAttribute("estadoActual", est);
+        model.addAttribute("q", busqueda == null ? "" : busqueda);
+
+        List<String> estados = java.util.List.of("PENDIENTE", "COMPLETADA", "CANCELADA");
+        java.util.Map<String, Long> conteos = new java.util.LinkedHashMap<>();
+        for (String e : estados) {
+            conteos.put(e, ventaRepository.countByEstado(e));
+        }
+        model.addAttribute("estadosDisponibles", estados);
+        model.addAttribute("conteosEstados", conteos);
+        model.addAttribute("totalVentas", ventaRepository.count());
+        model.addAttribute("totalFiltrado", ventas.size());
         return "admin/ventas/listar";
     }
 
     @GetMapping("/{id}")
-    public String ver(@PathVariable Integer id, Model model) {
+    public String ver(@PathVariable Long id, Model model) {
         Venta venta = ventaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Venta no encontrada"));
         model.addAttribute("venta", venta);
@@ -54,14 +66,36 @@ public class VentaController {
     public String guardar(@ModelAttribute Venta venta,
             @RequestParam("idCliente") Long idCliente,
             @RequestParam("idEmpleado") Long idEmpleado,
-            Model model) {
-        Cliente cliente = clienteRepository.findById(idCliente)
-                .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
-        Empleado empleado = empleadoRepository.findById(idEmpleado)
-                .orElseThrow(() -> new RuntimeException("Empleado no encontrado"));
-        venta.setCliente(cliente);
-        venta.setEmpleado(empleado);
-        ventaRepository.save(venta);
-        return "redirect:/admin/ventas/" + venta.getIdVenta();
+            Model model,
+            org.springframework.web.servlet.mvc.support.RedirectAttributes flash) {
+        try {
+            Cliente cliente = clienteRepository.findById(idCliente)
+                    .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
+            Empleado empleado = empleadoRepository.findById(idEmpleado)
+                    .orElseThrow(() -> new RuntimeException("Empleado no encontrado"));
+            venta.setCliente(cliente);
+            venta.setEmpleado(empleado);
+            if (venta.getSubtotal() != null && venta.getSubtotal().compareTo(java.math.BigDecimal.ZERO) < 0) {
+                throw new RuntimeException("El subtotal no puede ser negativo");
+            }
+            if (venta.getIgv() != null && venta.getIgv().compareTo(java.math.BigDecimal.ZERO) < 0) {
+                throw new RuntimeException("El IGV no puede ser negativo");
+            }
+            if (venta.getTotal() != null && venta.getTotal().compareTo(java.math.BigDecimal.ZERO) <= 0) {
+                throw new RuntimeException("El total debe ser mayor a 0");
+            }
+            if (venta.getEstado() != null && !venta.getEstado().isBlank()
+                    && !java.util.Set.of("PENDIENTE", "COMPLETADA", "CANCELADA").contains(venta.getEstado())) {
+                throw new RuntimeException("Estado no valido (PENDIENTE, COMPLETADA, CANCELADA)");
+            }
+            if (venta.getFechaVenta() == null) {
+                venta.setFechaVenta(java.time.LocalDateTime.now());
+            }
+            ventaRepository.save(venta);
+            return "redirect:/admin/ventas/" + venta.getIdVenta();
+        } catch (RuntimeException e) {
+            flash.addFlashAttribute("error", "No se pudo registrar la venta: " + e.getMessage());
+            return "redirect:/admin/ventas/crear";
+        }
     }
 }

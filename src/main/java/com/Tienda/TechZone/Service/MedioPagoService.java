@@ -27,9 +27,12 @@ public class MedioPagoService {
         return medioPagoRepository.save(medioPago);
     }
 
-    public MedioPago ActualizarMedioPago(Integer id, MedioPago medioPago) {
+    public MedioPago ActualizarMedioPago(Long id, MedioPago medioPago) {
         MedioPago existente = medioPagoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Medio de pago no encontrado con id: " + id));
+        if (medioPago.getNombre() == null || medioPago.getNombre().isBlank()) {
+            throw new RuntimeException("El nombre del medio de pago es obligatorio");
+        }
         existente.setNombre(medioPago.getNombre().trim());
         if (medioPago.getVigente() != null) {
             existente.setVigente(medioPago.getVigente());
@@ -37,11 +40,11 @@ public class MedioPagoService {
         return medioPagoRepository.save(existente);
     }
 
-    public void EliminarMedioPago(Integer id) {
+    public void EliminarMedioPago(Long id) {
         medioPagoRepository.deleteById(id);
     }
 
-    public MedioPago ObtenerMedioPagoPorId(Integer id) {
+    public MedioPago ObtenerMedioPagoPorId(Long id) {
         return medioPagoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Medio de pago no encontrado con id: " + id));
     }

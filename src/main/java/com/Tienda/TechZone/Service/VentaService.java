@@ -33,7 +33,7 @@ public class VentaService {
         return ventaRepository.findByClienteIdCliente(idCliente);
     }
 
-    public Venta ObtenerVentaPorId(Integer id) {
+    public Venta ObtenerVentaPorId(Long id) {
         return ventaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Venta no encontrada con id: " + id));
     }
@@ -91,7 +91,7 @@ public class VentaService {
         return venta;
     }
 
-    public Venta CambiarEstado(Integer idVenta, String estado) {
+    public Venta CambiarEstado(Long idVenta, String estado) {
         Venta venta = ObtenerVentaPorId(idVenta);
         venta.setEstado(estado);
         return ventaRepository.save(venta);

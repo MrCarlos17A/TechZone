@@ -19,12 +19,12 @@
                                 <form th:action="${proveedor.idProveedor != null} ? @{/admin/proveedores/actualizar/{id}(id=${proveedor.idProveedor})} : @{/admin/proveedores/guardar}" method="post">
                                     <div class="mb-3">
                                         <label class="form-label">Razon Social</label>
-                                        <input type="text" class="form-control" name="razonSocial" th:value="${proveedor.razonSocial}" required>
+                                        <input type="text" class="form-control" name="razonSocial" th:value="${proveedor.razonSocial}" maxlength="150" required>
                                     </div>
                                     <div class="row">
                                         <div class="col-md-4 mb-3">
                                             <label class="form-label">Tipo Documento</label>
-                                            <select class="form-select" name="tipoDocumento">
+                                            <select class="form-select" name="idTipoDocumento" required>
                                                 <option value="">Seleccionar...</option>
                                                 <option th:each="td : ${tiposDocumento}" th:value="${td.idTipoDocumento}" th:text="${td.nombre}"
                                                     th:selected="${proveedor.tipoDocumento != null and proveedor.tipoDocumento.idTipoDocumento == td.idTipoDocumento}"></option>
@@ -42,11 +42,11 @@
                                     <div class="row">
                                         <div class="col-md-4 mb-3">
                                             <label class="form-label">Correo</label>
-                                            <input type="email" class="form-control" name="correo" th:value="${proveedor.correo}">
+                                            <input type="email" class="form-control" name="correo" th:value="${proveedor.correo}" maxlength="100" required>
                                         </div>
                                         <div class="col-md-4 mb-3">
                                             <label class="form-label">Nombre Encargado</label>
-                                            <input type="text" class="form-control" name="nombreEncargado" th:value="${proveedor.nombreEncargado}">
+                                            <input type="text" class="form-control" name="nombreEncargado" th:value="${proveedor.nombreEncargado}" maxlength="150" required>
                                         </div>
                                         <div class="col-md-4 mb-3">
                                             <label class="form-label">Estado</label>
