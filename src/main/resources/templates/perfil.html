@@ -387,14 +387,10 @@
                     <div class="tab-contenido" id="tab-seguridad" style="display:none;">
                         <div class="perfil-seccion-titulo"><i class="bi bi-person-badge"></i> Datos de Cuenta</div>
                         <div class="row">
-                            <div class="col-md-6 col-12 perfil-campo">
+                            <div class="col-12 perfil-campo">
                                 <label>Correo electronico</label>
                                 <div class="perfil-readonly" th:text="${usuario.correo}">correo@correo.com</div>
                                 <div class="perfil-nota">El correo no se puede modificar</div>
-                            </div>
-                            <div class="col-md-6 col-12 perfil-campo">
-                                <label>Rol</label>
-                                <div class="perfil-readonly" th:text="${usuario.rol != null ? usuario.rol.nombre : ''}">Rol</div>
                             </div>
                         </div>
 

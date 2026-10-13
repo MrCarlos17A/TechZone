@@ -4,6 +4,8 @@ import com.Tienda.TechZone.Model.Persona;
 import com.Tienda.TechZone.Model.Rol;
 import com.Tienda.TechZone.Model.Usuario;
 import com.Tienda.TechZone.Model.Cliente;
+import com.Tienda.TechZone.Model.TipoDocumento;
+import com.Tienda.TechZone.Model.Ubigeo;
 import com.Tienda.TechZone.Repository.PersonaRepository;
 import com.Tienda.TechZone.Repository.RolRepository;
 import com.Tienda.TechZone.Repository.UsuarioRepository;
@@ -82,7 +84,8 @@ public class LoginController {
     }
 
     @GetMapping("/registro")
-    public String PaginaRegistro() {
+    public String PaginaRegistro(Model model) {
+        model.addAttribute("tiposDocumento", tipoDocumentoRepository.findAllByVigenteTrue());
         return "registro";
     }
 
@@ -93,10 +96,34 @@ public class LoginController {
             @RequestParam String telefono,
             @RequestParam String password,
             @RequestParam String passwordConfirmar,
+            @RequestParam(required = false) String apellidoMaterno,
+            @RequestParam(required = false) String idTipoDocumento,
+            @RequestParam(required = false) String numeroDocumento,
+            @RequestParam(required = false) String fechaNacimiento,
+            @RequestParam(required = false) String direccion,
+            @RequestParam(required = false) String referencia,
+            @RequestParam(required = false) String ubigeo,
+            jakarta.servlet.http.HttpServletRequest request,
+            jakarta.servlet.http.HttpServletResponse response,
             RedirectAttributes flash) {
+
+        if (nombres == null || nombres.isBlank()) {
+            flash.addFlashAttribute("error", "Los nombres son obligatorios");
+            return "redirect:/registro";
+        }
+
+        if (apellidos == null || apellidos.isBlank()) {
+            flash.addFlashAttribute("error", "El apellido paterno es obligatorio");
+            return "redirect:/registro";
+        }
 
         if (correo == null || !correo.contains("@") || !correo.matches("[^@\\s]+@[^@\\s]+\\.[^@\\s]+")) {
             flash.addFlashAttribute("error", "Ingresa un correo valido que contenga @");
+            return "redirect:/registro";
+        }
+
+        if (telefono == null || !telefono.matches("\\d{9}")) {
+            flash.addFlashAttribute("error", "El telefono debe tener 9 digitos");
             return "redirect:/registro";
         }
 
@@ -107,6 +134,12 @@ public class LoginController {
 
         if (!password.equals(passwordConfirmar)) {
             flash.addFlashAttribute("error", "Las contrasenas no coinciden");
+            return "redirect:/registro";
+        }
+
+        if (numeroDocumento != null && !numeroDocumento.isBlank()
+                && !numeroDocumento.matches("[0-9A-Za-z]{6,20}")) {
+            flash.addFlashAttribute("error", "El numero de documento debe tener entre 6 y 20 caracteres");
             return "redirect:/registro";
         }
 
@@ -121,10 +154,43 @@ public class LoginController {
             return "redirect:/registro";
         }
 
+        TipoDocumento tipoDoc = null;
+        if (idTipoDocumento != null && !idTipoDocumento.isBlank()) {
+            try {
+                tipoDoc = tipoDocumentoRepository.findById(Long.parseLong(idTipoDocumento.trim())).orElse(null);
+            } catch (NumberFormatException ignored) {
+            }
+        }
+
+        Ubigeo ubigeoSel = null;
+        if (ubigeo != null && !ubigeo.isBlank()) {
+            try {
+                ubigeoSel = ubigeoRepository.findById(Long.parseLong(ubigeo.trim())).orElse(null);
+            } catch (NumberFormatException ignored) {
+            }
+        }
+
+        java.time.LocalDate fechaNac = null;
+        if (fechaNacimiento != null && !fechaNacimiento.isBlank()) {
+            try {
+                fechaNac = java.time.LocalDate.parse(fechaNacimiento);
+            } catch (RuntimeException ignored) {
+                flash.addFlashAttribute("error", "La fecha de nacimiento no es valida");
+                return "redirect:/registro";
+            }
+        }
+
         Persona persona = personaRepository.save(Persona.builder()
-                .nombres(nombres)
-                .apellidoPaterno(apellidos)
-                .telefono(telefono)
+                .nombres(nombres.trim())
+                .apellidoPaterno(apellidos.trim())
+                .apellidoMaterno(apellidoMaterno != null && !apellidoMaterno.isBlank() ? apellidoMaterno.trim() : null)
+                .tipoDocumento(tipoDoc)
+                .numeroDocumento(numeroDocumento != null && !numeroDocumento.isBlank() ? numeroDocumento.trim() : null)
+                .telefono(telefono.trim())
+                .direccion(direccion != null && !direccion.isBlank() ? direccion.trim() : null)
+                .referencia(referencia != null && !referencia.isBlank() ? referencia.trim() : null)
+                .ubigeo(ubigeoSel)
+                .fechaNacimiento(fechaNac)
                 .vigente(true)
                 .build());
 
@@ -138,8 +204,23 @@ public class LoginController {
 
         usuarioRepository.save(usuario);
         clienteRepository.save(Cliente.builder().persona(persona).totalGastado(java.math.BigDecimal.ZERO).build());
-        flash.addFlashAttribute("exito", "Cuenta creada correctamente. Ahora puedes iniciar sesion.");
-        return "redirect:/?abrirLogin=true";
+
+        try {
+            Authentication auth = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(correo, password));
+
+            SecurityContext contexto = SecurityContextHolder.createEmptyContext();
+            contexto.setAuthentication(auth);
+            SecurityContextHolder.setContext(contexto);
+            securityContextRepository.saveContext(contexto, request, response);
+
+            flash.addFlashAttribute("exito", "Cuenta creada correctamente. Bienvenido, " + persona.getNombres() + ".");
+        } catch (Exception e) {
+            flash.addFlashAttribute("exito", "Cuenta creada correctamente. Ahora puedes iniciar sesion.");
+            return "redirect:/?abrirLogin=true";
+        }
+
+        return "redirect:/";
     }
 
     @GetMapping("/debug/usuarios")

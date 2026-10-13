@@ -13,6 +13,12 @@
                     <div class="card-body p-4">
                         <h2 class="text-center mb-4"><i class="bi bi-person-plus"></i> Crear Cuenta</h2>
 
+                        <div id="alertaValidacion" class="alert alert-danger alert-dismissible fade show d-none"
+                            role="alert">
+                            <i class="bi bi-exclamation-triangle"></i> Revisa los campos marcados en rojo.
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+
                         <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
                             <i class="bi bi-exclamation-triangle"></i> <span th:text="${error}">Error</span>
                             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
@@ -24,21 +30,58 @@
                         </div>
 
                         <form th:action="@{/registro}" method="post" id="formRegistro" novalidate>
+                            <div class="mb-3">
+                                <h6 class="text-muted text-uppercase small mb-2"><i class="bi bi-person-vcard"></i> Datos personales</h6>
+                            </div>
+
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label for="nombres" class="form-label">Nombres</label>
+                                    <label for="nombres" class="form-label">Nombres <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" id="nombres" name="nombres" required
-                                        placeholder="Tus nombres">
+                                        placeholder="Tus nombres" maxlength="100">
+                                    <div class="invalid-feedback">Los nombres son obligatorios</div>
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <label for="apellidos" class="form-label">Apellidos</label>
+                                    <label for="apellidos" class="form-label">Apellido Paterno <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" id="apellidos" name="apellidos" required
-                                        placeholder="Tus apellidos">
+                                        placeholder="Tu apellido paterno" maxlength="50">
+                                    <div class="invalid-feedback">El apellido paterno es obligatorio</div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="apellidoMaterno" class="form-label">Apellido Materno</label>
+                                    <input type="text" class="form-control" id="apellidoMaterno" name="apellidoMaterno"
+                                        placeholder="Tu apellido materno" maxlength="50">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="fechaNacimiento" class="form-label">Fecha de nacimiento</label>
+                                    <input type="date" class="form-control" id="fechaNacimiento" name="fechaNacimiento">
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-5 mb-3">
+                                    <label for="idTipoDocumento" class="form-label">Tipo de documento</label>
+                                    <select class="form-select" id="idTipoDocumento" name="idTipoDocumento">
+                                        <option value="">Seleccionar...</option>
+                                        <option th:each="td : ${tiposDocumento}" th:value="${td.idTipoDocumento}"
+                                            th:text="${td.nombre}"
+                                            th:selected="${td.nombre == 'DNI'}">DNI</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-7 mb-3">
+                                    <label for="numeroDocumento" class="form-label">Numero de documento</label>
+                                    <input type="text" class="form-control" id="numeroDocumento" name="numeroDocumento"
+                                        placeholder="Ej: 12345678" maxlength="20" inputmode="numeric">
+                                    <small class="text-muted">DNI: 8 digitos</small>
+                                    <div class="invalid-feedback">Numero de documento invalido</div>
                                 </div>
                             </div>
 
                             <div class="mb-3">
-                                <label for="correo" class="form-label">Correo electronico</label>
+                                <label for="correo" class="form-label">Correo electronico <span class="text-danger">*</span></label>
                                 <input type="email" class="form-control" id="correo" name="correo" required
                                     placeholder="tu@correo.com" pattern="[^@\s]+@[^@\s]+\.[^@\s]+"
                                     title="Ingresa un correo valido que contenga @">
@@ -46,32 +89,75 @@
                             </div>
 
                             <div class="mb-3">
-                                <label for="telefono" class="form-label">Telefono</label>
+                                <label for="telefono" class="form-label">Telefono <span class="text-danger">*</span></label>
                                 <input type="tel" class="form-control" id="telefono" name="telefono" required
                                     placeholder="999888777" pattern="[0-9]{9}" maxlength="9"
                                     title="Ingresa 9 digitos">
                                 <div class="invalid-feedback">El telefono debe tener 9 digitos</div>
                             </div>
 
+                            <div class="mb-3">
+                                <h6 class="text-muted text-uppercase small mb-2 mt-4"><i class="bi bi-geo-alt"></i> Ubicacion</h6>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label for="departamentoRegistro" class="form-label">Departamento</label>
+                                    <select class="form-select" id="departamentoRegistro">
+                                        <option value="">Seleccionar...</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="provinciaRegistro" class="form-label">Provincia</label>
+                                    <select class="form-select" id="provinciaRegistro" disabled>
+                                        <option value="">Seleccionar...</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="distritoRegistro" class="form-label">Distrito</label>
+                                    <select class="form-select" id="distritoRegistro" name="ubigeo" disabled>
+                                        <option value="">Seleccionar...</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="direccion" class="form-label">Direccion</label>
+                                <input type="text" class="form-control" id="direccion" name="direccion"
+                                    placeholder="Av. Los Olivos 123, Urb. El Limon" maxlength="255">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="referencia" class="form-label">Referencia</label>
+                                <input type="text" class="form-control" id="referencia" name="referencia"
+                                    placeholder="Frente al parque" maxlength="255">
+                            </div>
+
+                            <div class="mb-3 mt-4">
+                                <h6 class="text-muted text-uppercase small mb-2"><i class="bi bi-shield-lock"></i> Seguridad</h6>
+                            </div>
+
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label for="password" class="form-label">Contrasena</label>
-                                    <div class="input-group">
+                                    <label for="password" class="form-label">Contrasena <span class="text-danger">*</span></label>
+                                    <div class="input-group has-validation">
                                         <input type="password" class="form-control" id="password" name="password" required
                                             placeholder="Minimo 6 caracteres" minlength="6">
                                         <button class="btn btn-outline-secondary" type="button" id="togglePassword" title="Mostrar / ocultar contrasena">
                                             <i class="bi bi-eye"></i>
                                         </button>
+                                        <div class="invalid-feedback">La contrasena debe tener al menos 6 caracteres</div>
                                     </div>
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <label for="passwordConfirmar" class="form-label">Confirmar Contrasena</label>
-                                    <div class="input-group">
+                                    <label for="passwordConfirmar" class="form-label">Confirmar Contrasena <span class="text-danger">*</span></label>
+                                    <div class="input-group has-validation">
                                         <input type="password" class="form-control" id="passwordConfirmar" name="passwordConfirmar" required
                                             placeholder="Repite tu contrasena" minlength="6">
                                         <button class="btn btn-outline-secondary" type="button" id="togglePasswordConfirmar" title="Mostrar / ocultar contrasena">
                                             <i class="bi bi-eye"></i>
                                         </button>
+                                        <div class="invalid-feedback">Las contrasenas no coinciden</div>
                                     </div>
                                 </div>
                             </div>
@@ -92,6 +178,7 @@
 
     <footer th:replace="~{fragments/plantilla :: pie}"></footer>
 
+    <script th:src="@{/js/ubigeo-cascada.js}"></script>
     <script>
         function setupToggle(toggleId, inputId) {
             var btn = document.getElementById(toggleId);
@@ -115,31 +202,55 @@
 
         document.getElementById('formRegistro').addEventListener('submit', function (e) {
             var ok = true;
+
+            function marcar(id, invalido) {
+                var el = document.getElementById(id);
+                if (!el) return;
+                if (invalido) { el.classList.add('is-invalid'); ok = false; }
+                else { el.classList.remove('is-invalid'); }
+            }
+
+            marcar('nombres', document.getElementById('nombres').value.trim() === '');
+            marcar('apellidos', document.getElementById('apellidos').value.trim() === '');
+
             var correo = document.getElementById('correo');
-            if (correo.value.indexOf('@') === -1) {
-                correo.classList.add('is-invalid');
-                ok = false;
-            } else {
-                correo.classList.remove('is-invalid');
-            }
+            marcar('correo', !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(correo.value.trim()));
+
             var tel = document.getElementById('telefono');
-            if (!/^[0-9]{9}$/.test(tel.value)) {
-                tel.classList.add('is-invalid');
-                ok = false;
-            } else {
-                tel.classList.remove('is-invalid');
+            marcar('telefono', !/^[0-9]{9}$/.test(tel.value));
+
+            var tipoDoc = document.getElementById('idTipoDocumento');
+            var numDoc = document.getElementById('numeroDocumento');
+            if (tipoDoc && numDoc && tipoDoc.value !== '') {
+                var nombreTipo = tipoDoc.options[tipoDoc.selectedIndex].text.toUpperCase();
+                var val = numDoc.value.trim();
+                if (nombreTipo === 'DNI') {
+                    marcar('numeroDocumento', !/^[0-9]{8}$/.test(val));
+                } else if (val !== '') {
+                    marcar('numeroDocumento', !/^[0-9A-Za-z]{6,20}$/.test(val));
+                } else {
+                    marcar('numeroDocumento', false);
+                }
             }
+
             var p1 = document.getElementById('password');
             var p2 = document.getElementById('passwordConfirmar');
-            if (p1.value !== p2.value) {
-                p2.classList.add('is-invalid');
-                ok = false;
-            } else {
-                p2.classList.remove('is-invalid');
-            }
+            marcar('password', p1.value.length < 6);
+            marcar('passwordConfirmar', p1.value !== p2.value || p2.value.length < 6);
+
+            var alerta = document.getElementById('alertaValidacion');
             if (!ok) {
                 e.preventDefault();
+                if (alerta) alerta.classList.remove('d-none');
+                var primeroInvalido = document.querySelector('#formRegistro .is-invalid');
+                if (primeroInvalido) primeroInvalido.focus();
+            } else if (alerta) {
+                alerta.classList.add('d-none');
             }
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            if (typeof initCascadaUbigeo === 'function') { initCascadaUbigeo('Registro'); }
         });
     </script>
 </body>

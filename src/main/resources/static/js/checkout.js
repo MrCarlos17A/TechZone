@@ -6,9 +6,15 @@
 
     function $(id) { return document.getElementById(id); }
 
+    function claveCarrito() {
+        const drawer = document.getElementById('drawerCarrito');
+        const usuario = drawer && drawer.dataset.usuario ? drawer.dataset.usuario : '';
+        return 'techzone-carrito-' + usuario;
+    }
+
     function obtenerCarrito() {
         try {
-            const datos = localStorage.getItem('techzone-carrito');
+            const datos = localStorage.getItem(claveCarrito());
             return datos ? JSON.parse(datos) : [];
         } catch (e) { return []; }
     }
@@ -416,7 +422,7 @@
             .then(r => r.json())
             .then(data => {
                 if (data.ok) {
-                    localStorage.removeItem('techzone-carrito');
+                    localStorage.removeItem(claveCarrito());
                     const insignia = document.getElementById('insigniaCarrito');
                     if (insignia) insignia.style.display = 'none';
                     const contador = document.getElementById('contadorDrawer');

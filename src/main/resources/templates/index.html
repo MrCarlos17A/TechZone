@@ -7,6 +7,15 @@
     <header th:replace="~{fragments/plantilla :: barra-navegacion('inicio')}"></header>
 
     <main class="container my-4">
+        <div th:if="${exito}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle"></i> <span th:text="${exito}">Exito</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle"></i> <span th:text="${error}">Error</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
         <!-- Hero Carrusel -->
         <section class="hero-section mb-5">
             <div id="carruselHero" class="carousel slide rounded-3 overflow-hidden shadow" data-bs-ride="carousel"
