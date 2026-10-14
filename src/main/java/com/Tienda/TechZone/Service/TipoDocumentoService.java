@@ -43,7 +43,10 @@ public class TipoDocumentoService {
     }
 
     public void EliminarTipoDocumento(Long id) {
-        tipoDocumentoRepository.deleteById(id);
+        TipoDocumento tipoDocumento = tipoDocumentoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Tipo de documento no encontrado con id: " + id));
+        tipoDocumento.setVigente(false);
+        tipoDocumentoRepository.save(tipoDocumento);
     }
 
     public TipoDocumento ObtenerTipoDocumentoPorId(Long id) {

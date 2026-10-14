@@ -47,8 +47,8 @@ public class ProductoImagenController {
 
     @PostMapping("/guardar")
     public String CrearImagen(@ModelAttribute ProductoImagen imagen,
-                              @RequestParam(value = "archivoImagen", required = false) MultipartFile archivoImagen,
-                              RedirectAttributes flash) {
+            @RequestParam(value = "archivoImagen", required = false) MultipartFile archivoImagen,
+            RedirectAttributes flash) {
         try {
             String url = guardarArchivo(archivoImagen);
             if (url != null) {
@@ -107,7 +107,8 @@ public class ProductoImagenController {
         }
         String nombreLimpio = Paths.get(nombreOriginal).getFileName().toString();
         String extension = nombreLimpio.contains(".")
-                ? nombreLimpio.substring(nombreLimpio.lastIndexOf('.') + 1).toLowerCase() : "";
+                ? nombreLimpio.substring(nombreLimpio.lastIndexOf('.') + 1).toLowerCase()
+                : "";
         if (!java.util.Set.of("jpg", "jpeg", "png", "gif", "webp").contains(extension)) {
             throw new RuntimeException("Formato no valido. Usa JPG, PNG, GIF o WEBP");
         }

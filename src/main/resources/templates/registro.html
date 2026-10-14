@@ -34,6 +34,33 @@
                                 <h6 class="text-muted text-uppercase small mb-2"><i class="bi bi-person-vcard"></i> Datos personales</h6>
                             </div>
 
+                            <input type="hidden" id="idPersona" name="idPersona" value="">
+
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label for="idTipoDocumento" class="form-label">Tipo de documento</label>
+                                    <select class="form-select" id="idTipoDocumento" name="idTipoDocumento">
+                                        <option value="">Seleccionar...</option>
+                                        <option th:each="td : ${tiposDocumento}" th:value="${td.idTipoDocumento}"
+                                            th:text="${td.nombre}"
+                                            th:selected="${td.nombre == 'DNI'}">DNI</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-8 mb-3">
+                                    <label for="numeroDocumento" class="form-label">Numero de documento</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="numeroDocumento" name="numeroDocumento"
+                                            placeholder="Ej: 12345678" maxlength="20" inputmode="numeric">
+                                        <button class="btn btn-outline-primary" type="button" id="btnBuscarDocumento"
+                                            title="Buscar documento">
+                                            <i class="bi bi-search"></i>
+                                        </button>
+                                    </div>
+                                    <small class="text-muted" id="msgDocumento">DNI: 8 digitos. Autocompleta tus datos.</small>
+                                    <div class="invalid-feedback">Numero de documento invalido</div>
+                                </div>
+                            </div>
+
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="nombres" class="form-label">Nombres <span class="text-danger">*</span></label>
@@ -58,25 +85,6 @@
                                 <div class="col-md-6 mb-3">
                                     <label for="fechaNacimiento" class="form-label">Fecha de nacimiento</label>
                                     <input type="date" class="form-control" id="fechaNacimiento" name="fechaNacimiento">
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="col-md-5 mb-3">
-                                    <label for="idTipoDocumento" class="form-label">Tipo de documento</label>
-                                    <select class="form-select" id="idTipoDocumento" name="idTipoDocumento">
-                                        <option value="">Seleccionar...</option>
-                                        <option th:each="td : ${tiposDocumento}" th:value="${td.idTipoDocumento}"
-                                            th:text="${td.nombre}"
-                                            th:selected="${td.nombre == 'DNI'}">DNI</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-7 mb-3">
-                                    <label for="numeroDocumento" class="form-label">Numero de documento</label>
-                                    <input type="text" class="form-control" id="numeroDocumento" name="numeroDocumento"
-                                        placeholder="Ej: 12345678" maxlength="20" inputmode="numeric">
-                                    <small class="text-muted">DNI: 8 digitos</small>
-                                    <div class="invalid-feedback">Numero de documento invalido</div>
                                 </div>
                             </div>
 
@@ -118,6 +126,7 @@
                                     <select class="form-select" id="distritoRegistro" name="ubigeo" disabled>
                                         <option value="">Seleccionar...</option>
                                     </select>
+                                    <input type="hidden" id="codigoUbigeoRegistro">
                                 </div>
                             </div>
 
@@ -179,6 +188,7 @@
     <footer th:replace="~{fragments/plantilla :: pie}"></footer>
 
     <script th:src="@{/js/ubigeo-cascada.js}"></script>
+    <script th:src="@{/js/documento-lookup.js}"></script>
     <script>
         function setupToggle(toggleId, inputId) {
             var btn = document.getElementById(toggleId);
@@ -251,6 +261,26 @@
 
         document.addEventListener('DOMContentLoaded', function () {
             if (typeof initCascadaUbigeo === 'function') { initCascadaUbigeo('Registro'); }
+            if (typeof initDocumentoLookup === 'function') {
+                initDocumentoLookup({
+                    tipoId: 'idTipoDocumento',
+                    numeroId: 'numeroDocumento',
+                    btnId: 'btnBuscarDocumento',
+                    msgId: 'msgDocumento',
+                    idPersonaId: 'idPersona',
+                    codigoUbigeoId: 'codigoUbigeoRegistro',
+                    bloquearNombres: true,
+                    campos: {
+                        nombres: 'nombres',
+                        apellidoPaterno: 'apellidos',
+                        apellidoMaterno: 'apellidoMaterno',
+                        telefono: 'telefono',
+                        fechaNacimiento: 'fechaNacimiento',
+                        direccion: 'direccion',
+                        referencia: 'referencia'
+                    }
+                });
+            }
         });
     </script>
 </body>

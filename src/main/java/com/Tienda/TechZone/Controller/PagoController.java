@@ -11,7 +11,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/admin/pagos")
@@ -46,9 +45,9 @@ public class PagoController {
 
     @PostMapping("/guardar")
     public String guardar(@ModelAttribute Pago pago,
-                          @RequestParam("idVenta") Long idVenta,
-                          @RequestParam("idMedioPago") Long idMedioPago,
-                          org.springframework.web.servlet.mvc.support.RedirectAttributes flash) {
+            @RequestParam("idVenta") Long idVenta,
+            @RequestParam("idMedioPago") Long idMedioPago,
+            org.springframework.web.servlet.mvc.support.RedirectAttributes flash) {
         try {
             Venta venta = ventaRepository.findById(idVenta)
                     .orElseThrow(() -> new RuntimeException("Venta no encontrada"));

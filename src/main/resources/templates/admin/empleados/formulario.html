@@ -21,38 +21,48 @@
                                     <h6 class="border-bottom pb-2 mb-3"><i class="bi bi-person"></i> Datos Personales</h6>
                                     <div class="row">
                                         <div class="col-md-4 mb-3">
-                                            <label class="form-label">Nombres *</label>
-                                            <input type="text" class="form-control" name="nombres" th:value="${persona.nombres}" required maxlength="100">
-                                        </div>
-                                        <div class="col-md-4 mb-3">
-                                            <label class="form-label">Apellido Paterno</label>
-                                            <input type="text" class="form-control" name="apellidoPaterno" th:value="${persona.apellidoPaterno}" maxlength="50" required>
-                                        </div>
-                                        <div class="col-md-4 mb-3">
-                                            <label class="form-label">Apellido Materno</label>
-                                            <input type="text" class="form-control" name="apellidoMaterno" th:value="${persona.apellidoMaterno}" maxlength="50">
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-3 mb-3">
                                             <label class="form-label">Tipo Documento</label>
-                                            <select class="form-select" name="idTipoDocumento">
+                                            <select class="form-select" id="idTipoDocumento" name="idTipoDocumento">
                                                 <option value="">Seleccionar...</option>
                                                 <option th:each="td : ${tiposDocumento}" th:value="${td.idTipoDocumento}" th:text="${td.nombre}"
                                                     th:selected="${persona.tipoDocumento != null and persona.tipoDocumento.idTipoDocumento == td.idTipoDocumento}"></option>
                                             </select>
                                         </div>
-                                        <div class="col-md-3 mb-3">
+                                        <div class="col-md-8 mb-3">
                                             <label class="form-label">Numero Documento</label>
-                                            <input type="text" class="form-control" name="numeroDocumento" th:value="${persona.numeroDocumento}" maxlength="15" pattern="[0-9]{8,15}" title="Solo digitos (8 a 15)">
+                                            <div class="input-group">
+                                                <input type="text" class="form-control" id="numeroDocumento" name="numeroDocumento"
+                                                    th:value="${persona.numeroDocumento}" maxlength="15" inputmode="numeric">
+                                                <button class="btn btn-outline-primary" type="button" id="btnBuscarDocumento"
+                                                    title="Buscar documento">
+                                                    <i class="bi bi-search"></i>
+                                                </button>
+                                            </div>
+                                            <small class="text-muted" id="msgDocumento">DNI: 8 digitos. Autocompleta los datos.</small>
                                         </div>
-                                        <div class="col-md-3 mb-3">
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Nombres *</label>
+                                            <input type="text" class="form-control" id="nombres" name="nombres" th:value="${persona.nombres}" required maxlength="100">
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Apellido Paterno</label>
+                                            <input type="text" class="form-control" id="apellidos" name="apellidoPaterno" th:value="${persona.apellidoPaterno}" maxlength="50" required>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Apellido Materno</label>
+                                            <input type="text" class="form-control" id="apellidoMaterno" name="apellidoMaterno" th:value="${persona.apellidoMaterno}" maxlength="50">
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
                                             <label class="form-label">Telefono</label>
-                                            <input type="text" class="form-control" name="telefono" th:value="${persona.telefono}" maxlength="15" pattern="[0-9]{7,15}" title="Solo digitos (7 a 15)">
+                                            <input type="text" class="form-control" id="telefono" name="telefono" th:value="${persona.telefono}" maxlength="15" pattern="[0-9]{7,15}" title="Solo digitos (7 a 15)">
                                         </div>
-                                        <div class="col-md-3 mb-3">
+                                        <div class="col-md-6 mb-3">
                                             <label class="form-label">Fecha Nacimiento</label>
-                                            <input type="date" class="form-control" name="fechaNacimiento" th:value="${persona.fechaNacimiento}">
+                                            <input type="date" class="form-control" id="fechaNacimiento" name="fechaNacimiento" th:value="${persona.fechaNacimiento}">
                                         </div>
                                     </div>
 
@@ -90,11 +100,11 @@
                                         </div>
                                         <div class="col-md-5 mb-3">
                                             <label class="form-label">Direccion</label>
-                                            <input type="text" class="form-control" name="direccion" th:value="${persona.direccion}" maxlength="255">
+                                            <input type="text" class="form-control" id="direccion" name="direccion" th:value="${persona.direccion}" maxlength="255">
                                         </div>
                                         <div class="col-md-4 mb-3">
                                             <label class="form-label">Referencia</label>
-                                            <input type="text" class="form-control" name="referencia" th:value="${persona.referencia}" maxlength="255">
+                                            <input type="text" class="form-control" id="referencia" name="referencia" th:value="${persona.referencia}" maxlength="255">
                                         </div>
                                     </div>
 
@@ -113,7 +123,7 @@
                                         <div class="col-md-4 mb-3">
                                             <label class="form-label">Rol *</label>
                                             <select class="form-select" name="rol" required>
-                                                <option value="">Seleccionar rol...</option>
+                                                <option value="" disabled>Seleccionar rol...</option>
                                                 <option th:each="r : ${roles}" th:if="${r.idRol == 1 or r.idRol == 2}"
                                                     th:value="${r.idRol}" th:text="${r.nombre}"
                                                     th:selected="${usuario.rol != null and usuario.rol.idRol == r.idRol}"></option>
@@ -147,7 +157,96 @@
             <footer th:replace="~{fragments/plantilla-admin :: pie-admin}"></footer>
         </div>
     </div>
+    <!-- Aviso: la persona consultada ya tiene cuenta de usuario -->
+    <div class="modal fade" id="modalCuentaExistente" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-warning text-dark">
+                    <h5 class="modal-title"><i class="bi bi-person-exclamation"></i> Ya tiene cuenta de usuario</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-3">
+                        La persona <strong id="cuentaNombre">-</strong>
+                        (<span id="cuentaDocumento">-</span>) ya se encuentra registrada en el sistema
+                        con una cuenta de acceso.
+                    </p>
+                    <ul class="list-group mb-3">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span><i class="bi bi-envelope"></i> Correo</span>
+                            <strong id="cuentaCorreo">-</strong>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span><i class="bi bi-shield-lock"></i> Rol</span>
+                            <span class="badge bg-primary" id="cuentaRol">-</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span><i class="bi bi-power"></i> Estado</span>
+                            <span class="badge" id="cuentaEstado">-</span>
+                        </li>
+                    </ul>
+                    <p class="text-muted small mb-0">
+                        Puedes continuar y <strong>vincular</strong> esta persona como empleado usando el mismo
+                        correo, o cambiar el correo para crearle una cuenta nueva.
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <a th:href="@{/admin/usuarios}" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-people"></i> Ver usuarios
+                    </a>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Entendido</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script th:src="@{/js/ubigeo-cascada.js}"></script>
-    <script>document.addEventListener('DOMContentLoaded', function () { initCascadaUbigeo('Empleado'); });</script>
+    <script th:src="@{/js/documento-lookup.js}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            initCascadaUbigeo('Empleado');
+            initDocumentoLookup({
+                tipoId: 'idTipoDocumento',
+                numeroId: 'numeroDocumento',
+                btnId: 'btnBuscarDocumento',
+                msgId: 'msgDocumento',
+                codigoUbigeoId: 'codigoUbigeoEmpleado',
+                bloquearNombres: true,
+                campos: {
+                    nombres: 'nombres',
+                    apellidoPaterno: 'apellidos',
+                    apellidoMaterno: 'apellidoMaterno',
+                    telefono: 'telefono',
+                    fechaNacimiento: 'fechaNacimiento',
+                    direccion: 'direccion',
+                    referencia: 'referencia'
+                },
+                onYaRegistrado: function (data) {
+                    mostrarCuentaExistente(data);
+                }
+            });
+        });
+
+        function mostrarCuentaExistente(data) {
+            var $ = function (id) { return document.getElementById(id); };
+            var d = data.datos || {};
+            var c = data.cuenta || {};
+            var nombre = [d.nombres, d.apellidoPaterno, d.apellidoMaterno]
+                .filter(function (v) { return v; }).join(' ').trim() || 'esta persona';
+            var doc = $('numeroDocumento') ? $('numeroDocumento').value.trim() : (d.numero || '');
+
+            $('cuentaNombre').textContent = nombre;
+            $('cuentaDocumento').textContent = doc ? ('Nro. ' + doc) : 'sin documento';
+            $('cuentaCorreo').textContent = c.correo || 'sin correo registrado';
+            $('cuentaRol').textContent = c.rol || 'sin rol';
+
+            var estado = $('cuentaEstado');
+            var activo = (c.estado || '').toLowerCase() === 'activo';
+            estado.textContent = activo ? 'ACTIVA' : 'INACTIVA';
+            estado.className = 'badge ' + (activo ? 'bg-success' : 'bg-danger');
+
+            bootstrap.Modal.getOrCreateInstance($('modalCuentaExistente')).show();
+        }
+    </script>
 </body>
 </html>

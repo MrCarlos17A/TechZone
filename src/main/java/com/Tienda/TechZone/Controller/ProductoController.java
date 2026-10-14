@@ -21,9 +21,9 @@ public class ProductoController {
 
     @GetMapping
     public String ListarProductos(@RequestParam(value = "q", required = false) String q,
-                                  @RequestParam(value = "marca", required = false) Long idMarca,
-                                  @RequestParam(value = "categoria", required = false) Long idCategoria,
-                                  Model model) {
+            @RequestParam(value = "marca", required = false) Long idMarca,
+            @RequestParam(value = "categoria", required = false) Long idCategoria,
+            Model model) {
         java.util.List<Producto> productos = productoService.ListarProductos();
         boolean hayFiltro = (q != null && !q.isBlank()) || idMarca != null || idCategoria != null;
         if (hayFiltro) {
@@ -36,12 +36,15 @@ public class ProductoController {
                                     || (p.getDescripcion() != null && p.getDescripcion().toLowerCase().contains(t))
                                     || (p.getMarca() != null && p.getMarca().getNombre() != null
                                             && p.getMarca().getNombre().toLowerCase().contains(t));
-                            if (!coincide) return false;
+                            if (!coincide)
+                                return false;
                         }
                         if (idMarca != null && (p.getMarca() == null
-                                || !idMarca.equals(p.getMarca().getIdMarca()))) return false;
+                                || !idMarca.equals(p.getMarca().getIdMarca())))
+                            return false;
                         if (idCategoria != null && (p.getCategoria() == null
-                                || !idCategoria.equals(p.getCategoria().getIdCategoria()))) return false;
+                                || !idCategoria.equals(p.getCategoria().getIdCategoria())))
+                            return false;
                         return true;
                     })
                     .collect(java.util.stream.Collectors.toList());
@@ -83,7 +86,8 @@ public class ProductoController {
     }
 
     @PostMapping("/actualizar/{id}")
-    public String ActualizarProducto(@PathVariable Long id, @ModelAttribute Producto producto, RedirectAttributes flash) {
+    public String ActualizarProducto(@PathVariable Long id, @ModelAttribute Producto producto,
+            RedirectAttributes flash) {
         try {
             productoService.ActualizarProducto(id, producto);
             flash.addFlashAttribute("exito", "Producto actualizado correctamente");

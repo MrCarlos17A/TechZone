@@ -19,34 +19,55 @@
                                 <form th:action="${persona.idPersona != null} ? @{/admin/personas/actualizar/{id}(id=${persona.idPersona})} : @{/admin/personas/guardar}" method="post">
                                     <div class="row">
                                         <div class="col-md-4 mb-3">
-                                            <label class="form-label">Nombres</label>
-                                            <input type="text" class="form-control" name="nombres" th:value="${persona.nombres}" maxlength="100" required>
-                                        </div>
-                                        <div class="col-md-4 mb-3">
-                                            <label class="form-label">Apellido Paterno</label>
-                                            <input type="text" class="form-control" name="apellidoPaterno" th:value="${persona.apellidoPaterno}" maxlength="50" required>
-                                        </div>
-                                        <div class="col-md-4 mb-3">
-                                            <label class="form-label">Apellido Materno</label>
-                                            <input type="text" class="form-control" name="apellidoMaterno" th:value="${persona.apellidoMaterno}" maxlength="50">
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-4 mb-3">
                                             <label class="form-label">Tipo Documento</label>
-                                            <select class="form-select" name="tipoDocumento">
+                                            <select class="form-select" id="tipoDocumento" name="tipoDocumento">
                                                 <option value="">Seleccionar...</option>
                                                 <option th:each="td : ${tiposDocumento}" th:value="${td.idTipoDocumento}" th:text="${td.nombre}"
                                                     th:selected="${persona.tipoDocumento != null and persona.tipoDocumento.idTipoDocumento == td.idTipoDocumento}"></option>
                                             </select>
                                         </div>
-                                        <div class="col-md-4 mb-3">
+                                        <div class="col-md-8 mb-3">
                                             <label class="form-label">Numero Documento</label>
-                                            <input type="text" class="form-control" name="numeroDocumento" th:value="${persona.numeroDocumento}" maxlength="15" pattern="[0-9]{8,15}" title="Solo digitos (8 a 15)">
+                                            <div class="input-group">
+                                                <input type="text" class="form-control" id="numeroDocumento" name="numeroDocumento"
+                                                    th:value="${persona.numeroDocumento}" maxlength="15" inputmode="numeric">
+                                                <button class="btn btn-outline-primary" type="button" id="btnBuscarDocumento"
+                                                    title="Buscar documento">
+                                                    <i class="bi bi-search"></i>
+                                                </button>
+                                            </div>
+                                            <small class="text-muted" id="msgDocumento">DNI: 8 digitos. Autocompleta los datos.</small>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Nombres</label>
+                                            <input type="text" class="form-control" id="nombres" name="nombres" th:value="${persona.nombres}" maxlength="100" required>
                                         </div>
                                         <div class="col-md-4 mb-3">
+                                            <label class="form-label">Apellido Paterno</label>
+                                            <input type="text" class="form-control" id="apellidos" name="apellidoPaterno" th:value="${persona.apellidoPaterno}" maxlength="50" required>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Apellido Materno</label>
+                                            <input type="text" class="form-control" id="apellidoMaterno" name="apellidoMaterno" th:value="${persona.apellidoMaterno}" maxlength="50">
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-4 mb-3">
                                             <label class="form-label">Telefono</label>
-                                            <input type="text" class="form-control" name="telefono" th:value="${persona.telefono}" maxlength="15" pattern="[0-9]{7,15}" title="Solo digitos (7 a 15)">
+                                            <input type="text" class="form-control" id="telefono" name="telefono" th:value="${persona.telefono}" maxlength="15" pattern="[0-9]{7,15}" title="Solo digitos (7 a 15)">
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Fecha Nacimiento</label>
+                                            <input type="date" class="form-control" id="fechaNacimiento" name="fechaNacimiento" th:value="${persona.fechaNacimiento}" th:max="${#temporals.format(#temporals.createToday(), 'yyyy-MM-dd')}">
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Estado</label>
+                                            <select class="form-select" name="vigente">
+                                                <option value="true" th:selected="${persona.vigente == null or persona.vigente}">Activa</option>
+                                                <option value="false" th:selected="${persona.vigente != null and !persona.vigente}">Inactiva</option>
+                                            </select>
                                         </div>
                                     </div>
                                     <div class="row">
@@ -82,24 +103,13 @@
                                         </div>
                                         <div class="col-md-8 mb-3">
                                             <label class="form-label">Direccion</label>
-                                            <input type="text" class="form-control" name="direccion" th:value="${persona.direccion}" maxlength="255">
+                                            <input type="text" class="form-control" id="direccion" name="direccion" th:value="${persona.direccion}" maxlength="255">
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="col-md-6 mb-3">
+                                        <div class="col-md-12 mb-3">
                                             <label class="form-label">Referencia</label>
-                                            <input type="text" class="form-control" name="referencia" th:value="${persona.referencia}" maxlength="255">
-                                        </div>
-                                        <div class="col-md-3 mb-3">
-                                            <label class="form-label">Fecha Nacimiento</label>
-                                            <input type="date" class="form-control" name="fechaNacimiento" th:value="${persona.fechaNacimiento}" th:max="${#temporals.format(#temporals.createToday(), 'yyyy-MM-dd')}">
-                                        </div>
-                                        <div class="col-md-3 mb-3">
-                                            <label class="form-label">Estado</label>
-                                            <select class="form-select" name="vigente">
-                                                <option value="true" th:selected="${persona.vigente == null or persona.vigente}">Activa</option>
-                                                <option value="false" th:selected="${persona.vigente != null and !persona.vigente}">Inactiva</option>
-                                            </select>
+                                            <input type="text" class="form-control" id="referencia" name="referencia" th:value="${persona.referencia}" maxlength="255">
                                         </div>
                                     </div>
                                     <div class="d-flex gap-2">
@@ -116,6 +126,28 @@
         </div>
     </div>
     <script th:src="@{/js/ubigeo-cascada.js}"></script>
-    <script>document.addEventListener('DOMContentLoaded', function () { initCascadaUbigeo('Persona'); });</script>
+    <script th:src="@{/js/documento-lookup.js}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            initCascadaUbigeo('Persona');
+            initDocumentoLookup({
+                tipoId: 'tipoDocumento',
+                numeroId: 'numeroDocumento',
+                btnId: 'btnBuscarDocumento',
+                msgId: 'msgDocumento',
+                codigoUbigeoId: 'codigoUbigeoPersona',
+                bloquearNombres: true,
+                campos: {
+                    nombres: 'nombres',
+                    apellidoPaterno: 'apellidos',
+                    apellidoMaterno: 'apellidoMaterno',
+                    telefono: 'telefono',
+                    fechaNacimiento: 'fechaNacimiento',
+                    direccion: 'direccion',
+                    referencia: 'referencia'
+                }
+            });
+        });
+    </script>
 </body>
 </html>

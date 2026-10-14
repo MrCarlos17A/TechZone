@@ -17,6 +17,13 @@ public class CategoriaService {
         return categoriaRepository.findAll();
     }
 
+    // Solo categorias vigentes (para la tienda publica)
+    public List<Categoria> ListarCategoriasActivas() {
+        return categoriaRepository.findAll().stream()
+                .filter(c -> c.getVigente() == null || c.getVigente())
+                .collect(java.util.stream.Collectors.toList());
+    }
+
     public Categoria CrearCategoria(Categoria categoria) {
         validarCategoria(categoria);
         if (categoria.getVigente() == null) {
@@ -43,7 +50,10 @@ public class CategoriaService {
     }
 
     public void EliminarCategoria(Long id) {
-        categoriaRepository.deleteById(id);
+        Categoria categoria = categoriaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Categoria no encontrada con id: " + id));
+        categoria.setVigente(false);
+        categoriaRepository.save(categoria);
     }
 
     public Categoria ObtenerCategoriaPorId(Long id) {

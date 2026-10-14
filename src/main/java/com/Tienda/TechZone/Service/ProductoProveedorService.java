@@ -15,15 +15,17 @@ public class ProductoProveedorService {
     private final ProductoProveedorRepository productoProveedorRepository;
 
     public List<ProductoProveedor> ListarPorProducto(Long idProducto) {
-        return productoProveedorRepository.findAll().stream()
-                .filter(pp -> pp.getId().getIdProducto().equals(idProducto))
-                .toList();
+        if (idProducto == null) {
+            return productoProveedorRepository.findAll();
+        }
+        return productoProveedorRepository.findById_IdProducto(idProducto);
     }
 
     public List<ProductoProveedor> ListarPorProveedor(Long idProveedor) {
-        return productoProveedorRepository.findAll().stream()
-                .filter(pp -> pp.getId().getIdProveedor().equals(idProveedor))
-                .toList();
+        if (idProveedor == null) {
+            return productoProveedorRepository.findAll();
+        }
+        return productoProveedorRepository.findById_IdProveedor(idProveedor);
     }
 
     public ProductoProveedor CrearRelacion(ProductoProveedor productoProveedor) {

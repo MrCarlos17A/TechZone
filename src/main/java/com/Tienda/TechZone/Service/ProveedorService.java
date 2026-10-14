@@ -42,7 +42,10 @@ public class ProveedorService {
     }
 
     public void EliminarProveedor(Long id) {
-        proveedorRepository.deleteById(id);
+        Proveedor proveedor = proveedorRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Proveedor no encontrado con id: " + id));
+        proveedor.setVigente(false);
+        proveedorRepository.save(proveedor);
     }
 
     public Proveedor ObtenerProveedorPorId(Long id) {

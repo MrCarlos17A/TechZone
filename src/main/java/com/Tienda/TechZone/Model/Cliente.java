@@ -29,4 +29,8 @@ public class Cliente {
 
     @Column(name = "total_gastado", precision = 10, scale = 2)
     private BigDecimal totalGastado;
+
+    @Column(name = "vigente")
+    @Builder.Default
+    private Boolean vigente = true;
 }

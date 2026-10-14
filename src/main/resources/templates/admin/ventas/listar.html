@@ -9,6 +9,15 @@
         <div class="admin-principal">
             <header th:replace="~{fragments/plantilla-admin :: barra-superior}"></header>
             <main class="admin-contenido container-fluid py-4">
+        <div th:if="${exito}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle"></i> <span th:text="${exito}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle"></i> <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1><i class="bi bi-receipt"></i> Ventas</h1>
             <a th:href="@{/admin/ventas/crear}" class="btn btn-success">
@@ -101,6 +110,25 @@
                         <td>
                             <a th:href="@{/admin/ventas/{id}(id=${venta.idVenta})}" class="btn btn-sm btn-info">
                                 <i class="bi bi-eye"></i>
+                            </a>
+                            <a th:if="${venta.estado == 'PENDIENTE'}" href="#"
+                                class="btn btn-sm btn-success d-inline-flex align-items-center gap-1"
+                                title="Confirmar venta" data-confirmar data-metodo="post" data-estilo="success"
+                                data-icono="bi-check-circle" data-titulo="Confirmar venta" data-boton="Confirmar"
+                                th:attr="data-accion=@{/admin/ventas/{id}/confirmar(id=${venta.idVenta})},
+                                    data-texto='Confirmar la venta #' + ${venta.idVenta} + ' por S/ '
+                                        + ${#numbers.formatDecimal(venta.total, 1, 2)}
+                                        + '? Se marcara COMPLETADA, se confirmara el pago y se actualizara el cliente.'">
+                                <i class="bi bi-check-circle"></i>
+                            </a>
+                            <a th:if="${venta.estado == 'PENDIENTE'}" href="#"
+                                class="btn btn-sm btn-danger d-inline-flex align-items-center gap-1"
+                                title="Cancelar venta" data-confirmar data-metodo="post" data-estilo="danger"
+                                data-icono="bi-x-circle" data-titulo="Cancelar venta" data-boton="Cancelar venta"
+                                th:attr="data-accion=@{/admin/ventas/{id}/cancelar(id=${venta.idVenta})},
+                                    data-texto='Cancelar la venta #' + ${venta.idVenta}
+                                        + '? Se devolvera el stock y el pago quedara RECHAZADO.'">
+                                <i class="bi bi-x-circle"></i>
                             </a>
                         </td>
                     </tr>

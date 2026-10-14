@@ -41,7 +41,10 @@ public class MedioPagoService {
     }
 
     public void EliminarMedioPago(Long id) {
-        medioPagoRepository.deleteById(id);
+        MedioPago medio = medioPagoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Medio de pago no encontrado con id: " + id));
+        medio.setVigente(false);
+        medioPagoRepository.save(medio);
     }
 
     public MedioPago ObtenerMedioPagoPorId(Long id) {

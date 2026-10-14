@@ -43,7 +43,10 @@ public class RolService {
     }
 
     public void EliminarRol(Long id) {
-        rolRepository.deleteById(id);
+        Rol rol = rolRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Rol no encontrado con id: " + id));
+        rol.setVigente(false);
+        rolRepository.save(rol);
     }
 
     public Rol ObtenerRolPorId(Long id) {

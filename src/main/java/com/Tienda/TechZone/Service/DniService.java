@@ -5,6 +5,7 @@ import tools.jackson.databind.ObjectMapper;
 import com.Tienda.TechZone.Model.Persona;
 import com.Tienda.TechZone.Model.Usuario;
 import com.Tienda.TechZone.Repository.PersonaRepository;
+import com.Tienda.TechZone.Repository.TipoDocumentoRepository;
 import com.Tienda.TechZone.Repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,11 +16,15 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class DniService {
+
+    private static final int MAX_CACHE = 500;
 
     @Value("${dni.api.url}")
     private String apiUrl;
@@ -29,12 +34,21 @@ public class DniService {
 
     private final PersonaRepository personaRepository;
     private final UsuarioRepository usuarioRepository;
+    private final TipoDocumentoRepository tipoDocumentoRepository;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public record DniData(String dni, String nombres, String apellidoPaterno, String apellidoMaterno) {
+    // Caché de respuestas de la API externa (evita repetir llamadas pagadas)
+    private final Map<String, DocumentoData> cacheApi = new ConcurrentHashMap<>();
+
+    public record DocumentoData(String numero, String nombres, String apellidoPaterno, String apellidoMaterno,
+            String telefono, String fechaNacimiento, Long idUbigeo, String direccion, String referencia) {
     }
 
-    public record DniResponse(boolean ok, String mensaje, DniData datos) {
+    public record CuentaExistente(String correo, String rol, String estado) {
+    }
+
+    public record DocumentoResponse(boolean ok, String mensaje, String origen,
+            Long idPersona, boolean yaRegistrado, DocumentoData datos, CuentaExistente cuenta) {
     }
 
     public record MisDatos(boolean ok, String dni, String nombres, String apellidoPaterno,
@@ -65,18 +79,76 @@ public class DniService {
                 p.getReferencia());
     }
 
-    public DniResponse buscarDni(String correo, String dni) {
-        Usuario usuario = usuarioRepository.findByCorreo(correo).orElse(null);
+    /**
+     * Consulta de documento SIN escribir en la base.
+     * 1) Primero busca en la BD local (no gasta la API externa).
+     * 2) Solo si no existe y el tipo es DNI, consulta la API externa.
+     */
+    public DocumentoResponse consultarDocumento(Long idTipoDocumento, String numero) {
+        if (numero == null || numero.isBlank()) {
+            return new DocumentoResponse(false, "El numero de documento es obligatorio", null, null, false, null, null);
+        }
+        String num = numero.trim();
 
-        if (usuario != null && usuario.getPersona() != null
-                && dni.equals(usuario.getPersona().getNumeroDocumento())) {
-            Persona p = usuario.getPersona();
-            return new DniResponse(true, "Datos cargados desde tu registro",
-                    new DniData(dni, p.getNombres(), p.getApellidoPaterno(), p.getApellidoMaterno()));
+        String nombreTipo = null;
+        if (idTipoDocumento != null) {
+            nombreTipo = tipoDocumentoRepository.findById(idTipoDocumento)
+                    .map(td -> td.getNombre() != null ? td.getNombre().toUpperCase() : null)
+                    .orElse(null);
+        }
+
+        // ---- 1) LOCAL ----
+        Persona local = null;
+        try {
+            if (idTipoDocumento != null) {
+                local = personaRepository.findFirstByTipoDocumentoAndNumeroDocumento(idTipoDocumento, num)
+                        .orElse(null);
+            }
+            if (local == null) {
+                local = personaRepository.findFirstByNumeroDocumento(num).orElse(null);
+            }
+        } catch (RuntimeException e) {
+            log.warn("Error buscando documento en local: {}", e.getMessage());
+        }
+
+        if (local != null) {
+            CuentaExistente cuenta = usuarioRepository.findFirstByPersona(local)
+                    .map(u -> new CuentaExistente(
+                            u.getCorreo(),
+                            u.getRol() != null ? u.getRol().getNombre() : null,
+                            u.getEstado()))
+                    .orElse(null);
+            boolean conCuenta = cuenta != null;
+            return new DocumentoResponse(true,
+                    conCuenta ? "El documento ya esta registrado" : "Datos encontrados en el sistema",
+                    "local", local.getIdPersona(), conCuenta,
+                    new DocumentoData(num,
+                            local.getNombres(),
+                            local.getApellidoPaterno(),
+                            local.getApellidoMaterno(),
+                            local.getTelefono(),
+                            local.getFechaNacimiento() != null ? local.getFechaNacimiento().toString() : null,
+                            local.getUbigeo() != null ? local.getUbigeo().getIdUbigeo() : null,
+                            local.getDireccion(),
+                            local.getReferencia()),
+                    cuenta);
+        }
+
+        // ---- 2) API EXTERNA (solo DNI de 8 digitos) ----
+        boolean esDni = nombreTipo == null || nombreTipo.contains("DNI");
+        if (!esDni || !num.matches("\\d{8}")) {
+            return new DocumentoResponse(false,
+                    "No hay datos locales y este tipo de documento no admite consulta automatica",
+                    null, null, false, null, null);
+        }
+
+        DocumentoData cacheado = cacheApi.get(num);
+        if (cacheado != null) {
+            return new DocumentoResponse(true, null, "api", null, false, cacheado, null);
         }
 
         try {
-            String url = apiUrl + "?numero=" + dni;
+            String url = apiUrl + "?numero=" + num;
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(url))
                     .header("Accept", "application/json")
@@ -88,7 +160,8 @@ public class DniService {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
             if (response.statusCode() != 200) {
-                return new DniResponse(false, "Error del servicio de DNI (HTTP " + response.statusCode() + ")", null);
+                return new DocumentoResponse(false,
+                        "Error del servicio de DNI (HTTP " + response.statusCode() + ")", null, null, false, null, null);
             }
 
             JsonNode json = objectMapper.readTree(response.body());
@@ -110,22 +183,22 @@ public class DniService {
             }
 
             if (nombres == null || nombres.isBlank()) {
-                return new DniResponse(false, "DNI no encontrado", null);
+                return new DocumentoResponse(false, "Documento no encontrado", null, null, false, null, null);
             }
 
-            if (usuario != null && usuario.getPersona() != null) {
-                Persona p = usuario.getPersona();
-                p.setNumeroDocumento(dni);
-                p.setNombres(nombres);
-                p.setApellidoPaterno(apPaterno);
-                p.setApellidoMaterno(apMaterno);
-                personaRepository.save(p);
-            }
+            DocumentoData datos = new DocumentoData(num, nombres, apPaterno, apMaterno,
+                    null, null, null, null, null);
 
-            return new DniResponse(true, null, new DniData(dni, nombres, apPaterno, apMaterno));
+            if (cacheApi.size() >= MAX_CACHE) {
+                cacheApi.clear();
+            }
+            cacheApi.put(num, datos);
+
+            return new DocumentoResponse(true, null, "api", null, false, datos, null);
         } catch (Exception e) {
             log.error("Error consultando API DNI: {}", e.getMessage());
-            return new DniResponse(false, "No se pudo consultar el DNI. Puedes escribirlo manualmente.", null);
+            return new DocumentoResponse(false,
+                    "No se pudo consultar el documento. Puedes escribirlo manualmente.", null, null, false, null, null);
         }
     }
 }

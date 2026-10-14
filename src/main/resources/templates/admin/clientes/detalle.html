@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/plantilla :: cabecera('Admin - Detalle Cliente')}"></head>
+<body>
+    <div class="admin-shell" id="paginaAdmin">
+        <div th:insert="~{fragments/admin :: barra-lateral('clientes')}"></div>
+        <div class="admin-principal">
+            <header th:replace="~{fragments/plantilla-admin :: barra-superior}"></header>
+            <main class="admin-contenido container-fluid py-4">
+
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h1>
+                            <i class="bi bi-person-badge"></i>
+                            <span th:text="${cliente.persona != null ? cliente.persona.nombres + ' ' + cliente.persona.apellidoPaterno : 'Cliente #' + cliente.idCliente}">Cliente</span>
+                        </h1>
+                        <p class="text-muted mb-0 mt-1" style="font-size:0.88rem;">
+                            Cliente #<span th:text="${cliente.idCliente}">1</span>
+                            · Ficha creada automaticamente por el sistema
+                        </p>
+                    </div>
+                    <a th:href="@{/admin/clientes}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i> Volver
+                    </a>
+                </div>
+
+                <!-- Resumen -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-4">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-body">
+                                <div class="text-muted small">Total gastado</div>
+                                <div class="fs-4 fw-bold text-success" th:text="'S/ ' + ${#numbers.formatDecimal(cliente.totalGastado, 1, 2)}">S/ 0.00</div>
+                                <div class="text-muted small mt-1">Segun la ficha del sistema</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-body">
+                                <div class="text-muted small">Compras completadas</div>
+                                <div class="fs-4 fw-bold" th:text="${nCompletadas} + ' de ' + ${nCompras}">0 de 0</div>
+                                <div class="text-muted small mt-1">Incluye pendientes y canceladas</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-body">
+                                <div class="text-muted small">Ultima compra</div>
+                                <div class="fs-5 fw-bold mt-1"
+                                     th:text="${cliente.fechaUltimaCompra != null ? #temporals.format(cliente.fechaUltimaCompra, 'dd/MM/yyyy HH:mm') : 'Sin compras'}">Sin compras</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Datos de la persona -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-white border-0">
+                        <h5 class="mb-0"><i class="bi bi-person-vcard"></i> Datos de la persona</h5>
+                    </div>
+                    <div class="card-body" th:if="${cliente.persona != null}">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <div class="text-muted small">Nombres</div>
+                                <div class="fw-semibold" th:text="${cliente.persona.nombres}">-</div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="text-muted small">Apellido paterno</div>
+                                <div class="fw-semibold" th:text="${cliente.persona.apellidoPaterno}">-</div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="text-muted small">Apellido materno</div>
+                                <div class="fw-semibold" th:text="${cliente.persona.apellidoMaterno != null ? cliente.persona.apellidoMaterno : '-'}">-</div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="text-muted small">Documento</div>
+                                <div class="fw-semibold"
+                                     th:text="${(cliente.persona.tipoDocumento != null ? cliente.persona.tipoDocumento.nombre + ' ' : '') + (cliente.persona.numeroDocumento != null ? cliente.persona.numeroDocumento : '-')}">-</div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="text-muted small">Telefono</div>
+                                <div class="fw-semibold" th:text="${cliente.persona.telefono != null ? cliente.persona.telefono : '-'}">-</div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="text-muted small">Distrito</div>
+                                <div class="fw-semibold" th:text="${cliente.persona.ubigeo != null ? cliente.persona.ubigeo.distrito : '-'}">-</div>
+                            </div>
+                            <div class="col-12">
+                                <div class="text-muted small">Direccion</div>
+                                <div class="fw-semibold" th:text="${cliente.persona.direccion != null ? cliente.persona.direccion : '-'}">-</div>
+                            </div>
+                            <div class="col-12" th:if="${cliente.persona.referencia != null}">
+                                <div class="text-muted small">Referencia</div>
+                                <div class="fw-semibold" th:text="${cliente.persona.referencia}">-</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body text-muted" th:if="${cliente.persona == null}">
+                        Esta ficha no tiene persona asociada.
+                    </div>
+                </div>
+
+                <!-- Historial de compras -->
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="bi bi-receipt"></i> Historial de compras</h5>
+                        <span class="badge bg-secondary" th:text="${nCompras} + ' registro(s)'">0</span>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover mb-0">
+                            <thead>
+                                <tr><th>ID</th><th>Fecha</th><th>Empleado</th><th>Subtotal</th><th>IGV</th><th>Total</th><th>Estado</th><th>Detalle</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="v : ${compras}">
+                                    <td th:text="${v.idVenta}">1</td>
+                                    <td th:text="${v.fechaVenta != null ? #temporals.format(v.fechaVenta, 'dd/MM/yyyy HH:mm') : '-'}">Fecha</td>
+                                    <td th:text="${v.empleado != null and v.empleado.persona != null ? v.empleado.persona.nombres + ' ' + v.empleado.persona.apellidoPaterno : '-'}">Empleado</td>
+                                    <td th:text="'S/ ' + ${#numbers.formatDecimal(v.subtotal, 1, 2)}">S/ 0.00</td>
+                                    <td th:text="'S/ ' + ${#numbers.formatDecimal(v.igv, 1, 2)}">S/ 0.00</td>
+                                    <td class="fw-semibold" th:text="'S/ ' + ${#numbers.formatDecimal(v.total, 1, 2)}">S/ 0.00</td>
+                                    <td>
+                                        <span class="badge"
+                                              th:classappend="${v.estado == 'PENDIENTE' ? 'bg-warning text-dark' : (v.estado == 'CANCELADA' ? 'bg-danger' : 'bg-success')}"
+                                              th:text="${v.estado}">COMPLETADA</span>
+                                    </td>
+                                    <td>
+                                        <a th:href="@{/admin/ventas/{id}(id=${v.idVenta})}" class="btn btn-sm btn-info" title="Ver venta">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="text-center py-4" th:if="${#lists.isEmpty(compras)}">
+                        <i class="bi bi-inbox fs-3 text-muted"></i>
+                        <p class="text-muted mt-2 mb-0">Este cliente aun no tiene compras registradas.</p>
+                    </div>
+                </div>
+
+            </main>
+            <footer th:replace="~{fragments/plantilla-admin :: pie-admin}"></footer>
+        </div>
+    </div>
+</body>
+</html>

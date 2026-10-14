@@ -7,8 +7,6 @@
         <div class="admin-principal">
             <header th:replace="~{fragments/plantilla-admin :: barra-superior}"></header>
             <main class="admin-contenido container-fluid py-4">
-                <div th:if="${exito}" class="alert alert-success alert-dismissible fade show"><i class="bi bi-check-circle"></i> <span th:text="${exito}"></span><button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
-                <div th:if="${error}" class="alert alert-danger alert-dismissible fade show"><i class="bi bi-exclamation-triangle"></i> <span th:text="${error}"></span><button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <div>
                         <h1><i class="bi bi-person-badge"></i> Clientes</h1>
@@ -16,7 +14,16 @@
                             <span class="filtro-contador-resultados"><strong th:text="${#lists.size(clientes)}">0</strong> cliente(s)</span>
                         </p>
                     </div>
-                    <a th:href="@{/admin/clientes/nuevo}" class="btn btn-success"><i class="bi bi-plus-circle"></i> Nuevo Cliente</a>
+                </div>
+                <!-- Nota: el alta de clientes no es manual -->
+                <div class="alert alert-info d-flex align-items-start gap-2 mb-4" role="alert">
+                    <i class="bi bi-info-circle-fill mt-1"></i>
+                    <div>
+                        <strong>Modulo de solo consulta.</strong>
+                        Los clientes <u>no</u> se dan de alta ni se editan desde aqui: el sistema crea la ficha
+                        automaticamente cuando el usuario confirma su primera compra.
+                        Desde este modulo solo puedes ver sus datos, su historial de compras y su gasto acumulado.
+                    </div>
                 </div>
                 <!-- Barra de filtro -->
                 <div class="filtro-admin-barra">
@@ -39,7 +46,7 @@
                 <div class="table-responsive">
                     <table class="table table-striped table-hover">
                         <thead>
-                            <tr><th>ID</th><th>Nombres</th><th>Ap. Paterno</th><th>Ap. Materno</th><th>Tipo Doc.</th><th>Nro. Doc.</th><th>Telefono</th><th>Direccion</th><th>Distrito</th><th>Total Gastado</th><th>Ultima Compra</th><th>Acciones</th></tr>
+                            <tr><th>ID</th><th>Nombres</th><th>Ap. Paterno</th><th>Ap. Materno</th><th>Tipo Doc.</th><th>Nro. Doc.</th><th>Telefono</th><th>Direccion</th><th>Distrito</th><th>Total Gastado</th><th>Ultima Compra</th><th>Estado</th><th>Acciones</th></tr>
                         </thead>
                         <tbody>
                             <tr th:each="c : ${clientes}">
@@ -54,9 +61,11 @@
                                 <td th:text="${c.persona != null and c.persona.ubigeo != null ? c.persona.ubigeo.distrito : '-'}">Distrito</td>
                                 <td th:text="'S/ ' + ${#numbers.formatDecimal(c.totalGastado, 1, 2)}">S/ 0.00</td>
                                 <td th:text="${c.fechaUltimaCompra != null ? #temporals.format(c.fechaUltimaCompra, 'dd/MM/yyyy') : '-'}">Fecha</td>
+                                <td><span class="badge" th:classappend="${c.vigente == null or c.vigente} ? 'bg-success' : 'bg-secondary'"
+                                    th:text="${c.vigente == null or c.vigente} ? 'Activo' : 'Inactivo'">Activo</span></td>
                                 <td>
-                                    <a th:href="@{/admin/clientes/editar/{id}(id=${c.idCliente})}" class="btn btn-sm btn-warning"><i class="bi bi-pencil"></i></a>
-                                    <a th:href="@{/admin/clientes/eliminar/{id}(id=${c.idCliente})}" class="btn btn-sm btn-danger" data-eliminar th:attr="data-nombre=${c.persona != null ? c.persona.nombres : 'cliente'}"><i class="bi bi-trash"></i></a>
+                                    <a th:href="@{/admin/clientes/{id}(id=${c.idCliente})}" class="btn btn-sm btn-info"
+                                       title="Ver detalle y compras"><i class="bi bi-eye"></i></a>
                                 </td>
                             </tr>
                         </tbody>

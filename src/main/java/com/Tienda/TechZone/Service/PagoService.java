@@ -53,10 +53,4 @@ public class PagoService {
         }
         return pagoRepository.save(pago);
     }
-
-    public Pago CambiarEstado(Long idPago, String estado) {
-        Pago pago = ObtenerPagoPorId(idPago);
-        pago.setEstadoPago(estado);
-        return pagoRepository.save(pago);
-    }
 }

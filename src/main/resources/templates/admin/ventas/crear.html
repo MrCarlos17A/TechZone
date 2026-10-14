@@ -40,17 +40,31 @@
                                 </select>
                             </div>
                             <div class="mb-3">
-                                <label for="estado" class="form-label">Estado</label>
-                                <select class="form-select" id="estado" name="estado">
-                                    <option value="PENDIENTE">PENDIENTE</option>
-                                    <option value="COMPLETADA">COMPLETADA</option>
-                                    <option value="CANCELADA">CANCELADA</option>
+                                <label for="subtotal" class="form-label">Subtotal (sin IGV)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">S/</span>
+                                    <input type="number" class="form-control" id="subtotal" name="subtotal"
+                                        min="0.01" step="0.01" placeholder="0.00" required />
+                                </div>
+                                <div class="form-text">El IGV (18%) y el total se calculan automaticamente.</div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="idMedioPago" class="form-label">Medio de Pago</label>
+                                <select class="form-select" id="idMedioPago" name="idMedioPago" required>
+                                    <option value="">Seleccionar medio de pago...</option>
+                                    <option th:each="m : ${mediosPago}" th:value="${m.idMedioPago}"
+                                        th:text="${m.nombre}"></option>
                                 </select>
                             </div>
                             <div class="mb-3">
                                 <label for="direccionEnvio" class="form-label">Direccion de Envio</label>
                                 <input type="text" class="form-control" id="direccionEnvio" name="direccionEnvio"
                                     maxlength="255">
+                            </div>
+                            <div class="alert alert-info py-2">
+                                <i class="bi bi-info-circle"></i>
+                                Esta venta es de mostrador: se guardara como <strong>COMPLETADA</strong>
+                                con su pago <strong>CONFIRMADO</strong>.
                             </div>
                             <div class="d-flex gap-2">
                                 <button type="submit" class="btn btn-success">

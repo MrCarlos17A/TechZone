@@ -42,7 +42,10 @@ public class UbigeoService {
     }
 
     public void EliminarUbigeo(Long id) {
-        ubigeoRepository.deleteById(id);
+        Ubigeo ubigeo = ubigeoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Ubigeo no encontrado con id: " + id));
+        ubigeo.setVigente(false);
+        ubigeoRepository.save(ubigeo);
     }
 
     public Ubigeo ObtenerUbigeoPorId(Long id) {

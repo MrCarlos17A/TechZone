@@ -48,7 +48,7 @@ public class SecurityConfig {
                 .requestMatchers("/", "/productos", "/novedades", "/marcas", "/buscar").permitAll()
                 .requestMatchers("/login", "/registro", "/acceso-denegado", "/api/login").permitAll()
                 .requestMatchers("/css/**", "/js/**", "/assets/**", "/Assets/**", "/uploads/**", "/favicon.ico", "/images/**").permitAll()
-                .requestMatchers("/api/carrito/**", "/api/ubigeos").permitAll()
+                .requestMatchers("/api/carrito/**", "/api/ubigeos", "/api/consulta-documento").permitAll()
                 .requestMatchers("/debug/**").hasRole("Administrador")
                 .requestMatchers("/mi-perfil", "/mis-pedidos", "/actualizar-perfil", "/checkout").authenticated()
                 .requestMatchers("/admin/usuarios/**", "/admin/roles/**", "/admin/configuracion/**").hasRole("Administrador")

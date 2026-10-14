@@ -18,6 +18,18 @@ public class ProductoService {
         return productoRepository.findAll();
     }
 
+    // Solo productos vigentes (para la tienda publica)
+    @Transactional(readOnly = true)
+    public List<Producto> ListarProductosActivos() {
+        return productoRepository.findByVigenteTrue();
+    }
+
+    public List<Producto> ListarProductosActivosPorCategoria(Long idCategoria) {
+        return productoRepository.findByCategoriaIdCategoria(idCategoria).stream()
+                .filter(p -> p.getVigente() == null || p.getVigente())
+                .collect(java.util.stream.Collectors.toList());
+    }
+
     public Producto CrearProducto(Producto producto) {
         validarPrecioStock(producto);
         if (producto.getVigente() == null) {
@@ -45,7 +57,10 @@ public class ProductoService {
     }
 
     public void EliminarProducto(Long id) {
-        productoRepository.deleteById(id);
+        Producto producto = productoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado con id: " + id));
+        producto.setVigente(false);
+        productoRepository.save(producto);
     }
 
     public Producto ObtenerProductoPorId(Long id) {
@@ -54,10 +69,15 @@ public class ProductoService {
     }
 
     public List<Producto> BuscarProductos(String texto) {
+        List<Producto> resultado;
         if (texto == null || texto.trim().isEmpty()) {
-            return productoRepository.findAll();
+            resultado = productoRepository.findByVigenteTrue();
+        } else {
+            resultado = productoRepository.buscarPorTexto(texto.trim());
         }
-        return productoRepository.buscarPorTexto(texto.trim());
+        return resultado.stream()
+                .filter(p -> p.getVigente() == null || p.getVigente())
+                .collect(java.util.stream.Collectors.toList());
     }
 
     public List<Producto> ListarProductosPorCategoria(Long idCategoria) {

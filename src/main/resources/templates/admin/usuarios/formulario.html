@@ -26,12 +26,19 @@
                             <div class="mb-3">
                                 <label for="persona" class="form-label">Persona</label>
                                 <select class="form-select" id="persona" name="persona" required>
-                                    <option value="">Seleccionar persona...</option>
+                                    <option value="" disabled>Seleccionar persona...</option>
                                     <option th:each="p : ${personas}" th:value="${p.idPersona}"
                                         th:text="${p.nombres + ' ' + p.apellidoPaterno + ' ' + p.apellidoMaterno}"
                                         th:selected="${usuario.persona != null and usuario.persona.idPersona == p.idPersona}">
                                     </option>
                                 </select>
+                                <small class="text-muted">Solo se listan las personas que aun no tienen cuenta de acceso.</small>
+                                <div class="alert alert-info py-2 mt-2 mb-0" th:if="${#lists.isEmpty(personas)}">
+                                    <i class="bi bi-info-circle"></i>
+                                    Todas las personas ya tienen cuenta. Registra primero la persona desde
+                                    <a th:href="@{/admin/personas/nuevo}" class="alert-link">Personas</a>
+                                    y vuelve a crear el usuario.
+                                </div>
                             </div>
                             <div class="mb-3">
                                 <label for="correo" class="form-label">Correo electronico</label>
@@ -50,11 +57,21 @@
                             <div class="mb-3">
                                 <label for="rol" class="form-label">Rol</label>
                                 <select class="form-select" id="rol" name="rol" required>
-                                    <option value="">Seleccionar rol...</option>
-                                    <option th:each="r : ${roles}" th:value="${r.idRol}" th:text="${r.nombre}"
+                                    <option value="" disabled>Seleccionar rol...</option>
+                                    <option th:if="${usuario.rol != null
+                                            and usuario.rol.nombre != 'Administrador'
+                                            and usuario.rol.nombre != 'Trabajador'}"
+                                        th:value="${usuario.rol.idRol}"
+                                        th:text="${usuario.rol.nombre + ' (asig. por el sistema)'}" selected>
+                                    </option>
+                                    <option th:each="r : ${roles}"
+                                        th:if="${r.nombre == 'Administrador' or r.nombre == 'Trabajador'}"
+                                        th:value="${r.idRol}" th:text="${r.nombre}"
                                         th:selected="${usuario.rol != null and usuario.rol.idRol == r.idRol}">
                                     </option>
                                 </select>
+                                <small class="text-muted">Los roles "Usuario" y "Cliente" los asigna solo el sistema:
+                                    la cuenta al registrarse y el cliente al comprar por primera vez.</small>
                             </div>
                             <div class="mb-3">
                                 <label for="estado" class="form-label">Estado</label>

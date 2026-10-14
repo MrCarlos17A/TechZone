@@ -18,7 +18,7 @@ public class Usuario {
     private Long idUsuario;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_persona")
+    @JoinColumn(name = "id_persona", unique = true)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private Persona persona;
@@ -29,7 +29,7 @@ public class Usuario {
     @EqualsAndHashCode.Exclude
     private Rol rol;
 
-    @Column(length = 100)
+    @Column(length = 100, unique = true)
     private String correo;
 
     @Column(name = "contrasena", length = 60)

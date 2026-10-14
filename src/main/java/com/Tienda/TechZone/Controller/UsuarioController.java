@@ -47,7 +47,7 @@ public class UsuarioController {
     public String FormularioNuevo(Model model) {
         model.addAttribute("usuario", new Usuario());
         model.addAttribute("roles", rolService.ListarRoles());
-        model.addAttribute("personas", personaService.ListarPersonas());
+        model.addAttribute("personas", personasSinCuenta(null));
         return "admin/usuarios/formulario";
     }
 
@@ -64,9 +64,11 @@ public class UsuarioController {
 
     @GetMapping("/editar/{id}")
     public String FormularioEditar(@PathVariable Long id, Model model) {
-        model.addAttribute("usuario", usuarioService.ObtenerUsuarioPorId(id));
+        Usuario usuario = usuarioService.ObtenerUsuarioPorId(id);
+        model.addAttribute("usuario", usuario);
         model.addAttribute("roles", rolService.ListarRoles());
-        model.addAttribute("personas", personaService.ListarPersonas());
+        model.addAttribute("personas", personasSinCuenta(
+                usuario.getPersona() != null ? usuario.getPersona().getIdPersona() : null));
         return "admin/usuarios/formulario";
     }
 
@@ -92,5 +94,21 @@ public class UsuarioController {
             flash.addFlashAttribute("error", "No se pudo deshabilitar el usuario: " + e.getMessage());
         }
         return "redirect:/admin/usuarios";
+    }
+
+    /**
+     * Personas que todavia no tienen cuenta de acceso. Se conserva ademas la persona
+     * ya ligada al usuario que se esta editando, para que el formulario pueda mostrarla.
+     */
+    private java.util.List<com.Tienda.TechZone.Model.Persona> personasSinCuenta(Long idPersonaActual) {
+        java.util.Set<Long> conCuenta = usuarioService.ListarUsuarios().stream()
+                .filter(u -> u.getPersona() != null && u.getPersona().getIdPersona() != null)
+                .map(u -> u.getPersona().getIdPersona())
+                .collect(java.util.stream.Collectors.toSet());
+        return personaService.ListarPersonas().stream()
+                .filter(p -> p.getIdPersona() != null
+                        && (!conCuenta.contains(p.getIdPersona())
+                                || p.getIdPersona().equals(idPersonaActual)))
+                .collect(java.util.stream.Collectors.toList());
     }
 }

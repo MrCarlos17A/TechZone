@@ -3,13 +3,11 @@ package com.Tienda.TechZone.Controller;
 import com.Tienda.TechZone.Model.Persona;
 import com.Tienda.TechZone.Model.Rol;
 import com.Tienda.TechZone.Model.Usuario;
-import com.Tienda.TechZone.Model.Cliente;
 import com.Tienda.TechZone.Model.TipoDocumento;
 import com.Tienda.TechZone.Model.Ubigeo;
 import com.Tienda.TechZone.Repository.PersonaRepository;
 import com.Tienda.TechZone.Repository.RolRepository;
 import com.Tienda.TechZone.Repository.UsuarioRepository;
-import com.Tienda.TechZone.Repository.ClienteRepository;
 import com.Tienda.TechZone.Repository.TipoDocumentoRepository;
 import com.Tienda.TechZone.Repository.UbigeoRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +22,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -40,7 +39,6 @@ public class LoginController {
     private final UsuarioRepository usuarioRepository;
     private final RolRepository rolRepository;
     private final PersonaRepository personaRepository;
-    private final ClienteRepository clienteRepository;
     private final TipoDocumentoRepository tipoDocumentoRepository;
     private final UbigeoRepository ubigeoRepository;
     private final PasswordEncoder passwordEncoder;
@@ -66,7 +64,7 @@ public class LoginController {
             String rol = auth.getAuthorities().stream()
                     .map(a -> a.getAuthority())
                     .findFirst()
-                    .orElse("ROLE_Cliente");
+                    .orElse("ROLE_Usuario");
             boolean esStaff = rol.equals("ROLE_Administrador") || rol.equals("ROLE_Trabajador");
             respuesta.put("ok", true);
             respuesta.put("esStaff", esStaff);
@@ -90,6 +88,7 @@ public class LoginController {
     }
 
     @PostMapping("/registro")
+    @Transactional
     public String Registrar(@RequestParam String nombres,
             @RequestParam String apellidos,
             @RequestParam String correo,
@@ -99,6 +98,7 @@ public class LoginController {
             @RequestParam(required = false) String apellidoMaterno,
             @RequestParam(required = false) String idTipoDocumento,
             @RequestParam(required = false) String numeroDocumento,
+            @RequestParam(required = false) String idPersona,
             @RequestParam(required = false) String fechaNacimiento,
             @RequestParam(required = false) String direccion,
             @RequestParam(required = false) String referencia,
@@ -111,9 +111,17 @@ public class LoginController {
             flash.addFlashAttribute("error", "Los nombres son obligatorios");
             return "redirect:/registro";
         }
+        if (nombres.trim().length() > 100) {
+            flash.addFlashAttribute("error", "Los nombres no pueden superar 100 caracteres");
+            return "redirect:/registro";
+        }
 
         if (apellidos == null || apellidos.isBlank()) {
             flash.addFlashAttribute("error", "El apellido paterno es obligatorio");
+            return "redirect:/registro";
+        }
+        if (apellidos.trim().length() > 50) {
+            flash.addFlashAttribute("error", "El apellido paterno no puede superar 50 caracteres");
             return "redirect:/registro";
         }
 
@@ -121,6 +129,11 @@ public class LoginController {
             flash.addFlashAttribute("error", "Ingresa un correo valido que contenga @");
             return "redirect:/registro";
         }
+        if (correo.trim().length() > 100) {
+            flash.addFlashAttribute("error", "El correo no puede superar 100 caracteres");
+            return "redirect:/registro";
+        }
+        correo = correo.trim();
 
         if (telefono == null || !telefono.matches("\\d{9}")) {
             flash.addFlashAttribute("error", "El telefono debe tener 9 digitos");
@@ -148,8 +161,8 @@ public class LoginController {
             return "redirect:/registro";
         }
 
-        Rol clienteRol = rolRepository.findByNombre("Cliente").orElse(null);
-        if (clienteRol == null) {
+        Rol usuarioRol = rolRepository.findByNombre("Usuario").orElse(null);
+        if (usuarioRol == null) {
             flash.addFlashAttribute("error", "Error del sistema: rol no encontrado");
             return "redirect:/registro";
         }
@@ -180,30 +193,78 @@ public class LoginController {
             }
         }
 
-        Persona persona = personaRepository.save(Persona.builder()
-                .nombres(nombres.trim())
-                .apellidoPaterno(apellidos.trim())
-                .apellidoMaterno(apellidoMaterno != null && !apellidoMaterno.isBlank() ? apellidoMaterno.trim() : null)
-                .tipoDocumento(tipoDoc)
-                .numeroDocumento(numeroDocumento != null && !numeroDocumento.isBlank() ? numeroDocumento.trim() : null)
-                .telefono(telefono.trim())
-                .direccion(direccion != null && !direccion.isBlank() ? direccion.trim() : null)
-                .referencia(referencia != null && !referencia.isBlank() ? referencia.trim() : null)
-                .ubigeo(ubigeoSel)
-                .fechaNacimiento(fechaNac)
-                .vigente(true)
-                .build());
+        Persona persona = null;
+        if (idPersona != null && !idPersona.isBlank()) {
+            try {
+                Persona existente = personaRepository.findById(Long.parseLong(idPersona.trim())).orElse(null);
+                // Solo se reusa si coincide el numero de documento (evita apuntar a otra
+                // persona)
+                if (existente != null && Boolean.TRUE.equals(existente.getVigente())
+                        && existente.getNumeroDocumento() != null && numeroDocumento != null
+                        && !numeroDocumento.isBlank()
+                        && existente.getNumeroDocumento().trim().equalsIgnoreCase(numeroDocumento.trim())) {
+                    persona = existente;
+                }
+            } catch (NumberFormatException ignored) {
+            }
+        }
+
+        if (persona != null) {
+            if (!nombres.isBlank()) {
+                persona.setNombres(nombres.trim());
+            }
+            if (!apellidos.isBlank()) {
+                persona.setApellidoPaterno(apellidos.trim());
+            }
+            if (apellidoMaterno != null && !apellidoMaterno.isBlank()) {
+                persona.setApellidoMaterno(apellidoMaterno.trim());
+            }
+            if (tipoDoc != null) {
+                persona.setTipoDocumento(tipoDoc);
+            }
+            if (telefono != null && !telefono.isBlank()) {
+                persona.setTelefono(telefono.trim());
+            }
+            if (direccion != null && !direccion.isBlank()) {
+                persona.setDireccion(direccion.trim());
+            }
+            if (referencia != null && !referencia.isBlank()) {
+                persona.setReferencia(referencia.trim());
+            }
+            if (ubigeoSel != null) {
+                persona.setUbigeo(ubigeoSel);
+            }
+            if (fechaNac != null) {
+                persona.setFechaNacimiento(fechaNac);
+            }
+            persona = personaRepository.save(persona);
+        } else {
+            persona = personaRepository.save(Persona.builder()
+                    .nombres(nombres.trim())
+                    .apellidoPaterno(apellidos.trim())
+                    .apellidoMaterno(
+                            apellidoMaterno != null && !apellidoMaterno.isBlank() ? apellidoMaterno.trim() : null)
+                    .tipoDocumento(tipoDoc)
+                    .numeroDocumento(
+                            numeroDocumento != null && !numeroDocumento.isBlank() ? numeroDocumento.trim() : null)
+                    .telefono(telefono.trim())
+                    .direccion(direccion != null && !direccion.isBlank() ? direccion.trim() : null)
+                    .referencia(referencia != null && !referencia.isBlank() ? referencia.trim() : null)
+                    .ubigeo(ubigeoSel)
+                    .fechaNacimiento(fechaNac)
+                    .vigente(true)
+                    .build());
+        }
 
         Usuario usuario = Usuario.builder()
                 .persona(persona)
-                .rol(clienteRol)
+                .rol(usuarioRol)
                 .correo(correo)
                 .password(passwordEncoder.encode(password))
                 .estado("activo")
                 .build();
 
         usuarioRepository.save(usuario);
-        clienteRepository.save(Cliente.builder().persona(persona).totalGastado(java.math.BigDecimal.ZERO).build());
 
         try {
             Authentication auth = authenticationManager.authenticate(

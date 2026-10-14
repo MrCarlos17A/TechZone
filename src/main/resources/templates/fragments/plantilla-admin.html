@@ -63,34 +63,78 @@
                 });
             })();
         </script>
-        <!-- Modal confirmar eliminacion -->
-        <div class="modal fade" id="modalEliminar" tabindex="-1" aria-hidden="true">
+        <!-- Modal unico de confirmacion: eliminaciones y acciones de estado -->
+        <div class="modal fade" id="modalConfirmacion" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
-                    <div class="modal-header bg-danger text-white">
-                        <h5 class="modal-title"><i class="bi bi-exclamation-triangle"></i> Confirmar eliminacion</h5>
+                    <div class="modal-header bg-danger text-white" id="cabeceraConfirmacion">
+                        <h5 class="modal-title" id="tituloConfirmacion">
+                            <i class="bi bi-exclamation-triangle"></i> Confirmar
+                        </h5>
                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                     </div>
                     <div class="modal-body">
-                        <p class="mb-1">Estas seguro de eliminar <strong id="nombreEliminar">este registro</strong>?</p>
-                        <p class="text-muted small mb-0">Esta accion no se puede deshacer.</p>
+                        <p class="mb-1" id="textoConfirmacion">Esta seguro de realizar esta accion?</p>
+                        <p class="text-muted small mb-0" id="notaConfirmacion">Esta accion no se puede deshacer.</p>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <a href="#" id="btnConfirmarEliminar" class="btn btn-danger">Aceptar</a>
+                        <button type="button" id="btnConfirmarAccion" class="btn btn-danger">Aceptar</button>
                     </div>
                 </div>
             </div>
         </div>
+        <form id="formConfirmacion" method="post" th:action="@{/}" style="display:none"></form>
         <script>
-            document.addEventListener('click', function (e) {
-                var boton = e.target.closest('[data-eliminar]');
-                if (!boton) return;
-                e.preventDefault();
-                document.getElementById('nombreEliminar').textContent = boton.dataset.nombre || 'este registro';
-                document.getElementById('btnConfirmarEliminar').href = boton.getAttribute('href');
-                new bootstrap.Modal(document.getElementById('modalEliminar')).show();
-            });
+            (function () {
+                var modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('modalConfirmacion'));
+                var form = document.getElementById('formConfirmacion');
+                var csrf = form.querySelector('input[name="_csrf"]');
+
+                document.addEventListener('click', function (e) {
+                    var b = e.target.closest('[data-eliminar], [data-confirmar]');
+                    if (!b) return;
+
+                    var url = b.dataset.accion || b.getAttribute('href');
+                    if (!url || url === '#') return;
+                    e.preventDefault();
+
+                    var esEliminar = b.hasAttribute('data-eliminar');
+                    var estilo = b.dataset.estilo || 'danger';
+                    var icono = b.dataset.icono || 'bi-exclamation-triangle';
+                    var nombre = b.dataset.nombre;
+
+                    document.getElementById('cabeceraConfirmacion').className =
+                        'modal-header text-white bg-' + estilo;
+                    document.getElementById('tituloConfirmacion').innerHTML =
+                        '<i class="bi ' + icono + '"></i> ' +
+                        (b.dataset.titulo || (esEliminar ? 'Confirmar eliminacion' : 'Confirmar accion'));
+
+                    var texto = b.dataset.texto;
+                    if (!texto) {
+                        texto = esEliminar
+                            ? 'Esta seguro de eliminar ' + (nombre || 'este registro') + '?'
+                            : 'Esta seguro de realizar esta accion?';
+                    }
+                    document.getElementById('textoConfirmacion').textContent = texto;
+                    document.getElementById('notaConfirmacion').textContent =
+                        b.dataset.nota || (esEliminar ? 'Esta accion no se puede deshacer.' : 'Verifique los datos antes de continuar.');
+
+                    var btn = document.getElementById('btnConfirmarAccion');
+                    btn.className = 'btn btn-' + estilo;
+                    btn.textContent = b.dataset.boton || 'Aceptar';
+
+                    form.method = b.dataset.metodo || 'get';
+                    form.action = url;
+                    if (csrf) csrf.disabled = (form.method === 'get');
+
+                    modal.show();
+                });
+
+                document.getElementById('btnConfirmarAccion').addEventListener('click', function () {
+                    form.submit();
+                });
+            })();
         </script>
     </footer>
 </body>

@@ -29,4 +29,8 @@ public class Empleado {
 
     @Column(name = "salario", precision = 10, scale = 2)
     private BigDecimal salario;
+
+    @Column(name = "vigente")
+    @Builder.Default
+    private Boolean vigente = true;
 }

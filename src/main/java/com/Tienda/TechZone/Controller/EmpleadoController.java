@@ -38,6 +38,10 @@ public class EmpleadoController {
         }
         model.addAttribute("empleados", empleados);
         model.addAttribute("q", q);
+        model.addAttribute("cuentasPorPersona", usuarioService.ListarUsuarios().stream()
+                .filter(u -> u.getPersona() != null && u.getPersona().getIdPersona() != null)
+                .collect(java.util.stream.Collectors.toMap(
+                        u -> u.getPersona().getIdPersona(), u -> u, (a, b) -> a)));
         return "admin/empleados/listar";
     }
 

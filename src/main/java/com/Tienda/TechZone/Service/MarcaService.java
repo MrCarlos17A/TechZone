@@ -17,6 +17,13 @@ public class MarcaService {
         return marcaRepository.findAll();
     }
 
+    // Solo marcas vigentes (para la tienda publica)
+    public List<Marca> ListarMarcasActivas() {
+        return marcaRepository.findAll().stream()
+                .filter(m -> m.getVigente() == null || m.getVigente())
+                .collect(java.util.stream.Collectors.toList());
+    }
+
     public Marca CrearMarca(Marca marca) {
         validarMarca(marca);
         if (marca.getVigente() == null) {
@@ -43,7 +50,10 @@ public class MarcaService {
     }
 
     public void EliminarMarca(Long id) {
-        marcaRepository.deleteById(id);
+        Marca marca = marcaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Marca no encontrada con id: " + id));
+        marca.setVigente(false);
+        marcaRepository.save(marca);
     }
 
     public Marca ObtenerMarcaPorId(Long id) {

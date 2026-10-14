@@ -31,8 +31,8 @@ public class ConfiguracionController {
 
     @PostMapping("/guardar")
     public String Guardar(@ModelAttribute ConfiguracionSitio configuracion,
-                          @RequestParam(value = "archivoLogo", required = false) MultipartFile archivoLogo,
-                          RedirectAttributes flash) {
+            @RequestParam(value = "archivoLogo", required = false) MultipartFile archivoLogo,
+            RedirectAttributes flash) {
         try {
             if (archivoLogo != null && !archivoLogo.isEmpty()) {
                 String ruta = guardarArchivo(archivoLogo);
@@ -53,7 +53,8 @@ public class ConfiguracionController {
         }
         String nombreLimpio = Paths.get(nombreOriginal).getFileName().toString();
         String extension = nombreLimpio.contains(".")
-                ? nombreLimpio.substring(nombreLimpio.lastIndexOf('.') + 1).toLowerCase() : "";
+                ? nombreLimpio.substring(nombreLimpio.lastIndexOf('.') + 1).toLowerCase()
+                : "";
         if (!java.util.Set.of("jpg", "jpeg", "png", "gif", "webp").contains(extension)) {
             throw new RuntimeException("Formato no valido. Usa JPG, PNG, GIF o WEBP");
         }

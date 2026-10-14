@@ -93,37 +93,46 @@ public class CompraController {
         PagoRequest pr = solicitud.pago();
         DireccionRequest dr = solicitud.direccion();
 
-        try {
-            BigDecimal total = BigDecimal.ZERO;
-
-            for (ItemCompra item : items) {
-                if (item.cantidad() == null || item.cantidad() <= 0) {
-                    continue;
-                }
-                Producto producto = productoService.ObtenerProductoPorId(item.idProducto());
-                if (producto.getStock() == null || producto.getStock() < item.cantidad()) {
-                    respuesta.put("ok", false);
-                    respuesta.put("mensaje", "Stock insuficiente para: " + producto.getNombre());
-                    return respuesta;
-                }
-                if (producto.getPrecioVenta() == null
-                        || producto.getPrecioVenta().compareTo(BigDecimal.ZERO) <= 0) {
-                    respuesta.put("ok", false);
-                    respuesta.put("mensaje", "Precio invalido para: " + producto.getNombre());
-                    return respuesta;
-                }
-                BigDecimal subtotal = producto.getPrecioVenta().multiply(BigDecimal.valueOf(item.cantidad()));
-                total = total.add(subtotal);
-            }
-
-            if (total.compareTo(BigDecimal.ZERO) <= 0) {
+        // ---- FASE 1: validar todo ANTES de escribir (evita IDs quemados por rollback) ----
+        BigDecimal total = BigDecimal.ZERO;
+        for (ItemCompra item : items) {
+            if (item.idProducto() == null || item.cantidad() == null || item.cantidad() <= 0) {
                 respuesta.put("ok", false);
-                respuesta.put("mensaje", "El total de la compra debe ser mayor a cero");
+                respuesta.put("mensaje", "Cantidad invalida en el carrito");
                 return respuesta;
             }
+            Producto producto = productoService.ObtenerProductoPorId(item.idProducto());
+            if (producto.getStock() == null || producto.getStock() < item.cantidad()) {
+                respuesta.put("ok", false);
+                respuesta.put("mensaje", "Stock insuficiente para: " + producto.getNombre());
+                return respuesta;
+            }
+            if (producto.getPrecioVenta() == null
+                    || producto.getPrecioVenta().compareTo(BigDecimal.ZERO) <= 0) {
+                respuesta.put("ok", false);
+                respuesta.put("mensaje", "Precio invalido para: " + producto.getNombre());
+                return respuesta;
+            }
+            total = total.add(producto.getPrecioVenta().multiply(BigDecimal.valueOf(item.cantidad())));
+        }
 
-            BigDecimal igv = total.multiply(new BigDecimal("0.18"));
-            BigDecimal totalConIgv = total.add(igv);
+        if (total.compareTo(BigDecimal.ZERO) <= 0) {
+            respuesta.put("ok", false);
+            respuesta.put("mensaje", "El total de la compra debe ser mayor a cero");
+            return respuesta;
+        }
+
+        String errorPago = validarPago(pr);
+        if (errorPago != null) {
+            respuesta.put("ok", false);
+            respuesta.put("mensaje", errorPago);
+            return respuesta;
+        }
+
+        BigDecimal igv = total.multiply(new BigDecimal("0.18"));
+        BigDecimal totalConIgv = total.add(igv);
+
+        try {
 
             // Actualizar Persona con datos del checkout
             Persona persona = usuario.getPersona();
@@ -161,7 +170,7 @@ public class CompraController {
             }
 
             Cliente cliente = usuario.getPersona() != null
-                    ? clienteRepository.findByPersona(usuario.getPersona()).orElse(null)
+                    ? clienteRepository.findFirstByPersona(usuario.getPersona()).orElse(null)
                     : null;
             if (cliente == null && usuario.getPersona() != null) {
                 cliente = clienteRepository.save(Cliente.builder()
@@ -260,21 +269,60 @@ public class CompraController {
                     .estadoPago("PENDIENTE")
                     .build());
 
-            if (cliente != null) {
-                BigDecimal gastadoPrevio = cliente.getTotalGastado() != null ? cliente.getTotalGastado() : BigDecimal.ZERO;
-                cliente.setTotalGastado(gastadoPrevio.add(totalConIgv));
-                cliente.setFechaUltimaCompra(LocalDateTime.now());
-                clienteRepository.save(cliente);
-            }
+            // El total gastado, la fecha de ultima compra y el paso del rol
+            // "Usuario" a "Cliente" NO se aplican aqui: la venta queda
+            // PENDIENTE hasta que el admin la confirme. Todo eso lo hace
+            // VentaService.ConfirmarVenta al marcar la venta COMPLETADA.
+            // El stock si se descuenta aqui porque funciona como reserva y
+            // VentaService.CancelarVenta lo devuelve si el pago se rechaza.
 
             respuesta.put("ok", true);
             respuesta.put("idPedido", venta.getIdVenta());
             respuesta.put("total", totalConIgv);
             return respuesta;
         } catch (RuntimeException e) {
+            // Marca la transaccion para revertir: no se queda ninguna escritura parcial
+            org.springframework.transaction.interceptor.TransactionAspectSupport
+                    .currentTransactionStatus().setRollbackOnly();
             respuesta.put("ok", false);
-            respuesta.put("mensaje", e.getMessage());
+            respuesta.put("mensaje", e.getMessage() != null ? e.getMessage() : "No se pudo procesar la compra");
             return respuesta;
         }
+    }
+
+    // Valida los datos de pago segun el medio elegido; devuelve null si todo esta bien
+    private String validarPago(PagoRequest pr) {
+        if (pr == null || pr.idMedioPago() == null) {
+            return null; // se usara Efectivo por defecto
+        }
+        MedioPago medio = medioPagoRepository.findById(pr.idMedioPago()).orElse(null);
+        if (medio == null || medio.getNombre() == null) {
+            return "Medio de pago no valido";
+        }
+        String nombre = medio.getNombre().toLowerCase();
+        if (nombre.contains("yape") || nombre.contains("plin")) {
+            if (pr.codigoOperacion() == null || !pr.codigoOperacion().matches("\\d{6}")) {
+                return "El codigo de operacion debe tener 6 digitos";
+            }
+            if (pr.numeroCelular() == null || !pr.numeroCelular().matches("\\d{9}")) {
+                return "El numero de celular debe tener 9 digitos";
+            }
+        } else if (nombre.contains("tarjeta")) {
+            if (pr.numeroTarjeta() == null || pr.numeroTarjeta().replaceAll("\\D", "").length() < 15) {
+                return "Numero de tarjeta invalido";
+            }
+            if (pr.cvv() == null || !pr.cvv().matches("\\d{3,4}")) {
+                return "Codigo de seguridad (CVV) invalido";
+            }
+        } else if (nombre.contains("transferencia")) {
+            if (pr.codigoOperacion() == null || pr.codigoOperacion().isBlank()) {
+                return "Ingresa el codigo de operacion";
+            }
+        } else if (nombre.contains("pagoefectivo") || nombre.contains("pago efectivo")) {
+            if (pr.codigoPPI() == null || pr.codigoPPI().isBlank()) {
+                return "Ingresa el codigo PPI";
+            }
+        }
+        return null;
     }
 }

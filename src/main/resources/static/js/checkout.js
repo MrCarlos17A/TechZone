@@ -158,51 +158,7 @@
         }
     }
 
-    // ── API DNI ──
-
-    function buscarDni() {
-        const dni = $('dniCheckout').value.trim();
-        const msg = $('mensajeDni');
-        const btn = $('btnBuscarDni');
-
-        if (!/^\d{8}$/.test(dni)) {
-            msg.textContent = 'El DNI debe tener 8 digitos';
-            msg.className = 'text-danger';
-            return;
-        }
-
-        btn.disabled = true;
-        btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
-        msg.textContent = 'Consultando...';
-        msg.className = 'text-muted';
-
-        fetch('/api/dni', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ dni: dni })
-        })
-            .then(r => r.json())
-            .then(data => {
-                if (data.ok && data.datos) {
-                    $('nombresCheckout').value = data.datos.nombres || '';
-                    $('apPaternoCheckout').value = data.datos.apellidoPaterno || '';
-                    $('apMaternoCheckout').value = data.datos.apellidoMaterno || '';
-                    msg.textContent = data.mensaje || 'Datos encontrados';
-                    msg.className = 'text-success';
-                } else {
-                    msg.textContent = data.mensaje || 'DNI no encontrado';
-                    msg.className = 'text-danger';
-                }
-            })
-            .catch(() => {
-                msg.textContent = 'Error de conexion';
-                msg.className = 'text-danger';
-            })
-            .finally(() => {
-                btn.disabled = false;
-                btn.innerHTML = '<i class="bi bi-search"></i>';
-            });
-    }
+    // ── API DNI: la consulta ahora la hace /js/documento-lookup.js ──
 
     // ── DATOS GUARDADOS ──
 
@@ -485,6 +441,23 @@
     window.techZoneAbrirCheckout = abrirCheckout;
 
     document.addEventListener('DOMContentLoaded', function () {
+        // Consulta de documento (local primero, API despues) reutilizable
+        if (typeof initDocumentoLookup === 'function') {
+            initDocumentoLookup({
+                tipoId: null,
+                numeroId: 'dniCheckout',
+                btnId: 'btnBuscarDni',
+                msgId: 'mensajeDni',
+                bloquearNombres: false,
+                campos: {
+                    nombres: 'nombresCheckout',
+                    apellidoPaterno: 'apPaternoCheckout',
+                    apellidoMaterno: 'apMaternoCheckout',
+                    telefono: 'telefonoCheckout'
+                }
+            });
+        }
+
         const btnSiguiente = $('btnCheckoutSiguiente');
         if (btnSiguiente) {
             btnSiguiente.addEventListener('click', function () {
@@ -504,18 +477,6 @@
         const btnConfirmar = $('btnCheckoutConfirmar');
         if (btnConfirmar) {
             btnConfirmar.addEventListener('click', confirmarCompra);
-        }
-
-        const btnDni = $('btnBuscarDni');
-        if (btnDni) {
-            btnDni.addEventListener('click', buscarDni);
-        }
-
-        const inpDni = $('dniCheckout');
-        if (inpDni) {
-            inpDni.addEventListener('keydown', function (e) {
-                if (e.key === 'Enter') { e.preventDefault(); buscarDni(); }
-            });
         }
 
         const selDepto = $('departamentoCheckout');

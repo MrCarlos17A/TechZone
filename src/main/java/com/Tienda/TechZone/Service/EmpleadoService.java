@@ -56,10 +56,32 @@ public class EmpleadoService {
         if (idRol == null || (idRol != 1 && idRol != 2)) {
             throw new RuntimeException("Selecciona un rol valido (Administrador o Trabajador)");
         }
-        if (usuarioRepository.findByCorreo(correo.trim()).isPresent()) {
-            throw new RuntimeException("El correo ya esta registrado");
-        }
         validarSalario(salario);
+
+        String correoLimpio = correo.trim();
+        String doc = (numeroDocumento != null && !numeroDocumento.isBlank()) ? numeroDocumento.trim() : null;
+
+        // Local-first: si el documento ya esta en el sistema se reusa esa persona
+        Persona persona = null;
+        if (doc != null) {
+            if (idTipoDocumento != null) {
+                persona = personaRepository
+                        .findFirstByTipoDocumentoAndNumeroDocumento(idTipoDocumento, doc).orElse(null);
+            }
+            if (persona == null) {
+                persona = personaRepository.findFirstByNumeroDocumento(doc).orElse(null);
+            }
+        }
+
+        // El correo solo se rechaza si pertenece a OTRA persona
+        Usuario usuarioExistente = usuarioRepository.findByCorreo(correoLimpio).orElse(null);
+        if (usuarioExistente != null) {
+            boolean mismaPersona = persona != null && usuarioExistente.getPersona() != null
+                    && usuarioExistente.getPersona().getIdPersona().equals(persona.getIdPersona());
+            if (!mismaPersona) {
+                throw new RuntimeException("El correo ya esta registrado por otra cuenta");
+            }
+        }
 
         TipoDocumento tipoDoc = null;
         if (idTipoDocumento != null) {
@@ -72,34 +94,81 @@ public class EmpleadoService {
         Rol rol = rolRepository.findById(idRol)
                 .orElseThrow(() -> new RuntimeException("Rol no encontrado"));
 
-        Persona persona = personaRepository.save(Persona.builder()
-                .nombres(nombres.trim())
-                .apellidoPaterno(apellidoPaterno != null ? apellidoPaterno.trim() : null)
-                .apellidoMaterno(apellidoMaterno != null ? apellidoMaterno.trim() : null)
-                .tipoDocumento(tipoDoc)
-                .numeroDocumento(numeroDocumento)
-                .telefono(telefono)
-                .direccion(direccion)
-                .referencia(referencia)
-                .ubigeo(ubigeo)
-                .fechaNacimiento(fechaNacimiento)
-                .fechaRegistro(LocalDateTime.now())
-                .vigente(true)
-                .build());
+        if (persona == null) {
+            persona = personaRepository.save(Persona.builder()
+                    .nombres(nombres.trim())
+                    .apellidoPaterno(apellidoPaterno != null ? apellidoPaterno.trim() : null)
+                    .apellidoMaterno(apellidoMaterno != null ? apellidoMaterno.trim() : null)
+                    .tipoDocumento(tipoDoc)
+                    .numeroDocumento(doc)
+                    .telefono(telefono)
+                    .direccion(direccion)
+                    .referencia(referencia)
+                    .ubigeo(ubigeo)
+                    .fechaNacimiento(fechaNacimiento)
+                    .fechaRegistro(LocalDateTime.now())
+                    .vigente(true)
+                    .build());
+        } else {
+            persona.setNombres(nombres.trim());
+            if (apellidoPaterno != null && !apellidoPaterno.isBlank()) {
+                persona.setApellidoPaterno(apellidoPaterno.trim());
+            }
+            if (apellidoMaterno != null && !apellidoMaterno.isBlank()) {
+                persona.setApellidoMaterno(apellidoMaterno.trim());
+            }
+            if (tipoDoc != null) {
+                persona.setTipoDocumento(tipoDoc);
+            }
+            if (doc != null) {
+                persona.setNumeroDocumento(doc);
+            }
+            if (telefono != null) {
+                persona.setTelefono(telefono);
+            }
+            if (direccion != null) {
+                persona.setDireccion(direccion);
+            }
+            if (referencia != null) {
+                persona.setReferencia(referencia);
+            }
+            if (ubigeo != null) {
+                persona.setUbigeo(ubigeo);
+            }
+            if (fechaNacimiento != null) {
+                persona.setFechaNacimiento(fechaNacimiento);
+            }
+            persona.setVigente(true);
+            persona = personaRepository.save(persona);
+        }
 
-        usuarioRepository.save(Usuario.builder()
-                .persona(persona)
-                .rol(rol)
-                .correo(correo.trim())
-                .password(passwordEncoder.encode(password))
-                .estado("activo")
-                .build());
+        // Se reusa la cuenta existente de esa misma persona si la tiene
+        Usuario usuario;
+        if (usuarioExistente != null) {
+            usuario = usuarioExistente;
+            usuario.setPersona(persona);
+            usuario.setRol(rol);
+            usuario.setPassword(passwordEncoder.encode(password));
+            usuario.setEstado("activo");
+        } else {
+            usuario = Usuario.builder()
+                    .persona(persona)
+                    .rol(rol)
+                    .correo(correoLimpio)
+                    .password(passwordEncoder.encode(password))
+                    .estado("activo")
+                    .build();
+        }
+        usuarioRepository.save(usuario);
 
-        return empleadoRepository.save(Empleado.builder()
-                .persona(persona)
-                .fechaContrato(fechaContrato)
-                .salario(salario)
-                .build());
+        Empleado empleado = empleadoRepository.findFirstByPersona(persona).orElse(null);
+        if (empleado == null) {
+            empleado = Empleado.builder().persona(persona).build();
+        }
+        empleado.setFechaContrato(fechaContrato);
+        empleado.setSalario(salario);
+        empleado.setVigente(true);
+        return empleadoRepository.save(empleado);
     }
 
     @Transactional
@@ -117,8 +186,12 @@ public class EmpleadoService {
         }
 
         persona.setNombres(nombres != null && !nombres.isBlank() ? nombres.trim() : persona.getNombres());
-        persona.setApellidoPaterno(apellidoPaterno != null ? apellidoPaterno.trim() : persona.getApellidoPaterno());
-        persona.setApellidoMaterno(apellidoMaterno != null ? apellidoMaterno.trim() : persona.getApellidoMaterno());
+        if (apellidoPaterno != null && !apellidoPaterno.isBlank()) {
+            persona.setApellidoPaterno(apellidoPaterno.trim());
+        }
+        if (apellidoMaterno != null && !apellidoMaterno.isBlank()) {
+            persona.setApellidoMaterno(apellidoMaterno.trim());
+        }
         if (idTipoDocumento != null) {
             persona.setTipoDocumento(tipoDocumentoRepository.findById(idTipoDocumento).orElse(persona.getTipoDocumento()));
         }
@@ -135,20 +208,47 @@ public class EmpleadoService {
         personaRepository.save(persona);
 
         if (correo != null && !correo.isBlank()) {
-            var usuarioOpt = usuarioRepository.findByCorreo(correo.trim());
-            if (usuarioOpt.isPresent()) {
-                Usuario usuario = usuarioOpt.get();
-                if (idRol != null && (idRol == 1 || idRol == 2)) {
-                    rolRepository.findById(idRol).ifPresent(usuario::setRol);
+            String correoLimpio = correo.trim();
+            Usuario usuarioPropio = usuarioRepository.findFirstByPersona(persona).orElse(null);
+            Usuario usuarioCorreo = usuarioRepository.findByCorreo(correoLimpio).orElse(null);
+
+            // El correo no puede pertenecer a otra persona
+            if (usuarioCorreo != null && (usuarioPropio == null
+                    || !usuarioCorreo.getIdUsuario().equals(usuarioPropio.getIdUsuario()))) {
+                throw new RuntimeException("El correo ya esta registrado por otra cuenta");
+            }
+
+            Usuario usuario = usuarioCorreo != null ? usuarioCorreo : usuarioPropio;
+            if (usuario == null) {
+                if (password == null || password.isBlank()) {
+                    throw new RuntimeException("La contrasena es obligatoria para crear la cuenta");
                 }
+                if (password.length() < 6) {
+                    throw new RuntimeException("La contrasena debe tener al menos 6 caracteres");
+                }
+                usuario = Usuario.builder()
+                        .persona(persona)
+                        .correo(correoLimpio)
+                        .password(passwordEncoder.encode(password))
+                        .estado("activo")
+                        .build();
+            } else {
+                usuario.setPersona(persona);
+                usuario.setCorreo(correoLimpio);
                 if (password != null && !password.isBlank()) {
                     if (password.length() < 6) {
                         throw new RuntimeException("La contrasena debe tener al menos 6 caracteres");
                     }
                     usuario.setPassword(passwordEncoder.encode(password));
                 }
-                usuarioRepository.save(usuario);
+                usuario.setEstado("activo");
             }
+            if (idRol != null && (idRol == 1 || idRol == 2)) {
+                rolRepository.findById(idRol).ifPresent(usuario::setRol);
+            } else if (usuario.getRol() == null) {
+                throw new RuntimeException("Selecciona un rol valido (Administrador o Trabajador)");
+            }
+            usuarioRepository.save(usuario);
         }
 
         if (fechaContrato != null && fechaContrato.isAfter(LocalDate.now())) {
@@ -156,10 +256,7 @@ public class EmpleadoService {
         }
         empleado.setFechaContrato(fechaContrato != null ? fechaContrato : empleado.getFechaContrato());
         if (salario != null) {
-        validarSalario(salario);
-        if (fechaContrato != null && fechaContrato.isAfter(LocalDate.now())) {
-            throw new RuntimeException("La fecha de contrato no puede ser futura");
-        }
+            validarSalario(salario);
             empleado.setSalario(salario);
         }
         return empleadoRepository.save(empleado);
@@ -185,6 +282,9 @@ public class EmpleadoService {
     }
 
     public void EliminarEmpleado(Long id) {
-        empleadoRepository.deleteById(id);
+        Empleado empleado = empleadoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Empleado no encontrado con id: " + id));
+        empleado.setVigente(false);
+        empleadoRepository.save(empleado);
     }
 }

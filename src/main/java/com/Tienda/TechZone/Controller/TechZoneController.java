@@ -24,9 +24,9 @@ public class TechZoneController {
 
     @GetMapping("/")
     public String Inicio(Model model) {
-        List<Marca> marcas = marcaService.ListarMarcas();
-        List<Categoria> categorias = categoriaService.ListarCategorias();
-        List<Producto> todosProductos = productoService.ListarProductos();
+        List<Marca> marcas = marcaService.ListarMarcasActivas();
+        List<Categoria> categorias = categoriaService.ListarCategoriasActivas();
+        List<Producto> todosProductos = productoService.ListarProductosActivos();
 
         Map<Categoria, List<Producto>> productosPorCategoria = new LinkedHashMap<>();
         for (Categoria cat : categorias) {
@@ -45,12 +45,12 @@ public class TechZoneController {
 
     @GetMapping("/productos")
     public String Productos(@RequestParam(value = "categoria", required = false) Long idCategoria, Model model) {
-        List<Categoria> categorias = categoriaService.ListarCategorias();
+        List<Categoria> categorias = categoriaService.ListarCategoriasActivas();
         List<Producto> productos;
         Categoria categoriaActiva = null;
 
         if (idCategoria != null) {
-            productos = productoService.ListarProductosPorCategoria(idCategoria);
+            productos = productoService.ListarProductosActivosPorCategoria(idCategoria);
             for (Categoria c : categorias) {
                 if (c.getIdCategoria().equals(idCategoria)) {
                     categoriaActiva = c;
@@ -58,7 +58,7 @@ public class TechZoneController {
                 }
             }
         } else {
-            productos = productoService.ListarProductos();
+            productos = productoService.ListarProductosActivos();
         }
 
         model.addAttribute("productos", productos);
@@ -71,7 +71,7 @@ public class TechZoneController {
 
     @GetMapping("/novedades")
     public String Novedades(Model model) {
-        List<Categoria> categorias = categoriaService.ListarCategorias();
+        List<Categoria> categorias = categoriaService.ListarCategoriasActivas();
         Long idCategoriaTarjetas = null;
         for (Categoria c : categorias) {
             if (c.getNombre().toLowerCase().contains("tarjeta")) {
@@ -81,9 +81,9 @@ public class TechZoneController {
         }
         List<Producto> productos;
         if (idCategoriaTarjetas != null) {
-            productos = productoService.ListarProductosPorCategoria(idCategoriaTarjetas);
+            productos = productoService.ListarProductosActivosPorCategoria(idCategoriaTarjetas);
         } else {
-            productos = productoService.ListarProductos();
+            productos = productoService.ListarProductosActivos();
         }
         model.addAttribute("productos", productos);
         return "novedades";
@@ -91,7 +91,7 @@ public class TechZoneController {
 
     @GetMapping("/marcas")
     public String Marcas(Model model) {
-        List<Marca> marcas = marcaService.ListarMarcas();
+        List<Marca> marcas = marcaService.ListarMarcasActivas();
         model.addAttribute("marcas", marcas);
         return "marcas";
     }

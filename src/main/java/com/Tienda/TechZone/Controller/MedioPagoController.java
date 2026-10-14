@@ -62,10 +62,13 @@ public class MedioPagoController {
     @GetMapping("/eliminar/{id}")
     public String eliminar(@PathVariable Long id, RedirectAttributes flash) {
         try {
-            medioPagoRepository.deleteById(id);
-            flash.addFlashAttribute("exito", "Medio de pago eliminado correctamente");
+            MedioPago medio = medioPagoRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Medio de pago no encontrado"));
+            medio.setVigente(false);
+            medioPagoRepository.save(medio);
+            flash.addFlashAttribute("exito", "Medio de pago desactivado correctamente");
         } catch (Exception e) {
-            flash.addFlashAttribute("error", "No se puede eliminar: tiene pagos asociados");
+            flash.addFlashAttribute("error", "No se pudo desactivar: " + e.getMessage());
         }
         return "redirect:/admin/medios-pago";
     }

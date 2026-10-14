@@ -101,10 +101,13 @@ public class ProveedorController {
     @GetMapping("/eliminar/{id}")
     public String eliminar(@PathVariable Long id, RedirectAttributes flash) {
         try {
-            proveedorRepository.deleteById(id);
-            flash.addFlashAttribute("exito", "Proveedor eliminado correctamente");
+            Proveedor proveedor = proveedorRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Proveedor no encontrado"));
+            proveedor.setVigente(false);
+            proveedorRepository.save(proveedor);
+            flash.addFlashAttribute("exito", "Proveedor desactivado correctamente");
         } catch (Exception e) {
-            flash.addFlashAttribute("error", "No se puede eliminar: el proveedor tiene registros asociados");
+            flash.addFlashAttribute("error", "No se pudo desactivar: " + e.getMessage());
         }
         return "redirect:/admin/proveedores";
     }

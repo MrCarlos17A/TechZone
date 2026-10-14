@@ -97,7 +97,7 @@ public class MisPedidosController {
         if (usuario == null || usuario.getPersona() == null) {
             return null;
         }
-        return clienteRepository.findByPersona(usuario.getPersona()).orElse(null);
+        return clienteRepository.findFirstByPersona(usuario.getPersona()).orElse(null);
     }
 
     private Map<String, Object> ConstruirPedido(Venta venta, int numeroPedido) {

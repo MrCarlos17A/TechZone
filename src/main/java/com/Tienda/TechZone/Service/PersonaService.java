@@ -20,6 +20,7 @@ public class PersonaService {
 
     public Persona CrearPersona(Persona persona) {
         validarPersona(persona);
+        validarDocumentoNoDuplicado(persona);
         if (persona.getVigente() == null) {
             persona.setVigente(true);
         }
@@ -48,7 +49,10 @@ public class PersonaService {
     }
 
     public void EliminarPersona(Long id) {
-        personaRepository.deleteById(id);
+        Persona persona = personaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Persona no encontrada con id: " + id));
+        persona.setVigente(false);
+        personaRepository.save(persona);
     }
 
     public Persona ObtenerPersonaPorId(Long id) {
@@ -59,6 +63,21 @@ public class PersonaService {
     public Persona ObtenerPorNumeroDocumento(String numeroDocumento) {
         return personaRepository.findByNumeroDocumento(numeroDocumento)
                 .orElseThrow(() -> new RuntimeException("Persona no encontrada con documento: " + numeroDocumento));
+    }
+
+    private void validarDocumentoNoDuplicado(Persona persona) {
+        String doc = persona.getNumeroDocumento();
+        if (doc == null || doc.isBlank()) {
+            return;
+        }
+        Long idTipo = persona.getTipoDocumento() != null
+                ? persona.getTipoDocumento().getIdTipoDocumento() : null;
+        long existe = (idTipo != null)
+                ? personaRepository.countByTipoDocumentoAndNumeroDocumento(idTipo, doc.trim())
+                : personaRepository.countByNumeroDocumento(doc.trim());
+        if (existe > 0) {
+            throw new RuntimeException("Ya existe una persona con ese tipo y numero de documento");
+        }
     }
 
     private void validarPersona(Persona persona) {
