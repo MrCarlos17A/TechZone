@@ -13,6 +13,7 @@
 | 1 | Arroyo Vega, Carlos Felipe | U23214686 |
 | 2 | Santamaria Damian, Jose Jhonatan | U23222412 |
 | 3 | Ipanaque Bravo, Gabriel Arturo | U21209609 |
+| 4 | De La Cruz Becerra, Jesús Miguel | U22321531 |
 
 ---
 
