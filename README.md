@@ -15,6 +15,7 @@
 | 3 | Ipanaque Bravo, Gabriel Arturo | U21209609 |
 | 4 | De La Cruz Becerra, Jesús Miguel | U22321531 |
 | 5| Suarez Paz Jhon Antonio | U23257973 |
+| 6| Taboada Mimbela, Gabriela Alexandra| U23271730 |
 
 ---
 
