@@ -135,15 +135,6 @@ La aplicación estará accesible en: `http://localhost:8080`
 
 ---
 
-## Credenciales de Prueba
-
-El script `bd_techzone.sql` siembra las siguientes cuentas (contraseñas encriptadas con BCrypt):
-
-| Correo | Contraseña | Rol |
-| :--- | :--- | :--- |
-| `admin@techzone.com` | `Admin123**` | Administrador |
----
-
 ## Estructura de la Base de Datos
 
 El script crea 20 tablas: `ubigeo`, `tipo_documento`, `rol`, `marca`, `categoria`, `medio_pago`, `persona`, `proveedor`, `cliente`, `empleado`, `usuario`, `producto`, `producto_imagen`, `producto_proveedor`, `carrito`, `detalle_carrito`, `venta`, `detalle_venta`, `pago` y `configuracion_sitio`.
