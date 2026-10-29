@@ -33,21 +33,49 @@ El proyecto está diseñado bajo una arquitectura desacoplada de dos capas (Mono
 
 ```text
 TechZone/
-├── backend-techzone/               # API REST - Spring Boot (Java 25)
-│   ├── src/main/java/              # Arquitectura en capas: Controller, Model, Repository, Service, Security
-│   ├── src/main/resources/         # Configuración y application.properties
-│   ├── .env.example                # Plantilla de variables de entorno para desarrollo
-│   ├── iniciar.ps1                 # Script de arranque automatizado con detección de Java 25
-│   ├── mvnw / mvnw.cmd             # Maven Wrapper
-│   └── pom.xml                     # Gestión de dependencias de Maven
-├── frontend-techzone/              # Cliente Web SPA - Angular 19 / 21
-│   ├── src/app/pages/              # Módulos: Tienda, Checkout, Carrito, Login, Perfil y Backoffice Admin
-│   ├── src/app/components/         # Componentes reutilizables (Navbar, Footer, Card, Modales, Toast)
-│   ├── src/app/services/           # Servicios HTTP reactivos y estado global mediante Signals
-│   ├── angular.json                # Configuración de compilación de Angular CLI
-│   └── package.json                # Dependencias y scripts de ejecución
-├── .gitignore                      # Reglas maestras de exclusión (secretos, dependencias y binarios)
-└── README.md                       # Documentación técnica y funcional del proyecto
+├── backend-techzone/                           # API REST - Spring Boot (Java 25)
+│   ├── src/main/java/com/tienda/backend_techzone/
+│   │   ├── Controller/                         # Endpoints REST (Auth, Producto, Venta, DNI, Auditoría, Admin)
+│   │   ├── Model/                              # Entidades JPA (Persona, Usuario, Cliente, Empleado, Producto, Venta)
+│   │   ├── Repository/                         # Acceso a datos Spring Data JPA y consultas JOIN FETCH
+│   │   ├── Service/                            # Lógica de negocio, transacciones ACID y reglas operativas
+│   │   ├── Security/                           # Spring Security, filtros JWT, hashing BCrypt y control RBAC
+│   │   └── BackendTechzoneApplication.java     # Clase principal de arranque de Spring Boot
+│   ├── src/main/resources/
+│   │   └── application.properties              # Configuración de base de datos Supabase, pooler y puerto
+│   ├── .env.example                            # Plantilla de variables de entorno para desarrollo
+│   ├── iniciar.ps1                             # Script de arranque automatizado con detección de Java 25
+│   ├── mvnw / mvnw.cmd                         # Maven Wrapper oficial
+│   └── pom.xml                                 # Dependencias del proyecto (Spring Boot, JPA, JWT, Postgres)
+│
+├── frontend-techzone/                          # Cliente Web SPA - Angular 19 / 21
+│   ├── src/app/
+│   │   ├── pages/                              # Vistas principales de la aplicación
+│   │   │   ├── home/                           # Página principal, banners promocionales y destacados
+│   │   │   ├── productos/                      # Catálogo interactivo con filtros (categoría, marca, precio)
+│   │   │   ├── producto-detalle/               # Ficha técnica, galería de imágenes y selector de compra
+│   │   │   ├── carrito/                        # Gestión del carrito de compras y cálculo de totales
+│   │   │   ├── checkout/                       # Pasarela de compra con validación de DNI en RENIEC y pagos
+│   │   │   ├── login/                          # Autenticación de usuarios y colaboradores
+│   │   │   ├── registro/                       # Alta de nuevos clientes con verificación de identidad
+│   │   │   ├── perfil/                         # Gestión de datos personales del usuario autenticado
+│   │   │   ├── mis-pedidos/                    # Historial y seguimiento de órdenes de compra
+│   │   │   └── admin/                          # Backoffice administrativo integral (Ventas, Inventario, Auditoría)
+│   │   ├── components/                         # Componentes reutilizables de UI
+│   │   │   ├── navbar/                         # Barra de navegación con buscador, carrito y sesión
+│   │   │   ├── footer/                         # Pie de página institucional y enlaces de soporte
+│   │   │   ├── product-card/                   # Tarjeta de producto con efecto hover y botón de compra
+│   │   │   └── toast-container/                # Notificaciones dinámicas de éxito, advertencia y error
+│   │   ├── services/                           # Servicios HTTP reactivos y estado global con Signals
+│   │   ├── interceptors/                       # Interceptor HTTP para inyección automática del token JWT
+│   │   └── models/                             # Interfaces TypeScript y tipado estricto del dominio
+│   ├── src/assets/                             # Recursos estáticos (logos, tipografías e iconografía)
+│   ├── angular.json                            # Configuración del compilador y bundles de Angular CLI
+│   ├── package.json                            # Dependencias npm (Angular, Tailwind CSS, Chart.js)
+│   └── tailwind.config.js                      # Configuración de diseño responsivo y temas Claro / Oscuro
+│
+├── .gitignore                                  # Reglas maestras de exclusión (secretos .env, .sql, target, dist)
+└── README.md                                   # Documentación técnica, diagramas de flujo y manual de despliegue
 ```
 
 ---
