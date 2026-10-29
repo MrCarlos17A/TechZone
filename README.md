@@ -21,15 +21,15 @@
 
 ## Descripción del Proyecto
 
-**TechZone** es una plataforma web integral de comercio electrónico y gestión empresarial (ERP/E-Commerce B2C/B2B) orientada a la comercialización, distribución mayorista/minorista y control logístico de hardware gamer de alta gama (tarjetas gráficas serie RTX 50, monitores OLED/QHD de alta tasa de refresco, procesadores, periféricos y accesorios profesionales).
+TechZone es una plataforma web integral de comercio electrónico y gestión empresarial (ERP/E-Commerce B2C/B2B) orientada a la comercialización, distribución mayorista/minorista y control logístico de hardware gamer de alta gama (tarjetas gráficas serie RTX 50, monitores OLED/QHD de alta tasa de refresco, procesadores, periféricos y accesorios profesionales).
 
-El proyecto está diseñado bajo una arquitectura limpia y desacoplada de dos capas (**Monorepo Fullstack**):
-1. **Frontend SPA:** Interfaz moderna y reactiva construida con **Angular 19 / 21**, gestión de estado granular basada en **Signals**, maquetación con **Tailwind CSS**, soporte integral para **Modo Claro / Modo Oscuro** y renderizado responsive de alta fidelidad.
-2. **Backend API REST:** Servidor robusto desarrollado en **Java 25** con **Spring Boot**, autenticación stateless mediante **JWT**, control de accesos por roles (**RBAC**), persistencia transaccional sobre **PostgreSQL en Supabase** y almacenamiento multimedia seguro en **Supabase Storage**.
+El proyecto está diseñado bajo una arquitectura desacoplada de dos capas (Monorepo Fullstack):
+1. **Frontend SPA:** Interfaz moderna y reactiva construida con Angular 19 / 21, gestión de estado granular basada en Signals, maquetación con Tailwind CSS, soporte integral para Modo Claro / Modo Oscuro y renderizado responsive de alta definición.
+2. **Backend API REST:** Servidor robusto desarrollado en Java 25 con Spring Boot, autenticación stateless mediante JWT, control de accesos por roles (RBAC), persistencia transaccional sobre PostgreSQL en Supabase y almacenamiento multimedia seguro en Supabase Storage.
 
 ---
 
-## Estructura del Repositorio
+## Estructura del Repositorio (Monorepo)
 
 ```text
 TechZone/
@@ -52,131 +52,162 @@ TechZone/
 
 ---
 
-## Tecnologías Utilizadas
+## Flujos y Arquitectura del Sistema
 
-### Backend
-* **Lenguaje:** Java 25 (OpenJDK 25.0.4.1 / compilado con release 25)
-* **Framework:** Spring Boot 3.4+ / 4.x
-* **Seguridad & RBAC:** Spring Security con filtros stateless **JWT (JSON Web Tokens)** con firma HMAC-SHA256 y hashing de contraseñas con **BCrypt**.
-* **Persistencia y ORM:** Spring Data JPA / Hibernate ORM con optimización de dialecto PostgreSQL y consultas ansiosas `JOIN FETCH`.
-* **Base de Datos en la Nube:** PostgreSQL alojado en **Supabase** mediante Transaction Pooler (puerto 6543) con conexiones SSL.
-* **Almacenamiento Multimedia:** **Supabase Storage** (buckets de imágenes para marcas, catálogo de productos, banners y comprobantes).
-* **Gestor de Construcción:** Apache Maven con Maven Wrapper (`mvnw`).
+### 1. Arquitectura General y Comunicación entre Capas
+```mermaid
+flowchart TD
+    subgraph FRONTEND["Capa Cliente (Angular 19/21 SPA)"]
+        UI_STORE["Tienda Online / Catálogo Gamer"]
+        UI_CHECKOUT["Checkout & Validación DNI"]
+        UI_ADMIN["Backoffice Admin (Signals + RBAC)"]
+    end
 
-### Frontend
-* **Framework:** Angular 19 / 21 (Arquitectura Standalone Components & Signals reactivos).
-* **Diseño y Estilos:** Tailwind CSS con temas duales (*Light Mode* y *Dark Gamer Mode*), efectos de cristal (*glassmorphism*) y diseño fluido.
-* **Iconografía:** Google Material Symbols y Bootstrap Icons.
-* **Gráficos y Métricas:** Chart.js con gráficos de evolución temporal de ingresos y distribución de ventas por categoría.
+    subgraph BACKEND["Capa de Negocio (Spring Boot / Java 25)"]
+        GW["Filtro de Seguridad & Validación JWT"]
+        C_AUTH["AuthApiController"]
+        C_DNI["DniApiController"]
+        C_PROD["ProductoApiController"]
+        C_VENTA["VentaApiController & Pagos"]
+        C_AUDIT["Módulo Auditoría Forense"]
+    end
+
+    subgraph CLOUD["Servicios Cloud y Externos"]
+        SUPA_DB[("PostgreSQL en Supabase (Puerto 6543)")]
+        SUPA_STORAGE["Supabase Storage (Imágenes WebP/PNG)"]
+        RENIEC["API DNI (apis.net.pe)"]
+    end
+
+    UI_STORE -->|HTTP GET /api/productos| C_PROD
+    C_PROD -->|Query SQL + JOIN FETCH| SUPA_DB
+    C_PROD -.->|URLs CDN públicas| SUPA_STORAGE
+
+    UI_CHECKOUT -->|HTTP GET /api/dni/{numero}| C_DNI
+    C_DNI -->|Consulta RENIEC| RENIEC
+
+    UI_CHECKOUT -->|HTTP POST /api/ventas| C_VENTA
+    C_VENTA -->|Transacción ACID| SUPA_DB
+    C_VENTA -->|Triggers de Auditoría con IP| SUPA_DB
+
+    UI_ADMIN -->|Bearer Token JWT| GW
+    GW -->|Verifica Claims & Rol| C_AUDIT
+    C_AUDIT -->|Consulta accesos y bitácora| SUPA_DB
+```
 
 ---
 
-## Roles y Matriz de Permisos (RBAC)
+### 2. Ciclo de Vida de una Venta (Checkout, Pago y Despacho)
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Cliente as Cliente
+    participant Front as Angular SPA
+    participant Back as Spring Boot API
+    participant DB as PostgreSQL Supabase
+    actor Colab as Colaborador / Admin
 
-El sistema implementa control de acceso basado en roles tanto a nivel de endpoints en Spring Security como en la navegación y acciones de interfaz en Angular:
+    Cliente->>Front: Agrega hardware gamer al carrito
+    Cliente->>Front: Ingresa a Checkout e introduce DNI
+    Front->>Back: Consulta GET /api/dni/{numero}
+    Back-->>Front: Retorna Nombres y Apellidos oficiales
+    Cliente->>Front: Elige método (Yape / Plin / Tarjeta) y confirma
+    Front->>Back: POST /api/ventas (crea orden en estado 'PENDIENTE')
+    Back->>DB: Guarda Venta, DetalleVenta y Pago preliminar
+    DB-->>Back: Venta ID generada
+    Back-->>Front: Orden confirmada con código OP-000001
+    
+    Colab->>Front: Revisa "Registro de Pagos" en panel admin
+    Colab->>Back: Actualiza estado de pago a 'CONFIRMADO'
+    Back->>DB: Trigger actualiza estado de venta a 'EN_PREPARACION'
+    Colab->>Front: Asigna colaborador de empaque y genera Boleta/Factura PDF
+    Front-->>Cliente: Notificación de pedido 'ENTREGADO'
+```
 
-| Rol | Ámbito de Acceso | Permisos y Capacidades |
+---
+
+### 3. Seguridad Defensiva, Bloqueo de Intentos y Auditoría IP
+```mermaid
+flowchart TD
+    START(["Intento de Login"]) --> CAPTURA["Captura IP del cliente (X-Forwarded-For / RemoteAddr)"]
+    CAPTURA --> BUSCA{"¿Usuario existe en BD?"}
+    
+    BUSCA -- No --> LOG_FAIL1["Registra en 'registro_acceso' (Exitoso=False, Motivo='usuario_inexistente')"] --> RET_401["Retorna 401: Credenciales inválidas"]
+    
+    BUSCA -- Sí --> CHECK_LOCK{"¿Cuenta bloqueada temporalmente?"}
+    CHECK_LOCK -- Sí --> RET_423["Retorna 423: Cuenta bloqueada por 15 minutos"]
+    
+    CHECK_LOCK -- No --> PASS{"¿Contraseña correcta (BCrypt)?"}
+    PASS -- No --> INC_FAIL["Incrementa intentos_fallidos (+1)"]
+    INC_FAIL --> REACH_LIMIT{"¿Intentos >= 5?"}
+    REACH_LIMIT -- Sí --> LOCK_USER["Bloquea cuenta por 15 minutos"]
+    REACH_LIMIT -- No --> LOG_FAIL2["Registra acceso fallido"]
+    
+    PASS -- Sí --> RESET["Resetea intentos_fallidos a 0"]
+    RESET --> GEN_JWT["Genera JWT (15 min) + Refresh Token (7 días)"]
+    GEN_JWT --> LOG_OK["Registra en 'registro_acceso' (Exitoso=True, IP, Navegador)"]
+    LOG_OK --> SEND_TOKEN(["Retorna 200 OK + Payload de Roles"])
+```
+
+---
+
+## Matriz de Roles y Permisos (RBAC)
+
+| Rol | Ámbito | Permisos y Capacidades |
 | :--- | :--- | :--- |
-| **Administrador** (`ROLE_ADMINISTRADOR`) | Control Total (`/admin/**`) | Gestión completa de catálogo, categorías, marcas, inventario, órdenes de venta, proveedores, colaboradores, auditoría de seguridad completa con trazabilidad de IP, roles y configuración institucional del sitio. Autorizado para eliminaciones y restauraciones. |
-| **Colaborador** (`ROLE_TRABAJADOR`) | Operativo & Ventas (`/admin/**`) | Atención y despacho de pedidos, consulta de inventario y stock crítico, registro de ventas, emisión de boletas/facturas electrónicas y consulta de clientes. **Restricción de seguridad:** botones de eliminación permanente ocultos y bloqueo de acceso a módulos críticos (Auditoría, Roles y Configuración). |
-| **Cliente** (`ROLE_CLIENTE`) | Tienda Pública (`/`) | Catálogo con filtros en tiempo real, carrito de compras sincronizado, checkout digital con validación de DNI/RUC, opciones de pago (Yape, Plin, Tarjeta, Transferencia) y módulo de autogestión *"Mis Pedidos / Mi Perfil"*. |
+| **Administrador** (`ROLE_ADMINISTRADOR`) | Panel Completo (`/admin/**`) | Control total de inventario, órdenes de venta, proveedores, colaboradores, configuración del sitio, auditoría forense con trazabilidad de IP, roles y permisos. Autorizado para restaurar eliminaciones accidentales. |
+| **Colaborador** (`ROLE_TRABAJADOR`) | Operativo & Ventas (`/admin/**`) | Despacho de pedidos, consulta de inventario y stock crítico, registro de ventas, emisión de boletas/facturas electrónicas y consulta de clientes. Botones de eliminación permanente bloqueados y sin acceso a módulos de auditoría ni configuración. |
+| **Cliente** (`ROLE_CLIENTE`) | Tienda Pública (`/`) | Catálogo interactivo con filtros, carrito sincronizado, checkout digital con validación de DNI/RUC, pasarela de pagos (Yape, Plin, Tarjetas) y panel "Mis Pedidos / Mi Perfil". |
 
 ---
 
-## Novedades y Módulos del Avance III
+## Catálogo de Endpoints REST (API Reference)
 
-1. **Control de Acceso y Rebranding de Colaboradores:**
-   * Sustitución completa de nomenclaturas operativas por el estándar corporativo **"Colaboradores"**.
-   * Ocultamiento selectivo de acciones destructivas (tachos de eliminación) y protección a nivel de API REST mediante `hasRole('ADMINISTRADOR')`.
-
-2. **Auditoría & Trazabilidad de Seguridad con Dirección IP:**
-   * Módulo de auditoría con selector conmutable de dos vistas:
-     * **Acciones del Sistema:** Registro de operaciones en catálogo, modificaciones y eliminaciones accidentales con soporte para **restauración inmediata**, fecha/hora y **Dirección IP** de terminal.
-     * **Inicios de Sesión & Accesos:** Bitácora completa de accesos con **Dirección IP**, usuario/correo, agente/navegador, fecha exacta y estado de autenticación (Exitoso / Fallido con motivo).
-
-3. **Matriz de Abastecimiento (Producto - Proveedor):**
-   * Visualización transparente de la relación $M:N$ con columnas independientes:
-     * **`N°`:** Número correlativo de fila en la lista.
-     * **`ID Prod`:** Identificador específico del producto en el catálogo.
-     * Costos de compra mayorista, Precio de Venta al Público (PVP), cálculo dinámico de **Margen Bruto de Ganancia (%)** y tiempos de entrega estimados.
-
-4. **Identidad Visual Corporativa:**
-   * Integración del logotipo oficial de TechZone con soporte de contraste total en modo claro y modo oscuro.
-   * Ajuste de tipografía corporativa en pantallas de autenticación (Login, Registro) y barra lateral del panel administrativo.
-
-5. **Exportación Contable Oficial:**
-   * Motor de exportación a libros de cálculo Excel XML para reportes de ventas, balances y catálogo de existencias.
+| Método | Endpoint | Acceso | Descripción |
+| :--- | :--- | :---: | :--- |
+| `POST` | `/api/auth/login` | Público | Autenticación de credenciales, control de intentos y generación de JWT. |
+| `POST` | `/api/auth/registro` | Público | Alta de nuevo cliente en la plataforma con validación previa de identidad. |
+| `GET` | `/api/auth/perfil` | Autenticado | Obtiene los datos del usuario en sesión a partir del token JWT. |
+| `GET` | `/api/productos` | Público | Listado paginado de catálogo con filtros de categoría, marca y stock. |
+| `GET` | `/api/dni/{numero}` | Público | Consulta de documento de identidad con validación en RENIEC. |
+| `POST` | `/api/ventas` | Autenticado | Creación de orden de compra, detalle y registro preliminar de pago. |
 
 ---
 
-## Configuración y Ejecución del Proyecto
+## Modelo de Datos y Entidades Clave
 
-### 1. Requisitos Previos
-* **Java Development Kit (JDK):** **Java 25** (OpenJDK 25.0.4.1 o compatible) en `JAVA_HOME` o `PATH`.
-* **Node.js:** Versión 18+ (LTS recomendada) con `npm`.
-* **Supabase:** Instancia de PostgreSQL y bucket `imagenes` en Storage.
+* **Jerarquía de Identidad:** La entidad central `Persona` almacena nombres, apellidos (paterno y materno), documento y ubigeo. Se hereda hacia `Usuario` (credenciales y rol) y se ramifica en `Cliente` (historial comercial) o `Empleado` (datos de contratación).
+* **Matriz de Abastecimiento (`ProductoProveedor`):** Relación M:N que enlaza productos con proveedores oficiales, controlando el costo mayorista (`precio_compra`), margen de beneficio bruto (%) y tiempo de reposición (`tiempo_pedido_dias`).
+* **Trazabilidad Inmutable:**
+  * `registro_acceso`: Registra cada intento de login con su IP, navegador/agente, fecha y motivo de rechazo.
+  * `registro_auditoria`: Bitácora que respalda snapshots en formato JSON (`datos_previos`, `datos_nuevos`), acción realizada, módulo e IP del terminal.
 
 ---
 
-### 2. Configuración de Variables de Entorno (`.env`)
+## Guía de Puesta en Marcha
 
-En la carpeta `backend-techzone`, copia el archivo de plantilla `.env.example` como `.env`:
+### 1. Requisitos del Entorno
+* **Java Development Kit (JDK):** Java 25 configurado en `JAVA_HOME`.
+* **Node.js:** Versión 18+ con gestor `npm`.
+* **PostgreSQL:** Instancia activa en Supabase (Transaction Pooler - Puerto 6543).
 
+### 2. Configuración de Variables (`backend-techzone/.env`)
+Copia la plantilla `.env.example` en `backend-techzone/` como `.env` y define tus credenciales locales:
 ```bash
 cd backend-techzone
 cp .env.example .env
 ```
 
-Configura tus credenciales locales en `backend-techzone/.env`:
-
-```env
-# --- API de consulta de DNI (opcional) ---
-DNI_API_TOKEN=
-
-# --- Supabase · Proyecto y Storage ---
-SUPABASE_URL=https://<TU-PROYECTO>.supabase.co
-SUPABASE_SERVICE_KEY=<TU_SERVICE_ROLE_KEY>
-SUPABASE_BUCKET=imagenes
-
-# --- Supabase · Base de Datos (Transaction Pooler - Puerto 6543) ---
-SUPABASE_DB_URL=jdbc:postgresql://<HOST-POOLER>:6543/postgres
-SUPABASE_DB_USER=postgres.<TU-PROYECTO>
-SUPABASE_DB_PASSWORD=<TU_PASSWORD>
-
-# --- Firma criptográfica de JWT ---
-JWT_SECRET=b1e55296f1efd85a92828162e126b7462039307a210da139a600e912c62d6cc54e7b4f85eea9c51ef28408d54beca088
-```
-
-> **Seguridad:** El archivo `.env` y los scripts de respaldo de base de datos se encuentran estrictamente protegidos bajo `.gitignore` y nunca se suben al repositorio.
-
----
-
-### 3. Puesta en Marcha del Backend (Spring Boot)
-
-En una terminal ubicada en la carpeta `backend-techzone`:
-
+### 3. Ejecución del Backend
 ```powershell
-# Opción recomendada: Script oficial (valida Java 25 y variables .env)
+cd backend-techzone
 .\iniciar.ps1
-
-# Opción alternativa: Arranque directo con Maven Wrapper
-.\mvnw.cmd spring-boot:run
 ```
+*API REST disponible en:* `http://localhost:8080`
 
-*El API REST quedará disponible en:* `http://localhost:8080`
-
----
-
-### 4. Puesta en Marcha del Frontend (Angular)
-
-En otra terminal ubicada en la carpeta `frontend-techzone`:
-
+### 4. Ejecución del Frontend
 ```bash
-# 1. Instalar dependencias
+cd frontend-techzone
 npm install
-
-# 2. Iniciar servidor de desarrollo
 npm start
 ```
-
-*La aplicación web estará disponible en:* `http://localhost:4200`
+*Aplicación web disponible en:* `http://localhost:4200`
