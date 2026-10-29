@@ -82,7 +82,7 @@ flowchart TD
     C_PROD -->|Query SQL + JOIN FETCH| SUPA_DB
     C_PROD -.->|URLs CDN públicas| SUPA_STORAGE
 
-    UI_CHECKOUT -->|HTTP GET /api/dni/{numero}| C_DNI
+    UI_CHECKOUT -->|HTTP GET /api/dni/:numero| C_DNI
     C_DNI -->|Consulta RENIEC| RENIEC
 
     UI_CHECKOUT -->|HTTP POST /api/ventas| C_VENTA
@@ -103,17 +103,22 @@ sequenceDiagram
     actor Cliente as Cliente
     participant Front as Angular SPA
     participant Back as Spring Boot API
+    participant RENIEC as Servicio RENIEC
     participant DB as PostgreSQL Supabase
     actor Colab as Colaborador / Admin
 
-    Cliente->>Front: Agrega hardware gamer al carrito
-    Cliente->>Front: Ingresa a Checkout e introduce DNI
-    Front->>Back: Consulta GET /api/dni/{numero}
-    Back-->>Front: Retorna Nombres y Apellidos oficiales
-    Cliente->>Front: Elige método (Yape / Plin / Tarjeta) y confirma
-    Front->>Back: POST /api/ventas (crea orden en estado 'PENDIENTE')
-    Back->>DB: Guarda Venta, DetalleVenta y Pago preliminar
-    DB-->>Back: Venta ID generada
+    Cliente->>Front: Agrega componentes al carrito
+    Cliente->>Front: Procede al Checkout e ingresa DNI
+    Front->>Back: GET /api/dni/12345678
+    Back->>RENIEC: Consulta servicio de identidad
+    RENIEC-->>Back: Nombres y Apellidos
+    Back-->>Front: Datos validados del titular
+    Cliente->>Front: Selecciona método de pago (Yape/Plin/Tarjeta) y adjunta constancia
+    Front->>Back: POST /api/ventas (Detalle + Comprobante)
+    Back->>DB: Inicia Transacción ACID
+    Back->>DB: Descuenta stock en tabla 'producto'
+    Back->>DB: Registra cabecera 'venta' y detalle 'detalle_venta'
+    Back->>DB: Registra comprobante en 'pago' (Estado: PENDIENTE)
     Back-->>Front: Orden confirmada con código OP-000001
     
     Colab->>Front: Revisa "Registro de Pagos" en panel admin
@@ -138,7 +143,7 @@ flowchart TD
     
     CHECK_LOCK -- No --> PASS{"¿Contraseña correcta (BCrypt)?"}
     PASS -- No --> INC_FAIL["Incrementa intentos_fallidos (+1)"]
-    INC_FAIL --> REACH_LIMIT{"¿Intentos >= 5?"}
+    INC_FAIL --> REACH_LIMIT{"¿Intentos mayor o igual a 5?"}
     REACH_LIMIT -- Sí --> LOCK_USER["Bloquea cuenta por 15 minutos"]
     REACH_LIMIT -- No --> LOG_FAIL2["Registra acceso fallido"]
     
