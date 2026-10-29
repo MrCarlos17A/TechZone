@@ -57,41 +57,41 @@ TechZone/
 ### 1. Arquitectura General y Comunicación entre Capas
 ```mermaid
 flowchart TD
-    subgraph FRONTEND["Capa Cliente (Angular 19/21 SPA)"]
-        UI_STORE["Tienda Online / Catálogo Gamer"]
-        UI_CHECKOUT["Checkout & Validación DNI"]
-        UI_ADMIN["Backoffice Admin (Signals + RBAC)"]
+    subgraph FRONTEND["Capa Cliente (Angular SPA)"]
+        UI_STORE["Tienda Online<br/>Catálogo Gamer"]
+        UI_CHECKOUT["Checkout Web<br/>Validación DNI"]
+        UI_ADMIN["Panel Admin<br/>Signals & RBAC"]
     end
 
     subgraph BACKEND["Capa de Negocio (Spring Boot / Java 25)"]
-        GW["Filtro de Seguridad & Validación JWT"]
-        C_AUTH["AuthApiController"]
-        C_DNI["DniApiController"]
-        C_PROD["ProductoApiController"]
-        C_VENTA["VentaApiController & Pagos"]
-        C_AUDIT["Módulo Auditoría Forense"]
+        GW["Filtro Seguridad<br/>& JWT Bearer"]
+        C_AUTH["Auth Controller<br/>Login / Registro"]
+        C_DNI["DNI Controller<br/>Consulta RENIEC"]
+        C_PROD["Producto Controller<br/>Catálogo y Stock"]
+        C_VENTA["Venta Controller<br/>Pedidos y Pagos"]
+        C_AUDIT["Auditoría Controller<br/>Trazabilidad e IP"]
     end
 
     subgraph CLOUD["Servicios Cloud y Externos"]
-        SUPA_DB[("PostgreSQL en Supabase (Puerto 6543)")]
-        SUPA_STORAGE["Supabase Storage (Imágenes WebP/PNG)"]
-        RENIEC["API DNI (apis.net.pe)"]
+        SUPA_DB[("PostgreSQL<br/>Supabase DB")]
+        SUPA_STORAGE["Supabase Storage<br/>Buckets Multimedia"]
+        RENIEC["API DNI<br/>apis.net.pe"]
     end
 
-    UI_STORE -->|HTTP GET /api/productos| C_PROD
-    C_PROD -->|Query SQL + JOIN FETCH| SUPA_DB
-    C_PROD -.->|URLs CDN públicas| SUPA_STORAGE
+    UI_STORE -->|GET /api/productos| C_PROD
+    C_PROD -->|Query JOIN FETCH| SUPA_DB
+    C_PROD -.->|CDN Imágenes| SUPA_STORAGE
 
-    UI_CHECKOUT -->|HTTP GET /api/dni/:numero| C_DNI
+    UI_CHECKOUT -->|GET /api/dni/:numero| C_DNI
     C_DNI -->|Consulta RENIEC| RENIEC
 
-    UI_CHECKOUT -->|HTTP POST /api/ventas| C_VENTA
+    UI_CHECKOUT -->|POST /api/ventas| C_VENTA
     C_VENTA -->|Transacción ACID| SUPA_DB
-    C_VENTA -->|Triggers de Auditoría con IP| SUPA_DB
+    C_VENTA -->|Triggers e IP| SUPA_DB
 
     UI_ADMIN -->|Bearer Token JWT| GW
-    GW -->|Verifica Claims & Rol| C_AUDIT
-    C_AUDIT -->|Consulta accesos y bitácora| SUPA_DB
+    GW -->|Claims & Roles| C_AUDIT
+    C_AUDIT -->|Consulta Logs| SUPA_DB
 ```
 
 ---
@@ -113,18 +113,18 @@ sequenceDiagram
     Back->>RENIEC: Consulta servicio de identidad
     RENIEC-->>Back: Nombres y Apellidos
     Back-->>Front: Datos validados del titular
-    Cliente->>Front: Selecciona método de pago (Yape/Plin/Tarjeta) y adjunta constancia
+    Cliente->>Front: Selecciona método de pago y comprobante
     Front->>Back: POST /api/ventas (Detalle + Comprobante)
     Back->>DB: Inicia Transacción ACID
     Back->>DB: Descuenta stock en tabla 'producto'
-    Back->>DB: Registra cabecera 'venta' y detalle 'detalle_venta'
-    Back->>DB: Registra comprobante en 'pago' (Estado: PENDIENTE)
+    Back->>DB: Registra cabecera 'venta' y 'detalle_venta'
+    Back->>DB: Registra comprobante en 'pago' (PENDIENTE)
     Back-->>Front: Orden confirmada con código OP-000001
     
     Colab->>Front: Revisa "Registro de Pagos" en panel admin
     Colab->>Back: Actualiza estado de pago a 'CONFIRMADO'
     Back->>DB: Trigger actualiza estado de venta a 'EN_PREPARACION'
-    Colab->>Front: Asigna colaborador de empaque y genera Boleta/Factura PDF
+    Colab->>Front: Asigna empaque y genera Boleta/Factura PDF
     Front-->>Cliente: Notificación de pedido 'ENTREGADO'
 ```
 
@@ -133,24 +133,24 @@ sequenceDiagram
 ### 3. Seguridad Defensiva, Bloqueo de Intentos y Auditoría IP
 ```mermaid
 flowchart TD
-    START(["Intento de Login"]) --> CAPTURA["Captura IP del cliente (X-Forwarded-For / RemoteAddr)"]
-    CAPTURA --> BUSCA{"¿Usuario existe en BD?"}
+    START(["Inicio:<br/>Intento de Login"]) --> CAPTURA["Captura IP cliente<br/>(Header / RemoteAddr)"]
+    CAPTURA --> BUSCA{"¿Usuario<br/>existe en BD?"}
     
-    BUSCA -- No --> LOG_FAIL1["Registra en 'registro_acceso' (Exitoso=False, Motivo='usuario_inexistente')"] --> RET_401["Retorna 401: Credenciales inválidas"]
+    BUSCA -- No --> LOG_FAIL1["Registra fallo<br/>en acceso"] --> RET_401["Error 401:<br/>Credenciales<br/>inválidas"]
     
-    BUSCA -- Sí --> CHECK_LOCK{"¿Cuenta bloqueada temporalmente?"}
-    CHECK_LOCK -- Sí --> RET_423["Retorna 423: Cuenta bloqueada por 15 minutos"]
+    BUSCA -- Sí --> CHECK_LOCK{"¿Cuenta<br/>bloqueada?"}
+    CHECK_LOCK -- Sí --> RET_423["Error 423:<br/>Bloqueo por<br/>15 minutos"]
     
-    CHECK_LOCK -- No --> PASS{"¿Contraseña correcta (BCrypt)?"}
-    PASS -- No --> INC_FAIL["Incrementa intentos_fallidos (+1)"]
-    INC_FAIL --> REACH_LIMIT{"¿Intentos mayor o igual a 5?"}
-    REACH_LIMIT -- Sí --> LOCK_USER["Bloquea cuenta por 15 minutos"]
-    REACH_LIMIT -- No --> LOG_FAIL2["Registra acceso fallido"]
+    CHECK_LOCK -- No --> PASS{"¿Contraseña<br/>correcta?<br/>(BCrypt)"}
+    PASS -- No --> INC_FAIL["Incrementa<br/>intentos (+1)"]
+    INC_FAIL --> REACH_LIMIT{"¿Llegó a 5<br/>intentos?"}
+    REACH_LIMIT -- Sí --> LOCK_USER["Bloquea cuenta<br/>por 15 min"]
+    REACH_LIMIT -- No --> LOG_FAIL2["Registra acceso<br/>fallido"]
     
-    PASS -- Sí --> RESET["Resetea intentos_fallidos a 0"]
-    RESET --> GEN_JWT["Genera JWT (15 min) + Refresh Token (7 días)"]
-    GEN_JWT --> LOG_OK["Registra en 'registro_acceso' (Exitoso=True, IP, Navegador)"]
-    LOG_OK --> SEND_TOKEN(["Retorna 200 OK + Payload de Roles"])
+    PASS -- Sí --> RESET["Resetea contador<br/>de intentos a 0"]
+    RESET --> GEN_JWT["Genera JWT (15m)<br/>+ Refresh Token"]
+    GEN_JWT --> LOG_OK["Registra acceso<br/>exitoso con IP"]
+    LOG_OK --> SEND_TOKEN(["200 OK:<br/>Sesión iniciada<br/>y Roles RBAC"])
 ```
 
 ---
