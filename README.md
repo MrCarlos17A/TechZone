@@ -58,40 +58,40 @@ TechZone/
 ```mermaid
 flowchart TD
     subgraph FRONTEND["Capa Cliente (Angular SPA)"]
-        UI_STORE["Tienda Online<br/>Catálogo Gamer"]
-        UI_CHECKOUT["Checkout Web<br/>Validación DNI"]
-        UI_ADMIN["Panel Admin<br/>Signals & RBAC"]
+        UI_STORE["Tienda Web<br/>Catálogo"]
+        UI_CHECKOUT["Checkout<br/>Validación DNI"]
+        UI_ADMIN["Panel Admin<br/>Signals y RBAC"]
     end
 
     subgraph BACKEND["Capa de Negocio (Spring Boot / Java 25)"]
-        GW["Filtro Seguridad<br/>& JWT Bearer"]
-        C_AUTH["Auth Controller<br/>Login / Registro"]
-        C_DNI["DNI Controller<br/>Consulta RENIEC"]
-        C_PROD["Producto Controller<br/>Catálogo y Stock"]
-        C_VENTA["Venta Controller<br/>Pedidos y Pagos"]
-        C_AUDIT["Auditoría Controller<br/>Trazabilidad e IP"]
+        GW["Filtro JWT<br/>Seguridad"]
+        C_AUTH["Auth API<br/>Login y Alta"]
+        C_DNI["DNI API<br/>Consulta DNI"]
+        C_PROD["Producto API<br/>Catálogo/Stock"]
+        C_VENTA["Venta API<br/>Pedidos/Pagos"]
+        C_AUDIT["Auditoría API<br/>Logs e IPs"]
     end
 
     subgraph CLOUD["Servicios Cloud y Externos"]
         SUPA_DB[("PostgreSQL<br/>Supabase DB")]
-        SUPA_STORAGE["Supabase Storage<br/>Buckets Multimedia"]
+        SUPA_STORAGE["Supabase<br/>Storage"]
         RENIEC["API DNI<br/>apis.net.pe"]
     end
 
-    UI_STORE -->|GET /api/productos| C_PROD
-    C_PROD -->|Query JOIN FETCH| SUPA_DB
-    C_PROD -.->|CDN Imágenes| SUPA_STORAGE
+    UI_STORE -->|GET /productos| C_PROD
+    C_PROD -->|JOIN FETCH| SUPA_DB
+    C_PROD -.->|CDN Imagen| SUPA_STORAGE
 
-    UI_CHECKOUT -->|GET /api/dni/:numero| C_DNI
-    C_DNI -->|Consulta RENIEC| RENIEC
+    UI_CHECKOUT -->|GET /dni/:num| C_DNI
+    C_DNI -->|RENIEC| RENIEC
 
-    UI_CHECKOUT -->|POST /api/ventas| C_VENTA
-    C_VENTA -->|Transacción ACID| SUPA_DB
-    C_VENTA -->|Triggers e IP| SUPA_DB
+    UI_CHECKOUT -->|POST /ventas| C_VENTA
+    C_VENTA -->|Transacción| SUPA_DB
+    C_VENTA -->|Auditoría| SUPA_DB
 
-    UI_ADMIN -->|Bearer Token JWT| GW
-    GW -->|Claims & Roles| C_AUDIT
-    C_AUDIT -->|Consulta Logs| SUPA_DB
+    UI_ADMIN -->|Token JWT| GW
+    GW -->|Roles| C_AUDIT
+    C_AUDIT -->|Logs| SUPA_DB
 ```
 
 ---
@@ -133,24 +133,24 @@ sequenceDiagram
 ### 3. Seguridad Defensiva, Bloqueo de Intentos y Auditoría IP
 ```mermaid
 flowchart TD
-    START(["Inicio:<br/>Intento de Login"]) --> CAPTURA["Captura IP cliente<br/>(Header / RemoteAddr)"]
-    CAPTURA --> BUSCA{"¿Usuario<br/>existe en BD?"}
+    START["Inicio:<br/>Login"] --> CAPTURA["Captura IP<br/>del cliente"]
+    CAPTURA --> BUSCA{"¿Existe<br/>usuario?"}
     
-    BUSCA -- No --> LOG_FAIL1["Registra fallo<br/>en acceso"] --> RET_401["Error 401:<br/>Credenciales<br/>inválidas"]
+    BUSCA -- No --> LOG_FAIL1["Registra<br/>fallo"] --> RET_401["Error 401<br/>Credenciales<br/>inválidas"]
     
     BUSCA -- Sí --> CHECK_LOCK{"¿Cuenta<br/>bloqueada?"}
-    CHECK_LOCK -- Sí --> RET_423["Error 423:<br/>Bloqueo por<br/>15 minutos"]
+    CHECK_LOCK -- Sí --> RET_423["Error 423<br/>Bloqueo temporal<br/>de 15 minutos"]
     
-    CHECK_LOCK -- No --> PASS{"¿Contraseña<br/>correcta?<br/>(BCrypt)"}
-    PASS -- No --> INC_FAIL["Incrementa<br/>intentos (+1)"]
+    CHECK_LOCK -- No --> PASS{"¿Password<br/>válida?"}
+    PASS -- No --> INC_FAIL["Suma intento<br/>(+1)"]
     INC_FAIL --> REACH_LIMIT{"¿Llegó a 5<br/>intentos?"}
-    REACH_LIMIT -- Sí --> LOCK_USER["Bloquea cuenta<br/>por 15 min"]
-    REACH_LIMIT -- No --> LOG_FAIL2["Registra acceso<br/>fallido"]
+    REACH_LIMIT -- Sí --> LOCK_USER["Bloqueo por<br/>15 minutos"]
+    REACH_LIMIT -- No --> LOG_FAIL2["Registra<br/>intento"]
     
-    PASS -- Sí --> RESET["Resetea contador<br/>de intentos a 0"]
-    RESET --> GEN_JWT["Genera JWT (15m)<br/>+ Refresh Token"]
-    GEN_JWT --> LOG_OK["Registra acceso<br/>exitoso con IP"]
-    LOG_OK --> SEND_TOKEN(["200 OK:<br/>Sesión iniciada<br/>y Roles RBAC"])
+    PASS -- Sí --> RESET["Resetea<br/>contador a 0"]
+    RESET --> GEN_JWT["Genera JWT<br/>y Refresh"]
+    GEN_JWT --> LOG_OK["Registra login<br/>exitoso con IP"]
+    LOG_OK --> SEND_TOKEN["200 OK<br/>Acceso concedido"]
 ```
 
 ---
