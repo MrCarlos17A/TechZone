@@ -180,5 +180,3 @@ npm start
 ```
 
 *La aplicación web estará disponible en:* `http://localhost:4200`
-   
- 
