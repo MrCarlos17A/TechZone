@@ -1,0 +1,548 @@
+﻿<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 transition-colors duration-300 no-print">
+
+  <div class="border-b border-slate-200 dark:border-slate-800 pb-4">
+    <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white font-heading">Historial de Mis Pedidos</h1>
+    <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">Revisa el estado de tus compras y descarga tus comprobantes</p>
+  </div>
+
+  @if (cargando()) {
+    <div class="space-y-4">
+      @for (i of [1,2,3]; track i) {
+        <div class="glass-panel p-6 rounded-2xl h-24 animate-pulse bg-slate-200 dark:bg-slate-900/50"></div>
+      }
+    </div>
+  } @else if (pedidos().length > 0) {
+    <div class="space-y-4">
+      @for (p of pedidos(); track p.idVenta) {
+        <div class="glass-panel p-6 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-6 hover:border-blue-500/40 border border-slate-200 dark:border-slate-800/80 bg-white dark:bg-slate-900/60 transition-all shadow-sm">
+          
+          <div class="space-y-1.5">
+            <div class="flex items-center gap-3">
+              <span class="font-bold text-slate-900 dark:text-white text-base">Orden #{{ p.idVenta }}</span>
+              <span
+                class="px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider inline-flex items-center gap-1.5 border"
+                [class.bg-emerald-100]="p.estado === 'ENTREGADO' || p.estado === 'COMPLETADA'"
+                [class.text-emerald-800]="p.estado === 'ENTREGADO' || p.estado === 'COMPLETADA'"
+                [class.border-emerald-300]="p.estado === 'ENTREGADO' || p.estado === 'COMPLETADA'"
+                [class.dark:bg-emerald-500/10]="p.estado === 'ENTREGADO' || p.estado === 'COMPLETADA'"
+                [class.dark:text-emerald-400]="p.estado === 'ENTREGADO' || p.estado === 'COMPLETADA'"
+                [class.dark:border-emerald-500/20]="p.estado === 'ENTREGADO' || p.estado === 'COMPLETADA'"
+                [class.bg-sky-100]="p.estado === 'EN_PREPARACION'"
+                [class.text-sky-800]="p.estado === 'EN_PREPARACION'"
+                [class.border-sky-300]="p.estado === 'EN_PREPARACION'"
+                [class.dark:bg-sky-500/10]="p.estado === 'EN_PREPARACION'"
+                [class.dark:text-sky-400]="p.estado === 'EN_PREPARACION'"
+                [class.dark:border-sky-500/20]="p.estado === 'EN_PREPARACION'"
+                [class.bg-indigo-100]="p.estado === 'EN_CAMINO'"
+                [class.text-indigo-800]="p.estado === 'EN_CAMINO'"
+                [class.border-indigo-300]="p.estado === 'EN_CAMINO'"
+                [class.dark:bg-indigo-500/10]="p.estado === 'EN_CAMINO'"
+                [class.dark:text-indigo-400]="p.estado === 'EN_CAMINO'"
+                [class.dark:border-indigo-500/20]="p.estado === 'EN_CAMINO'"
+                [class.bg-amber-100]="p.estado === 'PENDIENTE'"
+                [class.text-amber-900]="p.estado === 'PENDIENTE'"
+                [class.border-amber-300]="p.estado === 'PENDIENTE'"
+                [class.dark:bg-amber-500/10]="p.estado === 'PENDIENTE'"
+                [class.dark:text-amber-400]="p.estado === 'PENDIENTE'"
+                [class.dark:border-amber-500/20]="p.estado === 'PENDIENTE'"
+                [class.bg-red-100]="p.estado === 'CANCELADA'"
+                [class.text-red-800]="p.estado === 'CANCELADA'"
+                [class.border-red-300]="p.estado === 'CANCELADA'"
+                [class.dark:bg-red-500/10]="p.estado === 'CANCELADA'"
+                [class.dark:text-red-400]="p.estado === 'CANCELADA'"
+                [class.dark:border-red-500/20]="p.estado === 'CANCELADA'">
+                @if (p.estado === 'PENDIENTE') { <span class="material-symbols-outlined text-xs">schedule</span> Pendiente }
+                @else if (p.estado === 'EN_PREPARACION') { <span class="material-symbols-outlined text-xs">inventory_2</span> En Preparación }
+                @else if (p.estado === 'EN_CAMINO') { <span class="material-symbols-outlined text-xs">local_shipping</span> En Camino }
+                @else if (p.estado === 'ENTREGADO' || p.estado === 'COMPLETADA') { <span class="material-symbols-outlined text-xs">check_circle</span> Entregado }
+                @else if (p.estado === 'CANCELADA') { <span class="material-symbols-outlined text-xs">cancel</span> Cancelada }
+                @else { {{ p.estado }} }
+              </span>
+            </div>
+            <p class="text-xs text-slate-600 dark:text-slate-400 flex items-center gap-1">
+              <span class="material-symbols-outlined text-xs">calendar_today</span> {{ p.fechaVenta | date:'dd/MM/yyyy HH:mm' }}
+            </p>
+            <p class="text-xs text-slate-600 dark:text-slate-400 flex items-center gap-1">
+              <span class="material-symbols-outlined text-xs">location_on</span> {{ p.direccionEnvio }}
+            </p>
+          </div>
+
+          <div class="flex items-center justify-between md:justify-end gap-6 border-t md:border-t-0 border-slate-200 dark:border-slate-800 pt-3 md:pt-0">
+            <div class="text-left md:text-right">
+              <span class="text-xs text-slate-500 dark:text-slate-400 block">Total pagado</span>
+              <span class="text-xl font-bold text-slate-900 dark:text-white font-heading">
+                S/ {{ p.total | number:'1.2-2' }}
+              </span>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <button
+                (click)="verComprobante(p.idVenta)"
+                class="px-3.5 py-2 rounded-xl text-xs font-semibold text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/60 hover:bg-blue-100 dark:hover:bg-blue-900/60 border border-blue-200 dark:border-blue-800/80 flex items-center gap-1.5 transition-colors cursor-pointer"
+                title="Ver o descargar comprobante fiscal">
+                <span class="material-symbols-outlined text-sm">receipt_long</span>
+                Comprobante
+              </button>
+              <button
+                (click)="verDetalle(p.idVenta)"
+                class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 border border-slate-300 dark:border-slate-700 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer">
+                Ver Seguimiento
+              </button>
+            </div>
+          </div>
+
+        </div>
+      }
+    </div>
+  } @else {
+    <div class="text-center py-20 glass-panel rounded-3xl max-w-md mx-auto p-8 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 shadow-sm">
+      <span class="material-symbols-outlined text-5xl text-slate-400 dark:text-slate-600 mb-3 block">inventory_2</span>
+      <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-1">Aún no tienes pedidos</h3>
+      <p class="text-xs text-slate-600 dark:text-slate-400 mb-6">Realiza tu primera compra y vive la mejor experiencia gaming.</p>
+      <a routerLink="/productos" class="glow-button px-5 py-2.5 rounded-xl text-xs font-semibold text-white inline-block">
+        Ir a la Tienda
+      </a>
+    </div>
+  }
+
+  <!-- Order Detail Modal with Delivery Stepper -->
+  @if (pedidoSeleccionado(); as det) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 dark:bg-slate-950/80 backdrop-blur-sm animate-fadeIn">
+      <div class="glass-panel w-full max-w-2xl rounded-3xl p-6 sm:p-8 space-y-6 max-h-[90vh] overflow-y-auto border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-2xl text-slate-900 dark:text-white">
+        
+        <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4">
+          <div>
+            <div class="flex items-center gap-2">
+              <h3 class="text-xl font-bold text-slate-900 dark:text-white font-heading">Seguimiento de Orden #{{ det.idVenta }}</h3>
+              <span
+                class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border"
+                [class.bg-emerald-100]="det.estado === 'ENTREGADO' || det.estado === 'COMPLETADA'"
+                [class.text-emerald-800]="det.estado === 'ENTREGADO' || det.estado === 'COMPLETADA'"
+                [class.border-emerald-300]="det.estado === 'ENTREGADO' || det.estado === 'COMPLETADA'"
+                [class.dark:bg-emerald-500/10]="det.estado === 'ENTREGADO' || det.estado === 'COMPLETADA'"
+                [class.dark:text-emerald-400]="det.estado === 'ENTREGADO' || det.estado === 'COMPLETADA'"
+                [class.dark:border-emerald-500/20]="det.estado === 'ENTREGADO' || det.estado === 'COMPLETADA'"
+                [class.bg-sky-100]="det.estado === 'EN_PREPARACION'"
+                [class.text-sky-800]="det.estado === 'EN_PREPARACION'"
+                [class.border-sky-300]="det.estado === 'EN_PREPARACION'"
+                [class.dark:bg-sky-500/10]="det.estado === 'EN_PREPARACION'"
+                [class.dark:text-sky-400]="det.estado === 'EN_PREPARACION'"
+                [class.dark:border-sky-500/20]="det.estado === 'EN_PREPARACION'"
+                [class.bg-indigo-100]="det.estado === 'EN_CAMINO'"
+                [class.text-indigo-800]="det.estado === 'EN_CAMINO'"
+                [class.border-indigo-300]="det.estado === 'EN_CAMINO'"
+                [class.dark:bg-indigo-500/10]="det.estado === 'EN_CAMINO'"
+                [class.dark:text-indigo-400]="det.estado === 'EN_CAMINO'"
+                [class.dark:border-indigo-500/20]="det.estado === 'EN_CAMINO'"
+                [class.bg-amber-100]="det.estado === 'PENDIENTE'"
+                [class.text-amber-900]="det.estado === 'PENDIENTE'"
+                [class.border-amber-300]="det.estado === 'PENDIENTE'"
+                [class.dark:bg-amber-500/10]="det.estado === 'PENDIENTE'"
+                [class.dark:text-amber-400]="det.estado === 'PENDIENTE'"
+                [class.dark:border-amber-500/20]="det.estado === 'PENDIENTE'"
+                [class.bg-red-100]="det.estado === 'CANCELADA'"
+                [class.text-red-800]="det.estado === 'CANCELADA'"
+                [class.border-red-300]="det.estado === 'CANCELADA'"
+                [class.dark:bg-red-500/10]="det.estado === 'CANCELADA'"
+                [class.dark:text-red-400]="det.estado === 'CANCELADA'"
+                [class.dark:border-red-500/20]="det.estado === 'CANCELADA'">
+                {{ det.estado }}
+              </span>
+            </div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Registrado el {{ det.fechaVenta | date:'medium' }}</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button
+              (click)="verComprobante(det.idVenta)"
+              class="px-3 py-1.5 rounded-xl text-xs font-semibold text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/60 hover:bg-blue-100 dark:hover:bg-blue-900/60 border border-blue-200 dark:border-blue-800/80 flex items-center gap-1.5 transition-colors cursor-pointer">
+              <span class="material-symbols-outlined text-sm">receipt_long</span>
+              Comprobante
+            </button>
+            <button (click)="cerrarModal()" class="text-slate-400 hover:text-slate-700 dark:hover:text-white p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer">
+              <span class="material-symbols-outlined text-xl">close</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Stepper de Envío -->
+        @if (det.estado === 'CANCELADA') {
+          <div class="p-4 rounded-2xl bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 text-red-700 dark:text-red-300 text-xs flex items-center gap-3">
+            <span class="material-symbols-outlined text-xl text-red-600 dark:text-red-400">warning</span>
+            <div>
+              <p class="font-bold">Esta orden fue cancelada</p>
+              <p class="text-[11px] text-red-600/80 dark:text-red-300/80">Los artículos volvieron al inventario y el pago fue cancelado.</p>
+            </div>
+          </div>
+        } @else {
+          <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 space-y-3">
+            <h4 class="text-xs font-bold uppercase text-slate-500 dark:text-slate-400 tracking-wider">Estado de la Entrega</h4>
+            
+            <div class="grid grid-cols-4 gap-2 text-center pt-2">
+              <!-- Paso 1: Recibido -->
+              <div class="space-y-2">
+                <div class="w-9 h-9 mx-auto rounded-full flex items-center justify-center text-sm font-bold bg-emerald-100 text-emerald-700 border border-emerald-300 dark:bg-emerald-500/20 dark:text-emerald-400 dark:border-emerald-500/40">
+                  <span class="material-symbols-outlined text-base">check</span>
+                </div>
+                <div>
+                  <p class="text-xs font-bold text-slate-900 dark:text-white">Recibido</p>
+                  <p class="text-[10px] text-slate-500 dark:text-slate-400">Orden creada</p>
+                </div>
+              </div>
+
+              <!-- Paso 2: Preparación -->
+              <div class="space-y-2">
+                <div
+                  class="w-9 h-9 mx-auto rounded-full flex items-center justify-center text-sm font-bold border"
+                  [class.bg-emerald-100]="det.estado === 'EN_CAMINO' || det.estado === 'ENTREGADO' || det.estado === 'COMPLETADA'"
+                  [class.text-emerald-700]="det.estado === 'EN_CAMINO' || det.estado === 'ENTREGADO' || det.estado === 'COMPLETADA'"
+                  [class.border-emerald-300]="det.estado === 'EN_CAMINO' || det.estado === 'ENTREGADO' || det.estado === 'COMPLETADA'"
+                  [class.dark:bg-emerald-500/20]="det.estado === 'EN_CAMINO' || det.estado === 'ENTREGADO' || det.estado === 'COMPLETADA'"
+                  [class.dark:text-emerald-400]="det.estado === 'EN_CAMINO' || det.estado === 'ENTREGADO' || det.estado === 'COMPLETADA'"
+                  [class.dark:border-emerald-500/40]="det.estado === 'EN_CAMINO' || det.estado === 'ENTREGADO' || det.estado === 'COMPLETADA'"
+                  [class.bg-sky-100]="det.estado === 'EN_PREPARACION'"
+                  [class.text-sky-700]="det.estado === 'EN_PREPARACION'"
+                  [class.border-sky-300]="det.estado === 'EN_PREPARACION'"
+                  [class.dark:bg-sky-500/20]="det.estado === 'EN_PREPARACION'"
+                  [class.dark:text-sky-400]="det.estado === 'EN_PREPARACION'"
+                  [class.dark:border-sky-500/40]="det.estado === 'EN_PREPARACION'"
+                  [class.bg-slate-200]="det.estado === 'PENDIENTE'"
+                  [class.text-slate-400]="det.estado === 'PENDIENTE'"
+                  [class.border-slate-300]="det.estado === 'PENDIENTE'"
+                  [class.dark:bg-slate-800]="det.estado === 'PENDIENTE'"
+                  [class.dark:text-slate-500]="det.estado === 'PENDIENTE'">
+                  @if (det.estado === 'EN_CAMINO' || det.estado === 'ENTREGADO' || det.estado === 'COMPLETADA') {
+                    <span class="material-symbols-outlined text-base">check</span>
+                  } @else {
+                    <span class="material-symbols-outlined text-base">inventory_2</span>
+                  }
+                </div>
+                <div>
+                  <p class="text-xs font-bold" [class.text-slate-900]="det.estado !== 'PENDIENTE'" [class.dark:text-white]="det.estado !== 'PENDIENTE'" [class.text-slate-400]="det.estado === 'PENDIENTE'">En Almacén</p>
+                  <p class="text-[10px] text-slate-500 dark:text-slate-400">Empaquetado</p>
+                </div>
+              </div>
+
+              <!-- Paso 3: En Camino -->
+              <div class="space-y-2">
+                <div
+                  class="w-9 h-9 mx-auto rounded-full flex items-center justify-center text-sm font-bold border"
+                  [class.bg-emerald-100]="det.estado === 'ENTREGADO' || det.estado === 'COMPLETADA'"
+                  [class.text-emerald-700]="det.estado === 'ENTREGADO' || det.estado === 'COMPLETADA'"
+                  [class.border-emerald-300]="det.estado === 'ENTREGADO' || det.estado === 'COMPLETADA'"
+                  [class.dark:bg-emerald-500/20]="det.estado === 'ENTREGADO' || det.estado === 'COMPLETADA'"
+                  [class.dark:text-emerald-400]="det.estado === 'ENTREGADO' || det.estado === 'COMPLETADA'"
+                  [class.dark:border-emerald-500/40]="det.estado === 'ENTREGADO' || det.estado === 'COMPLETADA'"
+                  [class.bg-indigo-100]="det.estado === 'EN_CAMINO'"
+                  [class.text-indigo-700]="det.estado === 'EN_CAMINO'"
+                  [class.border-indigo-300]="det.estado === 'EN_CAMINO'"
+                  [class.dark:bg-indigo-500/20]="det.estado === 'EN_CAMINO'"
+                  [class.dark:text-indigo-400]="det.estado === 'EN_CAMINO'"
+                  [class.dark:border-indigo-500/40]="det.estado === 'EN_CAMINO'"
+                  [class.bg-slate-200]="det.estado === 'PENDIENTE' || det.estado === 'EN_PREPARACION'"
+                  [class.text-slate-400]="det.estado === 'PENDIENTE' || det.estado === 'EN_PREPARACION'"
+                  [class.border-slate-300]="det.estado === 'PENDIENTE' || det.estado === 'EN_PREPARACION'"
+                  [class.dark:bg-slate-800]="det.estado === 'PENDIENTE' || det.estado === 'EN_PREPARACION'"
+                  [class.dark:text-slate-500]="det.estado === 'PENDIENTE' || det.estado === 'EN_PREPARACION'">
+                  @if (det.estado === 'ENTREGADO' || det.estado === 'COMPLETADA') {
+                    <span class="material-symbols-outlined text-base">check</span>
+                  } @else {
+                    <span class="material-symbols-outlined text-base">local_shipping</span>
+                  }
+                </div>
+                <div>
+                  <p class="text-xs font-bold" [class.text-slate-900]="det.estado === 'EN_CAMINO' || det.estado === 'ENTREGADO' || det.estado === 'COMPLETADA'" [class.dark:text-white]="det.estado === 'EN_CAMINO' || det.estado === 'ENTREGADO' || det.estado === 'COMPLETADA'" [class.text-slate-400]="det.estado === 'PENDIENTE' || det.estado === 'EN_PREPARACION'">En Camino</p>
+                  <p class="text-[10px] text-slate-500 dark:text-slate-400">Con repartidor</p>
+                </div>
+              </div>
+
+              <!-- Paso 4: Entregado -->
+              <div class="space-y-2">
+                <div
+                  class="w-9 h-9 mx-auto rounded-full flex items-center justify-center text-sm font-bold border"
+                  [class.bg-emerald-100]="det.estado === 'ENTREGADO' || det.estado === 'COMPLETADA'"
+                  [class.text-emerald-700]="det.estado === 'ENTREGADO' || det.estado === 'COMPLETADA'"
+                  [class.border-emerald-300]="det.estado === 'ENTREGADO' || det.estado === 'COMPLETADA'"
+                  [class.dark:bg-emerald-500/20]="det.estado === 'ENTREGADO' || det.estado === 'COMPLETADA'"
+                  [class.dark:text-emerald-400]="det.estado === 'ENTREGADO' || det.estado === 'COMPLETADA'"
+                  [class.dark:border-emerald-500/40]="det.estado === 'ENTREGADO' || det.estado === 'COMPLETADA'"
+                  [class.bg-slate-200]="det.estado !== 'ENTREGADO' && det.estado !== 'COMPLETADA'"
+                  [class.text-slate-400]="det.estado !== 'ENTREGADO' && det.estado !== 'COMPLETADA'"
+                  [class.border-slate-300]="det.estado !== 'ENTREGADO' && det.estado !== 'COMPLETADA'"
+                  [class.dark:bg-slate-800]="det.estado !== 'ENTREGADO' && det.estado !== 'COMPLETADA'"
+                  [class.dark:text-slate-500]="det.estado !== 'ENTREGADO' && det.estado !== 'COMPLETADA'">
+                  <span class="material-symbols-outlined text-base">done_all</span>
+                </div>
+                <div>
+                  <p class="text-xs font-bold" [class.text-slate-900]="det.estado === 'ENTREGADO' || det.estado === 'COMPLETADA'" [class.dark:text-white]="det.estado === 'ENTREGADO' || det.estado === 'COMPLETADA'" [class.text-slate-400]="det.estado !== 'ENTREGADO' && det.estado !== 'COMPLETADA'">Entregado</p>
+                  <p class="text-[10px] text-slate-500 dark:text-slate-400">En domicilio</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="border-t border-slate-200 dark:border-slate-800/80 pt-3 flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300">
+              <span class="material-symbols-outlined text-sm text-blue-600 dark:text-blue-400">location_on</span>
+              <span>Dirección de Envío: <strong class="text-slate-900 dark:text-white">{{ det.direccionEnvio }}</strong></span>
+            </div>
+          </div>
+        }
+
+        <!-- Items Table -->
+        <div class="space-y-3">
+          <h4 class="text-xs font-bold uppercase text-slate-500 dark:text-slate-400 tracking-wider">Productos Comprados</h4>
+          <div class="space-y-2">
+            @for (item of det.detalles; track item.idDetalleVenta) {
+              <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800/80 flex items-center justify-between text-xs">
+                <div>
+                  <p class="font-semibold text-slate-900 dark:text-white text-sm">{{ item.nombreProducto }}</p>
+                  <p class="text-slate-500 dark:text-slate-400">{{ item.cantidad }}x S/ {{ item.precioUnitario | number:'1.2-2' }}</p>
+                </div>
+                <span class="font-bold text-slate-900 dark:text-slate-200">S/ {{ item.subTotalVenta | number:'1.2-2' }}</span>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Financial Breakdown -->
+        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950/70 border border-slate-200 dark:border-slate-800 space-y-1.5 text-xs">
+          <div class="flex justify-between text-slate-600 dark:text-slate-400">
+            <span>Subtotal</span>
+            <span class="text-slate-800 dark:text-slate-200">S/ {{ det.subtotal | number:'1.2-2' }}</span>
+          </div>
+          <div class="flex justify-between text-slate-600 dark:text-slate-400">
+            <span>IGV (18%)</span>
+            <span class="text-slate-800 dark:text-slate-200">S/ {{ det.igv | number:'1.2-2' }}</span>
+          </div>
+          <div class="border-t border-slate-200 dark:border-slate-800 pt-1.5 flex justify-between font-bold text-sm text-slate-900 dark:text-white">
+            <span>Total Pagado</span>
+            <span class="text-blue-600 dark:text-blue-400 text-base font-mono">S/ {{ det.total | number:'1.2-2' }}</span>
+          </div>
+        </div>
+
+        <!-- Payments list -->
+        @if (det.pagos && det.pagos.length > 0) {
+          <div>
+            <h4 class="text-xs font-bold uppercase text-slate-500 dark:text-slate-400 tracking-wider mb-2">Comprobante de Pago</h4>
+            @for (p of det.pagos; track p.idPago) {
+              <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-950/40 border border-slate-200 dark:border-slate-800 text-xs flex justify-between">
+                <span>Método: <strong class="text-slate-900 dark:text-white">{{ p.medioPago }}</strong></span>
+                <span>Código Op: <strong class="text-slate-900 dark:text-white font-mono">{{ p.codigoOperacion || 'N/A' }}</strong></span>
+                <span>Estado: <strong class="text-emerald-700 dark:text-emerald-400 uppercase">{{ p.estadoPago }}</strong></span>
+              </div>
+            }
+          </div>
+        }
+
+        <div class="pt-2">
+          <button (click)="cerrarModal()" class="w-full py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-white text-xs font-semibold border border-slate-300 dark:border-slate-700 cursor-pointer transition-colors">
+            Cerrar
+          </button>
+        </div>
+
+      </div>
+    </div>
+  }
+
+
+  <!-- Modal Comprobante Oficial (SUNAT) -->
+  @if (comprobanteSeleccionado(); as comp) {
+    <div class="comprobante-overlay fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-fadeIn overflow-y-auto">
+      <div class="relative w-full max-w-3xl my-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl p-6 sm:p-8 space-y-6 text-slate-900 dark:text-slate-100 comprobante-imprimible">
+        
+        <!-- Barra de herramientas superior (oculta al imprimir) -->
+        <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4 no-print">
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-blue-600 dark:text-blue-400 text-2xl">verified</span>
+            <div>
+              <h3 class="text-base font-bold text-slate-900 dark:text-white font-heading">Comprobante de Pago Electrónico</h3>
+              <p class="text-[11px] text-slate-500 dark:text-slate-400">Generado bajo formato oficial SUNAT (Perú)</p>
+            </div>
+          </div>
+          <button
+            (click)="cerrarComprobante()"
+            class="p-2 text-slate-400 hover:text-slate-700 dark:hover:text-white rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+            title="Cerrar comprobante">
+            <span class="material-symbols-outlined text-xl">close</span>
+          </button>
+        </div>
+
+        <!-- Encabezado del Comprobante -->
+        <div class="flex flex-col sm:flex-row justify-between items-start gap-4">
+          <!-- Datos del Emisor -->
+          <div class="space-y-1">
+            <div class="flex items-center gap-3 mb-2">
+              <img
+                [src]="configuracionService.configuracion()?.logoUrl || 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/configurtacion_sitio/TechZone.png'"
+                alt="TechZone Logo"
+                class="h-10 w-auto max-h-12 object-contain rounded-xl p-1 bg-white border border-slate-200 dark:border-slate-800 shadow-xs"
+              />
+              <div class="flex flex-col">
+                <div class="flex items-center font-black text-xl tracking-tight leading-none font-heading">
+                  <span class="text-slate-900 dark:text-white">Tech</span>
+                  <span class="text-blue-600 dark:text-blue-400">Zone</span>
+                </div>
+                <span class="text-[9px] text-blue-600 dark:text-blue-400 font-bold tracking-[0.2em] uppercase mt-0.5">Gaming Store</span>
+              </div>
+            </div>
+            <p class="text-xs font-bold text-slate-900 dark:text-white uppercase">TechZone Gaming Store S.A.C.</p>
+            <p class="text-[11px] text-slate-500 dark:text-slate-400">Distribuidora de Componentes & Periféricos Gaming</p>
+            <p class="text-[11px] text-slate-500 dark:text-slate-400">Av. Javier Prado Este 4200, Santiago de Surco - Lima</p>
+            <p class="text-[11px] text-slate-500 dark:text-slate-400 font-mono">Central Telefónica: (01) 710-8900 · ventas@techzone.com</p>
+          </div>
+
+          <!-- Cuadro Tributario RUC y Numeración -->
+          <div class="w-full sm:w-72 p-4 rounded-2xl border-2 border-slate-900 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-center space-y-1">
+            <p class="text-xs font-mono font-bold text-slate-800 dark:text-slate-200 tracking-wider">R.U.C. 20608945123</p>
+            <p class="text-xs font-black uppercase text-blue-600 dark:text-blue-400 tracking-wide font-heading">
+              {{ esFactura(comp) ? 'FACTURA ELECTRÓNICA' : 'BOLETA DE VENTA ELECTRÓNICA' }}
+            </p>
+            <p class="text-sm font-mono font-bold text-slate-900 dark:text-white tracking-widest">
+              {{ esFactura(comp) ? 'F001' : 'B001' }} - {{ ('00000000' + comp.idVenta).slice(-8) }}
+            </p>
+          </div>
+        </div>
+
+        <!-- Datos del Cliente y Emisión -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs bg-slate-50 dark:bg-slate-950/70 p-4 rounded-2xl border border-slate-200 dark:border-slate-800/80">
+          <div class="space-y-1.5">
+            <p><span class="text-slate-500 dark:text-slate-400 font-semibold">Señor(es):</span> <strong class="text-slate-900 dark:text-white uppercase">{{ comp.clienteNombre || 'CLIENTE REGISTRADO' }}</strong></p>
+            @if (esFactura(comp)) {
+              <p><span class="text-slate-500 dark:text-slate-400 font-semibold">RUC Adquirente:</span> <strong class="text-blue-600 dark:text-blue-400 font-mono font-bold">{{ comp.clienteDocumento || '-' }}</strong></p>
+            } @else {
+              <p><span class="text-slate-500 dark:text-slate-400 font-semibold">Documento (DNI):</span> <strong class="text-blue-600 dark:text-blue-400 font-mono font-bold">{{ comp.clienteDocumento || '-' }}</strong></p>
+            }
+          </div>
+
+          <div class="space-y-1.5 sm:text-right">
+            <p><span class="text-slate-500 dark:text-slate-400 font-semibold">Moneda:</span> <span class="text-slate-900 dark:text-white font-bold">SOLES (PEN)</span></p>
+            @if (comp.pagos && comp.pagos[0]?.codigoOperacion) {
+            }
+          </div>
+        </div>
+
+        <!-- Tabla de Productos -->
+        <div class="rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950/50">
+          <table class="w-full text-left text-xs text-slate-700 dark:text-slate-300">
+            <thead class="bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-200 uppercase text-[10px] font-bold tracking-wider border-b border-slate-200 dark:border-slate-800">
+              <tr>
+                <th class="p-3 text-center w-14">Cant.</th>
+                <th class="p-3">Descripción del Producto</th>
+                <th class="p-3 text-right w-28">Precio Unit.</th>
+                <th class="p-3 text-right w-28">Importe</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-200 dark:divide-slate-800/60">
+              @for (item of comp.detalles; track item.idDetalleVenta) {
+                <tr>
+                  <td class="p-3 text-center font-bold text-slate-900 dark:text-white font-mono">{{ item.cantidad }}</td>
+                  <td class="p-3 font-medium text-slate-900 dark:text-white">{{ item.nombreProducto }}</td>
+                  <td class="p-3 text-right font-mono text-slate-600 dark:text-slate-300">S/ {{ item.precioUnitario | number:'1.2-2' }}</td>
+                  <td class="p-3 text-right font-mono font-bold text-slate-900 dark:text-white">S/ {{ item.subTotalVenta | number:'1.2-2' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pie de Totales y Tributación SUNAT -->
+        <div class="flex flex-col sm:flex-row justify-between items-center gap-4 pt-2">
+          <!-- QR y Leyenda SUNAT -->
+          <div class="flex items-center gap-3 text-[10px] text-slate-500 dark:text-slate-400">
+            <div class="w-24 h-24 sm:w-28 sm:h-28 bg-white border-2 border-slate-900 p-1.5 rounded-xl flex items-center justify-center flex-shrink-0 shadow-xs">
+              <svg class="w-full h-full" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="100" height="100" fill="white"/>
+                <!-- Top-left finder -->
+                <rect x="5" y="5" width="26" height="26" fill="black"/>
+                <rect x="9" y="9" width="18" height="18" fill="white"/>
+                <rect x="13" y="13" width="10" height="10" fill="black"/>
+                <!-- Top-right finder -->
+                <rect x="69" y="5" width="26" height="26" fill="black"/>
+                <rect x="73" y="9" width="18" height="18" fill="white"/>
+                <rect x="77" y="13" width="10" height="10" fill="black"/>
+                <!-- Bottom-left finder -->
+                <rect x="5" y="69" width="26" height="26" fill="black"/>
+                <rect x="9" y="73" width="18" height="18" fill="white"/>
+                <rect x="13" y="77" width="10" height="10" fill="black"/>
+                <!-- Data modules -->
+                <rect x="36" y="8" width="6" height="6" fill="black"/>
+                <rect x="46" y="8" width="6" height="6" fill="black"/>
+                <rect x="56" y="8" width="6" height="6" fill="black"/>
+                <rect x="36" y="18" width="6" height="6" fill="black"/>
+                <rect x="46" y="22" width="6" height="6" fill="black"/>
+                <rect x="58" y="18" width="6" height="6" fill="black"/>
+                <rect x="8" y="36" width="6" height="6" fill="black"/>
+                <rect x="18" y="36" width="6" height="6" fill="black"/>
+                <rect x="26" y="44" width="6" height="6" fill="black"/>
+                <rect x="8" y="52" width="6" height="6" fill="black"/>
+                <rect x="18" y="58" width="6" height="6" fill="black"/>
+                <rect x="36" y="36" width="7" height="7" fill="black"/>
+                <rect x="47" y="36" width="6" height="6" fill="black"/>
+                <rect x="57" y="36" width="6" height="6" fill="black"/>
+                <rect x="68" y="36" width="6" height="6" fill="black"/>
+                <rect x="78" y="36" width="6" height="6" fill="black"/>
+                <rect x="88" y="36" width="6" height="6" fill="black"/>
+                <rect x="36" y="47" width="6" height="6" fill="black"/>
+                <rect x="46" y="47" width="8" height="8" fill="black"/>
+                <rect x="58" y="47" width="6" height="6" fill="black"/>
+                <rect x="68" y="47" width="6" height="6" fill="black"/>
+                <rect x="78" y="47" width="6" height="6" fill="black"/>
+                <rect x="36" y="58" width="6" height="6" fill="black"/>
+                <rect x="46" y="58" width="6" height="6" fill="black"/>
+                <rect x="56" y="58" width="8" height="8" fill="black"/>
+                <rect x="68" y="58" width="6" height="6" fill="black"/>
+                <rect x="86" y="58" width="6" height="6" fill="black"/>
+                <rect x="36" y="70" width="8" height="8" fill="black"/>
+                <rect x="48" y="70" width="6" height="6" fill="black"/>
+                <rect x="58" y="70" width="6" height="6" fill="black"/>
+                <rect x="68" y="70" width="6" height="6" fill="black"/>
+                <rect x="78" y="70" width="6" height="6" fill="black"/>
+                <rect x="88" y="70" width="6" height="6" fill="black"/>
+                <rect x="36" y="82" width="6" height="6" fill="black"/>
+                <rect x="46" y="82" width="6" height="6" fill="black"/>
+                <rect x="56" y="82" width="6" height="6" fill="black"/>
+                <rect x="68" y="82" width="6" height="6" fill="black"/>
+                <rect x="78" y="82" width="6" height="6" fill="black"/>
+                <rect x="88" y="82" width="6" height="6" fill="black"/>
+              </svg>
+            </div>
+            <div class="space-y-0.5">
+              <p class="font-bold text-slate-700 dark:text-slate-300">Representación Impresa de Comprobante Electrónico</p>
+              <p class="text-slate-500 dark:text-slate-400">Autorizado mediante resolución SUNAT N° 034-005</p>
+            </div>
+          </div>
+
+          <!-- Totales Financieros -->
+          <div class="w-full sm:w-72 p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-1.5 text-xs">
+            <div class="flex justify-between text-slate-600 dark:text-slate-400">
+              <span>Op. Gravada:</span>
+              <span class="font-mono font-medium text-slate-800 dark:text-slate-200">S/ {{ comp.subtotal | number:'1.2-2' }}</span>
+            </div>
+            <div class="flex justify-between text-slate-600 dark:text-slate-400">
+              <span>I.G.V. (18%):</span>
+              <span class="font-mono font-medium text-slate-800 dark:text-slate-200">S/ {{ comp.igv | number:'1.2-2' }}</span>
+            </div>
+            <div class="border-t border-slate-200 dark:border-slate-800 pt-1.5 flex justify-between font-black text-sm text-slate-900 dark:text-white font-heading">
+              <span>TOTAL A PAGAR:</span>
+              <span class="text-blue-600 dark:text-blue-400 text-base font-mono">S/ {{ comp.total | number:'1.2-2' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Botones inferiores para cerrar o imprimir -->
+        <div class="pt-2 no-print flex justify-end gap-3">
+          <button
+            (click)="cerrarComprobante()"
+            class="px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-white text-xs font-semibold border border-slate-300 dark:border-slate-700 cursor-pointer transition-colors">
+            Cerrar
+          </button>
+          <button
+            (click)="imprimirComprobante()"
+            class="glow-button px-5 py-2.5 rounded-xl text-xs font-bold text-white flex items-center gap-2 cursor-pointer shadow-md">
+            <span class="material-symbols-outlined text-sm">print</span> Imprimir / Guardar PDF
+          </button>
+        </div>
+
+      </div>
+    </div>
+  }
+
+</div>

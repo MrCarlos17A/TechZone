@@ -1,0 +1,192 @@
+<div class="space-y-16">
+
+  <!-- Hero Section Carousel -->
+  <section class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
+    <div class="relative h-[340px] sm:h-[420px] md:h-[500px] w-full rounded-3xl overflow-hidden shadow-2xl border border-slate-200/80 dark:border-slate-800/80 bg-slate-950">
+      
+      @for (item of heroSlides; track item.title; let idx = $index) {
+        <div
+          class="absolute inset-0 transition-opacity duration-1000 ease-in-out bg-gradient-to-br"
+          [ngClass]="item.gradient"
+          [class.opacity-100]="slideActivo() === idx"
+          [class.opacity-0]="slideActivo() !== idx">
+          
+          <!-- Background image from Supabase Storage -->
+          @if (item.image) {
+            <img [src]="item.image" [alt]="item.title" class="absolute inset-0 w-full h-full object-cover opacity-30 mix-blend-luminosity" />
+          }
+
+          <!-- Background decorative element -->
+          <div class="absolute -right-10 -bottom-10 opacity-10 pointer-events-none select-none">
+            <span class="material-symbols-outlined text-[260px] text-white">{{ item.icon }}</span>
+          </div>
+
+          <div class="relative z-10 h-full flex flex-col justify-end p-8 md:p-14 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent">
+            <span class="inline-block px-3.5 py-1 rounded-full text-xs font-bold tracking-wider uppercase bg-blue-600/90 text-white w-max mb-3 shadow-lg shadow-blue-600/40 border border-blue-400/30">
+              {{ item.badge }}
+            </span>
+            <h1 class="text-2xl sm:text-4xl md:text-5xl font-black text-white font-heading max-w-2xl leading-tight drop-shadow-md">
+              {{ item.title }}
+            </h1>
+            <p class="mt-2 text-sm sm:text-base text-slate-200 max-w-xl">
+              {{ item.desc }}
+            </p>
+            <div class="mt-6 flex gap-4">
+              <a routerLink="/productos" class="glow-button px-6 py-3 rounded-xl text-sm font-semibold text-white inline-flex items-center gap-2 shadow-lg">
+                Ver Catálogo <span class="material-symbols-outlined text-base">arrow_forward</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- Indicators -->
+      <div class="absolute bottom-5 right-8 flex gap-2 z-20">
+        @for (item of heroSlides; track item.title; let idx = $index) {
+          <button
+            (click)="slideActivo.set(idx)"
+            class="h-2 rounded-full transition-all cursor-pointer"
+            [class.w-8]="slideActivo() === idx"
+            [class.bg-blue-500]="slideActivo() === idx"
+            [class.w-2]="slideActivo() !== idx"
+            [class.bg-slate-500]="slideActivo() !== idx">
+          </button>
+        }
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Value Propositions / Perks -->
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+      <div class="glass-panel p-5 rounded-2xl flex items-center gap-4">
+        <div class="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-600 dark:text-blue-400 flex-shrink-0">
+          <span class="material-symbols-outlined text-2xl">local_shipping</span>
+        </div>
+        <div>
+          <h4 class="font-semibold text-slate-900 dark:text-white text-sm">Envíos a Todo el Perú</h4>
+          <p class="text-xs text-slate-500 dark:text-slate-400">Rápido y 100% asegurado</p>
+        </div>
+      </div>
+
+      <div class="glass-panel p-5 rounded-2xl flex items-center gap-4">
+        <div class="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-600 dark:text-cyan-400 flex-shrink-0">
+          <span class="material-symbols-outlined text-2xl">verified_user</span>
+        </div>
+        <div>
+          <h4 class="font-semibold text-slate-900 dark:text-white text-sm">Garantía Real</h4>
+          <p class="text-xs text-slate-500 dark:text-slate-400">Hasta 36 meses oficial</p>
+        </div>
+      </div>
+
+      <div class="glass-panel p-5 rounded-2xl flex items-center gap-4">
+        <div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400 flex-shrink-0">
+          <span class="material-symbols-outlined text-2xl">credit_card</span>
+        </div>
+        <div>
+          <h4 class="font-semibold text-slate-900 dark:text-white text-sm">Pagos Seguros</h4>
+          <p class="text-xs text-slate-500 dark:text-slate-400">Yape, Plin y Tarjetas</p>
+        </div>
+      </div>
+
+      <div class="glass-panel p-5 rounded-2xl flex items-center gap-4">
+        <div class="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-600 dark:text-indigo-400 flex-shrink-0">
+          <span class="material-symbols-outlined text-2xl">headset_mic</span>
+        </div>
+        <div>
+          <h4 class="font-semibold text-slate-900 dark:text-white text-sm">Soporte Técnico</h4>
+          <p class="text-xs text-slate-500 dark:text-slate-400">Asesoría especializada</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Categories Grid -->
+  @if (categorias().length > 0) {
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between mb-8">
+        <div>
+          <h2 class="text-2xl font-bold text-slate-900 dark:text-white font-heading">Categorías Principales</h2>
+          <p class="text-sm text-slate-500 dark:text-slate-400">Encuentra los componentes que necesitas</p>
+        </div>
+        <a routerLink="/productos" class="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 flex items-center gap-1">
+          Ver todas <span class="material-symbols-outlined text-base">arrow_forward</span>
+        </a>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+        @for (cat of categorias(); track cat.idCategoria) {
+          <a
+            [routerLink]="['/productos']"
+            [queryParams]="{ categoria: cat.idCategoria }"
+            class="glass-panel p-5 rounded-2xl flex flex-col items-center justify-center text-center hover:border-blue-500/50 hover:bg-slate-100/60 dark:hover:bg-slate-900/80 transition-all group">
+            <div class="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-blue-600 dark:text-blue-400 group-hover:scale-110 group-hover:bg-blue-500/20 transition-all mb-3">
+              <span class="material-symbols-outlined text-2xl">memory</span>
+            </div>
+            <span class="text-xs font-semibold text-slate-800 dark:text-slate-200 group-hover:text-blue-600 dark:group-hover:text-white transition-colors">{{ cat.nombre }}</span>
+          </a>
+        }
+      </div>
+    </section>
+  }
+
+  <!-- Featured Products Section -->
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between mb-8">
+      <div>
+        <span class="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest">Lo Más Pedido</span>
+        <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white font-heading">Productos Destacados</h2>
+      </div>
+      <a routerLink="/productos" class="glow-button px-4 py-2 rounded-xl text-xs font-semibold text-white">
+        Ver Todo el Catálogo
+      </a>
+    </div>
+
+    @if (cargando()) {
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        @for (i of [1,2,3,4]; track i) {
+          <div class="glass-card rounded-2xl h-80 animate-pulse bg-slate-200 dark:bg-slate-900/50"></div>
+        }
+      </div>
+    } @else if (destacados().length > 0) {
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        @for (prod of destacados(); track prod.idProducto) {
+          <app-product-card [producto]="prod" />
+        }
+      </div>
+    } @else {
+      <div class="text-center py-12 glass-panel rounded-2xl">
+        <span class="material-symbols-outlined text-4xl text-slate-400 dark:text-slate-500 mb-2 block">inventory_2</span>
+        <p class="text-slate-500 dark:text-slate-400">Pronto agregaremos nuevos productos al catálogo.</p>
+      </div>
+    }
+  </section>
+
+  <!-- Brands Section -->
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center max-w-xl mx-auto mb-10">
+      <span class="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest">Partners & Fabricantes</span>
+      <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white font-heading">Marcas Oficiales</h2>
+      <p class="text-sm text-slate-500 dark:text-slate-400 mt-2">Garantía oficial y soporte directo de los líderes de la industria.</p>
+    </div>
+
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 items-center">
+      @for (marca of marcas(); track marca.idMarca) {
+        <a [routerLink]="['/productos']" [queryParams]="{ marca: marca.idMarca }"
+           class="glass-panel p-4 rounded-2xl flex flex-col items-center justify-center gap-2 hover:border-blue-500/50 hover:bg-slate-100/60 dark:hover:bg-slate-800/60 transition-all h-28 group">
+          @if (marca.logoUrl) {
+            <img [src]="marca.logoUrl" [alt]="marca.nombre" class="h-10 w-auto max-w-[100px] object-contain group-hover:scale-110 transition-transform filter brightness-95 group-hover:brightness-110" />
+          } @else {
+            <span class="material-symbols-outlined text-2xl text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform">verified</span>
+          }
+          <span class="text-xs font-bold text-slate-800 dark:text-white font-heading tracking-wider uppercase group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+            {{ marca.nombre }}
+          </span>
+          <span class="text-[9px] text-slate-400 dark:text-slate-500 uppercase tracking-widest">Oficial</span>
+        </a>
+      }
+    </div>
+  </section>
+
+</div>

@@ -1,0 +1,182 @@
+<header class="sticky top-0 z-50 border-b border-blue-500/30 bg-gradient-to-r from-[#070f26] via-[#0c1a40] to-[#070f26] backdrop-blur-xl shadow-lg shadow-blue-950/25 transition-colors duration-300">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-20">
+      
+      <!-- Logo TechZone -->
+      <a routerLink="/" class="flex items-center gap-3 group select-none">
+        <img
+          [src]="configuracionService.configuracion()?.logoUrl || 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/configurtacion_sitio/TechZone.png'"
+          alt="TechZone Logo"
+          class="h-10 sm:h-12 w-auto max-h-12 object-contain rounded-xl p-1 bg-white/10 border border-blue-400/30 group-hover:scale-105 transition-all duration-300 drop-shadow"
+        />
+        <div class="flex flex-col">
+          <div class="flex items-center font-black text-xl sm:text-2xl tracking-tight leading-none font-heading">
+            <span class="text-white">Tech</span>
+            <span class="text-blue-400">Zone</span>
+          </div>
+          <span class="text-[10px] sm:text-[11px] text-blue-300 font-bold tracking-[0.2em] uppercase mt-0.5">Gaming Store</span>
+        </div>
+      </a>
+
+      <!-- Desktop Nav Links -->
+      <nav class="hidden md:flex items-center space-x-1 lg:space-x-2">
+        <a routerLink="/" routerLinkActive="text-white font-bold bg-blue-600 shadow-md shadow-blue-900/40" [routerLinkActiveOptions]="{exact: true}"
+           class="px-3.5 py-1.5 rounded-xl text-sm font-semibold text-slate-200 hover:text-white hover:bg-white/10 transition-all">
+          Inicio
+        </a>
+        <a routerLink="/productos" routerLinkActive="text-white font-bold bg-blue-600 shadow-md shadow-blue-900/40"
+           class="px-3.5 py-1.5 rounded-xl text-sm font-semibold text-slate-200 hover:text-white hover:bg-white/10 transition-all">
+          Productos
+        </a>
+        <a routerLink="/novedades" routerLinkActive="text-white font-bold bg-blue-600 shadow-md shadow-blue-900/40"
+           class="px-3.5 py-1.5 rounded-xl text-sm font-semibold text-slate-200 hover:text-white hover:bg-white/10 transition-all">
+          Novedades
+        </a>
+        <a routerLink="/marcas" routerLinkActive="text-white font-bold bg-blue-600 shadow-md shadow-blue-900/40"
+           class="px-3.5 py-1.5 rounded-xl text-sm font-semibold text-slate-200 hover:text-white hover:bg-white/10 transition-all">
+          Marcas
+        </a>
+      </nav>
+
+      <!-- Search bar -->
+      <div class="hidden sm:block flex-1 max-w-xs mx-4">
+        <form (ngSubmit)="buscar()" class="relative">
+          <input
+            type="text"
+            [ngModel]="busqueda()"
+            (ngModelChange)="busqueda.set($event)"
+            name="search"
+            placeholder="Buscar componentes, periféricos..."
+            class="w-full bg-white/10 text-sm text-white pl-10 pr-4 py-2 rounded-full border border-blue-400/30 focus:outline-none focus:border-blue-400 focus:bg-white/15 focus:ring-2 focus:ring-blue-400/30 placeholder-blue-200/60 shadow-inner transition-all"
+          />
+          <button type="submit" class="absolute left-3 top-2 text-blue-300 hover:text-white flex items-center justify-center cursor-pointer">
+            <span class="material-symbols-outlined text-lg">search</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- Right actions (Theme Toggle, Cart & User) -->
+      <div class="flex items-center gap-2.5">
+        
+        <!-- Toggle Modo Claro / Oscuro -->
+        <button
+          (click)="temaService.toggleTema()"
+          type="button"
+          class="p-2.5 rounded-full bg-white/10 border border-blue-400/30 text-white hover:bg-white/20 hover:border-blue-400/60 transition-all shadow-xs flex items-center justify-center cursor-pointer"
+          [title]="temaService.esModoOscuro() ? 'Cambiar a Modo Claro' : 'Cambiar a Modo Oscuro'">
+          @if (temaService.esModoOscuro()) {
+            <span class="material-symbols-outlined text-amber-300 text-xl filled">light_mode</span>
+          } @else {
+            <span class="material-symbols-outlined text-blue-300 text-xl filled">dark_mode</span>
+          }
+        </button>
+
+        <!-- Shopping Cart -->
+        <a routerLink="/carrito" class="relative p-2.5 rounded-full bg-white/10 border border-blue-400/30 hover:border-blue-400/60 text-white hover:bg-white/20 transition-all shadow-xs flex items-center justify-center">
+          <span class="material-symbols-outlined text-xl">shopping_cart</span>
+          @if (carritoService.cantidadTotal() > 0) {
+            <span class="absolute -top-1.5 -right-1.5 bg-blue-500 text-white text-[11px] font-bold w-5 h-5 flex items-center justify-center rounded-full animate-pulse shadow-lg shadow-blue-500/50">
+              {{ carritoService.cantidadTotal() }}
+            </span>
+          }
+        </a>
+
+        <!-- Auth state (dropdown de usuario) -->
+        @if (authService.isAuthenticated()) {
+          <div class="relative">
+            <button
+              (click)="toggleUsuarioDropdown()"
+              class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-blue-400/30 hover:border-blue-400/60 text-sm font-semibold text-white hover:bg-white/15 transition-all shadow-xs cursor-pointer">
+              <div class="w-7 h-7 rounded-full bg-gradient-to-tr from-blue-500 to-indigo-500 flex items-center justify-center text-xs font-bold uppercase text-white shadow-sm">
+                {{ authService.currentUser()?.nombre?.charAt(0) || 'U' }}
+              </div>
+              <span class="hidden lg:inline max-w-[120px] truncate text-slate-100">{{ authService.currentUser()?.nombre }}</span>
+              <span class="material-symbols-outlined text-base text-blue-300">expand_more</span>
+            </button>
+
+            @if (usuarioDropdownAbierto()) {
+              <div class="absolute right-0 mt-2 w-56 rounded-2xl shadow-2xl py-2 z-50 border border-blue-500/40 bg-slate-900/98 backdrop-blur-xl animate-fadeIn">
+                <div class="px-4 py-2 border-b border-slate-800">
+                  <p class="text-xs text-blue-300">Conectado como</p>
+                  <p class="text-xs font-semibold text-white truncate">{{ authService.currentUser()?.correo }}</p>
+                </div>
+
+                <a (click)="usuarioDropdownAbierto.set(false)" routerLink="/perfil" class="flex items-center gap-2.5 px-4 py-2 text-sm text-slate-200 hover:text-white hover:bg-white/10 transition-colors">
+                  <span class="material-symbols-outlined text-lg text-blue-400">manage_accounts</span> Mi Perfil
+                </a>
+
+                <a (click)="usuarioDropdownAbierto.set(false)" routerLink="/mis-pedidos" class="flex items-center gap-2.5 px-4 py-2 text-sm text-slate-200 hover:text-white hover:bg-white/10 transition-colors">
+                  <span class="material-symbols-outlined text-lg text-cyan-400">receipt_long</span> Mis Pedidos
+                </a>
+
+                @if (authService.isStaff()) {
+                  <a (click)="usuarioDropdownAbierto.set(false)" routerLink="/admin" class="flex items-center gap-2.5 px-4 py-2 text-sm text-amber-400 hover:text-amber-300 hover:bg-white/10 font-semibold transition-colors">
+                    <span class="material-symbols-outlined text-lg">admin_panel_settings</span> Panel Administrador
+                  </a>
+                }
+
+                <div class="border-t border-slate-800 my-1"></div>
+
+                <button
+                  (click)="cerrarSesion()"
+                  class="w-full text-left flex items-center gap-2.5 px-4 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-950/40 transition-colors cursor-pointer">
+                  <span class="material-symbols-outlined text-lg">logout</span> Cerrar Sesión
+                </button>
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="flex items-center gap-2">
+            <a routerLink="/login" class="px-3.5 py-1.5 rounded-xl text-sm font-semibold text-slate-200 hover:text-white hover:bg-white/10 transition-colors">
+              Ingresar
+            </a>
+            <a routerLink="/registro" class="glow-button px-4 py-1.5 rounded-xl text-sm font-semibold text-white shadow-md">
+              Registrarse
+            </a>
+          </div>
+        }
+
+        <!-- Mobile hamburger -->
+        <button (click)="toggleMenu()" class="md:hidden p-2 text-blue-200 hover:text-white flex items-center justify-center cursor-pointer">
+          <span class="material-symbols-outlined text-2xl">{{ menuAbierto() ? 'close' : 'menu' }}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile menu -->
+  @if (menuAbierto()) {
+    <div class="md:hidden border-t border-blue-500/30 bg-gradient-to-b from-[#0c1a40] to-[#070f26] px-4 pt-3 pb-5 space-y-2 shadow-2xl">
+      <form (ngSubmit)="buscar(); toggleMenu()" class="mb-3">
+        <input
+          type="text"
+          [ngModel]="busqueda()"
+          (ngModelChange)="busqueda.set($event)"
+          name="mobileSearch"
+          placeholder="Buscar productos..."
+          class="w-full bg-white/10 text-sm text-white px-4 py-2 rounded-xl border border-blue-400/30 focus:outline-none focus:border-blue-400 placeholder-blue-200/60 shadow-xs"
+        />
+      </form>
+      <a (click)="toggleMenu()" routerLink="/" class="block px-3 py-2 rounded-md text-base text-slate-200 hover:text-white hover:bg-white/10">Inicio</a>
+      <a (click)="toggleMenu()" routerLink="/productos" class="block px-3 py-2 rounded-md text-base text-slate-200 hover:text-white hover:bg-white/10">Productos</a>
+      <a (click)="toggleMenu()" routerLink="/novedades" class="block px-3 py-2 rounded-md text-base text-slate-200 hover:text-white hover:bg-white/10">Novedades</a>
+      <a (click)="toggleMenu()" routerLink="/marcas" class="block px-3 py-2 rounded-md text-base text-slate-200 hover:text-white hover:bg-white/10">Marcas</a>
+      @if (authService.isAuthenticated()) {
+        <a (click)="toggleMenu()" routerLink="/perfil" class="flex items-center gap-2 px-3 py-2 rounded-md text-base text-blue-300 font-semibold hover:bg-white/10">
+          <span class="material-symbols-outlined text-xl">manage_accounts</span> Mi Perfil
+        </a>
+        <a (click)="toggleMenu()" routerLink="/mis-pedidos" class="flex items-center gap-2 px-3 py-2 rounded-md text-base text-cyan-300 font-semibold hover:bg-white/10">
+          <span class="material-symbols-outlined text-xl">receipt_long</span> Mis Pedidos
+        </a>
+        @if (authService.isStaff()) {
+          <a (click)="toggleMenu()" routerLink="/admin" class="flex items-center gap-2 px-3 py-2 rounded-md text-base text-amber-300 font-semibold hover:bg-white/10">
+            <span class="material-symbols-outlined text-xl">admin_panel_settings</span> Panel Administrador
+          </a>
+        }
+        <button (click)="cerrarSesion(); toggleMenu()" class="w-full text-left flex items-center gap-2 px-3 py-2 rounded-md text-base text-red-400 font-semibold hover:bg-red-950/40 cursor-pointer">
+          <span class="material-symbols-outlined text-xl">logout</span> Cerrar Sesión
+        </button>
+      }
+    </div>
+  }
+</header>

@@ -1,0 +1,119 @@
+<div class="min-h-[75vh] flex items-center justify-center px-4 py-12">
+  <div class="glass-panel w-full max-w-md p-8 sm:p-10 rounded-3xl space-y-8 border border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/90 shadow-2xl relative transition-colors duration-300">
+    
+    <div class="text-center space-y-3">
+      <!-- Logo Oficial de TechZone Gaming Store -->
+      <a routerLink="/" class="inline-flex items-center justify-center gap-3 group select-none transition-transform hover:scale-105" title="Ir al Inicio de TechZone">
+        <img
+          [src]="configuracionService.configuracion()?.logoUrl || 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/configurtacion_sitio/TechZone.png'"
+          alt="TechZone Logo"
+          class="h-12 w-auto max-h-14 object-contain rounded-2xl p-1.5 bg-white/10 dark:bg-slate-800/60 border border-blue-400/30 drop-shadow-md"
+        />
+        <div class="flex flex-col text-left">
+          <div class="flex items-center font-black text-2xl tracking-tight leading-none font-heading">
+            <span class="text-slate-900 dark:text-white">Tech</span>
+            <span class="text-blue-600 dark:text-blue-400">Zone</span>
+          </div>
+          <span class="text-[9px] text-blue-600 dark:text-blue-400 font-extrabold tracking-[0.25em] uppercase mt-0.5">Gaming Store</span>
+        </div>
+      </a>
+
+      <div>
+        <h2 class="text-2xl font-black text-slate-900 dark:text-white font-heading">Iniciar Sesión</h2>
+        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Accede a tu cuenta para gestionar tus pedidos y compras</p>
+      </div>
+    </div>
+
+    @if (authService.isAuthenticated()) {
+      <div class="p-4 rounded-2xl bg-blue-500/10 border border-blue-500/30 text-xs space-y-2">
+        <div class="flex items-center gap-2 text-blue-600 dark:text-blue-300 font-bold">
+          <span class="material-symbols-outlined text-base">info</span> Sesión activa detectada
+        </div>
+        <p class="text-slate-700 dark:text-slate-300">
+          Actualmente has iniciado sesión como <strong class="text-slate-900 dark:text-white">{{ authService.currentUser()?.nombre }}</strong> ({{ authService.currentUser()?.correo }}).
+        </p>
+        <div class="flex items-center gap-2 pt-1">
+          <button
+            type="button"
+            (click)="cerrarSesionActual()"
+            class="px-3 py-1.5 rounded-lg bg-red-500/20 text-red-600 dark:text-red-300 hover:bg-red-500/30 text-[11px] font-bold transition-colors flex items-center gap-1.5 cursor-pointer">
+            <span class="material-symbols-outlined text-sm">logout</span> Cerrar esta sesión
+          </button>
+          <a
+            [routerLink]="authService.isStaff() ? '/admin' : '/'"
+            class="px-3 py-1.5 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white text-[11px] font-semibold transition-colors">
+            Ir a {{ authService.isStaff() ? 'Panel Admin' : 'la Tienda' }}
+          </a>
+        </div>
+      </div>
+    }
+
+    @if (error()) {
+      <div class="p-3.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 text-xs flex items-center gap-2">
+        <span class="material-symbols-outlined text-base flex-shrink-0">error</span>
+        <span>{{ error() }}</span>
+      </div>
+    }
+
+    <form (ngSubmit)="onSubmit()" class="space-y-4">
+      <div>
+        <label class="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1.5">Correo Electrónico</label>
+        <div class="relative">
+          <input
+            type="email"
+            [ngModel]="username()"
+            (ngModelChange)="username.set($event)"
+            name="email"
+            required
+            placeholder="correo@ejemplo.com"
+            class="w-full bg-slate-100 dark:bg-slate-950 text-sm text-slate-900 dark:text-slate-200 pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-800 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none transition-all"
+          />
+          <span class="material-symbols-outlined text-lg absolute left-3 top-2.5 text-slate-400 dark:text-slate-500">mail</span>
+        </div>
+      </div>
+
+      <div>
+        <label class="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1.5">Contraseña</label>
+        <div class="relative">
+          <input
+            [type]="mostrarPassword() ? 'text' : 'password'"
+            [ngModel]="password()"
+            (ngModelChange)="password.set($event)"
+            name="password"
+            required
+            placeholder="••••••••"
+            class="w-full bg-slate-100 dark:bg-slate-950 text-sm text-slate-900 dark:text-slate-200 pl-10 pr-10 py-2.5 rounded-xl border border-slate-300 dark:border-slate-800 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none transition-all"
+          />
+          <span class="material-symbols-outlined text-lg absolute left-3 top-2.5 text-slate-400 dark:text-slate-500">lock</span>
+          <button
+            type="button"
+            (click)="toggleMostrarPassword()"
+            class="absolute right-3 top-2 text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors cursor-pointer flex items-center justify-center"
+            tabindex="-1"
+            title="Mostrar u ocultar contraseña">
+            <span class="material-symbols-outlined text-lg">{{ mostrarPassword() ? 'visibility_off' : 'visibility' }}</span>
+          </button>
+        </div>
+      </div>
+
+      <button
+        type="submit"
+        [disabled]="cargando()"
+        class="glow-button w-full py-3.5 rounded-xl font-bold text-white text-sm flex items-center justify-center gap-2 mt-2 disabled:opacity-50 cursor-pointer shadow-md">
+        @if (cargando()) {
+          <span class="material-symbols-outlined animate-spin text-base">progress_activity</span> Iniciando...
+        } @else {
+          Ingresar a TechZone
+        }
+      </button>
+    </form>
+
+    <div class="border-t border-slate-200 dark:border-slate-800/80 pt-6 text-center text-xs text-slate-500 dark:text-slate-400">
+      ¿Aún no tienes una cuenta?
+      <a routerLink="/registro" class="text-blue-600 dark:text-blue-400 font-semibold hover:text-blue-700 dark:hover:text-blue-300 ml-1">
+        Regístrate aquí
+      </a>
+    </div>
+
+  </div>
+</div>

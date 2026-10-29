@@ -1,0 +1,448 @@
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 animate-fadeIn transition-colors duration-300">
+
+  <!-- Header -->
+  <div class="mb-8">
+    <div class="flex items-center gap-2 text-xs text-slate-500 mb-2">
+      <a routerLink="/" class="hover:text-blue-600 dark:hover:text-white transition-colors">Inicio</a>
+      <span>/</span>
+      <span class="text-blue-600 dark:text-blue-400 font-semibold">Mi Perfil</span>
+    </div>
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div>
+        <h1 class="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white font-heading tracking-wide flex items-center gap-3">
+          <span class="material-symbols-outlined text-blue-600 dark:text-blue-400 text-3xl">account_circle</span> Mi Cuenta & Perfil
+        </h1>
+        <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
+          Gestiona tu información personal, direcciones de entrega y credenciales de seguridad.
+        </p>
+      </div>
+
+      <div class="flex items-center gap-3">
+        @if (authService.isStaff()) {
+          <a routerLink="/admin" class="px-4 py-2 rounded-xl text-xs font-semibold bg-amber-500/10 text-amber-500 dark:text-amber-400 border border-amber-500/30 hover:bg-amber-500/20 transition-all flex items-center gap-2">
+            <span class="material-symbols-outlined text-sm">admin_panel_settings</span> Panel Administrador
+          </a>
+        }
+      </div>
+    </div>
+  </div>
+
+  @if (cargando()) {
+    <div class="glass-panel p-12 text-center rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/40 shadow-sm">
+      <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-blue-500 border-t-transparent mb-3"></div>
+      <p class="text-xs text-slate-500 dark:text-slate-400 font-mono">Cargando tus datos...</p>
+    </div>
+  } @else {
+
+    <!-- Main Card -->
+    <div class="glass-panel rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 shadow-2xl overflow-hidden backdrop-blur-xl">
+
+      <!-- Navigation Tabs -->
+      <div class="flex border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/80 px-4 sm:px-6 gap-2 overflow-x-auto">
+        <button
+          (click)="tabActiva.set('datos')"
+          class="flex items-center gap-2.5 px-4 py-3.5 text-xs font-semibold border-b-2 transition-all whitespace-nowrap cursor-pointer"
+          [class.border-blue-600]="tabActiva() === 'datos'"
+          [class.dark:border-blue-500]="tabActiva() === 'datos'"
+          [class.text-blue-600]="tabActiva() === 'datos'"
+          [class.dark:text-white]="tabActiva() === 'datos'"
+          [class.border-transparent]="tabActiva() !== 'datos'"
+          [class.text-slate-500]="tabActiva() !== 'datos'"
+          [class.dark:text-slate-400]="tabActiva() !== 'datos'"
+          [class.hover:text-slate-800]="tabActiva() !== 'datos'"
+          [class.dark:hover:text-slate-200]="tabActiva() !== 'datos'">
+          <span class="material-symbols-outlined text-base" [class.text-blue-600]="tabActiva() === 'datos'" [class.dark:text-blue-400]="tabActiva() === 'datos'">badge</span>
+          1. Datos Personales
+        </button>
+
+        <button
+          (click)="tabActiva.set('ubicacion')"
+          class="flex items-center gap-2.5 px-4 py-3.5 text-xs font-semibold border-b-2 transition-all whitespace-nowrap cursor-pointer"
+          [class.border-blue-600]="tabActiva() === 'ubicacion'"
+          [class.dark:border-blue-500]="tabActiva() === 'ubicacion'"
+          [class.text-blue-600]="tabActiva() === 'ubicacion'"
+          [class.dark:text-white]="tabActiva() === 'ubicacion'"
+          [class.border-transparent]="tabActiva() !== 'ubicacion'"
+          [class.text-slate-500]="tabActiva() !== 'ubicacion'"
+          [class.dark:text-slate-400]="tabActiva() !== 'ubicacion'"
+          [class.hover:text-slate-800]="tabActiva() !== 'ubicacion'"
+          [class.dark:hover:text-slate-200]="tabActiva() !== 'ubicacion'">
+          <span class="material-symbols-outlined text-base" [class.text-blue-600]="tabActiva() === 'ubicacion'" [class.dark:text-blue-400]="tabActiva() === 'ubicacion'">location_on</span>
+          2. Ubicación & Dirección
+        </button>
+
+        <button
+          (click)="tabActiva.set('seguridad')"
+          class="flex items-center gap-2.5 px-4 py-3.5 text-xs font-semibold border-b-2 transition-all whitespace-nowrap cursor-pointer"
+          [class.border-blue-600]="tabActiva() === 'seguridad'"
+          [class.dark:border-blue-500]="tabActiva() === 'seguridad'"
+          [class.text-blue-600]="tabActiva() === 'seguridad'"
+          [class.dark:text-white]="tabActiva() === 'seguridad'"
+          [class.border-transparent]="tabActiva() !== 'seguridad'"
+          [class.text-slate-500]="tabActiva() !== 'seguridad'"
+          [class.dark:text-slate-400]="tabActiva() !== 'seguridad'"
+          [class.hover:text-slate-800]="tabActiva() !== 'seguridad'"
+          [class.dark:hover:text-slate-200]="tabActiva() !== 'seguridad'">
+          <span class="material-symbols-outlined text-base" [class.text-blue-600]="tabActiva() === 'seguridad'" [class.dark:text-blue-400]="tabActiva() === 'seguridad'">admin_panel_settings</span>
+          3. Seguridad & Contraseña
+        </button>
+      </div>
+
+      <!-- Tab Content Area -->
+      <div class="p-6 sm:p-8">
+
+        <!-- ================= TAB 1: DATOS PERSONALES ================= -->
+        @if (tabActiva() === 'datos') {
+          <div class="space-y-6 animate-fadeIn">
+            <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+              <div>
+                <h3 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider font-heading">Información de Identidad</h3>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400">Datos registrados en el sistema de TechZone</p>
+              </div>
+              <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
+                Rol: {{ perfil().rol || 'Cliente' }}
+              </span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Nombres *</label>
+                <input
+                  type="text"
+                  [disabled]="!modoEdicion()"
+                  [ngModel]="formNombres()"
+                  (ngModelChange)="formNombres.set($event)"
+                  class="w-full bg-slate-50 dark:bg-slate-950 text-xs text-slate-900 dark:text-white uppercase px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500 disabled:opacity-60 disabled:cursor-not-allowed"
+                />
+              </div>
+
+              <div>
+                <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Apellido Paterno *</label>
+                <input
+                  type="text"
+                  [disabled]="!modoEdicion()"
+                  [ngModel]="formApellidoPaterno()"
+                  (ngModelChange)="formApellidoPaterno.set($event)"
+                  class="w-full bg-slate-50 dark:bg-slate-950 text-xs text-slate-900 dark:text-white uppercase px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500 disabled:opacity-60 disabled:cursor-not-allowed"
+                />
+              </div>
+
+              <div>
+                <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Apellido Materno *</label>
+                <input
+                  type="text"
+                  [disabled]="!modoEdicion()"
+                  [ngModel]="formApellidoMaterno()"
+                  (ngModelChange)="formApellidoMaterno.set($event)"
+                  class="w-full bg-slate-50 dark:bg-slate-950 text-xs text-slate-900 dark:text-white uppercase px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500 disabled:opacity-60 disabled:cursor-not-allowed"
+                />
+              </div>
+
+              <div>
+                <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Teléfono Móvil (9 dígitos)</label>
+                <input
+                  type="text"
+                  maxlength="9"
+                  [disabled]="!modoEdicion()"
+                  [ngModel]="formTelefono()"
+                  (ngModelChange)="formTelefono.set($event)"
+                  placeholder="987654321"
+                  class="w-full bg-slate-50 dark:bg-slate-950 text-xs text-slate-900 dark:text-white px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500 disabled:opacity-60 disabled:cursor-not-allowed"
+                />
+              </div>
+
+              <div>
+                <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Tipo de Documento *</label>
+                <select
+                  [disabled]="!modoEdicion()"
+                  [ngModel]="formTipoDoc()"
+                  (ngModelChange)="formTipoDoc.set($event)"
+                  class="w-full bg-slate-50 dark:bg-slate-950 text-xs text-slate-900 dark:text-white px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500 disabled:opacity-60 disabled:cursor-not-allowed">
+                  @for (td of tiposDoc(); track td.idTipoDocumento) {
+                    <option [ngValue]="td.idTipoDocumento">{{ td.nombre }}</option>
+                  }
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Número de Documento (DNI) *</label>
+                <input
+                  type="text"
+                  maxlength="20"
+                  [disabled]="!modoEdicion()"
+                  [ngModel]="formNumeroDoc()"
+                  (ngModelChange)="formNumeroDoc.set($event)"
+                  placeholder="Número de documento"
+                  class="w-full bg-slate-50 dark:bg-slate-950 text-xs text-slate-900 dark:text-white px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500 disabled:opacity-60 disabled:cursor-not-allowed"
+                />
+              </div>
+
+              <div>
+                <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Fecha de Nacimiento</label>
+                <input
+                  type="date"
+                  [disabled]="!modoEdicion()"
+                  [ngModel]="formFechaNacimiento()"
+                  (ngModelChange)="formFechaNacimiento.set($event)"
+                  class="w-full bg-slate-50 dark:bg-slate-950 text-xs text-slate-900 dark:text-white px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500 disabled:opacity-60 disabled:cursor-not-allowed"
+                />
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- ================= TAB 2: UBICACIÓN & DIRECCIÓN ================= -->
+        @if (tabActiva() === 'ubicacion') {
+          <div class="space-y-6 animate-fadeIn">
+            <div class="border-b border-slate-200 dark:border-slate-800 pb-3">
+              <h3 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider font-heading">Dirección de Entrega Predeterminada</h3>
+              <p class="text-[11px] text-slate-500 dark:text-slate-400">Selecciona tu ubicación geográfica exacta para calcular envíos</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div>
+                <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Departamento</label>
+                <select
+                  [disabled]="!modoEdicion()"
+                  [ngModel]="deptoSel()"
+                  (ngModelChange)="onDepartamentoChange($event)"
+                  class="w-full bg-slate-50 dark:bg-slate-950 text-xs text-slate-900 dark:text-white px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500 disabled:opacity-60 disabled:cursor-not-allowed">
+                  <option value="">Selecciona...</option>
+                  @for (d of departamentos(); track d) {
+                    <option [value]="d">{{ d }}</option>
+                  }
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Provincia</label>
+                <select
+                  [disabled]="!modoEdicion()"
+                  [ngModel]="provSel()"
+                  (ngModelChange)="onProvinciaChange($event)"
+                  class="w-full bg-slate-50 dark:bg-slate-950 text-xs text-slate-900 dark:text-white px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500 disabled:opacity-60 disabled:cursor-not-allowed">
+                  <option value="">Selecciona...</option>
+                  @for (p of provincias(); track p) {
+                    <option [value]="p">{{ p }}</option>
+                  }
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Distrito (Ubigeo)</label>
+                <select
+                  [disabled]="!modoEdicion()"
+                  [ngModel]="formIdUbigeo()"
+                  (ngModelChange)="formIdUbigeo.set($event)"
+                  class="w-full bg-slate-50 dark:bg-slate-950 text-xs text-slate-900 dark:text-white px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500 disabled:opacity-60 disabled:cursor-not-allowed">
+                  <option [ngValue]="null">Selecciona...</option>
+                  @for (dist of distritos(); track dist.idUbigeo) {
+                    <option [ngValue]="dist.idUbigeo">{{ dist.distrito }} ({{ dist.idUbigeo }})</option>
+                  }
+                </select>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Dirección Exacta *</label>
+                <input
+                  type="text"
+                  [disabled]="!modoEdicion()"
+                  [ngModel]="formDireccion()"
+                  (ngModelChange)="formDireccion.set($event)"
+                  [placeholder]="modoEdicion() ? 'Ej. Av. Arequipa 1234, Dpto 402' : ''"
+                  class="w-full bg-slate-50 dark:bg-slate-950 text-xs text-slate-900 dark:text-white uppercase px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500 disabled:opacity-60 disabled:cursor-not-allowed"
+                />
+              </div>
+
+              <div>
+                <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Referencia de Entrega (Opcional)</label>
+                <input
+                  type="text"
+                  [disabled]="!modoEdicion()"
+                  [ngModel]="formReferencia()"
+                  (ngModelChange)="formReferencia.set($event)"
+                  [placeholder]="modoEdicion() ? 'Ej. Frente al parque, portón negro' : ''"
+                  class="w-full bg-slate-50 dark:bg-slate-950 text-xs text-slate-900 dark:text-white uppercase px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500 disabled:opacity-60 disabled:cursor-not-allowed"
+                />
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- ================= TAB 3: SEGURIDAD & CONTRASEÑA ================= -->
+        @if (tabActiva() === 'seguridad') {
+          <div class="space-y-6 animate-fadeIn">
+            <div class="border-b border-slate-200 dark:border-slate-800 pb-3">
+              <h3 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider font-heading">Seguridad de la Cuenta</h3>
+              <p class="text-[11px] text-slate-500 dark:text-slate-400">Credenciales de acceso y cambio de contraseña</p>
+            </div>
+
+            <div>
+              <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Correo Electrónico (Solo Lectura)</label>
+              <div class="w-full bg-slate-100 dark:bg-slate-950/80 text-xs text-slate-600 dark:text-slate-400 px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-800 flex items-center justify-between">
+                <span>{{ perfil().correo }}</span>
+                <span class="text-[10px] text-slate-400 dark:text-slate-500 italic flex items-center gap-1"><span class="material-symbols-outlined text-xs">lock</span> No modificable</span>
+              </div>
+            </div>
+
+            @if (modoEdicion()) {
+              <div class="glass-panel p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/60 space-y-4">
+                <div class="flex items-center gap-2 text-blue-600 dark:text-blue-400 text-xs font-bold uppercase tracking-wider">
+                  <span class="material-symbols-outlined text-sm">vpn_key</span> Cambiar Contraseña (Opcional)
+                </div>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400 -mt-2">Deja estos campos en blanco si no deseas modificar tu clave actual.</p>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+                  <div>
+                    <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Contraseña Actual *</label>
+                    <div class="relative">
+                      <input
+                        [type]="mostrarPassActual() ? 'text' : 'password'"
+                        [ngModel]="passwordActual()"
+                        (ngModelChange)="passwordActual.set($event)"
+                        placeholder="••••••••"
+                        class="w-full bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-white px-3.5 py-2.5 pr-10 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500"
+                      />
+                      <button
+                        type="button"
+                        (click)="mostrarPassActual.set(!mostrarPassActual())"
+                        class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-800 dark:hover:text-white cursor-pointer">
+                        <span class="material-symbols-outlined text-lg">{{ mostrarPassActual() ? 'visibility_off' : 'visibility' }}</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Nueva Contraseña Segura</label>
+                    <div class="relative">
+                      <input
+                        [type]="mostrarPassNuevo() ? 'text' : 'password'"
+                        [ngModel]="passwordNuevo()"
+                        (ngModelChange)="passwordNuevo.set($event)"
+                        placeholder="••••••••"
+                        class="w-full bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-white px-3.5 py-2.5 pr-10 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500"
+                      />
+                      <button
+                        type="button"
+                        (click)="mostrarPassNuevo.set(!mostrarPassNuevo())"
+                        class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-800 dark:hover:text-white cursor-pointer">
+                        <span class="material-symbols-outlined text-lg">{{ mostrarPassNuevo() ? 'visibility_off' : 'visibility' }}</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                @if (passwordNuevo()) {
+                  <!-- Requisitos de Contraseña -->
+                  <div class="p-3 rounded-xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 space-y-1.5">
+                    <p class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                      <span class="material-symbols-outlined text-sm text-blue-600 dark:text-indigo-400">verified_user</span> Criterios de Seguridad:
+                    </p>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                      <div class="flex items-center gap-1.5 text-[10px] px-2 py-1 rounded-lg border transition-all"
+                           [class.bg-emerald-500/10]="criteriosPasswordNuevo().longitud"
+                           [class.border-emerald-500/30]="criteriosPasswordNuevo().longitud"
+                           [class.text-emerald-600]="criteriosPasswordNuevo().longitud"
+                           [class.dark:text-emerald-400]="criteriosPasswordNuevo().longitud"
+                           [class.bg-slate-100]="!criteriosPasswordNuevo().longitud"
+                           [class.dark:bg-slate-950]="!criteriosPasswordNuevo().longitud"
+                           [class.border-slate-200]="!criteriosPasswordNuevo().longitud"
+                           [class.dark:border-slate-800]="!criteriosPasswordNuevo().longitud"
+                           [class.text-slate-400]="!criteriosPasswordNuevo().longitud">
+                        <span class="material-symbols-outlined text-xs">{{ criteriosPasswordNuevo().longitud ? 'check_circle' : 'radio_button_unchecked' }}</span>
+                        <span>8+ caracteres</span>
+                      </div>
+
+                      <div class="flex items-center gap-1.5 text-[10px] px-2 py-1 rounded-lg border transition-all"
+                           [class.bg-emerald-500/10]="criteriosPasswordNuevo().mayuscula"
+                           [class.border-emerald-500/30]="criteriosPasswordNuevo().mayuscula"
+                           [class.text-emerald-600]="criteriosPasswordNuevo().mayuscula"
+                           [class.dark:text-emerald-400]="criteriosPasswordNuevo().mayuscula"
+                           [class.bg-slate-100]="!criteriosPasswordNuevo().mayuscula"
+                           [class.dark:bg-slate-950]="!criteriosPasswordNuevo().mayuscula"
+                           [class.border-slate-200]="!criteriosPasswordNuevo().mayuscula"
+                           [class.dark:border-slate-800]="!criteriosPasswordNuevo().mayuscula"
+                           [class.text-slate-400]="!criteriosPasswordNuevo().mayuscula">
+                        <span class="material-symbols-outlined text-xs">{{ criteriosPasswordNuevo().mayuscula ? 'check_circle' : 'radio_button_unchecked' }}</span>
+                        <span>1 Mayúscula</span>
+                      </div>
+
+                      <div class="flex items-center gap-1.5 text-[10px] px-2 py-1 rounded-lg border transition-all"
+                           [class.bg-emerald-500/10]="criteriosPasswordNuevo().numero"
+                           [class.border-emerald-500/30]="criteriosPasswordNuevo().numero"
+                           [class.text-emerald-600]="criteriosPasswordNuevo().numero"
+                           [class.dark:text-emerald-400]="criteriosPasswordNuevo().numero"
+                           [class.bg-slate-100]="!criteriosPasswordNuevo().numero"
+                           [class.dark:bg-slate-950]="!criteriosPasswordNuevo().numero"
+                           [class.border-slate-200]="!criteriosPasswordNuevo().numero"
+                           [class.dark:border-slate-800]="!criteriosPasswordNuevo().numero"
+                           [class.text-slate-400]="!criteriosPasswordNuevo().numero">
+                        <span class="material-symbols-outlined text-xs">{{ criteriosPasswordNuevo().numero ? 'check_circle' : 'radio_button_unchecked' }}</span>
+                        <span>1 Número</span>
+                      </div>
+
+                      <div class="flex items-center gap-1.5 text-[10px] px-2 py-1 rounded-lg border transition-all"
+                           [class.bg-emerald-500/10]="criteriosPasswordNuevo().simbolo"
+                           [class.border-emerald-500/30]="criteriosPasswordNuevo().simbolo"
+                           [class.text-emerald-600]="criteriosPasswordNuevo().simbolo"
+                           [class.dark:text-emerald-400]="criteriosPasswordNuevo().simbolo"
+                           [class.bg-slate-100]="!criteriosPasswordNuevo().simbolo"
+                           [class.dark:bg-slate-950]="!criteriosPasswordNuevo().simbolo"
+                           [class.border-slate-200]="!criteriosPasswordNuevo().simbolo"
+                           [class.dark:border-slate-800]="!criteriosPasswordNuevo().simbolo"
+                           [class.text-slate-400]="!criteriosPasswordNuevo().simbolo">
+                        <span class="material-symbols-outlined text-xs">{{ criteriosPasswordNuevo().simbolo ? 'check_circle' : 'radio_button_unchecked' }}</span>
+                        <span>1 Símbolo (!@#*)</span>
+                      </div>
+                    </div>
+                  </div>
+                }
+              </div>
+            } @else {
+              <div class="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/40 text-xs text-slate-500 dark:text-slate-400 flex items-center justify-between">
+                <span>Contraseña 100% protegida y segura</span>
+                <span class="text-xs text-slate-400 dark:text-slate-500">••••••••••••</span>
+              </div>
+            }
+          </div>
+        }
+
+      </div>
+
+      <!-- Action Buttons Footer -->
+      <div class="p-4 sm:p-6 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/90 flex flex-col-reverse sm:flex-row justify-end gap-3">
+        @if (!modoEdicion()) {
+          <button
+            (click)="activarEdicion()"
+            class="glow-button px-6 py-2.5 rounded-xl text-xs font-semibold text-white flex items-center justify-center gap-2 cursor-pointer shadow-md">
+            <span class="material-symbols-outlined text-sm">edit</span> Editar Datos
+          </button>
+        } @else {
+          <button
+            (click)="cancelarEdicion()"
+            [disabled]="guardando()"
+            class="px-5 py-2.5 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors cursor-pointer">
+            Cancelar
+          </button>
+          <button
+            (click)="guardarCambios()"
+            [disabled]="guardando()"
+            class="glow-button px-6 py-2.5 rounded-xl text-xs font-semibold text-white flex items-center justify-center gap-2 cursor-pointer shadow-md">
+            @if (guardando()) {
+              <div class="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              <span>Guardando...</span>
+            } @else {
+              <span class="material-symbols-outlined text-sm">check_circle</span>
+              <span>Guardar Cambios</span>
+            }
+          </button>
+        }
+      </div>
+
+    </div>
+
+  }
+
+</div>

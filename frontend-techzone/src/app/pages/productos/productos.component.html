@@ -1,0 +1,123 @@
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+  <!-- Header -->
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-6">
+    <div>
+      <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white font-heading">Catálogo de Productos</h1>
+      <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Explora nuestra selección completa de hardware y periféricos gaming</p>
+    </div>
+
+    <!-- Quick Count -->
+    <div class="text-sm text-slate-500 dark:text-slate-400">
+      Mostrando <span class="font-bold text-blue-600 dark:text-white">{{ productos().length }}</span> productos
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+    
+    <!-- Sidebar Filters -->
+    <aside class="space-y-6">
+      <div class="glass-panel p-6 rounded-2xl space-y-6 shadow-sm">
+        
+        <!-- Search query filter -->
+        <div>
+          <label class="text-xs font-bold uppercase text-slate-700 dark:text-slate-300 block mb-2">Búsqueda</label>
+          <div class="relative">
+            <input
+              type="text"
+              [ngModel]="busqueda()"
+              (ngModelChange)="busqueda.set($event)"
+              (keyup.enter)="filtrar()"
+              placeholder="Buscar..."
+              class="w-full bg-slate-100 dark:bg-slate-900 text-sm text-slate-800 dark:text-slate-200 px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700/60 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+            />
+            <button (click)="filtrar()" class="absolute right-3 top-2.5 text-slate-400 hover:text-blue-500 flex items-center justify-center">
+              <span class="material-symbols-outlined text-base">search</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Categorías filter -->
+        <div>
+          <label class="text-xs font-bold uppercase text-slate-700 dark:text-slate-300 block mb-2">Categoría</label>
+          <select
+            [ngModel]="categoriaSeleccionada()"
+            (ngModelChange)="categoriaSeleccionada.set($event); filtrar()"
+            class="w-full bg-slate-100 dark:bg-slate-900 text-sm text-slate-800 dark:text-slate-200 px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700/60 focus:border-blue-500 focus:outline-none">
+            <option [ngValue]="null">Todas las categorías</option>
+            @for (cat of categorias(); track cat.idCategoria) {
+              <option [ngValue]="cat.idCategoria">{{ cat.nombre }}</option>
+            }
+          </select>
+        </div>
+
+        <!-- Marcas filter -->
+        <div>
+          <label class="text-xs font-bold uppercase text-slate-700 dark:text-slate-300 block mb-2">Marca</label>
+          <select
+            [ngModel]="marcaSeleccionada()"
+            (ngModelChange)="marcaSeleccionada.set($event); filtrar()"
+            class="w-full bg-slate-100 dark:bg-slate-900 text-sm text-slate-800 dark:text-slate-200 px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700/60 focus:border-blue-500 focus:outline-none">
+            <option [ngValue]="null">Todas las marcas</option>
+            @for (m of marcas(); track m.idMarca) {
+              <option [ngValue]="m.idMarca">{{ m.nombre }}</option>
+            }
+          </select>
+        </div>
+
+        <!-- Ordenar por -->
+        <div>
+          <label class="text-xs font-bold uppercase text-slate-700 dark:text-slate-300 block mb-2">Ordenar por</label>
+          <select
+            [ngModel]="ordenSeleccionado()"
+            (ngModelChange)="ordenSeleccionado.set($event); cargarProductos()"
+            class="w-full bg-slate-100 dark:bg-slate-900 text-sm text-slate-800 dark:text-slate-200 px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700/60 focus:border-blue-500 focus:outline-none">
+            <option value="defecto">Relevancia</option>
+            <option value="precio-asc">Precio: Menor a Mayor</option>
+            <option value="precio-desc">Precio: Mayor a Menor</option>
+          </select>
+        </div>
+
+        <!-- Botones de filtro -->
+        <div class="pt-2 flex flex-col gap-2">
+          <button (click)="filtrar()" class="glow-button w-full py-2.5 rounded-xl text-xs font-semibold text-white">
+            Aplicar Filtros
+          </button>
+          <button (click)="limpiarFiltros()" class="w-full py-2 rounded-xl text-xs text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 transition-colors">
+            Limpiar Filtros
+          </button>
+        </div>
+
+      </div>
+    </aside>
+
+    <!-- Products Grid -->
+    <main class="lg:col-span-3">
+      @if (cargando()) {
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          @for (i of [1,2,3,4,5,6]; track i) {
+            <div class="glass-card rounded-2xl h-80 animate-pulse bg-slate-200 dark:bg-slate-900/50"></div>
+          }
+        </div>
+      } @else if (productos().length > 0) {
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          @for (prod of productos(); track prod.idProducto) {
+            <app-product-card [producto]="prod" />
+          }
+        </div>
+      } @else {
+        <div class="glass-panel rounded-2xl text-center py-20 px-6">
+          <span class="material-symbols-outlined text-5xl text-slate-400 dark:text-slate-600 mb-4 block">search_off</span>
+          <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">No se encontraron productos</h3>
+          <p class="text-sm text-slate-500 dark:text-slate-400 max-w-sm mx-auto mb-6">
+            Intenta cambiar los términos de búsqueda o quitar los filtros aplicados.
+          </p>
+          <button (click)="limpiarFiltros()" class="glow-button px-5 py-2 rounded-xl text-xs font-semibold text-white">
+            Ver Todos los Productos
+          </button>
+        </div>
+      }
+    </main>
+
+  </div>
+</div>

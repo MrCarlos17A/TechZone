@@ -1,0 +1,12 @@
+<div class="min-h-screen flex flex-col bg-[var(--bg-main)] text-[var(--text-main)] selection:bg-blue-600 selection:text-white transition-colors duration-300">
+  @if (!esRutaAdmin()) {
+    <app-navbar />
+  }
+  <main class="flex-1 flex flex-col">
+    <router-outlet />
+  </main>
+  @if (!esRutaAdmin()) {
+    <app-footer />
+  }
+  <app-toast-container />
+</div>

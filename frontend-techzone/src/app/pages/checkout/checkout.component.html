@@ -1,0 +1,645 @@
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 transition-colors duration-300">
+
+  <!-- ============================================================== -->
+  <!-- COMPROBANTE EMITIDO (Boleta de Venta o Factura Electrónica)    -->
+  <!-- ============================================================== -->
+  @if (exito()) {
+    <div class="max-w-3xl mx-auto space-y-6 animate-fadeIn">
+      
+      <!-- Banner de Éxito -->
+      <div class="glass-panel p-6 rounded-3xl border border-emerald-500/30 bg-emerald-50 dark:bg-emerald-950/20 text-center space-y-2 shadow-sm">
+        <div class="w-14 h-14 bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center text-3xl mx-auto border border-emerald-500/40">
+          <span class="material-symbols-outlined text-3xl">check</span>
+        </div>
+        <h2 class="text-2xl font-black text-slate-900 dark:text-white font-heading">¡Compra Finalizada con Éxito!</h2>
+        <p class="text-xs text-slate-600 dark:text-slate-300">Tu pedido <span class="font-bold text-blue-600 dark:text-blue-400 font-mono">#{{ idVentaCreada() }}</span> ha sido procesado. Aquí tienes tu comprobante electrónico oficial.</p>
+        
+        <div class="pt-2 flex flex-wrap justify-center gap-3">
+          <button (click)="imprimirComprobante()" class="glow-button px-5 py-2.5 rounded-xl text-xs font-bold text-white flex items-center gap-2 cursor-pointer shadow-md">
+            <span class="material-symbols-outlined text-base">print</span> Imprimir / Guardar Comprobante
+          </button>
+          <a routerLink="/mis-pedidos" class="px-5 py-2.5 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 hover:text-blue-600 dark:hover:text-white flex items-center gap-1.5 transition-colors">
+            <span class="material-symbols-outlined text-base">receipt_long</span> Ver Mis Pedidos
+          </a>
+          <a routerLink="/" class="px-5 py-2.5 rounded-xl text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white flex items-center gap-1.5 transition-colors">
+            <span class="material-symbols-outlined text-base">home</span> Ir al Inicio
+          </a>
+        </div>
+      </div>
+
+      <!-- Representación Impresa Oficial del Comprobante (Boleta / Factura) -->
+      <div id="comprobante-fiscal" class="p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl text-slate-800 dark:text-slate-200 space-y-6 relative overflow-hidden">
+        
+        <!-- Marca de agua decorativa -->
+        <div class="absolute -right-12 -bottom-12 opacity-5 pointer-events-none select-none">
+          <span class="material-symbols-outlined text-[260px] text-slate-900 dark:text-white">verified_user</span>
+        </div>
+
+        <!-- Encabezado del Comprobante -->
+        <div class="flex flex-col sm:flex-row justify-between items-start gap-4 border-b border-slate-200 dark:border-slate-800 pb-6">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2">
+              <span class="text-xl font-black text-slate-900 dark:text-white tracking-wider font-heading">TECHZONE S.A.C.</span>
+            </div>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Distribución de Hardware, Componentes Gaming y Tecnología</p>
+            <p class="text-[11px] text-slate-400 dark:text-slate-500">Av. Las Camelias 450, San Isidro, Lima - Perú</p>
+            <p class="text-[11px] text-slate-400 dark:text-slate-500">contacto@techzone.com · Tel: (01) 680-4500</p>
+          </div>
+
+          <!-- Recuadro Fiscal R.U.C. -->
+          <div class="w-full sm:w-64 p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border-2 border-blue-500/40 text-center space-y-1">
+            <p class="text-xs font-mono font-bold text-slate-600 dark:text-slate-300 tracking-wider">R.U.C. 20608945123</p>
+            <p class="text-xs font-black uppercase text-blue-600 dark:text-blue-400 tracking-wide font-heading">
+              {{ tipoComprobante() === 'factura' ? 'FACTURA ELECTRÓNICA' : 'BOLETA DE VENTA ELECTRÓNICA' }}
+            </p>
+            <p class="text-sm font-mono font-bold text-slate-900 dark:text-white tracking-widest">
+              {{ tipoComprobante() === 'factura' ? 'F001' : 'B001' }} - {{ ('000000' + idVentaCreada()).slice(-8) }}
+            </p>
+          </div>
+        </div>
+
+        <!-- Datos del Cliente y Emisión -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs bg-slate-50 dark:bg-slate-950/70 p-4 rounded-2xl border border-slate-200 dark:border-slate-800/80">
+          <div class="space-y-1">
+            <p><span class="text-slate-500 dark:text-slate-400 font-semibold">Cliente:</span> <strong class="text-slate-900 dark:text-white uppercase">{{ nombres() }} {{ apellidoPaterno() }} {{ apellidoMaterno() }}</strong></p>
+            @if (tipoComprobante() === 'factura') {
+              <p><span class="text-slate-500 dark:text-slate-400 font-semibold">Razón Social:</span> <strong class="text-slate-900 dark:text-white uppercase">{{ razonSocialFactura() }}</strong></p>
+              <p><span class="text-slate-500 dark:text-slate-400 font-semibold">RUC Adquirente:</span> <strong class="text-blue-600 dark:text-indigo-400 font-mono">{{ rucFactura() }}</strong></p>
+            } @else {
+              <p><span class="text-slate-500 dark:text-slate-400 font-semibold">DNI:</span> <strong class="text-blue-600 dark:text-indigo-400 font-mono">{{ dni() }}</strong></p>
+            }
+            <p><span class="text-slate-500 dark:text-slate-400 font-semibold">Teléfono:</span> <span class="text-slate-700 dark:text-slate-300 font-mono">{{ telefono() }}</span></p>
+          </div>
+
+          <div class="space-y-1 sm:text-right">
+            <p><span class="text-slate-500 dark:text-slate-400 font-semibold">Fecha de Emisión:</span> <span class="text-slate-700 dark:text-slate-300 font-mono">{{ fechaEmision() | date:'dd/MM/yyyy HH:mm:ss' }}</span></p>
+            <p><span class="text-slate-500 dark:text-slate-400 font-semibold">Moneda:</span> <span class="text-slate-900 dark:text-white font-bold">SOLES (PEN)</span></p>
+            <p><span class="text-slate-500 dark:text-slate-400 font-semibold">Medio de Pago:</span> <span class="text-emerald-600 dark:text-emerald-400 font-bold uppercase">{{ getNombreMedioPago() }}</span></p>
+            <p><span class="text-slate-500 dark:text-slate-400 font-semibold">Destino:</span> <span class="text-slate-700 dark:text-slate-300 uppercase">{{ direccion() }}, {{ getDistritoNombre() }}</span></p>
+          </div>
+        </div>
+
+        <!-- Tabla de Artículos Comprados -->
+        <div class="rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950/50">
+          <table class="w-full text-left text-xs text-slate-700 dark:text-slate-300">
+            <thead class="bg-slate-50 dark:bg-slate-950 text-slate-500 dark:text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-200 dark:border-slate-800">
+              <tr>
+                <th class="p-3 text-center w-12">Cant.</th>
+                <th class="p-3">Descripción</th>
+                <th class="p-3 text-right">Precio Unit.</th>
+                <th class="p-3 text-right">Importe</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-200 dark:divide-slate-800/60">
+              @for (it of itemsComprados(); track it.idProducto) {
+                <tr>
+                  <td class="p-3 text-center font-bold text-slate-900 dark:text-white font-mono">{{ it.cantidad }}</td>
+                  <td class="p-3 font-medium text-slate-900 dark:text-white">{{ it.nombre }}</td>
+                  <td class="p-3 text-right font-mono text-slate-500 dark:text-slate-400">S/ {{ (it.precioVenta || 0).toFixed(2) }}</td>
+                  <td class="p-3 text-right font-mono font-bold text-slate-900 dark:text-white">S/ {{ ((it.precioVenta || 0) * it.cantidad).toFixed(2) }}</td>
+                </tr>
+              }
+              @if (itemsComprados().length === 0) {
+                <tr>
+                  <td colspan="4" class="p-4 text-center text-slate-500 italic">Orden registrada exitosamente</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Desglose de Totales -->
+        <div class="flex flex-col sm:flex-row justify-between items-center gap-4 pt-2">
+          
+          <!-- QR y Leyenda SUNAT -->
+          <div class="flex items-center gap-3 text-[10px] text-slate-500 dark:text-slate-400">
+            <div class="w-16 h-16 bg-white border border-slate-200 dark:border-transparent p-1 rounded-xl flex items-center justify-center flex-shrink-0">
+              <span class="material-symbols-outlined text-4xl text-slate-950">qr_code_2</span>
+            </div>
+            <div class="space-y-0.5">
+              <p class="font-bold text-slate-700 dark:text-slate-300">Representación impresa autorizada</p>
+              <p>Código Hash: <span class="font-mono text-slate-500">e8a49c71b02f5a6b...</span></p>
+              <p class="text-slate-500">Autorizado mediante resolución SUNAT N° 034-005</p>
+            </div>
+          </div>
+
+          <!-- Totales Financieros -->
+          <div class="w-full sm:w-64 p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-1.5 text-xs">
+            <div class="flex justify-between text-slate-500 dark:text-slate-400">
+              <span>Op. Gravada:</span>
+              <span class="font-mono text-slate-800 dark:text-slate-200">S/ {{ (totalComprado() / 1.18).toFixed(2) }}</span>
+            </div>
+            <div class="flex justify-between text-slate-500 dark:text-slate-400">
+              <span>I.G.V. (18%):</span>
+              <span class="font-mono text-slate-800 dark:text-slate-200">S/ {{ (totalComprado() - (totalComprado() / 1.18)).toFixed(2) }}</span>
+            </div>
+            <div class="flex justify-between text-slate-500 dark:text-slate-400">
+              <span>Envío Nacional:</span>
+              <span class="text-emerald-600 dark:text-emerald-400 font-semibold font-mono">S/ 0.00</span>
+            </div>
+            <div class="border-t border-slate-200 dark:border-slate-800 pt-1.5 flex justify-between text-slate-900 dark:text-white font-black text-sm">
+              <span>TOTAL:</span>
+              <span class="text-blue-600 dark:text-blue-400 font-mono">S/ {{ totalComprado().toFixed(2) }}</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  } @else {
+    <div class="space-y-6 animate-fadeIn">
+      
+      <div class="border-b border-slate-200 dark:border-slate-800 pb-4">
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white font-heading">Finalizar Compra</h1>
+        <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">Completa tus datos personales, comprobante y dirección de entrega para despachar tu pedido</p>
+      </div>
+
+      @if (errorMensaje()) {
+        <div class="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 text-xs sm:text-sm flex items-center gap-3">
+          <span class="material-symbols-outlined flex-shrink-0 text-base">warning</span>
+          <span>{{ errorMensaje() }}</span>
+        </div>
+      }
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <!-- Formulario (2 columnas) -->
+        <div class="lg:col-span-2 space-y-6">
+          
+          <!-- 1. Datos Personales y de Contacto -->
+          <div class="glass-panel p-6 rounded-2xl space-y-4 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 shadow-sm">
+            <h3 class="text-sm font-bold text-slate-900 dark:text-white font-heading flex items-center gap-2">
+              <span class="w-6 h-6 rounded-lg bg-blue-500/20 text-blue-600 dark:text-blue-400 text-xs flex items-center justify-center font-black">1</span>
+              Datos Personales y de Contacto
+            </h3>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              <div>
+                <label class="text-[11px] font-semibold text-slate-700 dark:text-slate-300 block mb-1">DNI (8 dígitos) *</label>
+                <input
+                  type="text"
+                  [ngModel]="dni()"
+                  (ngModelChange)="onDniChange($event)"
+                  maxlength="8"
+                  placeholder="Ej. 70000001"
+                  class="w-full bg-slate-50 dark:bg-slate-950 text-xs text-slate-900 dark:text-slate-200 px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-800 focus:border-blue-500 focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label class="text-[11px] font-semibold text-slate-700 dark:text-slate-300 block mb-1">Nombres *</label>
+                <input
+                  type="text"
+                  [ngModel]="nombres()"
+                  (ngModelChange)="nombres.set($event)"
+                  placeholder="Tus nombres"
+                  class="w-full bg-slate-50 dark:bg-slate-950 text-xs text-slate-900 dark:text-slate-200 uppercase px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-800 focus:border-blue-500 focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label class="text-[11px] font-semibold text-slate-700 dark:text-slate-300 block mb-1">Apellido Paterno *</label>
+                <input
+                  type="text"
+                  [ngModel]="apellidoPaterno()"
+                  (ngModelChange)="apellidoPaterno.set($event)"
+                  placeholder="Apellido paterno"
+                  class="w-full bg-slate-50 dark:bg-slate-950 text-xs text-slate-900 dark:text-slate-200 uppercase px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-800 focus:border-blue-500 focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label class="text-[11px] font-semibold text-slate-700 dark:text-slate-300 block mb-1">Apellido Materno *</label>
+                <input
+                  type="text"
+                  [ngModel]="apellidoMaterno()"
+                  (ngModelChange)="apellidoMaterno.set($event)"
+                  placeholder="Apellido materno"
+                  class="w-full bg-slate-50 dark:bg-slate-950 text-xs text-slate-900 dark:text-slate-200 uppercase px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-800 focus:border-blue-500 focus:outline-none"
+                />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="text-[11px] font-semibold text-slate-700 dark:text-slate-300 block mb-1">Teléfono Celular * (9 dígitos)</label>
+                <input
+                  type="tel"
+                  [ngModel]="telefono()"
+                  (ngModelChange)="onTelefonoChange($event)"
+                  maxlength="9"
+                  placeholder="Ej. 987654321"
+                  class="w-full bg-slate-50 dark:bg-slate-950 text-xs text-slate-900 dark:text-slate-200 px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-800 focus:border-blue-500 focus:outline-none"
+                />
+                <span class="text-[10px] text-slate-500 mt-1 block">Para coordinación de entrega y WhatsApp</span>
+              </div>
+
+              <div>
+                <label class="text-[11px] font-semibold text-slate-700 dark:text-slate-300 block mb-1">Correo Electrónico (Notificaciones)</label>
+                <input
+                  type="email"
+                  [ngModel]="correo()"
+                  (ngModelChange)="correo.set($event)"
+                  placeholder="correo@ejemplo.com"
+                  class="w-full bg-slate-50 dark:bg-slate-950 text-xs text-slate-900 dark:text-slate-200 px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-800 focus:border-blue-500 focus:outline-none"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. Tipo de Comprobante (Boleta o Factura Electrónica) -->
+          <div class="glass-panel p-6 rounded-2xl space-y-4 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 shadow-sm">
+            <h3 class="text-sm font-bold text-slate-900 dark:text-white font-heading flex items-center gap-2">
+              <span class="w-6 h-6 rounded-lg bg-blue-500/20 text-blue-600 dark:text-blue-400 text-xs flex items-center justify-center font-black">2</span>
+              Comprobante de Pago
+            </h3>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <button
+                type="button"
+                (click)="tipoComprobante.set('boleta')"
+                class="p-4 rounded-xl border text-left transition-all cursor-pointer"
+                [ngClass]="tipoComprobante() === 'boleta' ? 'border-blue-600 dark:border-blue-500 bg-blue-50 dark:bg-blue-500/10 text-slate-900 dark:text-white shadow-md' : 'border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-600 dark:text-slate-400 hover:border-slate-300 dark:hover:border-slate-700'">
+                <div class="flex items-center gap-3">
+                  <span class="material-symbols-outlined text-xl text-blue-600 dark:text-blue-400">receipt_long</span>
+                  <div>
+                    <h4 class="text-xs font-bold text-slate-900 dark:text-white">Boleta de Venta</h4>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Para personas naturales y consumidores finales</p>
+                  </div>
+                </div>
+              </button>
+
+              <button
+                type="button"
+                (click)="tipoComprobante.set('factura')"
+                class="p-4 rounded-xl border text-left transition-all cursor-pointer"
+                [ngClass]="tipoComprobante() === 'factura' ? 'border-blue-600 dark:border-blue-500 bg-blue-50 dark:bg-blue-500/10 text-slate-900 dark:text-white shadow-md' : 'border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-600 dark:text-slate-400 hover:border-slate-300 dark:hover:border-slate-700'">
+                <div class="flex items-center gap-3">
+                  <span class="material-symbols-outlined text-xl text-indigo-500 dark:text-indigo-400">description</span>
+                  <div>
+                    <h4 class="text-xs font-bold text-slate-900 dark:text-white">Factura Electrónica</h4>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Para empresas con RUC 10 o 20 con crédito fiscal</p>
+                  </div>
+                </div>
+              </button>
+            </div>
+
+            <!-- Campos específicos para Factura -->
+            @if (tipoComprobante() === 'factura') {
+              <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 space-y-3 animate-fadeIn">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label class="text-[11px] font-semibold text-slate-700 dark:text-slate-300 block mb-1">RUC de la Empresa (11 dígitos) *</label>
+                    <input
+                      type="text"
+                      [ngModel]="rucFactura()"
+                      (ngModelChange)="rucFactura.set($event.replace(/\D/g, '').slice(0, 11))"
+                      maxlength="11"
+                      placeholder="Ej. 20608945123"
+                      class="w-full bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-white px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-800 focus:border-blue-500 focus:outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label class="text-[11px] font-semibold text-slate-700 dark:text-slate-300 block mb-1">Razón Social *</label>
+                    <input
+                      type="text"
+                      [ngModel]="razonSocialFactura()"
+                      (ngModelChange)="razonSocialFactura.set($event)"
+                      placeholder="Nombre oficial o societario"
+                      class="w-full bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-white uppercase px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-800 focus:border-blue-500 focus:outline-none"
+                    />
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+
+          <!-- 3. Dirección y Ubicación de Entrega -->
+          <div class="glass-panel p-6 rounded-2xl space-y-4 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 shadow-sm">
+            <h3 class="text-sm font-bold text-slate-900 dark:text-white font-heading flex items-center gap-2">
+              <span class="w-6 h-6 rounded-lg bg-blue-500/20 text-blue-600 dark:text-blue-400 text-xs flex items-center justify-center font-black">3</span>
+              Destino y Dirección de Entrega
+            </h3>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label class="text-[11px] font-semibold text-slate-700 dark:text-slate-300 block mb-1">Departamento *</label>
+                <select
+                  [ngModel]="departamentoSel()"
+                  (ngModelChange)="cambioDepartamento($event)"
+                  class="w-full bg-slate-50 dark:bg-slate-950 text-xs text-slate-800 dark:text-slate-200 px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-800 focus:border-blue-500 focus:outline-none">
+                  <option value="">Seleccione Departamento</option>
+                  @for (d of departamentos(); track d) {
+                    <option [value]="d">{{ d }}</option>
+                  }
+                </select>
+              </div>
+
+              <div>
+                <label class="text-[11px] font-semibold text-slate-700 dark:text-slate-300 block mb-1">Provincia *</label>
+                <select
+                  [ngModel]="provinciaSel()"
+                  (ngModelChange)="cambioProvincia($event)"
+                  [disabled]="!departamentoSel()"
+                  class="w-full bg-slate-50 dark:bg-slate-950 text-xs text-slate-800 dark:text-slate-200 px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-800 focus:border-blue-500 focus:outline-none disabled:opacity-50">
+                  <option value="">Seleccione Provincia</option>
+                  @for (p of provincias(); track p) {
+                    <option [value]="p">{{ p }}</option>
+                  }
+                </select>
+              </div>
+
+              <div>
+                <label class="text-[11px] font-semibold text-slate-700 dark:text-slate-300 block mb-1">Distrito (Ubigeo) *</label>
+                <select
+                  [ngModel]="idUbigeoSel()"
+                  (ngModelChange)="idUbigeoSel.set($event)"
+                  [disabled]="!provinciaSel()"
+                  class="w-full bg-slate-50 dark:bg-slate-950 text-xs text-slate-800 dark:text-slate-200 px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-800 focus:border-blue-500 focus:outline-none disabled:opacity-50">
+                  <option [ngValue]="undefined">Seleccione Distrito</option>
+                  @for (d of distritos(); track d.idUbigeo) {
+                    <option [ngValue]="d.idUbigeo">{{ d.distrito }}</option>
+                  }
+                </select>
+              </div>
+            </div>
+
+            <div class="space-y-3 pt-1">
+              <div>
+                <label class="text-[11px] font-semibold text-slate-700 dark:text-slate-300 block mb-1">Dirección Exacta (Calle, Avenida, Jr, Nro) *</label>
+                <input
+                  type="text"
+                  [ngModel]="direccion()"
+                  (ngModelChange)="direccion.set($event)"
+                  placeholder="Ej: Av. Javier Prado Este 2465, Dpto 402"
+                  class="w-full bg-slate-50 dark:bg-slate-950 text-xs text-slate-900 dark:text-slate-200 uppercase px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-800 focus:border-blue-500 focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label class="text-[11px] font-semibold text-slate-700 dark:text-slate-300 block mb-1">Referencia de Entrega (Opcional)</label>
+                <input
+                  type="text"
+                  [ngModel]="referencia()"
+                  (ngModelChange)="referencia.set($event)"
+                  placeholder="Ej: Frente al parque, edificio blanco rejas negras"
+                  class="w-full bg-slate-50 dark:bg-slate-950 text-xs text-slate-900 dark:text-slate-200 uppercase px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-800 focus:border-blue-500 focus:outline-none"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. Método de Pago -->
+          <div class="glass-panel p-6 rounded-2xl space-y-4 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 shadow-sm">
+            <h3 class="text-sm font-bold text-slate-900 dark:text-white font-heading flex items-center gap-2">
+              <span class="w-6 h-6 rounded-lg bg-blue-500/20 text-blue-600 dark:text-blue-400 text-xs flex items-center justify-center font-black">4</span>
+              Método de Pago
+            </h3>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+              @for (m of mediosPago(); track m.idMedioPago) {
+                <button
+                  type="button"
+                  (click)="medioPagoSeleccionado.set(m.idMedioPago)"
+                  class="p-4 rounded-xl border text-left transition-all cursor-pointer"
+                  [ngClass]="medioPagoSeleccionado() === m.idMedioPago ? 'border-blue-600 dark:border-blue-500 bg-blue-50 dark:bg-blue-500/10 text-slate-900 dark:text-white shadow-md shadow-blue-500/15' : 'border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-600 dark:text-slate-400 hover:border-slate-300 dark:hover:border-slate-700'">
+                  <div class="flex items-center gap-3">
+                    @if (m.nombre.toLowerCase().includes('yape')) {
+                      <div class="w-9 h-9 rounded-xl bg-purple-600 flex items-center justify-center text-white font-bold text-xs flex-shrink-0">Y</div>
+                    } @else if (m.nombre.toLowerCase().includes('plin')) {
+                      <div class="w-9 h-9 rounded-xl bg-teal-500 flex items-center justify-center text-white font-bold text-xs flex-shrink-0">P</div>
+                    } @else if (m.nombre.toLowerCase().includes('tarjeta')) {
+                      <div class="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white text-base flex-shrink-0"><span class="material-symbols-outlined text-base">credit_card</span></div>
+                    } @else {
+                      <div class="w-9 h-9 rounded-xl bg-slate-800 flex items-center justify-center text-white text-base flex-shrink-0"><span class="material-symbols-outlined text-base">account_balance</span></div>
+                    }
+                    <div class="min-w-0">
+                      <p class="text-xs font-bold text-slate-900 dark:text-white truncate">{{ m.nombre }}</p>
+                      <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 truncate">Pago digital seguro</p>
+                    </div>
+                  </div>
+                </button>
+              }
+            </div>
+
+            <!-- Campos específicos para Yape / Plin -->
+            @if (esYapeOPlin()) {
+              <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 space-y-3 animate-fadeIn">
+                <p class="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <span class="material-symbols-outlined text-blue-600 dark:text-blue-400">smartphone</span> Completa los datos de tu comprobante digital
+                </p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label class="text-[11px] font-semibold text-slate-700 dark:text-slate-300 block mb-1">Celular de quien realiza el pago *</label>
+                    <input
+                      type="tel"
+                      [ngModel]="celularPago()"
+                      (ngModelChange)="onCelularPagoChange($event)"
+                      maxlength="9"
+                      placeholder="Ej. 987654321"
+                      class="w-full bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-slate-200 px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label class="text-[11px] font-semibold text-slate-700 dark:text-slate-300 block mb-1">Código de Operación (6 dígitos) *</label>
+                    <input
+                      type="text"
+                      [ngModel]="codOpPago()"
+                      (ngModelChange)="onCodOpChange($event)"
+                      maxlength="6"
+                      placeholder="Ej. 123456"
+                      class="w-full bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-slate-200 px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500"
+                    />
+                  </div>
+                </div>
+              </div>
+            }
+
+            <!-- Campos específicos para Tarjeta -->
+            @if (esTarjeta()) {
+              <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 space-y-3 animate-fadeIn">
+                <p class="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <span class="material-symbols-outlined text-blue-600 dark:text-blue-400">credit_card</span> Datos de la Tarjeta (Débito o Crédito)
+                </p>
+                <div class="space-y-3">
+                  <div>
+                    <label class="text-[11px] font-semibold text-slate-700 dark:text-slate-300 block mb-1">Número de Tarjeta (16 dígitos) *</label>
+                    <input
+                      type="text"
+                      [ngModel]="numTarjeta()"
+                      (ngModelChange)="onNumTarjetaChange($event)"
+                      maxlength="16"
+                      placeholder="4000 1234 5678 9010"
+                      class="w-full bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-slate-200 px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500"
+                    />
+                  </div>
+                  <div class="grid grid-cols-2 gap-3">
+                    <div>
+                      <label class="text-[11px] font-semibold text-slate-700 dark:text-slate-300 block mb-1">Vencimiento (MM/AA) *</label>
+                      <input
+                        type="text"
+                        [ngModel]="fechaVence()"
+                        (ngModelChange)="onFechaVenceChange($event)"
+                        maxlength="5"
+                        placeholder="12/28"
+                        class="w-full bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-slate-200 px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label class="text-[11px] font-semibold text-slate-700 dark:text-slate-300 block mb-1">CVV (3 dígitos) *</label>
+                      <input
+                        type="password"
+                        [ngModel]="cvvTarjeta()"
+                        (ngModelChange)="onCvvChange($event)"
+                        maxlength="4"
+                        placeholder="123"
+                        class="w-full bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-slate-200 px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label class="text-[11px] font-semibold text-slate-700 dark:text-slate-300 block mb-1">Titular de la Tarjeta *</label>
+                    <input
+                      type="text"
+                      [ngModel]="titularTarjeta()"
+                      (ngModelChange)="titularTarjeta.set($event)"
+                      placeholder="Como figura en el plástico"
+                      class="w-full bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-slate-200 px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500"
+                    />
+                  </div>
+                </div>
+              </div>
+            }
+
+            <!-- Campos para Transferencia -->
+            @if (esTransferencia()) {
+              <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 space-y-3 animate-fadeIn">
+                <p class="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <span class="material-symbols-outlined text-blue-600 dark:text-blue-400">account_balance</span> Datos de la Transferencia Bancaria
+                </p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label class="text-[11px] font-semibold text-slate-700 dark:text-slate-300 block mb-1">Banco de Origen *</label>
+                    <select
+                      [ngModel]="bancoOrigen()"
+                      (ngModelChange)="bancoOrigen.set($event)"
+                      class="w-full bg-white dark:bg-slate-900 text-xs text-slate-800 dark:text-slate-200 px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none">
+                      <option value="BCP">BCP (Banco de Crédito)</option>
+                      <option value="BBVA">BBVA Continental</option>
+                      <option value="INTERBANK">Interbank</option>
+                      <option value="SCOTIABANK">Scotiabank</option>
+                      <option value="BANBIF">BanBif</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="text-[11px] font-semibold text-slate-700 dark:text-slate-300 block mb-1">Nro. de Operación Bancaria *</label>
+                    <input
+                      type="text"
+                      [ngModel]="codOpTransferencia()"
+                      (ngModelChange)="codOpTransferencia.set($event)"
+                      placeholder="Ej. BCP-98124578"
+                      class="w-full bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-slate-200 px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none"
+                    />
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+
+          <!-- 5. Resumen General de Datos antes de confirmar -->
+          <div class="glass-panel p-6 rounded-2xl space-y-3 border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/40 shadow-sm">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 flex items-center gap-2">
+              <span class="material-symbols-outlined text-blue-600 dark:text-indigo-400">fact_check</span> Resumen de Datos para la Emisión
+            </h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs bg-white dark:bg-slate-950 p-4 rounded-xl border border-slate-200 dark:border-slate-800/80">
+              <div>
+                <p class="text-slate-500 dark:text-slate-400">Comprador:</p>
+                <p class="font-bold text-slate-900 dark:text-white">{{ nombres() || '-' }} {{ apellidoPaterno() || '' }} {{ apellidoMaterno() || '' }}</p>
+                <p class="text-slate-500 dark:text-slate-400 mt-1">Documento:</p>
+                <p class="font-mono text-blue-600 dark:text-indigo-300 font-semibold">{{ dni() || '-' }}</p>
+                <p class="text-slate-500 dark:text-slate-400 mt-1">Comprobante:</p>
+                <p class="font-bold text-blue-600 dark:text-blue-400 uppercase">{{ tipoComprobante() === 'factura' ? ('Factura (RUC: ' + (rucFactura() || '-') + ')') : 'Boleta de Venta' }}</p>
+              </div>
+              <div>
+                <p class="text-slate-500 dark:text-slate-400">Destino de Entrega:</p>
+                <p class="text-slate-900 dark:text-white">{{ direccion() || '-' }}</p>
+                <p class="text-slate-500 dark:text-slate-400 font-mono">{{ departamentoSel() || '-' }} - {{ provinciaSel() || '-' }} - {{ getDistritoNombre() || '-' }}</p>
+                <p class="text-slate-500 dark:text-slate-400 mt-1">Medio de Pago:</p>
+                <p class="font-bold text-emerald-600 dark:text-emerald-400 uppercase">{{ getNombreMedioPago() }}</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Resumen del Pedido (1 columna lateral) -->
+        <div class="space-y-6">
+          <div class="glass-panel p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 sticky top-24 space-y-4 shadow-sm">
+            <h3 class="text-sm font-bold text-slate-900 dark:text-white font-heading border-b border-slate-200 dark:border-slate-800 pb-3 flex items-center justify-between">
+              <span>Resumen de Compra</span>
+              <span class="text-xs text-blue-600 dark:text-blue-400 font-mono font-semibold">{{ carritoService.cantidadTotal() }} items</span>
+            </h3>
+
+            <div class="space-y-3 max-h-60 overflow-y-auto pr-1">
+              @for (it of carritoService.items(); track it.idProducto) {
+                <div class="flex items-center gap-2.5 text-xs py-2 border-b border-slate-200 dark:border-slate-800/40">
+                  <div class="w-11 h-11 rounded-lg bg-white border border-slate-200 dark:border-slate-800 flex items-center justify-center p-1 flex-shrink-0 overflow-hidden shadow-2xs">
+                    @if (obtenerImagenItem(it); as imgUrl) {
+                      <img [src]="imgUrl" [alt]="it.nombre" class="w-full h-full object-contain" />
+                    } @else {
+                      <span class="material-symbols-outlined text-base text-blue-600 dark:text-blue-400">memory</span>
+                    }
+                  </div>
+                  <div class="flex-1 min-w-0 pr-1">
+                    <p class="text-slate-800 dark:text-slate-200 font-medium truncate">{{ it.nombre }}</p>
+                    <p class="text-[11px] text-slate-500">Cant: {{ it.cantidad }} x S/ {{ it.precioVenta | number:'1.2-2' }}</p>
+                  </div>
+                  <span class="font-bold text-slate-900 dark:text-slate-300 flex-shrink-0">S/ {{ it.subtotal.toFixed(2) }}</span>
+                </div>
+              }
+            </div>
+
+            <div class="border-t border-slate-200 dark:border-slate-800 pt-3 space-y-2 text-xs">
+              <div class="flex justify-between text-slate-500 dark:text-slate-400">
+                <span>Subtotal (Op. Gravada)</span>
+                <span class="text-slate-800 dark:text-slate-200 font-mono">S/ {{ (carritoService.subtotal() / 1.18).toFixed(2) }}</span>
+              </div>
+              <div class="flex justify-between text-slate-500 dark:text-slate-400">
+                <span>I.G.V. (18%)</span>
+                <span class="text-slate-800 dark:text-slate-200 font-mono">S/ {{ (carritoService.subtotal() - (carritoService.subtotal() / 1.18)).toFixed(2) }}</span>
+              </div>
+              <div class="flex justify-between text-slate-500 dark:text-slate-400">
+                <span>Costo de Envío</span>
+                <span class="text-emerald-600 dark:text-emerald-400 font-semibold">GRATIS</span>
+              </div>
+              <div class="flex justify-between text-slate-900 dark:text-white font-black text-base pt-2 border-t border-slate-200 dark:border-slate-800">
+                <span>Total a Pagar</span>
+                <span class="text-blue-600 dark:text-blue-400 font-mono">S/ {{ carritoService.subtotal().toFixed(2) }}</span>
+              </div>
+            </div>
+
+            <button
+              (click)="confirmarCompra()"
+              [disabled]="procesando() || carritoService.cantidadTotal() === 0"
+              class="glow-button w-full py-3.5 rounded-xl font-bold text-white text-sm flex items-center justify-center gap-2 disabled:opacity-50 transition-all cursor-pointer shadow-md">
+              @if (procesando()) {
+                <span class="material-symbols-outlined animate-spin text-base">progress_activity</span> Procesando Compra...
+              } @else {
+                <span class="material-symbols-outlined text-base">check_circle</span> Confirmar y Realizar Pedido
+              }
+            </button>
+
+            <div class="text-center pt-2">
+              <p class="text-[10px] text-slate-500 dark:text-slate-400 flex items-center justify-center gap-1.5 font-medium">
+                <span class="material-symbols-outlined text-emerald-500 dark:text-emerald-400 text-sm">verified_user</span> Compra 100% Segura
+              </p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  }
+
+</div>

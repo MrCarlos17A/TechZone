@@ -1,0 +1,78 @@
+<div class="glass-card rounded-2xl overflow-hidden flex flex-col h-full group relative border border-slate-200 dark:border-slate-800/80 hover:border-blue-500/50 dark:hover:border-blue-500/50 bg-white dark:bg-slate-900/60 hover:bg-slate-50/80 dark:hover:bg-slate-900/90 transition-all duration-300 p-3 shadow-sm hover:shadow-xl hover:shadow-blue-500/10">
+  
+  <!-- Contenedor estandarizado de imagen con marco homogéneo -->
+  <a [routerLink]="['/productos', producto.idProducto]" class="block relative h-52 w-full rounded-xl overflow-hidden bg-white p-3 flex items-center justify-center group-hover:shadow-lg group-hover:shadow-blue-500/15 transition-all">
+    <!-- Brand badge -->
+    @if (producto.marca) {
+      <span class="absolute top-2.5 left-2.5 z-10 text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 rounded-md bg-slate-950/85 text-white backdrop-blur-md shadow-sm">
+        {{ producto.marca.nombre }}
+      </span>
+    }
+
+    <!-- Stock badge -->
+    @if (producto.stock > 0) {
+      <span class="absolute top-2.5 right-2.5 z-10 text-[10px] font-bold uppercase px-2 py-0.5 rounded-md bg-emerald-600 text-white shadow-sm">
+        En Stock
+      </span>
+    } @else {
+      <span class="absolute top-2.5 right-2.5 z-10 text-[10px] font-bold uppercase px-2 py-0.5 rounded-md bg-red-600 text-white shadow-sm">
+        Agotado
+      </span>
+    }
+
+    @if (urlImagen) {
+      <img
+        [src]="urlImagen"
+        [alt]="producto.nombre"
+        class="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
+        loading="lazy"
+      />
+    } @else {
+      <div class="flex flex-col items-center justify-center text-slate-400 gap-1.5 p-4">
+        <span class="material-symbols-outlined text-4xl text-slate-400">memory</span>
+        <span class="text-[9px] text-slate-400 font-semibold tracking-wider uppercase text-center">TechZone Component</span>
+      </div>
+    }
+  </a>
+
+  <!-- Content -->
+  <div class="pt-3 px-1.5 pb-1 flex-1 flex flex-col justify-between">
+    <div>
+      @if (producto.categoria) {
+        <p class="text-xs text-blue-600 dark:text-blue-400 font-semibold mb-1">{{ producto.categoria.nombre }}</p>
+      }
+      <a [routerLink]="['/productos', producto.idProducto]" class="block font-medium text-slate-800 dark:text-slate-100 hover:text-blue-600 dark:hover:text-blue-400 text-sm line-clamp-2 transition-colors">
+        {{ producto.nombre }}
+      </a>
+      @if (producto.codigoSku) {
+        <p class="text-[11px] text-slate-500 mt-1">SKU: {{ producto.codigoSku }}</p>
+      }
+    </div>
+
+    <!-- Pricing and action -->
+    <div class="mt-4 pt-3 border-t border-slate-200 dark:border-slate-800/80 flex items-center justify-between">
+      <div>
+        <span class="text-xs text-slate-500 dark:text-slate-400 block">Precio online</span>
+        <span class="text-lg font-bold text-slate-900 dark:text-white font-heading">
+          S/ {{ producto.precioVenta | number:'1.2-2' }}
+        </span>
+      </div>
+
+      <button
+        (click)="agregarAlCarrito($event)"
+        [disabled]="producto.stock <= 0 || agregando"
+        [class]="agregadoExitoso ? 'bg-emerald-600 text-white' : 'glow-button text-white'"
+        class="p-2.5 rounded-xl transition-all flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer shadow-md"
+        title="Agregar al carrito"
+        aria-label="Agregar al carrito">
+        @if (agregando) {
+          <span class="material-symbols-outlined animate-spin text-xl">progress_activity</span>
+        } @else if (agregadoExitoso) {
+          <span class="material-symbols-outlined text-xl">check</span>
+        } @else {
+          <span class="material-symbols-outlined text-xl">shopping_cart</span>
+        }
+      </button>
+    </div>
+  </div>
+</div>
