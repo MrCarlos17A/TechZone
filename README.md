@@ -1,7 +1,7 @@
-# Sistema de Gestión de TechZone
+# Sistema de Gestión Integral TechZone · Avance III
 
 **Curso:** Desarrollo Web Integrado  
-**Ciclo Académico:** 2026-2  
+**Ciclo Académico:** 2026-2 · Ciclo VIII  
 **Repositorio Oficial:** [https://github.com/MrCarlos17A/TechZone.git](https://github.com/MrCarlos17A/TechZone.git)  
 
 ---
@@ -21,11 +21,34 @@
 
 ## Descripción del Proyecto
 
-**TechZone** es una plataforma web integral de comercio electrónico y gestión empresarial (ERP/E-Commerce) de alta gama orientada a la comercialización, distribución y control de inventario de componentes gamer y hardware de última generación (tarjetas gráficas RTX serie 50, monitores QHD/OLED, procesadores, periféricos y accesorios de alto rendimiento).
+**TechZone** es una plataforma web integral de comercio electrónico y gestión empresarial (ERP/E-Commerce B2C/B2B) orientada a la comercialización, distribución mayorista/minorista y control logístico de hardware gamer de alta gama (tarjetas gráficas serie RTX 50, monitores OLED/QHD de alta tasa de refresco, procesadores, periféricos y accesorios profesionales).
 
-El sistema opera bajo una arquitectura desacoplada y escalable en dos capas:
-1. **Frontend SPA:** Interfaz de usuario reactiva, accesible y optimizada desarrollada en **Angular 19 / 21** con diseño moderno, soporte completo para **Modo Claro / Modo Oscuro** y gestión de estado mediante **Signals**.
-2. **Backend API REST:** Servicios de negocio, persistencia transaccional, seguridad robusta y almacenamiento en la nube construidos sobre **Java 25** y **Spring Boot**.
+El proyecto está diseñado bajo una arquitectura limpia y desacoplada de dos capas (**Monorepo Fullstack**):
+1. **Frontend SPA:** Interfaz moderna y reactiva construida con **Angular 19 / 21**, gestión de estado granular basada en **Signals**, maquetación con **Tailwind CSS**, soporte integral para **Modo Claro / Modo Oscuro** y renderizado responsive de alta fidelidad.
+2. **Backend API REST:** Servidor robusto desarrollado en **Java 25** con **Spring Boot**, autenticación stateless mediante **JWT**, control de accesos por roles (**RBAC**), persistencia transaccional sobre **PostgreSQL en Supabase** y almacenamiento multimedia seguro en **Supabase Storage**.
+
+---
+
+## Estructura del Repositorio
+
+```text
+TechZone/
+├── backend-techzone/               # API REST - Spring Boot (Java 25)
+│   ├── src/main/java/              # Arquitectura en capas: Controller, Model, Repository, Service, Security
+│   ├── src/main/resources/         # Configuración y application.properties
+│   ├── .env.example                # Plantilla de variables de entorno para desarrollo
+│   ├── iniciar.ps1                 # Script de arranque automatizado con detección de Java 25
+│   ├── mvnw / mvnw.cmd             # Maven Wrapper
+│   └── pom.xml                     # Gestión de dependencias de Maven
+├── frontend-techzone/              # Cliente Web SPA - Angular 19 / 21
+│   ├── src/app/pages/              # Módulos: Tienda, Checkout, Carrito, Login, Perfil y Backoffice Admin
+│   ├── src/app/components/         # Componentes reutilizables (Navbar, Footer, Card, Modales, Toast)
+│   ├── src/app/services/           # Servicios HTTP reactivos y estado global mediante Signals
+│   ├── angular.json                # Configuración de compilación de Angular CLI
+│   └── package.json                # Dependencias y scripts de ejecución
+├── .gitignore                      # Reglas maestras de exclusión (secretos, dependencias y binarios)
+└── README.md                       # Documentación técnica y funcional del proyecto
+```
 
 ---
 
@@ -33,137 +56,120 @@ El sistema opera bajo una arquitectura desacoplada y escalable en dos capas:
 
 ### Backend
 * **Lenguaje:** Java 25 (OpenJDK 25.0.4.1 / compilado con release 25)
-* **Framework:** Spring Boot 4.x / 3.4+
-* **Seguridad y Autorización:** Spring Security con autenticación stateless mediante **JWT (JSON Web Tokens)**, firma criptográfica HMAC-SHA256 y hashing de contraseñas con **BCrypt**.
-* **Persistencia y ORM:** Spring Data JPA / Hibernate ORM con optimización de dialecto PostgreSQL y carga ansiosa `JOIN FETCH` para integridad relacional.
-* **Base de Datos:** PostgreSQL en la nube (**Supabase**) mediante Transaction Pooler (puerto 6543) y preparación de conexiones seguras SSL.
-* **Almacenamiento en la Nube:** **Supabase Storage** (buckets de imágenes para marcas, productos, periféricos y comprobantes).
-* **Gestor de Dependencias y Construcción:** Apache Maven con Maven Wrapper (`mvnw`).
+* **Framework:** Spring Boot 3.4+ / 4.x
+* **Seguridad & RBAC:** Spring Security con filtros stateless **JWT (JSON Web Tokens)** con firma HMAC-SHA256 y hashing de contraseñas con **BCrypt**.
+* **Persistencia y ORM:** Spring Data JPA / Hibernate ORM con optimización de dialecto PostgreSQL y consultas ansiosas `JOIN FETCH`.
+* **Base de Datos en la Nube:** PostgreSQL alojado en **Supabase** mediante Transaction Pooler (puerto 6543) con conexiones SSL.
+* **Almacenamiento Multimedia:** **Supabase Storage** (buckets de imágenes para marcas, catálogo de productos, banners y comprobantes).
+* **Gestor de Construcción:** Apache Maven con Maven Wrapper (`mvnw`).
 
 ### Frontend
 * **Framework:** Angular 19 / 21 (Arquitectura Standalone Components & Signals reactivos).
-* **Diseño y Estilos:** Tailwind CSS con temas duales (Light Mode y Dark Mode Gamer), efectos de cristal (*glassmorphism*) y bordes de alta definición.
+* **Diseño y Estilos:** Tailwind CSS con temas duales (*Light Mode* y *Dark Gamer Mode*), efectos de cristal (*glassmorphism*) y diseño fluido.
 * **Iconografía:** Google Material Symbols y Bootstrap Icons.
 * **Gráficos y Métricas:** Chart.js con gráficos de evolución temporal de ingresos y distribución de ventas por categoría.
 
 ---
 
-## Dependencias Clave del Backend (`pom.xml`)
+## Roles y Matriz de Permisos (RBAC)
 
-| Dependencia | Propósito |
-| :--- | :--- |
-| `spring-boot-starter-web` | Controladores API REST y procesamiento de peticiones HTTP con Tomcat 11. |
-| `spring-boot-starter-data-jpa` | Abstracción de repositorios y mapeo relacional con PostgreSQL. |
-| `postgresql` | Driver JDBC oficial para la conexión con la base de datos de Supabase. |
-| `spring-boot-starter-security` | Seguridad, control de accesos basado en roles (RBAC) y filtros de autorización JWT. |
-| `jjwt-api / jjwt-impl / jjwt-jackson` | Generación, firmado y verificación de tokens de acceso seguro. |
-| `spring-boot-starter-validation` | Validación declarativa de reglas de negocio en DTOs, registros y compras. |
-| `lombok` | Reducción de código repetitivo mediante `@Getter`, `@Setter`, `@Builder` y constructores. |
+El sistema implementa control de acceso basado en roles tanto a nivel de endpoints en Spring Security como en la navegación y acciones de interfaz en Angular:
+
+| Rol | Ámbito de Acceso | Permisos y Capacidades |
+| :--- | :--- | :--- |
+| **Administrador** (`ROLE_ADMINISTRADOR`) | Control Total (`/admin/**`) | Gestión completa de catálogo, categorías, marcas, inventario, órdenes de venta, proveedores, colaboradores, auditoría de seguridad completa con trazabilidad de IP, roles y configuración institucional del sitio. Autorizado para eliminaciones y restauraciones. |
+| **Colaborador** (`ROLE_TRABAJADOR`) | Operativo & Ventas (`/admin/**`) | Atención y despacho de pedidos, consulta de inventario y stock crítico, registro de ventas, emisión de boletas/facturas electrónicas y consulta de clientes. **Restricción de seguridad:** botones de eliminación permanente ocultos y bloqueo de acceso a módulos críticos (Auditoría, Roles y Configuración). |
+| **Cliente** (`ROLE_CLIENTE`) | Tienda Pública (`/`) | Catálogo con filtros en tiempo real, carrito de compras sincronizado, checkout digital con validación de DNI/RUC, opciones de pago (Yape, Plin, Tarjeta, Transferencia) y módulo de autogestión *"Mis Pedidos / Mi Perfil"*. |
 
 ---
 
-## Roles y Permisos del Sistema
+## Novedades y Módulos del Avance III
 
-| Rol | Alcance y Acceso |
-| :--- | :--- |
-| **Administrador** | Acceso total al panel de administración (`/admin/**`). Gestión de inventario, categorías, marcas con logotipos, galería multimedia en Supabase Storage, 20 proveedores oficiales, usuarios, roles, métricas de ventas y configuración institucional del sitio. |
-| **Trabajador** | Acceso operativo (`/admin/**`). Control y cambio de estados de pedidos/ventas, monitoreo de stock crítico y consulta de clientes/comprobantes. |
-| **Usuario / Cliente** | Tienda pública (`/`), catálogo de productos con búsqueda en tiempo real, carrito sincronizado, pasarela de compra digital (Yape, Plin, Tarjetas, Transferencias) y panel *"Mis Pedidos / Mi Perfil"*. |
+1. **Control de Acceso y Rebranding de Colaboradores:**
+   * Sustitución completa de nomenclaturas operativas por el estándar corporativo **"Colaboradores"**.
+   * Ocultamiento selectivo de acciones destructivas (tachos de eliminación) y protección a nivel de API REST mediante `hasRole('ADMINISTRADOR')`.
 
-> **Nota:** La jerarquía del modelo de datos sigue la estructura `Persona` → `Usuario` → `Cliente` / `Empleado`. Los nombres y apellidos completos (paterno y materno) se muestran unificados en todo el sistema y en los carritos de compra.
+2. **Auditoría & Trazabilidad de Seguridad con Dirección IP:**
+   * Módulo de auditoría con selector conmutable de dos vistas:
+     * **Acciones del Sistema:** Registro de operaciones en catálogo, modificaciones y eliminaciones accidentales con soporte para **restauración inmediata**, fecha/hora y **Dirección IP** de terminal.
+     * **Inicios de Sesión & Accesos:** Bitácora completa de accesos con **Dirección IP**, usuario/correo, agente/navegador, fecha exacta y estado de autenticación (Exitoso / Fallido con motivo).
 
----
+3. **Matriz de Abastecimiento (Producto - Proveedor):**
+   * Visualización transparente de la relación $M:N$ con columnas independientes:
+     * **`N°`:** Número correlativo de fila en la lista.
+     * **`ID Prod`:** Identificador específico del producto en el catálogo.
+     * Costos de compra mayorista, Precio de Venta al Público (PVP), cálculo dinámico de **Margen Bruto de Ganancia (%)** y tiempos de entrega estimados.
 
-## Funcionalidades Principales
+4. **Identidad Visual Corporativa:**
+   * Integración del logotipo oficial de TechZone con soporte de contraste total en modo claro y modo oscuro.
+   * Ajuste de tipografía corporativa en pantallas de autenticación (Login, Registro) y barra lateral del panel administrativo.
 
-* **E-Commerce Gamer:**
-  * Catálogo dinámico con búsqueda instantánea y filtros rápidos por stock (En Stock, Stock Crítico $\le 5$, Sin Stock).
-  * Carrito de compras reactivo sincronizado con el backend.
-  * Pasarela de Checkout con validación de datos de entrega, documento de identidad (DNI / RUC) y selección de método de pago.
-* **Panel de Administración (Backoffice):**
-  * Dashboard de analítica con métricas de ingresos, ticket promedio y gráficos interactivos.
-  * **Gestor de Imágenes de Supabase Storage:** subida de archivos locales o enlace por URL externa, vinculación/edición directa del producto asignado y marcado de imagen principal.
-  * **Directorio de Ubigeos del Perú:** consulta distrital/provincial con badges de estado vigencia interactivos.
-  * **Directorio de Proveedores:** catálogo completo con los 20 proveedores y distribuidores tecnológicos oficiales.
-  * **Auditoría y Seguridad:** registro en tiempo real de inicios de sesión, detección de intentos fallidos con bloqueo preventivo temporal de 15 minutos e identificación de IP y agentes.
-* **Experiencia de Usuario (UI/UX):**
-  * Alternador de **Modo Claro** y **Modo Oscuro** persistente en toda la aplicación.
-  * Footer con contraste y separación visual en ambos modos temáticos.
-  * Estandarización de textos: conversión automática a mayúsculas para nombres y direcciones (estándar RENIEC/SUNAT) y correos electrónicos en minúsculas.
+5. **Exportación Contable Oficial:**
+   * Motor de exportación a libros de cálculo Excel XML para reportes de ventas, balances y catálogo de existencias.
 
 ---
 
 ## Configuración y Ejecución del Proyecto
 
 ### 1. Requisitos Previos
-* **Java Development Kit (JDK):** **Java 25** (OpenJDK 25.0.4.1 o superior) configurado en `JAVA_HOME` o `PATH`.
-* **Node.js:** Versión 18+ con gestor de paquetes `npm`.
-* **Maven:** Incluido a través de Maven Wrapper (`.\mvnw.cmd`).
-* **Supabase:** Instancia de PostgreSQL y bucket `imagenes` configurado en Storage.
+* **Java Development Kit (JDK):** **Java 25** (OpenJDK 25.0.4.1 o compatible) en `JAVA_HOME` o `PATH`.
+* **Node.js:** Versión 18+ (LTS recomendada) con `npm`.
+* **Supabase:** Instancia de PostgreSQL y bucket `imagenes` en Storage.
 
 ---
 
 ### 2. Configuración de Variables de Entorno (`.env`)
 
-En la carpeta `backend-techzone`, copia la plantilla `.env.example` y nómbrala `.env`:
+En la carpeta `backend-techzone`, copia el archivo de plantilla `.env.example` como `.env`:
 
 ```bash
 cd backend-techzone
 cp .env.example .env
 ```
 
-Configura tus credenciales en `backend-techzone/.env`:
+Configura tus credenciales locales en `backend-techzone/.env`:
 
 ```env
 # --- API de consulta de DNI (opcional) ---
 DNI_API_TOKEN=
 
 # --- Supabase · Proyecto y Storage ---
-SUPABASE_URL=https://<TU-REF>.supabase.co
+SUPABASE_URL=https://<TU-PROYECTO>.supabase.co
 SUPABASE_SERVICE_KEY=<TU_SERVICE_ROLE_KEY>
 SUPABASE_BUCKET=imagenes
 
-# --- Supabase · Base de datos (Transaction Pooler - Puerto 6543) ---
+# --- Supabase · Base de Datos (Transaction Pooler - Puerto 6543) ---
 SUPABASE_DB_URL=jdbc:postgresql://<HOST-POOLER>:6543/postgres
-SUPABASE_DB_USER=postgres.<TU-REF>
+SUPABASE_DB_USER=postgres.<TU-PROYECTO>
 SUPABASE_DB_PASSWORD=<TU_PASSWORD>
 
-# --- Firma criptográfica de JWT (mínimo 32 caracteres) ---
+# --- Firma criptográfica de JWT ---
 JWT_SECRET=b1e55296f1efd85a92828162e126b7462039307a210da139a600e912c62d6cc54e7b4f85eea9c51ef28408d54beca088
 ```
 
-> **Nota:** El backend carga automáticamente las variables del archivo `.env` al iniciar.
+> **Seguridad:** El archivo `.env` y los scripts de respaldo de base de datos se encuentran estrictamente protegidos bajo `.gitignore` y nunca se suben al repositorio.
 
 ---
 
-### 3. Puesta en Marcha de la Base de Datos
+### 3. Puesta en Marcha del Backend (Spring Boot)
 
-Ejecuta el script maestro con la estructura relacional e inserciones iniciales en el SQL Editor de tu proyecto en Supabase:
-```
-backend-techzone/src/main/java/com/tienda/backend_techzone/Data/bd_techzone_supabase.sql
-```
-
----
-
-### 4. Ejecución del Backend (Java 25)
-
-Abre una terminal PowerShell en la carpeta `backend-techzone`:
+En una terminal ubicada en la carpeta `backend-techzone`:
 
 ```powershell
-# Opción A: Script oficial de arranque (detecta Java 25 y valida variables)
+# Opción recomendada: Script oficial (valida Java 25 y variables .env)
 .\iniciar.ps1
 
-# Opción B: Arranque directo con Maven Wrapper
+# Opción alternativa: Arranque directo con Maven Wrapper
 .\mvnw.cmd spring-boot:run
 ```
 
-*El API REST estará disponible en:* `http://localhost:8080`
+*El API REST quedará disponible en:* `http://localhost:8080`
 
 ---
 
-### 5. Ejecución del Frontend (Angular)
+### 4. Puesta en Marcha del Frontend (Angular)
 
-Abre otra terminal en la carpeta `frontend-techzone`:
+En otra terminal ubicada en la carpeta `frontend-techzone`:
 
 ```bash
 # 1. Instalar dependencias
