@@ -3,6 +3,7 @@
 **Curso:** Desarrollo Web Integrado  
 **Ciclo Académico:** 2026-2 · Ciclo VIII  
 **Repositorio Oficial:** [https://github.com/MrCarlos17A/TechZone.git](https://github.com/MrCarlos17A/TechZone.git)  
+**Estado del Pipeline CI:** [![TechZone CI](https://github.com/MrCarlos17A/TechZone/actions/workflows/ci.yml/badge.svg)](https://github.com/MrCarlos17A/TechZone/actions/workflows/ci.yml)  
 
 ---
 
@@ -74,6 +75,8 @@ TechZone/
 │   ├── package.json                            # Dependencias npm (Angular, Tailwind CSS, Chart.js)
 │   └── tailwind.config.js                      # Configuración de diseño responsivo y temas Claro / Oscuro
 │
+├── .github/                                    # Automatización CI/CD con GitHub Actions (pruebas y build)
+│   └── workflows/ci.yml                        # Pipeline de integración continua (Spring Boot + Angular)
 ├── .gitignore                                  # Reglas maestras de exclusión (secretos .env, .sql, target, dist)
 └── README.md                                   # Documentación técnica, diagramas de flujo y manual de despliegue
 ```

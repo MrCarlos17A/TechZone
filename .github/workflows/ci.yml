@@ -1,0 +1,70 @@
+name: TechZone CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend-test:
+    name: Backend CI (Spring Boot & Java 25)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Java 25 (Oracle JDK)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'oracle'
+          java-version: '25'
+          cache: 'maven'
+
+      - name: Dar permisos de ejecucion a Maven Wrapper
+        run: chmod +x backend-techzone/mvnw
+
+      - name: Ejecutar pruebas unitarias del Backend
+        run: |
+          cd backend-techzone
+          ./mvnw clean test
+
+      - name: Compilar y empaquetar artefacto JAR
+        run: |
+          cd backend-techzone
+          ./mvnw package -DskipTests
+
+  frontend-test:
+    name: Frontend CI (Angular 21 & Vitest)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+          cache-dependency-path: frontend-techzone/package-lock.json
+
+      - name: Instalar dependencias del Frontend
+        run: |
+          cd frontend-techzone
+          npm ci
+
+      - name: Ejecutar pruebas unitarias del Frontend
+        run: |
+          cd frontend-techzone
+          npm test -- --watch=false
+
+      - name: Compilar aplicacion Angular para produccion
+        run: |
+          cd frontend-techzone
+          npm run build
