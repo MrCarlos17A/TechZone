@@ -68,3 +68,4 @@ jobs:
         run: |
           cd frontend-techzone
           npm run build
+
