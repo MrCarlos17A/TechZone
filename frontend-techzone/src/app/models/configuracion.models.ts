@@ -52,6 +52,7 @@ export interface DniConsultaResponse {
     nombres: string;
     apellidoPaterno: string;
     apellidoMaterno: string;
+    fechaNacimiento?: string;
     telefono?: string;
     direccion?: string;
     referencia?: string;

@@ -168,6 +168,7 @@ public class DniService {
             String nombres = null;
             String apPaterno = null;
             String apMaterno = null;
+            String fechaNacimiento = extraerFechaNacimiento(json);
 
             if (json.has("nombres")) {
                 nombres = json.path("nombres").asString("");
@@ -175,10 +176,15 @@ public class DniService {
                 apMaterno = json.path("apellidoMaterno").asString("");
             } else if (json.has("success") && json.get("success").asBoolean()) {
                 JsonNode data = json.get("data");
-                if (data != null && data.has("nombres")) {
-                    nombres = data.path("nombres").asString("");
-                    apPaterno = data.path("apellidoPaterno").asString("");
-                    apMaterno = data.path("apellidoMaterno").asString("");
+                if (data != null) {
+                    if (data.has("nombres")) {
+                        nombres = data.path("nombres").asString("");
+                        apPaterno = data.path("apellidoPaterno").asString("");
+                        apMaterno = data.path("apellidoMaterno").asString("");
+                    }
+                    if (fechaNacimiento == null) {
+                        fechaNacimiento = extraerFechaNacimiento(data);
+                    }
                 }
             }
 
@@ -187,7 +193,7 @@ public class DniService {
             }
 
             DocumentoData datos = new DocumentoData(num, nombres, apPaterno, apMaterno,
-                    null, null, null, null, null);
+                    null, fechaNacimiento, null, null, null);
 
             if (cacheApi.size() >= MAX_CACHE) {
                 cacheApi.clear();
@@ -200,5 +206,39 @@ public class DniService {
             return new DocumentoResponse(false,
                     "No se pudo consultar el documento. Puedes escribirlo manualmente.", null, null, false, null, null);
         }
+    }
+
+    private String extraerFechaNacimiento(JsonNode nodo) {
+        if (nodo == null) return null;
+        String[] claves = {"fechaNacimiento", "fecha_nacimiento", "nacimiento", "date_of_birth", "f_nacimiento"};
+        for (String clave : claves) {
+            if (nodo.has(clave) && !nodo.path(clave).isNull()) {
+                String valor = nodo.path(clave).asString("").trim();
+                if (!valor.isBlank()) {
+                    return normalizarFecha(valor);
+                }
+            }
+        }
+        return null;
+    }
+
+    private String normalizarFecha(String raw) {
+        if (raw == null || raw.isBlank()) return null;
+        String limpia = raw.trim();
+        // Caso estandar ISO: YYYY-MM-DD
+        if (limpia.matches("^\\d{4}-\\d{2}-\\d{2}$")) {
+            return limpia;
+        }
+        // Caso DD/MM/YYYY
+        if (limpia.matches("^\\d{2}/\\d{2}/\\d{4}$")) {
+            String[] partes = limpia.split("/");
+            return partes[2] + "-" + partes[1] + "-" + partes[0];
+        }
+        // Caso DD-MM-YYYY
+        if (limpia.matches("^\\d{2}-\\d{2}-\\d{4}$")) {
+            String[] partes = limpia.split("-");
+            return partes[2] + "-" + partes[1] + "-" + partes[0];
+        }
+        return limpia;
     }
 }

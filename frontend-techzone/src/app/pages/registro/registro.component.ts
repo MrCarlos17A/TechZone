@@ -21,6 +21,7 @@ export class RegistroComponent implements OnInit {
   tiposDoc = signal<TipoDocumento[]>([]);
   idTipoDoc = signal<number | undefined>(undefined);
   numDoc = signal('');
+  fechaNacimiento = signal('');
   nombres = signal('');
   apellidoPaterno = signal('');
   apellidoMaterno = signal('');
@@ -89,6 +90,7 @@ export class RegistroComponent implements OnInit {
           this.nombres.set(resp.datos.nombres || '');
           this.apellidoPaterno.set(resp.datos.apellidoPaterno || '');
           this.apellidoMaterno.set(resp.datos.apellidoMaterno || '');
+          if (resp.datos.fechaNacimiento) this.fechaNacimiento.set(resp.datos.fechaNacimiento);
           if (resp.datos.telefono) this.telefono.set(resp.datos.telefono.replace(/\D/g, '').slice(0, 9));
           if (resp.datos.direccion) this.direccion.set(resp.datos.direccion);
           if (resp.datos.referencia) this.referencia.set(resp.datos.referencia);
@@ -196,6 +198,7 @@ export class RegistroComponent implements OnInit {
       password: this.password(),
       idTipoDocumento: this.idTipoDoc(),
       numeroDocumento: this.numDoc().trim() || undefined,
+      fechaNacimiento: this.fechaNacimiento().trim() || undefined,
       direccion: this.direccion().trim().toUpperCase() || undefined,
       referencia: this.referencia().trim().toUpperCase() || undefined,
       idUbigeo: this.idUbigeoSel()

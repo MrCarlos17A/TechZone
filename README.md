@@ -186,6 +186,43 @@ flowchart TD
 
 ---
 
+### 4. Integración y Autocompletado de Identidad (API DNI y RENIEC)
+
+El sistema centraliza la validación de identidad y la extracción automatizada de datos oficiales (nombres, apellidos y fecha de nacimiento) para agilizar los procesos de registro de clientes, actualización de perfiles y alta de colaboradores en el panel administrativo.
+
+```mermaid
+flowchart TD
+    subgraph UI["Formularios Cliente (Angular)"]
+        F_REG["Registro<br/>de Cuenta"]
+        F_PERF["Mi Perfil<br/>de Usuario"]
+        F_COLAB["Alta de<br/>Colaborador"]
+    end
+
+    subgraph BACK["Backend Spring Boot (DniService)"]
+        CACHE{"¿Existe en<br/>BD Local?"}
+        DB_HIT["Obtiene persona<br/>de BD Supabase"]
+        API_CALL["Consulta HTTP<br/>API RENIEC Externa"]
+        NORM["Normaliza Fecha<br/>a YYYY-MM-DD"]
+        DTO["Genera Response<br/>Unificado JSON"]
+    end
+
+    subgraph FRONT_RES["Reactividad UI (Signals)"]
+        AUTO["Autocompleta Nombres,<br/>Apellidos y Fecha"]
+        BADGE["Badge de Validación<br/>RENIEC Activo"]
+    end
+
+    F_REG -->|DNI 8 dígitos| CACHE
+    F_PERF -->|DNI 8 dígitos| CACHE
+    F_COLAB -->|DNI 8 dígitos| CACHE
+
+    CACHE -- Sí --> DB_HIT --> DTO
+    CACHE -- No --> API_CALL --> NORM --> DTO
+
+    DTO --> AUTO --> BADGE
+```
+
+---
+
 ## Matriz de Roles y Permisos (RBAC)
 
 | Rol | Ámbito | Permisos y Capacidades |

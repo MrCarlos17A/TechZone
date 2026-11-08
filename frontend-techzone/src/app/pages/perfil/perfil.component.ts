@@ -28,6 +28,7 @@ export class PerfilComponent implements OnInit {
   modoEdicion = signal(false);
   cargando = signal(true);
   guardando = signal(false);
+  consultandoDni = signal(false);
 
   // Tipos de Documento oficiales
   tiposDoc = signal<TipoDocumento[]>([]);
@@ -256,6 +257,33 @@ export class PerfilComponent implements OnInit {
       error: (err) => {
         this.guardando.set(false);
         this.toastService.error(err.error?.mensaje || 'Error al guardar los cambios');
+      }
+    });
+  }
+
+  consultarDni(): void {
+    const num = (this.formNumeroDoc() || '').trim();
+    if (!num || !/^\d{8}$/.test(num)) {
+      this.toastService.advertencia('Ingresa un número de DNI válido de 8 dígitos');
+      return;
+    }
+    this.consultandoDni.set(true);
+    this.configService.consultarDocumento(this.formTipoDoc(), num).subscribe({
+      next: (resp) => {
+        this.consultandoDni.set(false);
+        if (resp.ok && resp.datos) {
+          if (resp.datos.nombres) this.formNombres.set(resp.datos.nombres);
+          if (resp.datos.apellidoPaterno) this.formApellidoPaterno.set(resp.datos.apellidoPaterno);
+          if (resp.datos.apellidoMaterno) this.formApellidoMaterno.set(resp.datos.apellidoMaterno);
+          if (resp.datos.fechaNacimiento) this.formFechaNacimiento.set(resp.datos.fechaNacimiento);
+          this.toastService.exito('Datos y fecha de nacimiento actualizados con RENIEC');
+        } else {
+          this.toastService.advertencia(resp.mensaje || 'No se encontraron datos automáticos para este DNI');
+        }
+      },
+      error: () => {
+        this.consultandoDni.set(false);
+        this.toastService.error('No se pudo consultar el servicio de DNI');
       }
     });
   }

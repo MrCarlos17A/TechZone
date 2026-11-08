@@ -34,3 +34,4 @@ describe('ToastService', () => {
     expect(service.toasts().length).toBe(0);
   });
 });
+

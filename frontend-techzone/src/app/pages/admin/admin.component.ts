@@ -265,6 +265,22 @@ export class AdminComponent implements OnInit {
   nuevoTipoDocVigente = signal(true);
 
   // ==========================================
+  // MODAL NUEVO COLABORADOR (RENIEC / DNI)
+  // ==========================================
+  mostrarModalNuevoEmpleado = signal(false);
+  guardandoEmpleado = signal(false);
+  consultandoDniColab = signal(false);
+  formColabDni = signal('');
+  formColabNombres = signal('');
+  formColabApPaterno = signal('');
+  formColabApMaterno = signal('');
+  formColabFechaNacimiento = signal('');
+  formColabTelefono = signal('');
+  formColabCargo = signal('ESPECIALISTA');
+  formColabSalario = signal<number>(1800);
+  formColabFechaContrato = signal(new Date().toISOString().substring(0, 10));
+
+  // ==========================================
   // CONFIGURACIÓN DEL SITIO & ASSETS
   // ==========================================
   configForm: ConfiguracionSitio = {};
@@ -2483,6 +2499,104 @@ export class AdminComponent implements OnInit {
         });
       }
     );
+  }
+
+  // ==========================================
+  // MÉTODOS MODAL NUEVO COLABORADOR (RENIEC)
+  // ==========================================
+  abrirModalNuevoEmpleado(): void {
+    this.formColabDni.set('');
+    this.formColabNombres.set('');
+    this.formColabApPaterno.set('');
+    this.formColabApMaterno.set('');
+    this.formColabFechaNacimiento.set('');
+    this.formColabTelefono.set('');
+    this.formColabCargo.set('ESPECIALISTA');
+    this.formColabSalario.set(1800);
+    this.formColabFechaContrato.set(new Date().toISOString().substring(0, 10));
+    this.mostrarModalNuevoEmpleado.set(true);
+  }
+
+  cerrarModalNuevoEmpleado(): void {
+    this.mostrarModalNuevoEmpleado.set(false);
+  }
+
+  consultarDniColaborador(): void {
+    const num = this.formColabDni().trim();
+    if (!num || !/^\d{8}$/.test(num)) {
+      this.toastService.advertencia('Ingresa un número de DNI válido de 8 dígitos');
+      return;
+    }
+    this.consultandoDniColab.set(true);
+    this.configuracionService.consultarDocumento(1, num).subscribe({
+      next: (resp) => {
+        this.consultandoDniColab.set(false);
+        if (resp.ok && resp.datos) {
+          if (resp.datos.nombres) this.formColabNombres.set(resp.datos.nombres);
+          if (resp.datos.apellidoPaterno) this.formColabApPaterno.set(resp.datos.apellidoPaterno);
+          if (resp.datos.apellidoMaterno) this.formColabApMaterno.set(resp.datos.apellidoMaterno);
+          if (resp.datos.fechaNacimiento) this.formColabFechaNacimiento.set(resp.datos.fechaNacimiento);
+          if (resp.datos.telefono) this.formColabTelefono.set(resp.datos.telefono);
+          this.toastService.exito('Datos y fecha de nacimiento obtenidos desde RENIEC');
+        } else {
+          this.toastService.advertencia(resp.mensaje || 'No se encontraron datos automáticos para este DNI');
+        }
+      },
+      error: () => {
+        this.consultandoDniColab.set(false);
+        this.toastService.error('Error al consultar el servicio de DNI');
+      }
+    });
+  }
+
+  guardarNuevoColaborador(): void {
+    const nombres = this.formColabNombres().trim();
+    const apPat = this.formColabApPaterno().trim();
+    const dni = this.formColabDni().trim();
+    if (!nombres || !apPat) {
+      this.toastService.advertencia('Nombres y apellido paterno son obligatorios');
+      return;
+    }
+    this.guardandoEmpleado.set(true);
+
+    const personaPayload: any = {
+      nombres: nombres.toUpperCase(),
+      apellidoPaterno: apPat.toUpperCase(),
+      apellidoMaterno: this.formColabApMaterno().trim().toUpperCase() || undefined,
+      numeroDocumento: dni || undefined,
+      telefono: this.formColabTelefono().trim() || undefined,
+      fechaNacimiento: this.formColabFechaNacimiento().trim() || undefined,
+      tipoDocumento: { idTipoDocumento: 1, descripcion: 'DNI' },
+      vigente: true
+    };
+
+    this.adminService.crearPersona(personaPayload).subscribe({
+      next: (persGuardada) => {
+        const empPayload: any = {
+          persona: { idPersona: persGuardada.idPersona },
+          cargo: this.formColabCargo(),
+          salario: this.formColabSalario(),
+          fechaContrato: this.formColabFechaContrato(),
+          vigente: true
+        };
+        this.adminService.crearEmpleado(empPayload).subscribe({
+          next: () => {
+            this.guardandoEmpleado.set(false);
+            this.cerrarModalNuevoEmpleado();
+            this.recargarEmpleados();
+            this.toastService.exito('Colaborador registrado exitosamente en la nómina');
+          },
+          error: (err) => {
+            this.guardandoEmpleado.set(false);
+            this.toastService.error(err.error?.mensaje || 'Error al registrar el contrato del colaborador');
+          }
+        });
+      },
+      error: (err) => {
+        this.guardandoEmpleado.set(false);
+        this.toastService.error(err.error?.mensaje || 'Error al registrar la persona');
+      }
+    });
   }
 
   eliminarTipoDoc(td: TipoDocumentoAdmin): void {

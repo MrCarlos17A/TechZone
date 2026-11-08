@@ -21,7 +21,18 @@ import java.util.Set;
 public class SupabaseStorageService {
 
     private static final Set<String> EXTENSIONES_VALIDAS = Set.of("jpg", "jpeg", "png", "gif", "webp");
-    private static final HttpClient CLIENTE = HttpClient.newHttpClient();
+    private static volatile HttpClient CLIENTE;
+
+    private static HttpClient getCliente() {
+        if (CLIENTE == null) {
+            synchronized (SupabaseStorageService.class) {
+                if (CLIENTE == null) {
+                    CLIENTE = HttpClient.newHttpClient();
+                }
+            }
+        }
+        return CLIENTE;
+    }
 
     @Value("${supabase.storage.project-url:${supabase.url:}}")
     private String projectUrl;
@@ -76,7 +87,7 @@ public class SupabaseStorageService {
 
         HttpResponse<String> respuesta;
         try {
-            respuesta = CLIENTE.send(request, HttpResponse.BodyHandlers.ofString());
+            respuesta = getCliente().send(request, HttpResponse.BodyHandlers.ofString());
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RuntimeException("Se interrumpio la subida de la imagen");
@@ -116,7 +127,7 @@ public class SupabaseStorageService {
                     .GET()
                     .build();
 
-            HttpResponse<byte[]> resDescarga = CLIENTE.send(reqDescarga, HttpResponse.BodyHandlers.ofByteArray());
+            HttpResponse<byte[]> resDescarga = getCliente().send(reqDescarga, HttpResponse.BodyHandlers.ofByteArray());
             if (resDescarga.statusCode() < 200 || resDescarga.statusCode() >= 300) {
                 log.warn("No se pudo descargar la imagen desde URL: HTTP {}", resDescarga.statusCode());
                 return urlLimpia;
@@ -151,7 +162,7 @@ public class SupabaseStorageService {
                     .POST(HttpRequest.BodyPublishers.ofByteArray(bytes))
                     .build();
 
-            HttpResponse<String> respuesta = CLIENTE.send(request, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> respuesta = getCliente().send(request, HttpResponse.BodyHandlers.ofString());
             if (respuesta.statusCode() >= 200 && respuesta.statusCode() < 300) {
                 String urlPublica = projectUrl + "/storage/v1/object/public/" + bucket + "/" + ruta;
                 log.info("Imagen desde URL subida con exito a Supabase: {}", urlPublica);
@@ -206,7 +217,7 @@ public class SupabaseStorageService {
                     .DELETE()
                     .build();
 
-            HttpResponse<String> respuesta = CLIENTE.send(request, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> respuesta = getCliente().send(request, HttpResponse.BodyHandlers.ofString());
             log.info("Archivo eliminado de Supabase {}: HTTP {}", ruta, respuesta.statusCode());
             return respuesta.statusCode() >= 200 && respuesta.statusCode() < 300;
         } catch (Exception e) {

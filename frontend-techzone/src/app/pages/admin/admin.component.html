@@ -2027,6 +2027,9 @@
               <button (click)="recargarEmpleados()" class="px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 shadow-xs flex items-center gap-1.5 transition-all cursor-pointer">
                 <span class="material-symbols-outlined text-sm">refresh</span> Actualizar
               </button>
+              <button (click)="abrirModalNuevoEmpleado()" class="px-3.5 py-2 rounded-xl text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-md shadow-blue-600/20 flex items-center gap-1.5 transition-all cursor-pointer">
+                <span class="material-symbols-outlined text-sm">person_add</span> Nuevo Colaborador
+              </button>
             </div>
           </div>
 
@@ -4953,6 +4956,163 @@
       </div>
     </div>
   }
+
+    <!-- ============================================================== -->
+  <!-- MODAL: NUEVO COLABORADOR (CONSULTA RENIEC & FECHA NACIMIENTO)   -->
+  <!-- ============================================================== -->
+  @if (mostrarModalNuevoEmpleado()) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 dark:bg-slate-950/80 backdrop-blur-sm animate-fadeIn">
+      <div class="glass-panel w-full max-w-lg rounded-3xl p-6 space-y-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white shadow-2xl max-h-[90vh] overflow-y-auto">
+        <div class="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3">
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-blue-600 dark:text-blue-400">person_add</span>
+            <h3 class="text-base font-bold text-slate-900 dark:text-white font-heading">
+              Alta de Nuevo Colaborador
+            </h3>
+          </div>
+          <button (click)="cerrarModalNuevoEmpleado()" class="text-slate-400 hover:text-slate-700 dark:hover:text-white p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+
+        <!-- Consulta DNI Automática -->
+        <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 space-y-2">
+          <label class="text-[11px] font-bold uppercase text-slate-600 dark:text-slate-400 block">DNI Oficial (RENIEC) *</label>
+          <div class="flex gap-2">
+            <input
+              type="text"
+              maxlength="8"
+              [ngModel]="formColabDni()"
+              (ngModelChange)="formColabDni.set($event)"
+              placeholder="Ingresa 8 dígitos..."
+              class="flex-1 bg-white dark:bg-slate-900 text-xs text-slate-800 dark:text-slate-200 px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500 font-mono"
+            />
+            <button
+              type="button"
+              (click)="consultarDniColaborador()"
+              [disabled]="consultandoDniColab()"
+              class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-1.5 disabled:opacity-50 cursor-pointer shadow-xs whitespace-nowrap">
+              @if (consultandoDniColab()) {
+                <span class="material-symbols-outlined animate-spin text-sm">progress_activity</span>
+              } @else {
+                <span class="material-symbols-outlined text-sm">search</span>
+              }
+              <span>Consultar</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Datos Personales Obtenidos -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="text-[11px] font-bold uppercase text-slate-600 dark:text-slate-400 block mb-1">Nombres *</label>
+            <input
+              type="text"
+              [ngModel]="formColabNombres()"
+              (ngModelChange)="formColabNombres.set($event)"
+              placeholder="Nombres oficiales"
+              class="w-full bg-slate-50 dark:bg-slate-950 text-xs text-slate-900 dark:text-white px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500 uppercase"
+            />
+          </div>
+          <div>
+            <label class="text-[11px] font-bold uppercase text-slate-600 dark:text-slate-400 block mb-1">Apellido Paterno *</label>
+            <input
+              type="text"
+              [ngModel]="formColabApPaterno()"
+              (ngModelChange)="formColabApPaterno.set($event)"
+              placeholder="Apellido paterno"
+              class="w-full bg-slate-50 dark:bg-slate-950 text-xs text-slate-900 dark:text-white px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500 uppercase"
+            />
+          </div>
+          <div>
+            <label class="text-[11px] font-bold uppercase text-slate-600 dark:text-slate-400 block mb-1">Apellido Materno</label>
+            <input
+              type="text"
+              [ngModel]="formColabApMaterno()"
+              (ngModelChange)="formColabApMaterno.set($event)"
+              placeholder="Apellido materno"
+              class="w-full bg-slate-50 dark:bg-slate-950 text-xs text-slate-900 dark:text-white px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500 uppercase"
+            />
+          </div>
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <label class="text-[11px] font-bold uppercase text-slate-600 dark:text-slate-400">Fecha de Nacimiento</label>
+              @if (formColabFechaNacimiento()) {
+                <span class="text-[9px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 px-1.5 py-0.5 rounded border border-emerald-200 dark:border-emerald-800/40">
+                  RENIEC
+                </span>
+              }
+            </div>
+            <input
+              type="date"
+              [ngModel]="formColabFechaNacimiento()"
+              (ngModelChange)="formColabFechaNacimiento.set($event)"
+              class="w-full bg-slate-50 dark:bg-slate-950 text-xs text-slate-900 dark:text-white px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500"
+            />
+          </div>
+        </div>
+
+        <!-- Datos Contractuales y Laborales -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1 border-t border-slate-200 dark:border-slate-800">
+          <div>
+            <label class="text-[11px] font-bold uppercase text-slate-600 dark:text-slate-400 block mb-1">Cargo / Puesto</label>
+            <select
+              [ngModel]="formColabCargo()"
+              (ngModelChange)="formColabCargo.set($event)"
+              class="w-full bg-slate-50 dark:bg-slate-950 text-xs text-slate-900 dark:text-white px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500">
+              <option value="ESPECIALISTA">Especialista</option>
+              <option value="SUPERVISOR">Supervisor</option>
+              <option value="LOGISTICA">Logística / Almacén</option>
+              <option value="SOPORTE">Soporte Técnico</option>
+              <option value="VENTAS">Ventas & Asesoría</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-[11px] font-bold uppercase text-slate-600 dark:text-slate-400 block mb-1">Salario Base (S/)</label>
+            <input
+              type="number"
+              [ngModel]="formColabSalario()"
+              (ngModelChange)="formColabSalario.set($event)"
+              min="1025"
+              step="50"
+              class="w-full bg-slate-50 dark:bg-slate-950 text-xs text-slate-900 dark:text-white px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500 font-mono"
+            />
+          </div>
+          <div>
+            <label class="text-[11px] font-bold uppercase text-slate-600 dark:text-slate-400 block mb-1">Fecha Contrato</label>
+            <input
+              type="date"
+              [ngModel]="formColabFechaContrato()"
+              (ngModelChange)="formColabFechaContrato.set($event)"
+              class="w-full bg-slate-50 dark:bg-slate-950 text-xs text-slate-900 dark:text-white px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500"
+            />
+          </div>
+        </div>
+
+        <div class="flex gap-2 pt-2 justify-end border-t border-slate-200 dark:border-slate-800">
+          <button
+            type="button"
+            (click)="cerrarModalNuevoEmpleado()"
+            class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-300 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 transition-colors cursor-pointer">
+            Cancelar
+          </button>
+          <button
+            type="button"
+            (click)="guardarNuevoColaborador()"
+            [disabled]="guardandoEmpleado()"
+            class="px-5 py-2 rounded-xl text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 transition-all shadow-md shadow-blue-600/30 flex items-center gap-1.5 cursor-pointer disabled:opacity-50">
+            @if (guardandoEmpleado()) {
+              <span class="material-symbols-outlined animate-spin text-sm">progress_activity</span>
+            } @else {
+              <span class="material-symbols-outlined text-sm">save</span>
+            }
+            <span>Guardar Colaborador</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
 
   <!-- ============================================================== -->
   <!-- MODAL: CONFIRMACIÓN CENTRALIZADO (Gestalt & Destructivo)       -->
