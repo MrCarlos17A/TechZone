@@ -1,69 +1,39 @@
 package com.tienda.backend_techzone.Service;
 
 import com.tienda.backend_techzone.Model.Persona;
+import com.tienda.backend_techzone.Model.TipoDocumento;
 import com.tienda.backend_techzone.Repository.PersonaRepository;
 import com.tienda.backend_techzone.Repository.TipoDocumentoRepository;
 import com.tienda.backend_techzone.Repository.UsuarioRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.lang.reflect.Proxy;
 import java.time.LocalDate;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class DniServiceTest {
 
+    @Mock
     private PersonaRepository personaRepository;
-    private UsuarioRepository usuarioRepository;
-    private TipoDocumentoRepository tipoDocumentoRepository;
-    private DniService dniService;
 
-    private Persona personaEncontrada;
+    @Mock
+    private UsuarioRepository usuarioRepository;
+
+    @Mock
+    private TipoDocumentoRepository tipoDocumentoRepository;
+
+    private DniService dniService;
 
     @BeforeEach
     void setUp() {
-        personaEncontrada = null;
-
-        personaRepository = (PersonaRepository) Proxy.newProxyInstance(
-                PersonaRepository.class.getClassLoader(),
-                new Class<?>[]{PersonaRepository.class},
-                (proxy, method, args) -> {
-                    if ("findFirstByTipoDocumentoAndNumeroDocumento".equals(method.getName())) {
-                        return Optional.ofNullable(personaEncontrada);
-                    }
-                    return null;
-                }
-        );
-
-        usuarioRepository = (UsuarioRepository) Proxy.newProxyInstance(
-                UsuarioRepository.class.getClassLoader(),
-                new Class<?>[]{UsuarioRepository.class},
-                (proxy, method, args) -> {
-                    if (method.getReturnType().equals(Optional.class)) {
-                        return Optional.empty();
-                    }
-                    return null;
-                }
-        );
-
-        com.tienda.backend_techzone.Model.TipoDocumento tdDni = new com.tienda.backend_techzone.Model.TipoDocumento();
-        tdDni.setIdTipoDocumento(1L);
-        tdDni.setNombre("DNI");
-
-        tipoDocumentoRepository = (TipoDocumentoRepository) Proxy.newProxyInstance(
-                TipoDocumentoRepository.class.getClassLoader(),
-                new Class<?>[]{TipoDocumentoRepository.class},
-                (proxy, method, args) -> {
-                    if ("findById".equals(method.getName())) {
-                        return Optional.of(tdDni);
-                    }
-                    return Optional.empty();
-                }
-        );
-
         dniService = new DniService(personaRepository, usuarioRepository, tipoDocumentoRepository);
     }
 
@@ -82,6 +52,8 @@ class DniServiceTest {
     @Test
     @DisplayName("Debe retornar datos no encontrados si el usuario no existe")
     void debeRetornarNoEncontradoParaUsuarioInexistente() {
+        when(usuarioRepository.findByCorreo("desconocido@techzone.pe")).thenReturn(Optional.empty());
+
         DniService.MisDatos datos = dniService.obtenerMisDatos("desconocido@techzone.pe");
         assertNotNull(datos);
         assertFalse(datos.ok(), "Debe indicar ok=false para usuario que no existe");
@@ -91,6 +63,10 @@ class DniServiceTest {
     @Test
     @DisplayName("Debe retornar fecha de nacimiento cuando existe en BD local")
     void debeRetornarFechaNacimientoLocal() {
+        TipoDocumento td = new TipoDocumento();
+        td.setIdTipoDocumento(1L);
+        td.setNombre("DNI");
+
         Persona persona = new Persona();
         persona.setIdPersona(5L);
         persona.setNumeroDocumento("45678901");
@@ -98,7 +74,11 @@ class DniServiceTest {
         persona.setApellidoPaterno("Arroyo");
         persona.setApellidoMaterno("Vega");
         persona.setFechaNacimiento(LocalDate.of(1998, 8, 15));
-        this.personaEncontrada = persona;
+
+        when(tipoDocumentoRepository.findById(1L)).thenReturn(Optional.of(td));
+        when(personaRepository.findFirstByTipoDocumentoAndNumeroDocumento(1L, "45678901"))
+                .thenReturn(Optional.of(persona));
+        when(usuarioRepository.findFirstByPersona(persona)).thenReturn(Optional.empty());
 
         DniService.DocumentoResponse resp = dniService.consultarDocumento(1L, "45678901");
 
