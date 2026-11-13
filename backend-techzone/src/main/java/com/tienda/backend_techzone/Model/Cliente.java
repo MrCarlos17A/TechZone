@@ -1,7 +1,10 @@
 package com.tienda.backend_techzone.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -14,6 +17,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Cliente {
 
     @EqualsAndHashCode.Include
@@ -25,6 +29,7 @@ public class Cliente {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_persona")
     @ToString.Exclude
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Persona persona;
 
     @Column(name = "fecha_ultima_compra")
@@ -37,23 +42,8 @@ public class Cliente {
     @Builder.Default
     private Boolean vigente = true;
 
-    @com.fasterxml.jackson.annotation.JsonProperty("nombreCompleto")
+    @JsonProperty("nombreCompleto")
     public String getNombreCompleto() {
         return persona != null ? persona.getNombreCompleto() : null;
     }
-
-    public Long getIdCliente() { return idCliente; }
-    public void setIdCliente(Long idCliente) { this.idCliente = idCliente; }
-
-    public Persona getPersona() { return persona; }
-    public void setPersona(Persona persona) { this.persona = persona; }
-
-    public LocalDateTime getFechaUltimaCompra() { return fechaUltimaCompra; }
-    public void setFechaUltimaCompra(LocalDateTime fechaUltimaCompra) { this.fechaUltimaCompra = fechaUltimaCompra; }
-
-    public BigDecimal getTotalGastado() { return totalGastado; }
-    public void setTotalGastado(BigDecimal totalGastado) { this.totalGastado = totalGastado; }
-
-    public Boolean getVigente() { return vigente; }
-    public void setVigente(Boolean vigente) { this.vigente = vigente; }
 }

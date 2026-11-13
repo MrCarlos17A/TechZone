@@ -1,10 +1,10 @@
 package com.tienda.backend_techzone.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Objects;
 
 @Entity
 @Table(name = "producto_proveedor")
@@ -15,6 +15,7 @@ import java.util.Objects;
 @AllArgsConstructor
 @Builder
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class ProductoProveedor {
 
     @EmbeddedId
@@ -31,59 +32,23 @@ public class ProductoProveedor {
     @MapsId("idProducto")
     @JoinColumn(name = "id_producto")
     @ToString.Exclude
+    @JsonIgnoreProperties({"imagenes", "hibernateLazyInitializer", "handler"})
     private Producto producto;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("idProveedor")
     @JoinColumn(name = "id_proveedor")
     @ToString.Exclude
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Proveedor proveedor;
-
-    public Id getId() {
-        return id;
-    }
-
-    public void setId(Id id) {
-        this.id = id;
-    }
-
-    public BigDecimal getPrecioCompra() {
-        return precioCompra;
-    }
-
-    public void setPrecioCompra(BigDecimal precioCompra) {
-        this.precioCompra = precioCompra;
-    }
-
-    public Integer getTiempoPedidoDias() {
-        return tiempoPedidoDias;
-    }
-
-    public void setTiempoPedidoDias(Integer tiempoPedidoDias) {
-        this.tiempoPedidoDias = tiempoPedidoDias;
-    }
-
-    public Producto getProducto() {
-        return producto;
-    }
-
-    public void setProducto(Producto producto) {
-        this.producto = producto;
-    }
-
-    public Proveedor getProveedor() {
-        return proveedor;
-    }
-
-    public void setProveedor(Proveedor proveedor) {
-        this.proveedor = proveedor;
-    }
 
     @Embeddable
     @Getter
     @Setter
     @NoArgsConstructor
     @AllArgsConstructor
+    @Builder
+    @EqualsAndHashCode
     public static class Id implements Serializable {
 
         @Column(name = "id_producto")
@@ -91,35 +56,5 @@ public class ProductoProveedor {
 
         @Column(name = "id_proveedor")
         private Long idProveedor;
-
-        public Long getIdProducto() {
-            return idProducto;
-        }
-
-        public void setIdProducto(Long idProducto) {
-            this.idProducto = idProducto;
-        }
-
-        public Long getIdProveedor() {
-            return idProveedor;
-        }
-
-        public void setIdProveedor(Long idProveedor) {
-            this.idProveedor = idProveedor;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (!(o instanceof Id)) return false;
-            Id id = (Id) o;
-            return Objects.equals(idProducto, id.idProducto) &&
-                   Objects.equals(idProveedor, id.idProveedor);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(idProducto, idProveedor);
-        }
     }
 }

@@ -15,7 +15,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@com.fasterxml.jackson.annotation.JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class ProductoImagen {
 
     @EqualsAndHashCode.Include
@@ -44,54 +44,6 @@ public class ProductoImagen {
     @Column(name = "etiqueta", length = 100)
     @Builder.Default
     private String etiqueta = "Vista Principal";
-
-    public Long getIdProductoImagen() {
-        return idProductoImagen;
-    }
-
-    public void setIdProductoImagen(Long idProductoImagen) {
-        this.idProductoImagen = idProductoImagen;
-    }
-
-    public Producto getProducto() {
-        return producto;
-    }
-
-    public void setProducto(Producto producto) {
-        this.producto = producto;
-    }
-
-    public String getUrlImagen() {
-        return urlImagen;
-    }
-
-    public void setUrlImagen(String urlImagen) {
-        this.urlImagen = urlImagen;
-    }
-
-    public Boolean getEsPrincipal() {
-        return esPrincipal;
-    }
-
-    public void setEsPrincipal(Boolean esPrincipal) {
-        this.esPrincipal = esPrincipal;
-    }
-
-    public Integer getOrden() {
-        return orden;
-    }
-
-    public void setOrden(Integer orden) {
-        this.orden = orden;
-    }
-
-    public String getEtiqueta() {
-        return etiqueta;
-    }
-
-    public void setEtiqueta(String etiqueta) {
-        this.etiqueta = etiqueta;
-    }
 
     @JsonProperty("idProducto")
     public Long getIdProducto() {

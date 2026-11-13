@@ -1,5 +1,6 @@
 package com.tienda.backend_techzone.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
@@ -16,6 +17,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Venta {
 
     @EqualsAndHashCode.Include
@@ -27,11 +29,13 @@ public class Venta {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_cliente")
     @ToString.Exclude
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Cliente cliente;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_empleado")
     @ToString.Exclude
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Empleado empleado;
 
     @Column(name = "estado", length = 50)
@@ -61,38 +65,4 @@ public class Venta {
     @ToString.Exclude
     @Builder.Default
     private List<Pago> pagos = new ArrayList<>();
-
-    // Getters y Setters explícitos para compatibilidad con cualquier IDE sin plugin Lombok
-    public Long getIdVenta() { return idVenta; }
-    public void setIdVenta(Long idVenta) { this.idVenta = idVenta; }
-
-    public Cliente getCliente() { return cliente; }
-    public void setCliente(Cliente cliente) { this.cliente = cliente; }
-
-    public Empleado getEmpleado() { return empleado; }
-    public void setEmpleado(Empleado empleado) { this.empleado = empleado; }
-
-    public String getEstado() { return estado; }
-    public void setEstado(String estado) { this.estado = estado; }
-
-    public LocalDateTime getFechaVenta() { return fechaVenta; }
-    public void setFechaVenta(LocalDateTime fechaVenta) { this.fechaVenta = fechaVenta; }
-
-    public BigDecimal getSubtotal() { return subtotal; }
-    public void setSubtotal(BigDecimal subtotal) { this.subtotal = subtotal; }
-
-    public BigDecimal getIgv() { return igv; }
-    public void setIgv(BigDecimal igv) { this.igv = igv; }
-
-    public BigDecimal getTotal() { return total; }
-    public void setTotal(BigDecimal total) { this.total = total; }
-
-    public String getDireccionEnvio() { return direccionEnvio; }
-    public void setDireccionEnvio(String direccionEnvio) { this.direccionEnvio = direccionEnvio; }
-
-    public List<DetalleVenta> getDetalles() { return detalles; }
-    public void setDetalles(List<DetalleVenta> detalles) { this.detalles = detalles; }
-
-    public List<Pago> getPagos() { return pagos; }
-    public void setPagos(List<Pago> pagos) { this.pagos = pagos; }
 }

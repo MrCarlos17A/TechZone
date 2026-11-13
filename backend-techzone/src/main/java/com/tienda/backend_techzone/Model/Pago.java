@@ -1,5 +1,6 @@
 package com.tienda.backend_techzone.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Pago {
 
     @EqualsAndHashCode.Include
@@ -25,13 +27,13 @@ public class Pago {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_venta")
     @ToString.Exclude
-    @com.fasterxml.jackson.annotation.JsonIgnoreProperties({"pagos", "detalles", "hibernateLazyInitializer", "handler"})
+    @JsonIgnoreProperties({"pagos", "detalles", "hibernateLazyInitializer", "handler"})
     private Venta venta;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_medio_pago")
     @ToString.Exclude
-    @com.fasterxml.jackson.annotation.JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private MedioPago medioPago;
 
     @Column(name = "monto_pago", precision = 10, scale = 2)

@@ -1,5 +1,6 @@
 package com.tienda.backend_techzone.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
@@ -14,6 +15,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Empleado {
 
     @EqualsAndHashCode.Include
@@ -25,6 +27,7 @@ public class Empleado {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_persona")
     @ToString.Exclude
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Persona persona;
 
     @Column(name = "fecha_contrato")

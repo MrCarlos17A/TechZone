@@ -1,5 +1,6 @@
 package com.tienda.backend_techzone.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -11,9 +12,10 @@ import java.time.LocalDateTime;
 @Setter
 @ToString
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@NoArgsConstructor 
-@AllArgsConstructor 
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Carrito {
 
     @EqualsAndHashCode.Include
@@ -25,18 +27,9 @@ public class Carrito {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_cliente")
     @ToString.Exclude
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Cliente cliente;
 
     @Column(name = "fecha_carrito")
     private LocalDateTime fechaCarrito;
-
-    // Getters y Setters explícitos para compatibilidad con cualquier IDE sin plugin Lombok
-    public Long getIdCarrito() { return idCarrito; }
-    public void setIdCarrito(Long idCarrito) { this.idCarrito = idCarrito; }
-
-    public Cliente getCliente() { return cliente; }
-    public void setCliente(Cliente cliente) { this.cliente = cliente; }
-
-    public LocalDateTime getFechaCarrito() { return fechaCarrito; }
-    public void setFechaCarrito(LocalDateTime fechaCarrito) { this.fechaCarrito = fechaCarrito; }
 }

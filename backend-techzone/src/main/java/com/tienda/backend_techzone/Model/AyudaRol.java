@@ -1,5 +1,6 @@
 package com.tienda.backend_techzone.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -12,6 +13,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class AyudaRol {
 
     @EmbeddedId
@@ -22,11 +24,13 @@ public class AyudaRol {
     @MapsId("idAyuda")
     @JoinColumn(name = "id_ayuda")
     @ToString.Exclude
+    @JsonIgnoreProperties({"roles", "hibernateLazyInitializer", "handler"})
     private CentroAyuda ayuda;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("idRol")
     @JoinColumn(name = "id_rol")
     @ToString.Exclude
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Rol rol;
 }

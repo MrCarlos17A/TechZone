@@ -1,5 +1,6 @@
 package com.tienda.backend_techzone.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Usuario {
 
     @EqualsAndHashCode.Include
@@ -26,11 +28,13 @@ public class Usuario {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_persona")
     @ToString.Exclude
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Persona persona;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_rol")
     @ToString.Exclude
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Rol rol;
 
     @Column(name = "correo", length = 100, unique = true)
@@ -53,7 +57,6 @@ public class Usuario {
     @Column(name = "estado", length = 20)
     private String estado;
 
-    // --- Trazabilidad y control de fuerza bruta (auditoria) ---
     @Column(name = "fecha_creacion")
     private LocalDateTime fechaCreacion;
 
@@ -78,35 +81,4 @@ public class Usuario {
     public boolean estaBloqueado() {
         return bloqueadoHasta != null && bloqueadoHasta.isAfter(LocalDateTime.now());
     }
-
-    // Getters y Setters explícitos para compatibilidad con cualquier IDE / compilador sin plugin Lombok
-    public Long getIdUsuario() { return idUsuario; }
-    public void setIdUsuario(Long idUsuario) { this.idUsuario = idUsuario; }
-
-    public Persona getPersona() { return persona; }
-    public void setPersona(Persona persona) { this.persona = persona; }
-
-    public Rol getRol() { return rol; }
-    public void setRol(Rol rol) { this.rol = rol; }
-
-    public String getCorreo() { return correo; }
-    public void setCorreo(String correo) { this.correo = correo; }
-
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
-
-    public LocalDateTime getFechaUltimoAcceso() { return fechaUltimoAcceso; }
-    public void setFechaUltimoAcceso(LocalDateTime fechaUltimoAcceso) { this.fechaUltimoAcceso = fechaUltimoAcceso; }
-
-    public String getEstado() { return estado; }
-    public void setEstado(String estado) { this.estado = estado; }
-
-    public LocalDateTime getFechaCreacion() { return fechaCreacion; }
-    public void setFechaCreacion(LocalDateTime fechaCreacion) { this.fechaCreacion = fechaCreacion; }
-
-    public Integer getIntentosFallidos() { return intentosFallidos; }
-    public void setIntentosFallidos(Integer intentosFallidos) { this.intentosFallidos = intentosFallidos; }
-
-    public LocalDateTime getBloqueadoHasta() { return bloqueadoHasta; }
-    public void setBloqueadoHasta(LocalDateTime bloqueadoHasta) { this.bloqueadoHasta = bloqueadoHasta; }
 }

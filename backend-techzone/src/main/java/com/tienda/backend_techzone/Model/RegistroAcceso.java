@@ -1,5 +1,6 @@
 package com.tienda.backend_techzone.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class RegistroAcceso {
 
     @Id
@@ -25,6 +27,7 @@ public class RegistroAcceso {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_usuario")
     @ToString.Exclude
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Usuario usuario;
 
     @Column(name = "correo", length = 100)
@@ -55,28 +58,4 @@ public class RegistroAcceso {
         this.motivo = motivo;
         this.fechaHora = LocalDateTime.now();
     }
-
-    public Long getIdAcceso() { return idAcceso; }
-    public void setIdAcceso(Long idAcceso) { this.idAcceso = idAcceso; }
-
-    public Usuario getUsuario() { return usuario; }
-    public void setUsuario(Usuario usuario) { this.usuario = usuario; }
-
-    public String getCorreo() { return correo; }
-    public void setCorreo(String correo) { this.correo = correo; }
-
-    public LocalDateTime getFechaHora() { return fechaHora; }
-    public void setFechaHora(LocalDateTime fechaHora) { this.fechaHora = fechaHora; }
-
-    public String getIp() { return ip; }
-    public void setIp(String ip) { this.ip = ip; }
-
-    public String getAgente() { return agente; }
-    public void setAgente(String agente) { this.agente = agente; }
-
-    public Boolean getExitoso() { return exitoso; }
-    public void setExitoso(Boolean exitoso) { this.exitoso = exitoso; }
-
-    public String getMotivo() { return motivo; }
-    public void setMotivo(String motivo) { this.motivo = motivo; }
 }

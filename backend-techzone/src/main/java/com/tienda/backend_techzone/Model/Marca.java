@@ -1,5 +1,6 @@
 package com.tienda.backend_techzone.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -12,7 +13,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@com.fasterxml.jackson.annotation.JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Marca {
 
     @EqualsAndHashCode.Include
@@ -30,36 +31,4 @@ public class Marca {
     @Column(name = "vigente")
     @Builder.Default
     private Boolean vigente = true;
-
-    public Long getIdMarca() {
-        return idMarca;
-    }
-
-    public void setIdMarca(Long idMarca) {
-        this.idMarca = idMarca;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public String getLogoUrl() {
-        return logoUrl;
-    }
-
-    public void setLogoUrl(String logoUrl) {
-        this.logoUrl = logoUrl;
-    }
-
-    public Boolean getVigente() {
-        return vigente;
-    }
-
-    public void setVigente(Boolean vigente) {
-        this.vigente = vigente;
-    }
 }

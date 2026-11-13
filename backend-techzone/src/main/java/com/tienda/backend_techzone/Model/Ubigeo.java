@@ -1,5 +1,6 @@
 package com.tienda.backend_techzone.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -12,6 +13,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Ubigeo {
 
     @EqualsAndHashCode.Include
@@ -31,20 +33,4 @@ public class Ubigeo {
     @Column(name = "vigente")
     @Builder.Default
     private Boolean vigente = true;
-
-    // Getters y Setters explícitos para compatibilidad con cualquier IDE sin plugin Lombok
-    public Long getIdUbigeo() { return idUbigeo; }
-    public void setIdUbigeo(Long idUbigeo) { this.idUbigeo = idUbigeo; }
-
-    public String getDepartamento() { return departamento; }
-    public void setDepartamento(String departamento) { this.departamento = departamento; }
-
-    public String getProvincia() { return provincia; }
-    public void setProvincia(String provincia) { this.provincia = provincia; }
-
-    public String getDistrito() { return distrito; }
-    public void setDistrito(String distrito) { this.distrito = distrito; }
-
-    public Boolean getVigente() { return vigente; }
-    public void setVigente(Boolean vigente) { this.vigente = vigente; }
 }
