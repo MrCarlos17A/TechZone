@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ProductoService } from '../../services/producto.service';
@@ -21,11 +21,32 @@ export class ProductoDetalleComponent implements OnInit {
 
   producto = signal<Producto | null>(null);
   imagenes = signal<ProductoImagen[]>([]);
-  imagenSeleccionada = signal<string>('');
+  indiceImagenActual = signal<number>(0);
   cantidad = signal<number>(1);
   cargando = signal<boolean>(true);
   agregando = signal<boolean>(false);
   agregadoExitoso = signal<boolean>(false);
+
+  // Computado de la imagen seleccionada activa
+  imagenActual = computed<ProductoImagen | null>(() => {
+    const list = this.imagenes();
+    const idx = this.indiceImagenActual();
+    if (list.length > 0 && idx >= 0 && idx < list.length) {
+      return list[idx];
+    }
+    return null;
+  });
+
+  // URL activa para visualizacion en el visor principal
+  imagenSeleccionadaUrl = computed<string>(() => {
+    const actual = this.imagenActual();
+    if (actual?.urlImagen) return actual.urlImagen;
+    const prod = this.producto();
+    if (prod?.imagenes && prod.imagenes.length > 0) {
+      return prod.imagenes[0].urlImagen;
+    }
+    return '';
+  });
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
@@ -53,15 +74,43 @@ export class ProductoDetalleComponent implements OnInit {
   cargarImagenes(id: number, prod: Producto): void {
     this.productoService.getImagenesProducto(id).subscribe({
       next: (imgs) => {
-        this.imagenes.set(imgs);
-        if (imgs.length > 0) {
-          const principal = imgs.find(i => i.esPrincipal);
-          this.imagenSeleccionada.set(principal ? principal.urlImagen : imgs[0].urlImagen);
+        const ordenadas = [...imgs].sort((a, b) => (a.orden ?? 0) - (b.orden ?? 0));
+        this.imagenes.set(ordenadas);
+        if (ordenadas.length > 0) {
+          const idxPrincipal = ordenadas.findIndex(i => i.esPrincipal);
+          this.indiceImagenActual.set(idxPrincipal >= 0 ? idxPrincipal : 0);
         } else if (prod.imagenes && prod.imagenes.length > 0) {
-          this.imagenSeleccionada.set(prod.imagenes[0].urlImagen);
+          const ordenadasProd = [...prod.imagenes].sort((a, b) => (a.orden ?? 0) - (b.orden ?? 0));
+          this.imagenes.set(ordenadasProd);
+          this.indiceImagenActual.set(0);
+        }
+      },
+      error: () => {
+        if (prod.imagenes && prod.imagenes.length > 0) {
+          const ordenadasProd = [...prod.imagenes].sort((a, b) => (a.orden ?? 0) - (b.orden ?? 0));
+          this.imagenes.set(ordenadasProd);
+          this.indiceImagenActual.set(0);
         }
       }
     });
+  }
+
+  seleccionarImagen(index: number): void {
+    if (index >= 0 && index < this.imagenes().length) {
+      this.indiceImagenActual.set(index);
+    }
+  }
+
+  siguienteImagen(): void {
+    const total = this.imagenes().length;
+    if (total <= 1) return;
+    this.indiceImagenActual.update(idx => (idx + 1) % total);
+  }
+
+  anteriorImagen(): void {
+    const total = this.imagenes().length;
+    if (total <= 1) return;
+    this.indiceImagenActual.update(idx => (idx - 1 + total) % total);
   }
 
   incrementar(): void {
@@ -82,18 +131,21 @@ export class ProductoDetalleComponent implements OnInit {
     if (!prod) return;
 
     if (!this.authService.isAuthenticated()) {
-      alert('Debes iniciar sesión para agregar productos al carrito.');
+      alert('Debes iniciar sesion para agregar productos al carrito.');
       this.router.navigate(['/login']);
       return;
     }
 
     this.agregando.set(true);
+    const imagenUrlParaCarrito = this.imagenSeleccionadaUrl() ||
+      ((prod.imagenes && prod.imagenes.length > 0) ? (prod.imagenes.find(i => i.esPrincipal)?.urlImagen || prod.imagenes[0].urlImagen) : '');
+
     this.carritoService.agregarProducto(prod.idProducto, this.cantidad(), {
       nombre: prod.nombre,
       codigoSku: prod.codigoSku,
       precioVenta: prod.precioVenta,
       stock: prod.stock,
-      imagenUrl: (prod.imagenes && prod.imagenes.length > 0) ? (prod.imagenes.find(i => i.esPrincipal)?.urlImagen || prod.imagenes[0].urlImagen) : ''
+      imagenUrl: imagenUrlParaCarrito
     }).subscribe({
       next: () => {
         this.agregando.set(false);
@@ -112,7 +164,7 @@ export class ProductoDetalleComponent implements OnInit {
     if (!prod) return;
 
     if (!this.authService.isAuthenticated()) {
-      alert('Debes iniciar sesión para realizar compras.');
+      alert('Debes iniciar sesion para realizar compras.');
       this.router.navigate(['/login']);
       return;
     }

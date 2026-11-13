@@ -35,6 +35,30 @@ public class ProductoImagen {
     @Builder.Default
     private Boolean esPrincipal = false;
 
+    @Column(name = "orden")
+    @Builder.Default
+    private Integer orden = 0;
+
+    @Column(name = "etiqueta", length = 100)
+    @Builder.Default
+    private String etiqueta = "Vista Principal";
+
+    public Integer getOrden() {
+        return orden;
+    }
+
+    public void setOrden(Integer orden) {
+        this.orden = orden;
+    }
+
+    public String getEtiqueta() {
+        return etiqueta;
+    }
+
+    public void setEtiqueta(String etiqueta) {
+        this.etiqueta = etiqueta;
+    }
+
     @JsonProperty("idProducto")
     public Long getIdProducto() {
         return producto != null ? producto.getIdProducto() : null;

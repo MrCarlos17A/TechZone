@@ -1,70 +1,161 @@
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
   
-  <!-- Breadcrumb -->
-  <nav class="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 mb-8">
+  <!-- Breadcrumb de Navegacion -->
+  <nav class="flex flex-wrap items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 mb-6">
     <a routerLink="/" class="hover:text-blue-600 dark:hover:text-white transition-colors">Inicio</a>
     <span class="material-symbols-outlined text-sm">chevron_right</span>
-    <a routerLink="/productos" class="hover:text-blue-600 dark:hover:text-white transition-colors">Productos</a>
-    @if (producto()?.categoria) {
+    <a routerLink="/productos" class="hover:text-blue-600 dark:hover:text-white transition-colors">Catalogo</a>
+    @if (producto()?.categoria; as cat) {
       <span class="material-symbols-outlined text-sm">chevron_right</span>
-      <span class="text-blue-600 dark:text-blue-400 font-semibold">{{ producto()?.categoria?.nombre }}</span>
+      <span class="text-blue-600 dark:text-blue-400 font-semibold">{{ cat.nombre }}</span>
+    }
+    @if (producto(); as prod) {
+      <span class="material-symbols-outlined text-sm">chevron_right</span>
+      <span class="text-slate-700 dark:text-slate-300 truncate max-w-xs">{{ prod.nombre }}</span>
     }
   </nav>
 
   @if (cargando()) {
-    <div class="glass-panel rounded-3xl p-8 animate-pulse grid grid-cols-1 md:grid-cols-2 gap-12">
-      <div class="aspect-square bg-slate-200 dark:bg-slate-900 rounded-2xl"></div>
-      <div class="space-y-4">
+    <div class="glass-panel rounded-3xl p-8 animate-pulse grid grid-cols-1 lg:grid-cols-12 gap-10">
+      <div class="lg:col-span-7 flex gap-4">
+        <div class="w-20 space-y-3">
+          <div class="w-20 h-20 bg-slate-200 dark:bg-slate-900 rounded-xl"></div>
+          <div class="w-20 h-20 bg-slate-200 dark:bg-slate-900 rounded-xl"></div>
+          <div class="w-20 h-20 bg-slate-200 dark:bg-slate-900 rounded-xl"></div>
+        </div>
+        <div class="flex-1 aspect-square bg-slate-200 dark:bg-slate-900 rounded-2xl"></div>
+      </div>
+      <div class="lg:col-span-5 space-y-4">
         <div class="h-8 bg-slate-200 dark:bg-slate-900 rounded w-3/4"></div>
         <div class="h-5 bg-slate-200 dark:bg-slate-900 rounded w-1/3"></div>
-        <div class="h-24 bg-slate-200 dark:bg-slate-900 rounded"></div>
+        <div class="h-28 bg-slate-200 dark:bg-slate-900 rounded-2xl"></div>
       </div>
     </div>
   } @else if (producto(); as prod) {
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
       
-      <!-- Gallery Column -->
-      <div class="space-y-4">
-        <div class="glass-panel p-8 rounded-3xl aspect-square flex items-center justify-center relative overflow-hidden bg-white dark:bg-slate-950/40 border border-slate-200 dark:border-slate-800">
-          @if (imagenSeleccionada()) {
-            <img
-              [src]="imagenSeleccionada()"
-              [alt]="prod.nombre"
-              class="max-h-full max-w-full object-contain transition-all duration-300"
-            />
-          } @else {
-            <div class="flex flex-col items-center justify-center text-slate-400 gap-3">
-              <span class="material-symbols-outlined text-7xl text-slate-400 dark:text-slate-600">memory</span>
-              <span class="text-xs text-slate-400 dark:text-slate-500 font-semibold uppercase tracking-wider">TechZone Gaming Hardware</span>
-            </div>
-          }
-        </div>
-
+      <!-- ========================================== -->
+      <!-- COLUMNA IZQUIERDA: GALERIA MULTI-VISTA (ESTILO PROMART) -->
+      <!-- ========================================== -->
+      <div class="lg:col-span-7 flex flex-col md:flex-row gap-4">
+        
+        <!-- Riel Vertical de Miniaturas (Lado Izquierdo) -->
         @if (imagenes().length > 1) {
-          <div class="flex gap-3 overflow-x-auto pb-2">
-            @for (img of imagenes(); track img.idProductoImagen) {
+          <div class="order-2 md:order-1 flex md:flex-col gap-3 overflow-x-auto md:overflow-y-auto max-h-[520px] pb-2 md:pb-0 pr-1 shrink-0 scrollbar-thin">
+            @for (img of imagenes(); track img.idProductoImagen; let idx = $index) {
               <button
-                (click)="imagenSeleccionada.set(img.urlImagen)"
-                class="w-20 h-20 rounded-xl glass-panel p-2 flex-shrink-0 border transition-all cursor-pointer bg-white dark:bg-slate-900"
-                [class.border-blue-500]="imagenSeleccionada() === img.urlImagen"
-                [class.ring-2]="imagenSeleccionada() === img.urlImagen"
-                [class.ring-blue-500/30]="imagenSeleccionada() === img.urlImagen"
-                [class.border-slate-200]="imagenSeleccionada() !== img.urlImagen"
-                [class.dark:border-slate-800]="imagenSeleccionada() !== img.urlImagen">
-                <img [src]="img.urlImagen" class="w-full h-full object-contain" />
+                type="button"
+                (click)="seleccionarImagen(idx)"
+                class="group relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl p-1.5 flex-shrink-0 border-2 transition-all duration-200 cursor-pointer bg-white dark:bg-slate-900 hover:shadow-md"
+                [class.border-orange-500]="indiceImagenActual() === idx"
+                [class.ring-4]="indiceImagenActual() === idx"
+                [class.ring-orange-500/20]="indiceImagenActual() === idx"
+                [class.border-slate-200]="indiceImagenActual() !== idx"
+                [class.dark:border-slate-800]="indiceImagenActual() !== idx"
+                [title]="img.etiqueta || ('Vista ' + (idx + 1))">
+                <img
+                  [src]="img.urlImagen"
+                  [alt]="img.etiqueta || prod.nombre"
+                  class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-200"
+                  loading="lazy"
+                />
+                @if (img.etiqueta) {
+                  <span class="absolute -bottom-1 -right-1 bg-slate-900/90 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full shadow-sm">
+                    {{ idx + 1 }}
+                  </span>
+                }
               </button>
             }
           </div>
         }
+
+        <!-- Visor Central de Imagen Principal -->
+        <div class="order-1 md:order-2 flex-1 glass-panel p-6 sm:p-10 rounded-3xl aspect-square flex flex-col items-center justify-between relative overflow-hidden bg-white dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 shadow-sm">
+          
+          <!-- Badge Superior de Etiqueta del Angulo/Vista -->
+          <div class="w-full flex items-center justify-between z-10">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-slate-900/80 dark:bg-slate-800/90 text-white backdrop-blur-md shadow-sm">
+              <span class="material-symbols-outlined text-sm text-orange-400">photo_camera</span>
+              {{ imagenActual()?.etiqueta || 'Vista Principal' }}
+            </span>
+            @if (imagenes().length > 1) {
+              <span class="text-xs font-mono font-medium text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 px-2.5 py-0.5 rounded-full border border-slate-200 dark:border-slate-800">
+                {{ indiceImagenActual() + 1 }} / {{ imagenes().length }}
+              </span>
+            }
+          </div>
+
+          <!-- Imagen con Controles Laterales -->
+          <div class="relative w-full flex-1 flex items-center justify-center my-2">
+            
+            <!-- Boton Anterior (<) -->
+            @if (imagenes().length > 1) {
+              <button
+                type="button"
+                (click)="anteriorImagen()"
+                aria-label="Imagen anterior"
+                class="absolute left-0 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-white/95 dark:bg-slate-900/95 text-slate-800 dark:text-white shadow-lg border border-slate-200 dark:border-slate-700 flex items-center justify-center hover:bg-orange-500 hover:text-white dark:hover:bg-orange-500 hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer">
+                <span class="material-symbols-outlined text-2xl">chevron_left</span>
+              </button>
+            }
+
+            <!-- Imagen Principal -->
+            @if (imagenSeleccionadaUrl()) {
+              <img
+                [src]="imagenSeleccionadaUrl()"
+                [alt]="(imagenActual()?.etiqueta || prod.nombre)"
+                class="max-h-[380px] max-w-full object-contain transition-all duration-300 drop-shadow-sm select-none"
+              />
+            } @else {
+              <div class="flex flex-col items-center justify-center text-slate-400 gap-3">
+                <span class="material-symbols-outlined text-7xl text-slate-400 dark:text-slate-600">memory</span>
+                <span class="text-xs text-slate-400 dark:text-slate-500 font-semibold uppercase tracking-wider">TechZone Gaming Hardware</span>
+              </div>
+            }
+
+            <!-- Boton Siguiente (>) -->
+            @if (imagenes().length > 1) {
+              <button
+                type="button"
+                (click)="siguienteImagen()"
+                aria-label="Imagen siguiente"
+                class="absolute right-0 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-white/95 dark:bg-slate-900/95 text-slate-800 dark:text-white shadow-lg border border-slate-200 dark:border-slate-700 flex items-center justify-center hover:bg-orange-500 hover:text-white dark:hover:bg-orange-500 hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer">
+                <span class="material-symbols-outlined text-2xl">chevron_right</span>
+              </button>
+            }
+          </div>
+
+          <!-- Bullets / Indicadores de Posicion Inferiores -->
+          @if (imagenes().length > 1) {
+            <div class="flex items-center gap-2 pt-2 z-10">
+              @for (img of imagenes(); track img.idProductoImagen; let idx = $index) {
+                <button
+                  type="button"
+                  (click)="seleccionarImagen(idx)"
+                  [attr.aria-label]="'Ir a imagen ' + (idx + 1)"
+                  class="h-2.5 transition-all duration-300 rounded-full cursor-pointer"
+                  [class.w-7]="indiceImagenActual() === idx"
+                  [class.bg-orange-500]="indiceImagenActual() === idx"
+                  [class.w-2.5]="indiceImagenActual() !== idx"
+                  [class.bg-slate-300]="indiceImagenActual() !== idx"
+                  [class.dark:bg-slate-700]="indiceImagenActual() !== idx">
+                </button>
+              }
+            </div>
+          }
+        </div>
+
       </div>
 
-      <!-- Details Column -->
-      <div class="space-y-6">
+      <!-- ========================================== -->
+      <!-- COLUMNA DERECHA: FICHA DE COMPRA Y DETALLES -->
+      <!-- ========================================== -->
+      <div class="lg:col-span-5 space-y-6">
         
-        <!-- Tags -->
-        <div class="flex items-center gap-3">
+        <!-- Tags de Marca y Stock -->
+        <div class="flex flex-wrap items-center gap-3">
           @if (prod.marca) {
-            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 uppercase tracking-wider">
+            <span class="px-3 py-1 rounded-full text-xs font-bold bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-800 uppercase tracking-wider">
               {{ prod.marca.nombre }}
             </span>
           }
@@ -77,77 +168,143 @@
               Agotado
             </span>
           }
+          @if (prod.codigoSku) {
+            <span class="text-xs text-slate-500 dark:text-slate-400 font-mono">
+              SKU: <strong class="text-slate-700 dark:text-slate-300">{{ prod.codigoSku }}</strong>
+            </span>
+          }
         </div>
 
-        <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white font-heading leading-tight">
+        <!-- Titulo del Producto -->
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white font-heading leading-tight">
           {{ prod.nombre }}
         </h1>
 
-        @if (prod.codigoSku) {
-          <p class="text-xs text-slate-500 dark:text-slate-400">Código SKU: <span class="text-slate-800 dark:text-slate-200 font-mono font-semibold">{{ prod.codigoSku }}</span></p>
-        }
-
-        <!-- Price -->
-        <div class="glass-panel p-5 rounded-2xl flex items-center justify-between border-blue-500/20 bg-blue-500/5 shadow-sm">
-          <div>
-            <span class="text-xs text-slate-500 dark:text-slate-400 block">Precio especial online</span>
-            <span class="text-3xl font-black text-slate-900 dark:text-white font-heading">
-              S/ {{ prod.precioVenta | number:'1.2-2' }}
-            </span>
+        <!-- Bloque de Precio y Promocion Estilo Promart -->
+        <div class="glass-panel p-5 rounded-2xl border-orange-500/20 bg-gradient-to-br from-orange-500/5 to-transparent dark:from-orange-500/10 shadow-sm space-y-3">
+          <div class="flex items-baseline justify-between">
+            <div>
+              <span class="text-xs text-slate-500 dark:text-slate-400 block font-medium">Precio exclusivo online</span>
+              <span class="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white font-heading">
+                S/ {{ prod.precioVenta | number:'1.2-2' }}
+              </span>
+            </div>
+            <div class="text-right">
+              <span class="text-xs text-slate-400 dark:text-slate-500 line-through block">
+                S/ {{ (prod.precioVenta * 1.25) | number:'1.2-2' }}
+              </span>
+              <span class="text-xs font-bold text-orange-600 dark:text-orange-400 bg-orange-100 dark:bg-orange-950/60 px-2 py-0.5 rounded-md">
+                -20% DCTO
+              </span>
+            </div>
           </div>
-          <span class="text-xs text-emerald-600 dark:text-emerald-400 flex items-center gap-1 font-semibold">
-            <span class="material-symbols-outlined text-lg">verified</span> Boleta o Factura
-          </span>
+
+          <!-- Beneficio de Pasarela SIP / Cuotas -->
+          <div class="pt-3 border-t border-orange-200/50 dark:border-orange-900/40 flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300">
+            <span class="px-2 py-0.5 rounded font-black bg-slate-900 text-white text-[10px] tracking-wider">SIP</span>
+            <span>Hasta <strong>6 cuotas sin intereses</strong> con pasarela oficial TechZone.</span>
+          </div>
         </div>
 
-        <!-- Description -->
-        @if (prod.descripcion) {
-          <div>
-            <h3 class="text-sm font-bold uppercase text-slate-700 dark:text-slate-300 mb-2 font-heading">Descripción</h3>
-            <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-line">{{ prod.descripcion }}</p>
+        <!-- Metodos de Entrega (Estilo Promart) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+          <div class="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/60 flex items-start gap-3">
+            <span class="material-symbols-outlined text-emerald-600 dark:text-emerald-400 text-xl shrink-0">local_shipping</span>
+            <div>
+              <strong class="text-slate-900 dark:text-white block font-semibold">Despacho a domicilio</strong>
+              <span class="text-slate-500 dark:text-slate-400">Lima y provincias con entrega asegurada.</span>
+            </div>
           </div>
-        }
+          <div class="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/60 flex items-start gap-3">
+            <span class="material-symbols-outlined text-blue-600 dark:text-blue-400 text-xl shrink-0">storefront</span>
+            <div>
+              <strong class="text-slate-900 dark:text-white block font-semibold">Retiro en tienda</strong>
+              <span class="text-slate-500 dark:text-slate-400">Gratis en nuestro centro de distribucion.</span>
+            </div>
+          </div>
+        </div>
 
-        <!-- Actions -->
+        <!-- Acciones de Compra -->
         @if (prod.stock > 0) {
-          <div class="space-y-4 pt-4 border-t border-slate-200 dark:border-slate-800">
+          <div class="space-y-4 pt-2">
+            
+            <!-- Selector de Cantidad -->
             <div class="flex items-center gap-4">
-              <span class="text-sm text-slate-700 dark:text-slate-300 font-medium">Cantidad:</span>
-              <div class="flex items-center border border-slate-300 dark:border-slate-700 rounded-xl bg-slate-100 dark:bg-slate-900 overflow-hidden">
-                <button (click)="decrementar()" class="px-3.5 py-1.5 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors flex items-center justify-center cursor-pointer">
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">Cantidad:</span>
+              <div class="flex items-center border border-slate-300 dark:border-slate-700 rounded-xl bg-slate-100 dark:bg-slate-900 overflow-hidden shadow-inner">
+                <button
+                  type="button"
+                  (click)="decrementar()"
+                  aria-label="Disminuir cantidad"
+                  class="px-3.5 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors flex items-center justify-center cursor-pointer">
                   <span class="material-symbols-outlined text-base">remove</span>
                 </button>
-                <span class="px-4 py-1.5 text-sm font-semibold text-slate-900 dark:text-white">{{ cantidad() }}</span>
-                <button (click)="incrementar()" class="px-3.5 py-1.5 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors flex items-center justify-center cursor-pointer">
+                <span class="px-5 py-2 text-sm font-bold text-slate-900 dark:text-white min-w-[2.5rem] text-center">
+                  {{ cantidad() }}
+                </span>
+                <button
+                  type="button"
+                  (click)="incrementar()"
+                  aria-label="Aumentar cantidad"
+                  class="px-3.5 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors flex items-center justify-center cursor-pointer">
                   <span class="material-symbols-outlined text-base">add</span>
                 </button>
               </div>
+              <span class="text-xs text-slate-500 dark:text-slate-400">
+                ({{ prod.stock }} disponibles)
+              </span>
             </div>
 
-            <div class="flex flex-col sm:flex-row gap-4 pt-2">
+            <!-- Botones de Accion -->
+            <div class="flex flex-col sm:flex-row gap-3 pt-2">
               <button
+                type="button"
                 (click)="agregarAlCarrito()"
                 [disabled]="agregando()"
-                class="glow-button flex-1 py-3.5 px-6 rounded-xl font-semibold text-white flex items-center justify-center gap-2 cursor-pointer shadow-md">
+                class="flex-1 py-4 px-6 rounded-2xl font-bold text-white bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-orange-500/25">
                 @if (agregando()) {
-                  <span class="material-symbols-outlined animate-spin text-lg">progress_activity</span> Agregando...
+                  <span class="material-symbols-outlined animate-spin text-xl">progress_activity</span> Agregando...
                 } @else if (agregadoExitoso()) {
-                  <span class="material-symbols-outlined text-lg text-emerald-300">check</span> ¡Agregado con éxito!
+                  <span class="material-symbols-outlined text-xl text-emerald-200">check_circle</span> Agregado con Exito!
                 } @else {
-                  <span class="material-symbols-outlined text-lg">shopping_cart</span> Añadir al Carrito
+                  <span class="material-symbols-outlined text-xl">add_shopping_cart</span> Agregar al Carrito
                 }
               </button>
 
               <button
+                type="button"
                 (click)="comprarAhora()"
-                class="flex-1 py-3.5 px-6 rounded-xl font-semibold text-slate-800 dark:text-white bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm">
-                <span class="material-symbols-outlined text-lg text-amber-500">bolt</span> Comprar Ahora
+                class="flex-1 py-4 px-6 rounded-2xl font-bold text-slate-900 dark:text-white bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm">
+                <span class="material-symbols-outlined text-xl text-amber-500">bolt</span> Comprar Ahora
               </button>
             </div>
           </div>
         } @else {
-          <div class="p-4 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-sm text-slate-600 dark:text-slate-400">
-            Este producto se encuentra actualmente agotado. Contáctanos por WhatsApp para consultar la próxima fecha de reingreso.
+          <div class="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-800 dark:text-amber-300 flex items-center gap-2">
+            <span class="material-symbols-outlined text-lg">info</span>
+            Este producto se encuentra temporalmente agotado. Puedes consultar reposicion con un asesor comercial.
+          </div>
+        }
+
+        <!-- Garantia y Tranquilidad de Compra -->
+        <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/40 flex items-center gap-3 text-xs text-slate-600 dark:text-slate-400">
+          <span class="material-symbols-outlined text-2xl text-blue-600 dark:text-blue-400 shrink-0">verified_user</span>
+          <div>
+            <strong class="text-slate-900 dark:text-white block font-semibold">Compra 100% protegida</strong>
+            <span>Garantia oficial de fabricante de 12 meses y cambios directos por fallas de fabrica.</span>
+          </div>
+        </div>
+
+        <!-- Descripcion del Producto -->
+        @if (prod.descripcion) {
+          <div class="pt-4 border-t border-slate-200 dark:border-slate-800">
+            <h3 class="text-sm font-bold uppercase tracking-wider text-slate-900 dark:text-white mb-2 font-heading flex items-center gap-2">
+              <span class="material-symbols-outlined text-base text-orange-500">description</span>
+              Descripcion del Producto
+            </h3>
+            <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-line">
+              {{ prod.descripcion }}
+            </p>
           </div>
         }
 
@@ -155,11 +312,13 @@
 
     </div>
   } @else {
-    <div class="text-center py-20 glass-panel rounded-3xl">
+    <div class="text-center py-20 glass-panel rounded-3xl max-w-xl mx-auto">
+      <span class="material-symbols-outlined text-6xl text-slate-400 mb-4">search_off</span>
       <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">Producto no encontrado</h3>
-      <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">El producto que buscas ya no está disponible o el enlace es incorrecto.</p>
-      <a routerLink="/productos" class="glow-button px-6 py-2.5 rounded-xl text-sm font-semibold text-white">
-        Volver al Catálogo
+      <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">El producto que buscas ya no esta disponible en el catalogo o el enlace es invalido.</p>
+      <a routerLink="/productos" class="glow-button px-6 py-2.5 rounded-xl text-sm font-semibold text-white inline-flex items-center gap-2">
+        <span class="material-symbols-outlined text-base">arrow_back</span>
+        Volver al Catalogo
       </a>
     </div>
   }

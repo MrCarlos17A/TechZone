@@ -15,6 +15,8 @@ export interface ProductoImagen {
   idProductoImagen: number;
   urlImagen: string;
   esPrincipal?: boolean;
+  orden?: number;
+  etiqueta?: string;
   idProducto?: number;
   nombreProducto?: string;
   skuProducto?: string;

@@ -43,7 +43,9 @@ public class ProductoImagenApiController {
     public ResponseEntity<?> subirImagen(
             @PathVariable Long idProducto,
             @RequestParam("archivo") MultipartFile archivo,
-            @RequestParam(value = "esPrincipal", defaultValue = "false") Boolean esPrincipal) {
+            @RequestParam(value = "esPrincipal", defaultValue = "false") Boolean esPrincipal,
+            @RequestParam(value = "orden", defaultValue = "0") Integer orden,
+            @RequestParam(value = "etiqueta", defaultValue = "Vista Principal") String etiqueta) {
         try {
             Producto producto = productoService.obtenerProductoPorId(idProducto);
             String carpeta = producto.getCategoria() != null
@@ -59,6 +61,8 @@ public class ProductoImagenApiController {
                     .producto(producto)
                     .urlImagen(urlPublica)
                     .esPrincipal(esPrincipal)
+                    .orden(orden)
+                    .etiqueta(etiqueta)
                     .build();
 
             ProductoImagen guardada = productoImagenService.crearImagen(imagen);
@@ -76,6 +80,8 @@ public class ProductoImagenApiController {
             Producto producto = productoService.obtenerProductoPorId(idProducto);
             String url = (String) body.get("urlImagen");
             Boolean esPrincipal = Boolean.TRUE.equals(body.get("esPrincipal"));
+            Integer orden = body.get("orden") != null ? Integer.valueOf(body.get("orden").toString()) : 0;
+            String etiqueta = body.get("etiqueta") != null ? (String) body.get("etiqueta") : "Vista Principal";
 
             if (url == null || url.isBlank()) {
                 return ResponseEntity.badRequest().body(Map.of("mensaje", "La URL es obligatoria"));
@@ -91,6 +97,8 @@ public class ProductoImagenApiController {
                     .producto(producto)
                     .urlImagen(urlFinal)
                     .esPrincipal(esPrincipal)
+                    .orden(orden)
+                    .etiqueta(etiqueta)
                     .build();
 
             ProductoImagen guardada = productoImagenService.crearImagen(imagen);
@@ -108,6 +116,8 @@ public class ProductoImagenApiController {
             Long idProducto = body.get("idProducto") != null ? Long.valueOf(body.get("idProducto").toString()) : null;
             String url = (String) body.get("urlImagen");
             Boolean esPrincipal = body.get("esPrincipal") != null ? Boolean.valueOf(body.get("esPrincipal").toString()) : null;
+            Integer orden = body.get("orden") != null ? Integer.valueOf(body.get("orden").toString()) : null;
+            String etiqueta = (String) body.get("etiqueta");
 
             String urlFinal = url;
             if (url != null && !url.isBlank()) {
@@ -123,7 +133,7 @@ public class ProductoImagenApiController {
                 urlFinal = supabaseStorageService.SubirImagenDesdeUrl(url.trim(), carpeta);
             }
 
-            ProductoImagen actualizada = productoImagenService.actualizarCompleto(id, idProducto, urlFinal, esPrincipal);
+            ProductoImagen actualizada = productoImagenService.actualizarCompleto(id, idProducto, urlFinal, esPrincipal, orden, etiqueta);
             return ResponseEntity.ok(actualizada);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(Map.of("mensaje", e.getMessage()));

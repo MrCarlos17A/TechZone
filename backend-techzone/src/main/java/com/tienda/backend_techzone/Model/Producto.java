@@ -60,6 +60,7 @@ public class Producto {
     private Boolean vigente = true;
 
     @OneToMany(mappedBy = "producto", fetch = FetchType.LAZY)
+    @OrderBy("orden ASC, idProductoImagen ASC")
     @ToString.Exclude
     @Builder.Default
     private List<ProductoImagen> imagenes = new ArrayList<>();

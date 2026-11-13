@@ -24,7 +24,7 @@ public class ProductoImagenService {
         if (idProducto == null) {
             return productoImagenRepository.findAllConProducto();
         }
-        return productoImagenRepository.findByProductoIdProducto(idProducto);
+        return productoImagenRepository.findByProductoIdProductoOrderByOrdenAsc(idProducto);
     }
 
     public List<ProductoImagen> listarPorProducto(Long idProducto) {
@@ -68,7 +68,7 @@ public class ProductoImagenService {
     }
 
     @Transactional
-    public ProductoImagen actualizarCompleto(Long id, Long idProducto, String url, Boolean esPrincipal) {
+    public ProductoImagen actualizarCompleto(Long id, Long idProducto, String url, Boolean esPrincipal, Integer orden, String etiqueta) {
         ProductoImagen existente = ObtenerImagenPorId(id);
         if (idProducto != null) {
             Producto producto = productoRepository.findById(idProducto)
@@ -86,7 +86,17 @@ public class ProductoImagenService {
         } else if (esPrincipal != null) {
             existente.setEsPrincipal(esPrincipal);
         }
+        if (orden != null) {
+            existente.setOrden(orden);
+        }
+        if (etiqueta != null && !etiqueta.isBlank()) {
+            existente.setEtiqueta(etiqueta.trim());
+        }
         return productoImagenRepository.save(existente);
+    }
+
+    public ProductoImagen actualizarCompleto(Long id, Long idProducto, String url, Boolean esPrincipal) {
+        return actualizarCompleto(id, idProducto, url, esPrincipal, null, null);
     }
 
     @Transactional
