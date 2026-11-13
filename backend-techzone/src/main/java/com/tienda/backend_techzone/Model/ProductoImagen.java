@@ -3,16 +3,12 @@ package com.tienda.backend_techzone.Model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import java.util.Objects;
 
 @Entity
 @Table(name = "producto_imagen")
-@ToString
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class ProductoImagen {
 
-    @EqualsAndHashCode.Include
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_producto_imagen", nullable = false)
@@ -20,7 +16,6 @@ public class ProductoImagen {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_producto")
-    @ToString.Exclude
     @JsonIgnoreProperties({"imagenes", "hibernateLazyInitializer", "handler"})
     private Producto producto;
 
@@ -171,5 +166,29 @@ public class ProductoImagen {
     @JsonProperty("marcaProducto")
     public String getMarcaProducto() {
         return (producto != null && producto.getMarca() != null) ? producto.getMarca().getNombre() : null;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ProductoImagen that = (ProductoImagen) o;
+        return Objects.equals(idProductoImagen, that.idProductoImagen);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(idProductoImagen);
+    }
+
+    @Override
+    public String toString() {
+        return "ProductoImagen{" +
+                "idProductoImagen=" + idProductoImagen +
+                ", urlImagen='" + urlImagen + '\'' +
+                ", esPrincipal=" + esPrincipal +
+                ", orden=" + orden +
+                ", etiqueta='" + etiqueta + '\'' +
+                '}';
     }
 }

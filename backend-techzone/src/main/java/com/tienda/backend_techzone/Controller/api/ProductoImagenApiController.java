@@ -57,13 +57,7 @@ public class ProductoImagenApiController {
                 return ResponseEntity.badRequest().body(Map.of("mensaje", "No se envio ningun archivo"));
             }
 
-            ProductoImagen imagen = ProductoImagen.builder()
-                    .producto(producto)
-                    .urlImagen(urlPublica)
-                    .esPrincipal(esPrincipal)
-                    .orden(orden)
-                    .etiqueta(etiqueta)
-                    .build();
+            ProductoImagen imagen = new ProductoImagen(null, producto, urlPublica, esPrincipal, orden, etiqueta);
 
             ProductoImagen guardada = productoImagenService.crearImagen(imagen);
             return ResponseEntity.status(201).body(guardada);
@@ -93,13 +87,7 @@ public class ProductoImagenApiController {
 
             String urlFinal = supabaseStorageService.SubirImagenDesdeUrl(url.trim(), carpeta);
 
-            ProductoImagen imagen = ProductoImagen.builder()
-                    .producto(producto)
-                    .urlImagen(urlFinal)
-                    .esPrincipal(esPrincipal)
-                    .orden(orden)
-                    .etiqueta(etiqueta)
-                    .build();
+            ProductoImagen imagen = new ProductoImagen(null, producto, urlFinal, esPrincipal, orden, etiqueta);
 
             ProductoImagen guardada = productoImagenService.crearImagen(imagen);
             return ResponseEntity.status(201).body(guardada);
