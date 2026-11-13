@@ -39,6 +39,46 @@ public class ProductoProveedor {
     @ToString.Exclude
     private Proveedor proveedor;
 
+    public Id getId() {
+        return id;
+    }
+
+    public void setId(Id id) {
+        this.id = id;
+    }
+
+    public BigDecimal getPrecioCompra() {
+        return precioCompra;
+    }
+
+    public void setPrecioCompra(BigDecimal precioCompra) {
+        this.precioCompra = precioCompra;
+    }
+
+    public Integer getTiempoPedidoDias() {
+        return tiempoPedidoDias;
+    }
+
+    public void setTiempoPedidoDias(Integer tiempoPedidoDias) {
+        this.tiempoPedidoDias = tiempoPedidoDias;
+    }
+
+    public Producto getProducto() {
+        return producto;
+    }
+
+    public void setProducto(Producto producto) {
+        this.producto = producto;
+    }
+
+    public Proveedor getProveedor() {
+        return proveedor;
+    }
+
+    public void setProveedor(Proveedor proveedor) {
+        this.proveedor = proveedor;
+    }
+
     @Embeddable
     @Getter
     @Setter
@@ -51,6 +91,22 @@ public class ProductoProveedor {
 
         @Column(name = "id_proveedor")
         private Long idProveedor;
+
+        public Long getIdProducto() {
+            return idProducto;
+        }
+
+        public void setIdProducto(Long idProducto) {
+            this.idProducto = idProducto;
+        }
+
+        public Long getIdProveedor() {
+            return idProveedor;
+        }
+
+        public void setIdProveedor(Long idProveedor) {
+            this.idProveedor = idProveedor;
+        }
 
         @Override
         public boolean equals(Object o) {

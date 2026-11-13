@@ -3,16 +3,18 @@ package com.tienda.backend_techzone.Service;
 import com.tienda.backend_techzone.Model.ProductoProveedor;
 import com.tienda.backend_techzone.Model.ProductoProveedor.Id;
 import com.tienda.backend_techzone.Repository.ProductoProveedorRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class ProductoProveedorService {
 
     private final ProductoProveedorRepository productoProveedorRepository;
+
+    public ProductoProveedorService(ProductoProveedorRepository productoProveedorRepository) {
+        this.productoProveedorRepository = productoProveedorRepository;
+    }
 
     public List<ProductoProveedor> ListarPorProducto(Long idProducto) {
         if (idProducto == null) {

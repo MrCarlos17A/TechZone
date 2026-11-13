@@ -3,17 +3,13 @@ package com.tienda.backend_techzone.Model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Entity
 @Table(name = "producto_imagen")
-@Getter
-@Setter
 @ToString
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class ProductoImagen {
 
     @EqualsAndHashCode.Include
@@ -32,16 +28,57 @@ public class ProductoImagen {
     private String urlImagen;
 
     @Column(name = "es_principal")
-    @Builder.Default
     private Boolean esPrincipal = false;
 
     @Column(name = "orden")
-    @Builder.Default
     private Integer orden = 0;
 
     @Column(name = "etiqueta", length = 100)
-    @Builder.Default
     private String etiqueta = "Vista Principal";
+
+    public ProductoImagen() {
+    }
+
+    public ProductoImagen(Long idProductoImagen, Producto producto, String urlImagen, Boolean esPrincipal, Integer orden, String etiqueta) {
+        this.idProductoImagen = idProductoImagen;
+        this.producto = producto;
+        this.urlImagen = urlImagen;
+        this.esPrincipal = esPrincipal != null ? esPrincipal : false;
+        this.orden = orden != null ? orden : 0;
+        this.etiqueta = etiqueta != null ? etiqueta : "Vista Principal";
+    }
+
+    public Long getIdProductoImagen() {
+        return idProductoImagen;
+    }
+
+    public void setIdProductoImagen(Long idProductoImagen) {
+        this.idProductoImagen = idProductoImagen;
+    }
+
+    public Producto getProducto() {
+        return producto;
+    }
+
+    public void setProducto(Producto producto) {
+        this.producto = producto;
+    }
+
+    public String getUrlImagen() {
+        return urlImagen;
+    }
+
+    public void setUrlImagen(String urlImagen) {
+        this.urlImagen = urlImagen;
+    }
+
+    public Boolean getEsPrincipal() {
+        return esPrincipal;
+    }
+
+    public void setEsPrincipal(Boolean esPrincipal) {
+        this.esPrincipal = esPrincipal;
+    }
 
     public Integer getOrden() {
         return orden;
@@ -57,6 +94,53 @@ public class ProductoImagen {
 
     public void setEtiqueta(String etiqueta) {
         this.etiqueta = etiqueta;
+    }
+
+    public static ProductoImagenBuilder builder() {
+        return new ProductoImagenBuilder();
+    }
+
+    public static class ProductoImagenBuilder {
+        private Long idProductoImagen;
+        private Producto producto;
+        private String urlImagen;
+        private Boolean esPrincipal = false;
+        private Integer orden = 0;
+        private String etiqueta = "Vista Principal";
+
+        public ProductoImagenBuilder idProductoImagen(Long idProductoImagen) {
+            this.idProductoImagen = idProductoImagen;
+            return this;
+        }
+
+        public ProductoImagenBuilder producto(Producto producto) {
+            this.producto = producto;
+            return this;
+        }
+
+        public ProductoImagenBuilder urlImagen(String urlImagen) {
+            this.urlImagen = urlImagen;
+            return this;
+        }
+
+        public ProductoImagenBuilder esPrincipal(Boolean esPrincipal) {
+            this.esPrincipal = esPrincipal;
+            return this;
+        }
+
+        public ProductoImagenBuilder orden(Integer orden) {
+            this.orden = orden;
+            return this;
+        }
+
+        public ProductoImagenBuilder etiqueta(String etiqueta) {
+            this.etiqueta = etiqueta;
+            return this;
+        }
+
+        public ProductoImagen build() {
+            return new ProductoImagen(idProductoImagen, producto, urlImagen, esPrincipal, orden, etiqueta);
+        }
     }
 
     @JsonProperty("idProducto")

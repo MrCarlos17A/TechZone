@@ -4,21 +4,29 @@ import com.tienda.backend_techzone.Model.ProductoImagen;
 import com.tienda.backend_techzone.Model.Producto;
 import com.tienda.backend_techzone.Repository.ProductoImagenRepository;
 import com.tienda.backend_techzone.Repository.ProductoRepository;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-@Slf4j
 @Service
-@RequiredArgsConstructor
 public class ProductoImagenService {
+
+    private static final Logger log = LoggerFactory.getLogger(ProductoImagenService.class);
 
     private final ProductoImagenRepository productoImagenRepository;
     private final ProductoRepository productoRepository;
     private final SupabaseStorageService supabaseStorageService;
+
+    public ProductoImagenService(ProductoImagenRepository productoImagenRepository,
+                                 ProductoRepository productoRepository,
+                                 SupabaseStorageService supabaseStorageService) {
+        this.productoImagenRepository = productoImagenRepository;
+        this.productoRepository = productoRepository;
+        this.supabaseStorageService = supabaseStorageService;
+    }
 
     public List<ProductoImagen> ListarImagenesPorProducto(Long idProducto) {
         if (idProducto == null) {
@@ -126,7 +134,7 @@ public class ProductoImagenService {
             try {
                 supabaseStorageService.EliminarArchivo(existente.getUrlImagen());
             } catch (Exception e) {
-                log.warn("No se pudo eliminar archivo físico de Supabase para imagen {}: {}", id, e.getMessage());
+                log.warn("No se pudo eliminar archivo fisico de Supabase para imagen {}: {}", id, e.getMessage());
             }
             productoImagenRepository.deleteById(id);
         }

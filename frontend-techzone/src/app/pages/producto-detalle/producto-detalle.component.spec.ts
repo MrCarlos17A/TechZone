@@ -114,3 +114,4 @@ describe('ProductoDetalleComponent - Galeria Estilo Promart', () => {
     expect(component.cantidad()).toBe(1);
   });
 });
+
