@@ -3,12 +3,22 @@ package com.tienda.backend_techzone.Model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import java.util.Objects;
+import lombok.*;
+import java.math.BigDecimal;
 
 @Entity
 @Table(name = "producto_imagen")
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@com.fasterxml.jackson.annotation.JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class ProductoImagen {
 
+    @EqualsAndHashCode.Include
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_producto_imagen", nullable = false)
@@ -16,6 +26,7 @@ public class ProductoImagen {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_producto")
+    @ToString.Exclude
     @JsonIgnoreProperties({"imagenes", "hibernateLazyInitializer", "handler"})
     private Producto producto;
 
@@ -23,25 +34,16 @@ public class ProductoImagen {
     private String urlImagen;
 
     @Column(name = "es_principal")
+    @Builder.Default
     private Boolean esPrincipal = false;
 
     @Column(name = "orden")
+    @Builder.Default
     private Integer orden = 0;
 
     @Column(name = "etiqueta", length = 100)
+    @Builder.Default
     private String etiqueta = "Vista Principal";
-
-    public ProductoImagen() {
-    }
-
-    public ProductoImagen(Long idProductoImagen, Producto producto, String urlImagen, Boolean esPrincipal, Integer orden, String etiqueta) {
-        this.idProductoImagen = idProductoImagen;
-        this.producto = producto;
-        this.urlImagen = urlImagen;
-        this.esPrincipal = esPrincipal != null ? esPrincipal : false;
-        this.orden = orden != null ? orden : 0;
-        this.etiqueta = etiqueta != null ? etiqueta : "Vista Principal";
-    }
 
     public Long getIdProductoImagen() {
         return idProductoImagen;
@@ -91,53 +93,6 @@ public class ProductoImagen {
         this.etiqueta = etiqueta;
     }
 
-    public static ProductoImagenBuilder builder() {
-        return new ProductoImagenBuilder();
-    }
-
-    public static class ProductoImagenBuilder {
-        private Long idProductoImagen;
-        private Producto producto;
-        private String urlImagen;
-        private Boolean esPrincipal = false;
-        private Integer orden = 0;
-        private String etiqueta = "Vista Principal";
-
-        public ProductoImagenBuilder idProductoImagen(Long idProductoImagen) {
-            this.idProductoImagen = idProductoImagen;
-            return this;
-        }
-
-        public ProductoImagenBuilder producto(Producto producto) {
-            this.producto = producto;
-            return this;
-        }
-
-        public ProductoImagenBuilder urlImagen(String urlImagen) {
-            this.urlImagen = urlImagen;
-            return this;
-        }
-
-        public ProductoImagenBuilder esPrincipal(Boolean esPrincipal) {
-            this.esPrincipal = esPrincipal;
-            return this;
-        }
-
-        public ProductoImagenBuilder orden(Integer orden) {
-            this.orden = orden;
-            return this;
-        }
-
-        public ProductoImagenBuilder etiqueta(String etiqueta) {
-            this.etiqueta = etiqueta;
-            return this;
-        }
-
-        public ProductoImagen build() {
-            return new ProductoImagen(idProductoImagen, producto, urlImagen, esPrincipal, orden, etiqueta);
-        }
-    }
-
     @JsonProperty("idProducto")
     public Long getIdProducto() {
         return producto != null ? producto.getIdProducto() : null;
@@ -154,7 +109,7 @@ public class ProductoImagen {
     }
 
     @JsonProperty("precioProducto")
-    public java.math.BigDecimal getPrecioProducto() {
+    public BigDecimal getPrecioProducto() {
         return producto != null ? producto.getPrecioVenta() : null;
     }
 
@@ -166,29 +121,5 @@ public class ProductoImagen {
     @JsonProperty("marcaProducto")
     public String getMarcaProducto() {
         return (producto != null && producto.getMarca() != null) ? producto.getMarca().getNombre() : null;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ProductoImagen that = (ProductoImagen) o;
-        return Objects.equals(idProductoImagen, that.idProductoImagen);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(idProductoImagen);
-    }
-
-    @Override
-    public String toString() {
-        return "ProductoImagen{" +
-                "idProductoImagen=" + idProductoImagen +
-                ", urlImagen='" + urlImagen + '\'' +
-                ", esPrincipal=" + esPrincipal +
-                ", orden=" + orden +
-                ", etiqueta='" + etiqueta + '\'' +
-                '}';
     }
 }
