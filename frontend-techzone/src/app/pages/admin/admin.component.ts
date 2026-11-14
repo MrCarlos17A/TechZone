@@ -306,7 +306,7 @@ export class AdminComponent implements OnInit {
   previewLogoUrl = signal<string | null>(null);
   previewLibroUrl = signal<string | null>(null);
   pestanaLogo = signal<'archivo' | 'url'>('archivo');
-  readonly LOGO_OFICIAL_BASE = 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/configurtacion_sitio/TechZone.png';
+  readonly LOGO_OFICIAL_BASE = 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/configurtacion_sitio/TechZone.webp';
 
   // ==========================================
   // PAGINACIÓN Y FILTROS REACTIVOS (Unificado a 15 por página)

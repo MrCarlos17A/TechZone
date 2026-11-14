@@ -26,7 +26,7 @@ export class HomeComponent implements OnInit {
       badge: 'Temporada Gaming 2026',
       gradient: 'from-blue-950/80 via-slate-950 to-indigo-950/80',
       icon: 'memory',
-      image: 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/configurtacion_sitio/Hero1.png'
+      image: 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/configurtacion_sitio/Hero1.webp'
     },
     {
       title: 'Tarjetas Gráficas de Última Generación',
@@ -34,7 +34,7 @@ export class HomeComponent implements OnInit {
       badge: 'Nuevos Arribos',
       gradient: 'from-indigo-950/80 via-slate-950 to-cyan-950/80',
       icon: 'developer_board',
-      image: 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/configurtacion_sitio/Hero2.png'
+      image: 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/configurtacion_sitio/Hero2.webp'
     },
     {
       title: 'Monitores de Alta Tasa de Refresco',
@@ -42,7 +42,7 @@ export class HomeComponent implements OnInit {
       badge: 'Visual Ultra Precisa',
       gradient: 'from-cyan-950/80 via-slate-950 to-blue-950/80',
       icon: 'desktop_windows',
-      image: 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/configurtacion_sitio/Hero3.png'
+      image: 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/configurtacion_sitio/Hero3.webp'
     }
   ];
   slideActivo = signal(0);

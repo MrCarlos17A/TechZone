@@ -25,7 +25,7 @@ public class ConfiguracionSitio {
 
     @Column(name = "logo_url", length = 500)
     @Builder.Default
-    private String logoUrl = "https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/configurtacion_sitio/TechZone.png";
+    private String logoUrl = "https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/configurtacion_sitio/TechZone.webp";
 
     @Column(length = 160)
     @Builder.Default
@@ -89,7 +89,7 @@ public class ConfiguracionSitio {
 
     @Column(name = "libro_reclamaciones_img", length = 500)
     @Builder.Default
-    private String libroReclamacionesImg = "https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/configurtacion_sitio/Libro_de_Reclamaciones.png";
+    private String libroReclamacionesImg = "https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/configurtacion_sitio/Libro_de_Reclamaciones.webp";
 
     @Column(name = "libro_reclamaciones_url", length = 500)
     @Builder.Default

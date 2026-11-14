@@ -594,19 +594,19 @@ INSERT INTO categoria (id_categoria, nombre, vigente) VALUES
 
 -- Marcas con logos oficiales
 INSERT INTO marca (id_marca, nombre, vigente, logo_url) VALUES
-(1,  'ASUS',      TRUE, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/marcas/ASUS.png'),
-(2,  'MSI',       TRUE, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/marcas/MSI.png'),
-(3,  'GIGABYTE',  TRUE, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/marcas/GIGABYTE.png'),
-(4,  'CORSAIR',   TRUE, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/marcas/CORSAIR.png'),
-(5,  'REDRAGON',  TRUE, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/marcas/REDRAGON.png'),
-(6,  'Logitech',  TRUE, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/marcas/Logitech.png'),
-(7,  'Kingston',  TRUE, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/marcas/Kingston.png'),
-(8,  'ALIENWARE', TRUE, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/marcas/ALIENWARE.png'),
-(9,  'TOSHIBA',   TRUE, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/marcas/TOSHIBA.png'),
-(10, 'MICRONICS', TRUE, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/marcas/MICRONICS.png'),
-(11, 'INTEL',     TRUE, 'https://upload.wikimedia.org/wikipedia/commons/7/7d/Intel_logo_%282020%29.svg'),
-(12, 'AMD',       TRUE, 'https://upload.wikimedia.org/wikipedia/commons/7/7c/AMD_Logo.svg'),
-(13, 'SAMSUNG',   TRUE, 'https://upload.wikimedia.org/wikipedia/commons/2/24/Samsung_Logo.svg'),
+(1,  'ASUS',      TRUE, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/marcas/ASUS.webp'),
+(2,  'MSI',       TRUE, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/marcas/MSI.webp'),
+(3,  'GIGABYTE',  TRUE, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/marcas/GIGABYTE.webp'),
+(4,  'CORSAIR',   TRUE, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/marcas/CORSAIR.webp'),
+(5,  'REDRAGON',  TRUE, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/marcas/REDRAGON.webp'),
+(6,  'Logitech',  TRUE, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/marcas/LOGITECH.webp'),
+(7,  'Kingston',  TRUE, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/marcas/KINGSTON.webp'),
+(8,  'ALIENWARE', TRUE, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/marcas/ALIENWARE.webp'),
+(9,  'TOSHIBA',   TRUE, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/marcas/TOSHIBA.webp'),
+(10, 'MICRONICS', TRUE, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/marcas/MICRONICS.webp'),
+(11, 'INTEL',     TRUE, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/marcas/INTEL.webp'),
+(12, 'AMD',       TRUE, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/marcas/AMD.webp'),
+(13, 'SAMSUNG',   TRUE, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/marcas/SAMSUNG.webp'),
 (14, 'RAZER',     TRUE, 'https://upload.wikimedia.org/wikipedia/en/thumb/4/40/Razer_snake_logo.svg/800px-Razer_snake_logo.svg.png'),
 (15, 'NZXT',      TRUE, 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/NZXT_logo.svg/1200px-NZXT_logo.svg.png');
 
@@ -700,366 +700,165 @@ INSERT INTO producto (id_producto, id_marca, id_categoria, codigo_sku, nombre,
 
 -- Galeria multi-vista de productos (estilo Promart) con angulos y etiquetas
 INSERT INTO producto_imagen (id_producto_imagen, id_producto, url_imagen, es_principal, orden, etiqueta) VALUES
-(1, 1, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/monitores/ASUS-27.png', TRUE, 1, 'Vista Frontal QHD'),
-(2, 1, 'https://dlcdnwebimgs.asus.com/gain/9F3FEBD0-A3A4-4A2B-8AC6-B79BC27885A1/w800', FALSE, 2, 'Ajuste de Altura y Giro'),
-(3, 1, 'https://dlcdnwebimgs.asus.com/gain/D2165038-04D7-4934-8451-EE273FE74B64/w800', FALSE, 3, 'Panel Trasero y Puertos'),
-(4, 2, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/monitores/ASUS-34.png', TRUE, 1, 'Curvatura 1500R UltraWide'),
-(5, 2, 'https://dlcdnwebimgs.asus.com/gain/5B9CF0E9-BE29-4592-A23C-A77E2A9B9294/w800', FALSE, 2, 'Diseño Trasero Blindado'),
-(6, 2, 'https://dlcdnwebimgs.asus.com/gain/B2496C37-DF49-43A7-BA1C-41F59B7373BE/w800', FALSE, 3, 'Conectividad Dual I/O'),
-(7, 3, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/monitores/MSI-27.png', TRUE, 1, 'Panel Cuántico QD-OLED'),
-(8, 3, 'https://asset.msi.com/resize/image/global/product/product_170442385108006e12e132e01dfdb8cfdca0a5eb57.png62405b38c58fe0f07fcef2367d8a9ba1/600.png', FALSE, 2, 'Perfil Slim 4.5mm'),
-(9, 3, 'https://asset.msi.com/resize/image/global/product/product_17044238515c1feebba02409745d24b6e512411995.png62405b38c58fe0f07fcef2367d8a9ba1/600.png', FALSE, 3, 'Refrigeración Graphene Pasiva'),
-(10, 4, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/monitores/GiGABYTE-27.png', TRUE, 1, 'Panel Super Speed IPS'),
-(11, 4, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/monitores/gigabyte-gs27fa-angulo.svg', FALSE, 2, 'Ángulo de Visión 178°'),
-(12, 4, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/monitores/gigabyte-gs27fa-puertos.svg', FALSE, 3, 'Entradas de Video y Audio'),
-(13, 5, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/monitores/samsung-g7-frontal.svg', TRUE, 1, 'Inmersión Máxima 1000R'),
-(14, 5, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/monitores/samsung-g7-trasera.svg', FALSE, 2, 'Iluminación Esférica CoreSync'),
-(15, 5, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/monitores/samsung-g7-conectores.svg', FALSE, 3, 'Cables DisplayPort y Fuente'),
-(16, 6, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/monitores/alienware-aw2725df-frontal.svg', TRUE, 1, 'Velocidad Élite 360Hz'),
-(17, 6, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/monitores/alienware-aw2725df-base.svg', FALSE, 2, 'Base Optimizada para Esports'),
-(18, 6, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/monitores/alienware-aw2725df-chasis.svg', FALSE, 3, 'Chasis Trasero AlienFX'),
-(19, 7, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/tarjetas-de-video/ASUS-MIKU-5080.png', TRUE, 1, 'Diseño de Colección Miku'),
-(20, 7, 'https://dlcdnwebimgs.asus.com/gain/97BAFE38-8B90-4820-9EB7-9DBCF43355A0/w800', FALSE, 2, 'Backplate Ilustrado de Aluminio'),
-(21, 7, 'https://dlcdnwebimgs.asus.com/gain/452B2CEF-21DE-4A94-98F1-4EBAFEAE30D3/w800', FALSE, 3, 'Triple Ventilador Axial-tech'),
-(22, 8, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/tarjetas-de-video/ASUS-PRIME-5070.png', TRUE, 1, 'Acabado Blanco Minimalista'),
-(23, 8, 'https://dlcdnwebimgs.asus.com/gain/3D32B811-D361-46B4-8A8C-32360E4582E5/w800', FALSE, 2, 'Puertos HDMI 2.1a y DP 2.1'),
-(24, 8, 'https://dlcdnwebimgs.asus.com/gain/EB2C15AA-DC64-44DC-B462-832F3D9218FB/w800', FALSE, 3, 'Estructura 2.5 Slots'),
-(25, 9, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/tarjetas-de-video/ASUS-5080.png', TRUE, 1, 'Chasis Fundido a Presión'),
-(26, 9, 'https://dlcdnwebimgs.asus.com/gain/11993206-8A87-4348-9F93-78BD4E8F8B60/w800', FALSE, 2, 'Barra de Luz Aura Sync'),
-(27, 9, 'https://dlcdnwebimgs.asus.com/gain/59DE476A-3F9C-4D2A-B9B2-C7392E0E7D2D/w800', FALSE, 3, 'Disipación Vapor Chamber'),
-(28, 10, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/tarjetas-de-video/MSI-TRIO-5070.png', TRUE, 1, 'Ventiladores Torx Fan 5.0'),
-(29, 10, 'https://asset.msi.com/resize/image/global/product/product_1672304911e3b6bb3f9ff7cb3b5840d4aa6d0c4103.png62405b38c58fe0f07fcef2367d8a9ba1/600.png', FALSE, 2, 'Backplate de Metal Reforzado'),
-(30, 10, 'https://asset.msi.com/resize/image/global/product/product_16723049129e9aeec2bc58ec18991316b27d42cf38.png62405b38c58fe0f07fcef2367d8a9ba1/600.png', FALSE, 3, 'Conector PCIe 5.1'),
-(31, 11, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/tarjetas-de-video/aorus-4070-lcd.svg', TRUE, 1, 'Pantalla LCD Edge View'),
-(32, 11, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/tarjetas-de-video/aorus-4070-windforce.svg', FALSE, 2, 'Tecnología Windforce Bionic'),
-(33, 11, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/tarjetas-de-video/aorus-4070-backplate.svg', FALSE, 3, 'Soporte Metálico y Accesorios'),
-(34, 12, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/tarjetas-de-video/gigabyte-rx7900xtx-frontal.svg', TRUE, 1, 'Arquitectura RDNA 3 24GB'),
-(35, 12, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/tarjetas-de-video/gigabyte-rx7900xtx-puertos.svg', FALSE, 2, 'Conectores DP 2.1 Ultra HD'),
-(36, 12, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/tarjetas-de-video/gigabyte-rx7900xtx-bios.svg', FALSE, 3, 'Dual BIOS Silencioso y OC'),
-(37, 13, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/procesadores/intel-i9-14900k-caja.svg', TRUE, 1, 'Empaque de Oblea Metálica'),
-(38, 13, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/procesadores/intel-i9-14900k-chip.svg', FALSE, 2, 'Chip Socket LGA 1700'),
-(39, 13, 'https://c1.neweggimages.com/ProductImageCompressAll1280/19-118-462-03.jpg', FALSE, 3, 'Contactos Dorados LGA'),
-(40, 14, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/procesadores/intel-i7-14700k-caja.svg', TRUE, 1, 'Caja Oficial Intel i7'),
-(41, 14, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/procesadores/intel-i7-14700k-ihs.svg', FALSE, 2, 'IHS Niquelado y Grabado'),
-(42, 15, 'https://c1.neweggimages.com/ProductImageCompressAll1280/19-118-466-01.jpg', TRUE, 1, 'Caja Oficial Serie KF'),
-(43, 15, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/procesadores/intel-i5-14600kf-blister.svg', FALSE, 2, 'Protector Antiestático Blíster'),
-(44, 16, 'https://c1.neweggimages.com/ProductImageCompressAll1280/19-113-793-01.jpg', TRUE, 1, 'Empaque Especial 3D V-Cache'),
-(45, 16, 'https://c1.neweggimages.com/ProductImageCompressAll1280/19-113-793-02.jpg', FALSE, 2, 'IHS Dentado Socket AM5'),
-(46, 16, 'https://c1.neweggimages.com/ProductImageCompressAll1280/19-113-793-03.jpg', FALSE, 3, 'Accesorios y Guía de Instalación'),
-(47, 17, 'https://c1.neweggimages.com/ProductImageCompressAll1280/19-113-791-01.jpg', TRUE, 1, 'Caja Insignia Ryzen 9'),
-(48, 17, 'https://c1.neweggimages.com/ProductImageCompressAll1280/19-113-791-02.jpg', FALSE, 2, 'Procesador AM5 144MB Caché'),
-(49, 18, 'https://c1.neweggimages.com/ProductImageCompressAll1280/19-113-770-01.jpg', TRUE, 1, 'Empaque Compacto AM5'),
-(50, 18, 'https://c1.neweggimages.com/ProductImageCompressAll1280/19-113-770-02.jpg', FALSE, 2, 'Plataforma Zen 4 5nm'),
-(51, 19, 'https://dlcdnwebimgs.asus.com/gain/C0E32961-A792-4B6A-BBA8-86A84180A2BE/w800', TRUE, 1, 'Diseño Polymo Lighting'),
-(52, 19, 'https://dlcdnwebimgs.asus.com/gain/2BFBFE4F-BE8B-40F1-B4B2-9F6D17C94821/w800', FALSE, 2, 'Puertos Dual Thunderbolt 4'),
-(53, 19, 'https://dlcdnwebimgs.asus.com/gain/FD177119-9CD1-4475-A8F8-C311910A5119/w800', FALSE, 3, 'Slots PCIe 5.0 y M.2'),
-(54, 20, 'https://asset.msi.com/resize/image/global/product/product_1664426543cbe2fb3aa6321262d08a28795da10b5c.png62405b38c58fe0f07fcef2367d8a9ba1/600.png', TRUE, 1, 'Acabado Arsenal Militar'),
-(55, 20, 'https://asset.msi.com/resize/image/global/product/product_16644265440f907be16a503e13d5440f7d5c417936.png62405b38c58fe0f07fcef2367d8a9ba1/600.png', FALSE, 2, 'Disipador Extendido de Aluminio'),
-(56, 20, 'https://asset.msi.com/resize/image/global/product/product_1664426544520372074e2d2719a71b12b5f63d6f02.png62405b38c58fe0f07fcef2367d8a9ba1/600.png', FALSE, 3, 'Conexiones LAN 2.5G y WiFi'),
-(57, 21, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/placas-madre/aorus-x670e-placa.svg', TRUE, 1, 'Armadura Térmica AORUS'),
-(58, 21, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/placas-madre/aorus-x670e-trasera.svg', FALSE, 2, 'Refuerzo Trasero de NanoCarbon'),
-(59, 21, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/placas-madre/aorus-x670e-antena.svg', FALSE, 3, 'Antena Smart AORUS'),
-(60, 22, 'https://dlcdnwebimgs.asus.com/gain/49C4FE28-2E54-47FA-B955-4EB9B3A2946A/w800', TRUE, 1, 'Certificación Militar TUF'),
-(61, 22, 'https://dlcdnwebimgs.asus.com/gain/1628EF65-BC95-4FE7-9ED4-F92D2ED31A8B/w800', FALSE, 2, 'Cabezales Aura RGB y Fan'),
-(62, 23, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/placas-madre/nzxt-n7-b650-placa.svg', TRUE, 1, 'Diseño Limpio Minimalista'),
-(63, 23, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/placas-madre/nzxt-n7-b650-io.svg', FALSE, 2, 'I/O Shield Integrado'),
-(64, 24, 'https://asset.msi.com/resize/image/global/product/product_16644400494df9da886297071f45610ec1f2fbb086.png62405b38c58fe0f07fcef2367d8a9ba1/600.png', TRUE, 1, 'Orientada a Productividad'),
-(65, 24, 'https://asset.msi.com/resize/image/global/product/product_1664440049ac16d9136ca7be815d4e138a0cbe6a89.png62405b38c58fe0f07fcef2367d8a9ba1/600.png', FALSE, 2, 'Memory Boost y Steel Armor'),
-(66, 25, 'https://c1.neweggimages.com/ProductImageCompressAll1280/20-236-828-01.jpg', TRUE, 1, 'Iluminación Dinámica Ten-Zone'),
-(67, 25, 'https://c1.neweggimages.com/ProductImageCompressAll1280/20-236-828-02.jpg', FALSE, 2, 'Disipador Térmico Anodizado'),
-(68, 25, 'https://c1.neweggimages.com/ProductImageCompressAll1280/20-236-828-03.jpg', FALSE, 3, 'Blíster Original Corsair'),
-(69, 26, 'https://c1.neweggimages.com/ProductImageCompressAll1280/20-242-730-01.jpg', TRUE, 1, 'Sincronización Infrared Sync'),
-(70, 26, 'https://c1.neweggimages.com/ProductImageCompressAll1280/20-242-730-02.jpg', FALSE, 2, 'Difusor de Luz Panal de Abeja'),
-(71, 27, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/memorias-almacenamiento/samsung-990pro-frontal.svg', TRUE, 1, 'Lecturas hasta 7450 MB/s'),
-(72, 27, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/memorias-almacenamiento/samsung-990pro-chip.svg', FALSE, 2, 'Controlador con Revestimiento Níquel'),
-(73, 27, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/memorias-almacenamiento/samsung-990pro-caja.svg', FALSE, 3, 'Empaque con Sello de Garantía'),
-(74, 28, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/memorias-almacenamiento/kingston-kc3000-frontal.svg', TRUE, 1, 'Disipador de Aluminio y Grafeno'),
-(75, 28, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/memorias-almacenamiento/kingston-kc3000-interfaz.svg', FALSE, 2, 'Interfaz M.2 2280 PCIe 4.0'),
-(76, 29, 'https://c1.neweggimages.com/ProductImageCompressAll1280/20-236-829-01.jpg', TRUE, 1, 'Compatible con PS5 y PC'),
-(77, 29, 'https://c1.neweggimages.com/ProductImageCompressAll1280/20-236-829-02.jpg', FALSE, 2, 'Cuerpo de Disipación Ranurado'),
-(78, 30, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/memorias-almacenamiento/kioxia-exceria-frontal.svg', TRUE, 1, 'Memorias 3D BiCS FLASH'),
-(79, 30, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/memorias-almacenamiento/kioxia-exceria-caja.svg', FALSE, 2, 'Caja Oficial Kioxia'),
-(80, 31, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/fuentes-refrigeracion/corsair-rm850x-fuente.svg', TRUE, 1, 'Certificación 80 PLUS Gold'),
-(81, 31, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/fuentes-refrigeracion/corsair-rm850x-modular.svg', FALSE, 2, 'Panel Modular y Switch Fan'),
-(82, 31, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/fuentes-refrigeracion/corsair-rm850x-cables.svg', FALSE, 3, 'Bolsa de Cables Modulares'),
-(83, 32, 'https://dlcdnwebimgs.asus.com/gain/8C0BFE85-78E9-4C5C-9A8C-BCDBFE2066FA/w800', TRUE, 1, 'Pantalla OLED Wattímetro en Vivo'),
-(84, 32, 'https://dlcdnwebimgs.asus.com/gain/7762A4FE-FA2F-43A5-9DE8-7BEBC84305DE/w800', FALSE, 2, 'Rejilla Pulida ROG Wing-Blade'),
-(85, 32, 'https://dlcdnwebimgs.asus.com/gain/9B9FBE28-667C-4C78-81D6-8F2C2DE1419F/w800', FALSE, 3, 'Cables Sleeved Premium'),
-(86, 33, 'https://asset.msi.com/resize/image/global/product/product_16843924610c3ea3f60f6064b19b2a759055d78a9c.png62405b38c58fe0f07fcef2367d8a9ba1/600.png', TRUE, 1, 'Compatible ATX 3.0 y PCIe 5.0'),
-(87, 33, 'https://asset.msi.com/resize/image/global/product/product_1684392462e03fcfa5aa9b2a472c63f10ef93c5d57.png62405b38c58fe0f07fcef2367d8a9ba1/600.png', FALSE, 2, 'Cable 12VHPWR con Seguro Amarillo'),
-(88, 34, 'https://c1.neweggimages.com/ProductImageCompressAll1280/35-146-121-01.jpg', TRUE, 1, 'Pantalla LCD Circular 2.36"'),
-(89, 34, 'https://c1.neweggimages.com/ProductImageCompressAll1280/35-146-121-02.jpg', FALSE, 2, 'Display LCD de 60 FPS'),
-(90, 34, 'https://c1.neweggimages.com/ProductImageCompressAll1280/35-146-121-03.jpg', FALSE, 3, 'Triple Fan NZXT RGB 120mm'),
-(91, 35, 'https://c1.neweggimages.com/ProductImageCompressAll1280/35-181-370-01.jpg', TRUE, 1, 'Ecosistema iCUE LINK sin Cables'),
-(92, 35, 'https://c1.neweggimages.com/ProductImageCompressAll1280/35-181-370-02.jpg', FALSE, 2, 'Base de Cobre de Flujo Dividido'),
-(93, 35, 'https://c1.neweggimages.com/ProductImageCompressAll1280/35-181-370-03.jpg', FALSE, 3, 'Conectores Directos Link'),
-(94, 36, 'https://c1.neweggimages.com/ProductImageCompressAll1280/35-856-258-01.jpg', TRUE, 1, 'Pantalla Digital de Temperatura'),
-(95, 36, 'https://c1.neweggimages.com/ProductImageCompressAll1280/35-856-258-02.jpg', FALSE, 2, 'Matriz de Aletas de Ajedrez'),
-(96, 37, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/perifericos-gaming/logitech-superlight2-top.svg', TRUE, 1, 'Sensor Hero 2 32000 DPI 60g'),
-(97, 37, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/perifericos-gaming/logitech-superlight2-base.svg', FALSE, 2, 'Base Cero Fricción PTFE'),
-(98, 37, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/perifericos-gaming/logitech-superlight2-dongle.svg', FALSE, 3, 'Receptor Lightspeed y Cable'),
-(99, 38, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/perifericos-gaming/logitech-gprox-tkl-frontal.svg', TRUE, 1, 'Switches GX Brown Táctiles'),
-(100, 38, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/perifericos-gaming/logitech-gprox-tkl-keycaps.svg', FALSE, 2, 'Keycaps PBT de Larga Duración'),
-(101, 38, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/perifericos-gaming/logitech-gprox-tkl-estuche.svg', FALSE, 3, 'Maletín de Transporte Incluido'),
-(102, 39, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/perifericos-gaming/redragon-k552-frontal.svg', TRUE, 1, 'Switches Outemu Blue Clicky'),
-(103, 39, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/perifericos-gaming/redragon-k552-chasis.svg', FALSE, 2, 'Diseño a Prueba de Salpicaduras'),
-(104, 40, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/perifericos-gaming/redragon-m711-frontal.svg', TRUE, 1, 'Sensor Pixart 3325 10000 DPI'),
-(105, 40, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/perifericos-gaming/redragon-m711-botones.svg', FALSE, 2, '7 Botones Programables'),
-(106, 41, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/perifericos-gaming/hyperx-cloud3-frontal.svg', TRUE, 1, 'Autonomía de 120 Horas'),
-(107, 41, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/perifericos-gaming/hyperx-cloud3-mic.svg', FALSE, 2, 'Micrófono Ultra Claro con LED'),
-(108, 41, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/perifericos-gaming/hyperx-cloud3-accesorios.svg', FALSE, 3, 'Conectores Multiplataforma'),
-(109, 42, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/perifericos-gaming/razer-deathadder-v3-top.svg', TRUE, 1, 'Sensor Focus Pro 30K 63g'),
-(110, 42, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/perifericos-gaming/razer-deathadder-v3-opticos.svg', FALSE, 2, 'Switches Ópticos Razer Gen-3'),
-(111, 42, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/perifericos-gaming/razer-deathadder-v3-grip.svg', FALSE, 3, 'Grip Tape Antideslizante');
+(1, 1, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/monitores/asus/rog-strix-oled-xg27acdms-280hz/rog_strix_oled_01.webp', TRUE, 1, 'ASUS ROG STRIX 27 - Vista 1'),
+(2, 1, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/monitores/asus/rog-strix-oled-xg27acdms-280hz/rog_strix_oled_02.webp', FALSE, 2, 'ASUS ROG STRIX 27 - Vista 2'),
+(3, 1, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/monitores/asus/rog-strix-oled-xg27acdms-280hz/rog_strix_oled_03.webp', FALSE, 3, 'ASUS ROG STRIX 27 - Vista 3'),
+(4, 2, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/monitores/asus/rog-strix-xg49vq-144hz/rog_strix_xg49vq_01.webp', TRUE, 1, 'ASUS TUF Curvo 34 - Vista 1'),
+(5, 2, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/monitores/asus/rog-strix-xg49vq-144hz/rog_strix_xg49vq_02.webp', FALSE, 2, 'ASUS TUF Curvo 34 - Vista 2'),
+(6, 2, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/monitores/asus/rog-strix-xg49vq-144hz/rog_strix_xg49vq_03.webp', FALSE, 3, 'ASUS TUF Curvo 34 - Vista 3'),
+(7, 3, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/monitores/msi/mag-274cqpdf-320hz/mag_274cqpdf_320hz_01.webp', TRUE, 1, 'MSI MAG 27 - Vista 1'),
+(8, 3, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/monitores/msi/mag-274cqpdf-320hz/mag_274cqpdf_320hz_02.webp', FALSE, 2, 'MSI MAG 27 - Vista 2'),
+(9, 3, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/monitores/msi/mag-274cqpdf-320hz/mag_274cqpdf_320hz_03.webp', FALSE, 3, 'MSI MAG 27 - Vista 3'),
+(10, 3, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/monitores/msi/mag-274cqpdf-320hz/mag_274cqpdf_320hz_04.webp', FALSE, 4, 'MSI MAG 27 - Vista 4'),
+(11, 4, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/monitores/gigabyte/mo27q2a-ice-oled-gaming-monitor-280hz/mo27q2a_ice_oled_01.webp', TRUE, 1, 'GIGABYTE GS27 - Vista 1'),
+(12, 4, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/monitores/gigabyte/mo27q2a-ice-oled-gaming-monitor-280hz/mo27q2a_ice_oled_02.webp', FALSE, 2, 'GIGABYTE GS27 - Vista 2'),
+(13, 4, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/monitores/gigabyte/mo27q2a-ice-oled-gaming-monitor-280hz/mo27q2a_ice_oled_03.webp', FALSE, 3, 'GIGABYTE GS27 - Vista 3'),
+(14, 4, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/monitores/gigabyte/mo27q2a-ice-oled-gaming-monitor-280hz/mo27q2a_ice_oled_04.webp', FALSE, 4, 'GIGABYTE GS27 - Vista 4'),
+(15, 5, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/monitores/sansung/monitor-gaming-40-odyssey-g7-g75f-wuhd-180hz/monitor_gaming_40_01.webp', TRUE, 1, 'SAMSUNG Odyssey G7 - Vista 1'),
+(16, 5, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/monitores/sansung/monitor-gaming-40-odyssey-g7-g75f-wuhd-180hz/monitor_gaming_40_02.webp', FALSE, 2, 'SAMSUNG Odyssey G7 - Vista 2'),
+(17, 5, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/monitores/sansung/monitor-gaming-40-odyssey-g7-g75f-wuhd-180hz/monitor_gaming_40_03.webp', FALSE, 3, 'SAMSUNG Odyssey G7 - Vista 3'),
+(18, 5, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/monitores/sansung/monitor-gaming-40-odyssey-g7-g75f-wuhd-180hz/monitor_gaming_40_04.webp', FALSE, 4, 'SAMSUNG Odyssey G7 - Vista 4'),
+(19, 5, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/monitores/sansung/monitor-gaming-40-odyssey-g7-g75f-wuhd-180hz/monitor_gaming_40_05.webp', FALSE, 5, 'SAMSUNG Odyssey G7 - Vista 5'),
+(20, 6, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/monitores/asus/rog-swift-oled-pg27aqdm-240hz/rog_swift_oled_01.webp', TRUE, 1, 'ALIENWARE 27 QD-OLED - Vista 1'),
+(21, 6, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/monitores/asus/rog-swift-oled-pg27aqdm-240hz/rog_swift_oled_02.webp', FALSE, 2, 'ALIENWARE 27 QD-OLED - Vista 2'),
+(22, 6, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/monitores/asus/rog-swift-oled-pg27aqdm-240hz/rog_swift_oled_03.webp', FALSE, 3, 'ALIENWARE 27 QD-OLED - Vista 3'),
+(23, 7, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/tarjetas-de-video/asus/rog-astral-geforce-rtx-5080-16gb-gddr7-oc-edition/rog_astral_geforce_01.webp', TRUE, 1, 'ASUS RTX 5080 Miku - Vista 1'),
+(24, 7, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/tarjetas-de-video/asus/rog-astral-geforce-rtx-5080-16gb-gddr7-oc-edition/rog_astral_geforce_02.webp', FALSE, 2, 'ASUS RTX 5080 Miku - Vista 2'),
+(25, 7, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/tarjetas-de-video/asus/rog-astral-geforce-rtx-5080-16gb-gddr7-oc-edition/rog_astral_geforce_03.webp', FALSE, 3, 'ASUS RTX 5080 Miku - Vista 3'),
+(26, 8, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/tarjetas-de-video/asus/rog-strix-geforce-rtx-4070-super-12gb-gddr6x-oc-edition/rog_strix_geforce_01.webp', TRUE, 1, 'ASUS RTX 5070 White Prime - Vista 1'),
+(27, 8, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/tarjetas-de-video/asus/rog-strix-geforce-rtx-4070-super-12gb-gddr6x-oc-edition/rog_strix_geforce_02.webp', FALSE, 2, 'ASUS RTX 5070 White Prime - Vista 2'),
+(28, 8, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/tarjetas-de-video/asus/rog-strix-geforce-rtx-4070-super-12gb-gddr6x-oc-edition/rog_strix_geforce_03.webp', FALSE, 3, 'ASUS RTX 5070 White Prime - Vista 3'),
+(29, 9, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/tarjetas-de-video/asus/rog-astral-geforce-rtx-5090-32gb-gddr7-oc-edition/rog_astral_geforce_01.webp', TRUE, 1, 'ASUS RTX 5080 ROG Astral - Vista 1'),
+(30, 9, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/tarjetas-de-video/asus/rog-astral-geforce-rtx-5090-32gb-gddr7-oc-edition/rog_astral_geforce_02.webp', FALSE, 2, 'ASUS RTX 5080 ROG Astral - Vista 2'),
+(31, 9, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/tarjetas-de-video/asus/rog-astral-geforce-rtx-5090-32gb-gddr7-oc-edition/rog_astral_geforce_03.webp', FALSE, 3, 'ASUS RTX 5080 ROG Astral - Vista 3'),
+(32, 10, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/tarjetas-de-video/msi/geforce-rtx-5090-32g-gaming-trio-oc/geforce_rtx_5090_01.webp', TRUE, 1, 'MSI RTX 5080 Gaming X Trio - Vista 1'),
+(33, 10, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/tarjetas-de-video/msi/geforce-rtx-5090-32g-gaming-trio-oc/geforce_rtx_5090_02.webp', FALSE, 2, 'MSI RTX 5080 Gaming X Trio - Vista 2'),
+(34, 10, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/tarjetas-de-video/msi/geforce-rtx-5090-32g-gaming-trio-oc/geforce_rtx_5090_03.webp', FALSE, 3, 'MSI RTX 5080 Gaming X Trio - Vista 3'),
+(35, 10, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/tarjetas-de-video/msi/geforce-rtx-5090-32g-gaming-trio-oc/geforce_rtx_5090_04.webp', FALSE, 4, 'MSI RTX 5080 Gaming X Trio - Vista 4'),
+(36, 11, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/tarjetas-de-video/gigabyte/geforce-rtx-5070-ti-gaming-16g/geforce_rtx_5070_01.webp', TRUE, 1, 'GIGABYTE RTX 4070 SUPER Master - Vista 1'),
+(37, 11, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/tarjetas-de-video/gigabyte/geforce-rtx-5070-ti-gaming-16g/geforce_rtx_5070_02.webp', FALSE, 2, 'GIGABYTE RTX 4070 SUPER Master - Vista 2'),
+(38, 11, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/tarjetas-de-video/gigabyte/geforce-rtx-5070-ti-gaming-16g/geforce_rtx_5070_03.webp', FALSE, 3, 'GIGABYTE RTX 4070 SUPER Master - Vista 3'),
+(39, 11, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/tarjetas-de-video/gigabyte/geforce-rtx-5070-ti-gaming-16g/geforce_rtx_5070_04.webp', FALSE, 4, 'GIGABYTE RTX 4070 SUPER Master - Vista 4'),
+(40, 12, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/tarjetas-de-video/gigabyte/geforce-rtx-5080-gaming-16g/geforce_rtx_5080_01.webp', TRUE, 1, 'GIGABYTE Radeon RX 7900 XTX - Vista 1'),
+(41, 12, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/tarjetas-de-video/gigabyte/geforce-rtx-5080-gaming-16g/geforce_rtx_5080_02.webp', FALSE, 2, 'GIGABYTE Radeon RX 7900 XTX - Vista 2'),
+(42, 12, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/tarjetas-de-video/gigabyte/geforce-rtx-5080-gaming-16g/geforce_rtx_5080_03.webp', FALSE, 3, 'GIGABYTE Radeon RX 7900 XTX - Vista 3'),
+(43, 12, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/tarjetas-de-video/gigabyte/geforce-rtx-5080-gaming-16g/geforce_rtx_5080_04.webp', FALSE, 4, 'GIGABYTE Radeon RX 7900 XTX - Vista 4'),
+(44, 13, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/tarjetas-de-video/msi/geforce-rtx-5070-ti-16g-mlg-edition/geforce_rtx_5070_01.webp', TRUE, 1, 'Intel Core i9 14900K - Vista 1'),
+(45, 13, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/tarjetas-de-video/msi/geforce-rtx-5070-ti-16g-mlg-edition/geforce_rtx_5070_02.webp', FALSE, 2, 'Intel Core i9 14900K - Vista 2'),
+(46, 13, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/tarjetas-de-video/msi/geforce-rtx-5070-ti-16g-mlg-edition/geforce_rtx_5070_03.webp', FALSE, 3, 'Intel Core i9 14900K - Vista 3'),
+(47, 13, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/tarjetas-de-video/msi/geforce-rtx-5070-ti-16g-mlg-edition/geforce_rtx_5070_04.webp', FALSE, 4, 'Intel Core i9 14900K - Vista 4'),
+(48, 14, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/tarjetas-de-video/msi/geforce-rtx-5080-16g-cod-mw4-edition-oc/geforce_rtx_5080_01.webp', TRUE, 1, 'Intel Core i7 14700K - Vista 1'),
+(49, 14, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/tarjetas-de-video/msi/geforce-rtx-5080-16g-cod-mw4-edition-oc/geforce_rtx_5080_02.webp', FALSE, 2, 'Intel Core i7 14700K - Vista 2'),
+(50, 14, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/tarjetas-de-video/msi/geforce-rtx-5080-16g-cod-mw4-edition-oc/geforce_rtx_5080_03.webp', FALSE, 3, 'Intel Core i7 14700K - Vista 3'),
+(51, 14, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/tarjetas-de-video/msi/geforce-rtx-5080-16g-cod-mw4-edition-oc/geforce_rtx_5080_04.webp', FALSE, 4, 'Intel Core i7 14700K - Vista 4'),
+(52, 15, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/tarjetas-de-video/gigabyte/geforce-rtx-5090-gaming-32g/geforce_rtx_5090_01.webp', TRUE, 1, 'Intel Core i5 14600KF - Vista 1'),
+(53, 15, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/tarjetas-de-video/gigabyte/geforce-rtx-5090-gaming-32g/geforce_rtx_5090_02.webp', FALSE, 2, 'Intel Core i5 14600KF - Vista 2'),
+(54, 15, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/tarjetas-de-video/gigabyte/geforce-rtx-5090-gaming-32g/geforce_rtx_5090_03.webp', FALSE, 3, 'Intel Core i5 14600KF - Vista 3'),
+(55, 15, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/tarjetas-de-video/gigabyte/geforce-rtx-5090-gaming-32g/geforce_rtx_5090_04.webp', FALSE, 4, 'Intel Core i5 14600KF - Vista 4'),
+(56, 16, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/monitores/gigabyte/mo32u2-gaming-monitor-240hz/mo32u2_gaming_monitor_01.webp', TRUE, 1, 'AMD Ryzen 7 7800X3D - Vista 1'),
+(57, 16, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/monitores/gigabyte/mo32u2-gaming-monitor-240hz/mo32u2_gaming_monitor_02.webp', FALSE, 2, 'AMD Ryzen 7 7800X3D - Vista 2'),
+(58, 16, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/monitores/gigabyte/mo32u2-gaming-monitor-240hz/mo32u2_gaming_monitor_03.webp', FALSE, 3, 'AMD Ryzen 7 7800X3D - Vista 3'),
+(59, 17, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/monitores/gigabyte/mo34wqc36-oled-gaming-monitor-360hz/mo34wqc36_oled_gaming_01.webp', TRUE, 1, 'AMD Ryzen 9 7950X3D - Vista 1'),
+(60, 17, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/monitores/gigabyte/mo34wqc36-oled-gaming-monitor-360hz/mo34wqc36_oled_gaming_02.webp', FALSE, 2, 'AMD Ryzen 9 7950X3D - Vista 2'),
+(61, 17, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/monitores/gigabyte/mo34wqc36-oled-gaming-monitor-360hz/mo34wqc36_oled_gaming_03.webp', FALSE, 3, 'AMD Ryzen 9 7950X3D - Vista 3'),
+(62, 17, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/monitores/gigabyte/mo34wqc36-oled-gaming-monitor-360hz/mo34wqc36_oled_gaming_04.webp', FALSE, 4, 'AMD Ryzen 9 7950X3D - Vista 4'),
+(63, 18, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/monitores/msi/meg-x-34uwqhd-360hz/meg_x_34uwqhd_01.webp', TRUE, 1, 'AMD Ryzen 5 7600X - Vista 1'),
+(64, 18, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/monitores/msi/meg-x-34uwqhd-360hz/meg_x_34uwqhd_02.webp', FALSE, 2, 'AMD Ryzen 5 7600X - Vista 2'),
+(65, 18, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/monitores/msi/meg-x-34uwqhd-360hz/meg_x_34uwqhd_03.webp', FALSE, 3, 'AMD Ryzen 5 7600X - Vista 3'),
+(66, 18, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/monitores/msi/meg-x-34uwqhd-360hz/meg_x_34uwqhd_04.webp', FALSE, 4, 'AMD Ryzen 5 7600X - Vista 4'),
+(67, 19, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/placas-madre/asus/rog-strix-x670e-a-gaming-wifi/rog_strix_x670e_01.webp', TRUE, 1, 'ASUS ROG MAXIMUS Z790 HERO - Vista 1'),
+(68, 19, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/placas-madre/asus/rog-strix-x670e-a-gaming-wifi/rog_strix_x670e_02.webp', FALSE, 2, 'ASUS ROG MAXIMUS Z790 HERO - Vista 2'),
+(69, 19, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/placas-madre/asus/rog-strix-x670e-a-gaming-wifi/rog_strix_x670e_03.webp', FALSE, 3, 'ASUS ROG MAXIMUS Z790 HERO - Vista 3'),
+(70, 20, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/placas-madre/msi/pro-x670-p-wifi/pro_x670_p_01.webp', TRUE, 1, 'MSI MAG B650 TOMAHAWK - Vista 1'),
+(71, 20, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/placas-madre/msi/pro-x670-p-wifi/pro_x670_p_02.webp', FALSE, 2, 'MSI MAG B650 TOMAHAWK - Vista 2'),
+(72, 20, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/placas-madre/msi/pro-x670-p-wifi/pro_x670_p_03.webp', FALSE, 3, 'MSI MAG B650 TOMAHAWK - Vista 3'),
+(73, 20, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/placas-madre/msi/pro-x670-p-wifi/pro_x670_p_04.webp', FALSE, 4, 'MSI MAG B650 TOMAHAWK - Vista 4'),
+(74, 21, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/placas-madre/gigabyte/x870-gaming-wifi7/x870_gaming_wifi7_01.webp', TRUE, 1, 'GIGABYTE X670E AORUS MASTER - Vista 1'),
+(75, 21, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/placas-madre/gigabyte/x870-gaming-wifi7/x870_gaming_wifi7_02.webp', FALSE, 2, 'GIGABYTE X670E AORUS MASTER - Vista 2'),
+(76, 21, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/placas-madre/gigabyte/x870-gaming-wifi7/x870_gaming_wifi7_03.webp', FALSE, 3, 'GIGABYTE X670E AORUS MASTER - Vista 3'),
+(77, 22, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/placas-madre/asus/rog-strix-b850-e-gaming-wifi/rog_strix_b850_01.webp', TRUE, 1, 'ASUS TUF GAMING B760-PLUS - Vista 1'),
+(78, 22, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/placas-madre/asus/rog-strix-b850-e-gaming-wifi/rog_strix_b850_02.webp', FALSE, 2, 'ASUS TUF GAMING B760-PLUS - Vista 2'),
+(79, 22, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/placas-madre/asus/rog-strix-b850-e-gaming-wifi/rog_strix_b850_03.webp', FALSE, 3, 'ASUS TUF GAMING B760-PLUS - Vista 3'),
+(80, 23, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/placas-madre/asus/rog-strix-b860-a-gaming-wifi/rog_strix_b860_01.webp', TRUE, 1, 'NZXT N7 B650 MATTE WHITE - Vista 1'),
+(81, 23, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/placas-madre/asus/rog-strix-b860-a-gaming-wifi/rog_strix_b860_02.webp', FALSE, 2, 'NZXT N7 B650 MATTE WHITE - Vista 2'),
+(82, 23, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/placas-madre/asus/rog-strix-b860-a-gaming-wifi/rog_strix_b860_03.webp', FALSE, 3, 'NZXT N7 B650 MATTE WHITE - Vista 3'),
+(83, 24, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/placas-madre/msi/pro-x870-p-wifi/pro_x870_p_01.webp', TRUE, 1, 'MSI PRO Z790-P WIFI - Vista 1'),
+(84, 24, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/placas-madre/msi/pro-x870-p-wifi/pro_x870_p_02.webp', FALSE, 2, 'MSI PRO Z790-P WIFI - Vista 2'),
+(85, 24, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/placas-madre/msi/pro-x870-p-wifi/pro_x870_p_03.webp', FALSE, 3, 'MSI PRO Z790-P WIFI - Vista 3'),
+(86, 24, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/placas-madre/msi/pro-x870-p-wifi/pro_x870_p_04.webp', FALSE, 4, 'MSI PRO Z790-P WIFI - Vista 4'),
+(87, 25, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/memoria-almacenamiento/samsung/ssd-interno-9100-pro-con-disipador-de-calor-2tb/ssd_interno_9100_01.webp', TRUE, 1, 'Corsair Vengeance RGB DDR5 - Vista 1'),
+(88, 25, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/memoria-almacenamiento/samsung/ssd-interno-9100-pro-con-disipador-de-calor-2tb/ssd_interno_9100_02.webp', FALSE, 2, 'Corsair Vengeance RGB DDR5 - Vista 2'),
+(89, 25, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/memoria-almacenamiento/samsung/ssd-interno-9100-pro-con-disipador-de-calor-2tb/ssd_interno_9100_03.webp', FALSE, 3, 'Corsair Vengeance RGB DDR5 - Vista 3'),
+(90, 25, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/memoria-almacenamiento/samsung/ssd-interno-9100-pro-con-disipador-de-calor-2tb/ssd_interno_9100_04.webp', FALSE, 4, 'Corsair Vengeance RGB DDR5 - Vista 4'),
+(91, 26, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/memoria-almacenamiento/samsung/ssd-interno-990-pro-1tb-pcie-4-0-up-to-7-450mbs-nvme-m-2-2280/ssd_interno_990_01.webp', TRUE, 1, 'Kingston Fury Beast DDR5 - Vista 1'),
+(92, 26, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/memoria-almacenamiento/samsung/ssd-interno-990-pro-1tb-pcie-4-0-up-to-7-450mbs-nvme-m-2-2280/ssd_interno_990_02.webp', FALSE, 2, 'Kingston Fury Beast DDR5 - Vista 2'),
+(93, 26, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/memoria-almacenamiento/samsung/ssd-interno-990-pro-1tb-pcie-4-0-up-to-7-450mbs-nvme-m-2-2280/ssd_interno_990_03.webp', FALSE, 3, 'Kingston Fury Beast DDR5 - Vista 3'),
+(94, 26, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/memoria-almacenamiento/samsung/ssd-interno-990-pro-1tb-pcie-4-0-up-to-7-450mbs-nvme-m-2-2280/ssd_interno_990_04.webp', FALSE, 4, 'Kingston Fury Beast DDR5 - Vista 4'),
+(95, 27, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/memoria-almacenamiento/samsung/ssd-interno-990-2tb-pcie-4-0-hasta-7-250mbs-nvme-m-2/ssd_interno_990_01.webp', TRUE, 1, 'SSD Samsung 990 PRO 2TB - Vista 1'),
+(96, 27, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/memoria-almacenamiento/samsung/ssd-interno-990-2tb-pcie-4-0-hasta-7-250mbs-nvme-m-2/ssd_interno_990_02.webp', FALSE, 2, 'SSD Samsung 990 PRO 2TB - Vista 2'),
+(97, 27, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/memoria-almacenamiento/samsung/ssd-interno-990-2tb-pcie-4-0-hasta-7-250mbs-nvme-m-2/ssd_interno_990_03.webp', FALSE, 3, 'SSD Samsung 990 PRO 2TB - Vista 3'),
+(98, 27, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/memoria-almacenamiento/samsung/ssd-interno-990-2tb-pcie-4-0-hasta-7-250mbs-nvme-m-2/ssd_interno_990_04.webp', FALSE, 4, 'SSD Samsung 990 PRO 2TB - Vista 4'),
+(99, 28, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/memoria-almacenamiento/samsung/ssd-interno-990-pro-1tb-pcie-4-0-up-to-7-450mbs-nvme-m-2-2280/ssd_interno_990_01.webp', TRUE, 1, 'SSD Kingston KC3000 1TB - Vista 1'),
+(100, 28, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/memoria-almacenamiento/samsung/ssd-interno-990-pro-1tb-pcie-4-0-up-to-7-450mbs-nvme-m-2-2280/ssd_interno_990_02.webp', FALSE, 2, 'SSD Kingston KC3000 1TB - Vista 2'),
+(101, 28, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/memoria-almacenamiento/samsung/ssd-interno-990-pro-1tb-pcie-4-0-up-to-7-450mbs-nvme-m-2-2280/ssd_interno_990_03.webp', FALSE, 3, 'SSD Kingston KC3000 1TB - Vista 3'),
+(102, 28, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/memoria-almacenamiento/samsung/ssd-interno-990-pro-1tb-pcie-4-0-up-to-7-450mbs-nvme-m-2-2280/ssd_interno_990_04.webp', FALSE, 4, 'SSD Kingston KC3000 1TB - Vista 4'),
+(103, 29, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/memoria-almacenamiento/samsung/ssd-interno-9100-pro-con-disipador-de-calor-2tb/ssd_interno_9100_01.webp', TRUE, 1, 'SSD Corsair MP600 PRO 2TB - Vista 1'),
+(104, 29, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/memoria-almacenamiento/samsung/ssd-interno-9100-pro-con-disipador-de-calor-2tb/ssd_interno_9100_02.webp', FALSE, 2, 'SSD Corsair MP600 PRO 2TB - Vista 2'),
+(105, 29, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/memoria-almacenamiento/samsung/ssd-interno-9100-pro-con-disipador-de-calor-2tb/ssd_interno_9100_03.webp', FALSE, 3, 'SSD Corsair MP600 PRO 2TB - Vista 3'),
+(106, 29, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/memoria-almacenamiento/samsung/ssd-interno-9100-pro-con-disipador-de-calor-2tb/ssd_interno_9100_04.webp', FALSE, 4, 'SSD Corsair MP600 PRO 2TB - Vista 4'),
+(107, 30, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/memoria-almacenamiento/samsung/ssd-interno-990-2tb-pcie-4-0-hasta-7-250mbs-nvme-m-2/ssd_interno_990_01.webp', TRUE, 1, 'SSD Toshiba Exceria 1TB - Vista 1'),
+(108, 30, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/memoria-almacenamiento/samsung/ssd-interno-990-2tb-pcie-4-0-hasta-7-250mbs-nvme-m-2/ssd_interno_990_02.webp', FALSE, 2, 'SSD Toshiba Exceria 1TB - Vista 2'),
+(109, 30, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/memoria-almacenamiento/samsung/ssd-interno-990-2tb-pcie-4-0-hasta-7-250mbs-nvme-m-2/ssd_interno_990_03.webp', FALSE, 3, 'SSD Toshiba Exceria 1TB - Vista 3'),
+(110, 30, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/memoria-almacenamiento/samsung/ssd-interno-990-2tb-pcie-4-0-hasta-7-250mbs-nvme-m-2/ssd_interno_990_04.webp', FALSE, 4, 'SSD Toshiba Exceria 1TB - Vista 4'),
+(111, 31, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/placas-madre/gigabyte/z890-gaming-x-wifi7/z890_gaming_x_01.webp', TRUE, 1, 'Corsair RM850X 850W - Vista 1'),
+(112, 31, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/placas-madre/gigabyte/z890-gaming-x-wifi7/z890_gaming_x_02.webp', FALSE, 2, 'Corsair RM850X 850W - Vista 2'),
+(113, 31, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/placas-madre/gigabyte/z890-gaming-x-wifi7/z890_gaming_x_03.webp', FALSE, 3, 'Corsair RM850X 850W - Vista 3'),
+(114, 32, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/placas-madre/gigabyte/b860m-gaming-x-rev-2-0/b860m_gaming_x_01.webp', TRUE, 1, 'ASUS ROG THOR 1000W - Vista 1'),
+(115, 32, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/placas-madre/gigabyte/b860m-gaming-x-rev-2-0/b860m_gaming_x_02.webp', FALSE, 2, 'ASUS ROG THOR 1000W - Vista 2'),
+(116, 32, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/placas-madre/gigabyte/b860m-gaming-x-rev-2-0/b860m_gaming_x_03.webp', FALSE, 3, 'ASUS ROG THOR 1000W - Vista 3'),
+(117, 33, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/placas-madre/msi/pro-x870e-s-evo-wifi/pro_x870e_s_01.webp', TRUE, 1, 'MSI MAG A850GL PCIE5 - Vista 1'),
+(118, 33, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/placas-madre/msi/pro-x870e-s-evo-wifi/pro_x870e_s_02.webp', FALSE, 2, 'MSI MAG A850GL PCIE5 - Vista 2'),
+(119, 33, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/placas-madre/msi/pro-x870e-s-evo-wifi/pro_x870e_s_03.webp', FALSE, 3, 'MSI MAG A850GL PCIE5 - Vista 3'),
+(120, 33, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/placas-madre/msi/pro-x870e-s-evo-wifi/pro_x870e_s_04.webp', FALSE, 4, 'MSI MAG A850GL PCIE5 - Vista 4'),
+(121, 34, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/placas-madre/msi/pro-z890-s-wifi-pz/pro_z890_s_01.webp', TRUE, 1, 'NZXT Kraken Elite 360 - Vista 1'),
+(122, 34, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/placas-madre/msi/pro-z890-s-wifi-pz/pro_z890_s_02.webp', FALSE, 2, 'NZXT Kraken Elite 360 - Vista 2'),
+(123, 34, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/placas-madre/msi/pro-z890-s-wifi-pz/pro_z890_s_03.webp', FALSE, 3, 'NZXT Kraken Elite 360 - Vista 3'),
+(124, 34, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/placas-madre/msi/pro-z890-s-wifi-pz/pro_z890_s_04.webp', FALSE, 4, 'NZXT Kraken Elite 360 - Vista 4'),
+(125, 35, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/monitores/msi/mpg-272qrf-360hz/mpg_272qrf_360hz_01.webp', TRUE, 1, 'Corsair iCUE H150i RGB - Vista 1'),
+(126, 35, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/monitores/msi/mpg-272qrf-360hz/mpg_272qrf_360hz_02.webp', FALSE, 2, 'Corsair iCUE H150i RGB - Vista 2'),
+(127, 35, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/monitores/msi/mpg-272qrf-360hz/mpg_272qrf_360hz_03.webp', FALSE, 3, 'Corsair iCUE H150i RGB - Vista 3'),
+(128, 35, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/monitores/msi/mpg-272qrf-360hz/mpg_272qrf_360hz_04.webp', FALSE, 4, 'Corsair iCUE H150i RGB - Vista 4'),
+(129, 36, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/monitores/sansung/monitor-gaming-32-odyssey-oled-g8-g80sh-4k-240hz-plano/monitor_gaming_32_01.webp', TRUE, 1, 'DeepCool AK620 Digital - Vista 1'),
+(130, 36, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/monitores/sansung/monitor-gaming-32-odyssey-oled-g8-g80sh-4k-240hz-plano/monitor_gaming_32_02.webp', FALSE, 2, 'DeepCool AK620 Digital - Vista 2'),
+(131, 36, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/monitores/sansung/monitor-gaming-32-odyssey-oled-g8-g80sh-4k-240hz-plano/monitor_gaming_32_03.webp', FALSE, 3, 'DeepCool AK620 Digital - Vista 3'),
+(132, 36, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/monitores/sansung/monitor-gaming-32-odyssey-oled-g8-g80sh-4k-240hz-plano/monitor_gaming_32_04.webp', FALSE, 4, 'DeepCool AK620 Digital - Vista 4'),
+(133, 36, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/monitores/sansung/monitor-gaming-32-odyssey-oled-g8-g80sh-4k-240hz-plano/monitor_gaming_32_05.webp', FALSE, 5, 'DeepCool AK620 Digital - Vista 5'),
+(134, 37, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/perifericos-gaming/audifonos/hyper-x/hyperx-cloud-flight-2-wireless-gaming-headset/hyperx_cloud_flight_01.webp', TRUE, 1, 'Logitech G PRO X Superlight - Vista 1'),
+(135, 37, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/perifericos-gaming/audifonos/hyper-x/hyperx-cloud-flight-2-wireless-gaming-headset/hyperx_cloud_flight_02.webp', FALSE, 2, 'Logitech G PRO X Superlight - Vista 2'),
+(136, 37, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/perifericos-gaming/audifonos/hyper-x/hyperx-cloud-flight-2-wireless-gaming-headset/hyperx_cloud_flight_03.webp', FALSE, 3, 'Logitech G PRO X Superlight - Vista 3'),
+(137, 37, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/perifericos-gaming/audifonos/hyper-x/hyperx-cloud-flight-2-wireless-gaming-headset/hyperx_cloud_flight_04.webp', FALSE, 4, 'Logitech G PRO X Superlight - Vista 4'),
+(138, 38, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/perifericos-gaming/teclados/msi/forge-gk600-tkl-wireless-sky/forge_gk600_tkl_01.webp', TRUE, 1, 'Teclado Logitech G PRO X TKL - Vista 1'),
+(139, 38, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/perifericos-gaming/teclados/msi/forge-gk600-tkl-wireless-sky/forge_gk600_tkl_02.webp', FALSE, 2, 'Teclado Logitech G PRO X TKL - Vista 2'),
+(140, 38, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/perifericos-gaming/teclados/msi/forge-gk600-tkl-wireless-sky/forge_gk600_tkl_03.webp', FALSE, 3, 'Teclado Logitech G PRO X TKL - Vista 3'),
+(141, 38, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/perifericos-gaming/teclados/msi/forge-gk600-tkl-wireless-sky/forge_gk600_tkl_04.webp', FALSE, 4, 'Teclado Logitech G PRO X TKL - Vista 4'),
+(142, 39, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/perifericos-gaming/teclados/msi/forge-tkl-wireless-frieren-edition/forge_tkl_wireless_01.webp', TRUE, 1, 'Redragon K552 Kumara RGB - Vista 1'),
+(143, 39, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/perifericos-gaming/teclados/msi/forge-tkl-wireless-frieren-edition/forge_tkl_wireless_02.webp', FALSE, 2, 'Redragon K552 Kumara RGB - Vista 2'),
+(144, 39, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/perifericos-gaming/teclados/msi/forge-tkl-wireless-frieren-edition/forge_tkl_wireless_03.webp', FALSE, 3, 'Redragon K552 Kumara RGB - Vista 3'),
+(145, 39, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/perifericos-gaming/teclados/msi/forge-tkl-wireless-frieren-edition/forge_tkl_wireless_04.webp', FALSE, 4, 'Redragon K552 Kumara RGB - Vista 4'),
+(146, 40, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/perifericos-gaming/teclados/msi/forge-gk110/forge_gk110_01.webp', TRUE, 1, 'Mouse Redragon M711 Cobra - Vista 1'),
+(147, 40, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/perifericos-gaming/teclados/msi/forge-gk110/forge_gk110_02.webp', FALSE, 2, 'Mouse Redragon M711 Cobra - Vista 2'),
+(148, 40, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/perifericos-gaming/teclados/msi/forge-gk110/forge_gk110_03.webp', FALSE, 3, 'Mouse Redragon M711 Cobra - Vista 3'),
+(149, 40, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/perifericos-gaming/teclados/msi/forge-gk110/forge_gk110_04.webp', FALSE, 4, 'Mouse Redragon M711 Cobra - Vista 4'),
+(150, 41, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/perifericos-gaming/audifonos/hyper-x/hyperx-cloud-iii-wireless-gaming-headset/hyperx_cloud_iii_01.webp', TRUE, 1, 'Auriculares HyperX Cloud III - Vista 1'),
+(151, 41, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/perifericos-gaming/audifonos/hyper-x/hyperx-cloud-iii-wireless-gaming-headset/hyperx_cloud_iii_02.webp', FALSE, 2, 'Auriculares HyperX Cloud III - Vista 2'),
+(152, 41, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/perifericos-gaming/audifonos/hyper-x/hyperx-cloud-iii-wireless-gaming-headset/hyperx_cloud_iii_03.webp', FALSE, 3, 'Auriculares HyperX Cloud III - Vista 3'),
+(153, 41, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/perifericos-gaming/audifonos/hyper-x/hyperx-cloud-iii-wireless-gaming-headset/hyperx_cloud_iii_04.webp', FALSE, 4, 'Auriculares HyperX Cloud III - Vista 4'),
+(154, 42, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/perifericos-gaming/audifonos/hyper-x/hyperx-cloud-stinger-3-wireless-gaming-headset/hyperx_cloud_stinger_01.webp', TRUE, 1, 'Razer DeathAdder V3 Pro - Vista 1'),
+(155, 42, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/perifericos-gaming/audifonos/hyper-x/hyperx-cloud-stinger-3-wireless-gaming-headset/hyperx_cloud_stinger_02.webp', FALSE, 2, 'Razer DeathAdder V3 Pro - Vista 2'),
+(156, 42, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/perifericos-gaming/audifonos/hyper-x/hyperx-cloud-stinger-3-wireless-gaming-headset/hyperx_cloud_stinger_03.webp', FALSE, 3, 'Razer DeathAdder V3 Pro - Vista 3'),
+(157, 42, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/perifericos-gaming/audifonos/hyper-x/hyperx-cloud-stinger-3-wireless-gaming-headset/hyperx_cloud_stinger_04.webp', FALSE, 4, 'Razer DeathAdder V3 Pro - Vista 4');
 
--- ==============================================================
---  PROVEEDORES OFICIALES MAYORISTAS
--- ==============================================================
-INSERT INTO proveedor (id_proveedor, razon_social, id_tipo_documento, numero_documento, telefono_contacto, correo, nombre_encargado, vigente) VALUES
-(1,  'ASUSTeK Computer Inc.',            2, '20558662471', '987654321', 'contacto@asus.com.pe',        'Roberto Salazar',   TRUE),
-(2,  'Micro-Star INTL Co., Ltd.',        2, '20512345678', '912345678', 'ventas@msi.com',             'Maria Torres',      TRUE),
-(3,  'GIGABYTE Technology Co., Ltd.',    2, '20698765432', '923456789', 'ventas@gigabyte.com',        'Juan Perez',        TRUE),
-(4,  'NVIDIA Corporation',               2, '20456789123', '934567890', 'ventas@nvidia.com',          'Carlos Mendez',     TRUE),
-(5,  'CORSAIR Gaming, Inc.',             2, '20534567891', '945678901', 'ventas@corsair.com',         'Ana Lopez',         TRUE),
-(6,  'Logitech International S.A.',      2, '20645678912', '956789012', 'ventas@logitech.com',        'Pedro Ruiz',        TRUE),
-(7,  'Kingston Technology Company, Inc.',2, '20467891234', '967890123', 'ventas@kingston.com',        'Luis Garcia',       TRUE),
-(8,  'Dell Technologies Inc.',           2, '20578912345', '978901234', 'ventas@dell.com',            'Sofia Martinez',    TRUE),
-(9,  'HP Inc.',                          2, '20689123456', '989012345', 'ventas@hp.com',              'Diego Rodriguez',   TRUE),
-(10, 'Lenovo Group Limited',             2, '20491234567', '990123456', 'ventas@lenovo.com',          'Carmen Vargas',     TRUE),
-(11, 'Synexo Corporation',               2, '20601234567', '901234567', 'ventas@synexo.com',          'Miguel Sanchez',    TRUE),
-(12, 'Ingram Micro Inc.',                2, '20512345679', '912345670', 'ventas@ingrammicro.com',     'Rosa Chen',         TRUE),
-(13, 'Arrow Electronics, Inc.',          2, '20623456789', '923456780', 'ventas@arrow.com',           'Fernando Torres',   TRUE),
-(14, 'Avnet, Inc.',                      2, '20434567890', '934567891', 'ventas@avnet.com',           'Patricia Gomez',    TRUE),
-(15, 'Tech Data Corporation',            2, '20545678901', '945678902', 'ventas@techdata.com',        'Andres Lopez',      TRUE),
-(16, 'Wortmann AG (Terra Computer)',     2, '20656789012', '956789013', 'ventas@wortmann.com',        'Elena Rodriguez',   TRUE),
-(17, 'Acer Inc.',                        2, '20467890123', '967890124', 'ventas@acer.com',            'Roberto Diaz',      TRUE),
-(18, 'Seagate Technology LLC',           2, '20578901234', '978901235', 'ventas@seagate.com',         'Monica Herrera',    TRUE),
-(19, 'Western Digital Corporation',      2, '20689012345', '989012346', 'ventas@westerndigital.com',  'Jorge Ramos',       TRUE),
-(20, 'Samsung Electronics Co., Ltd.',    2, '20490123456', '990123457', 'ventas@samsung.com',         'Lucia Fernandez',   TRUE)
-ON CONFLICT (id_proveedor) DO NOTHING;
-
--- Relaciones de suministro Producto - Proveedor para los 42 productos
-INSERT INTO producto_proveedor (id_producto, id_proveedor, precio_compra, tiempo_pedido_dias) VALUES
-(1, 2, 218.98, 3),
-(2, 3, 287.20, 4),
-(3, 4, 206.61, 5),
-(4, 5, 263.20, 2),
-(5, 6, 559.20, 3),
-(6, 7, 719.20, 4),
-(7, 8, 1992.00, 5),
-(8, 9, 703.20, 2),
-(9, 10, 1672.00, 3),
-(10, 11, 1560.00, 4),
-(11, 12, 679.20, 5),
-(12, 13, 920.00, 2),
-(13, 14, 496.00, 3),
-(14, 15, 359.20, 4),
-(15, 16, 263.20, 5),
-(16, 17, 391.20, 2),
-(17, 18, 559.20, 3),
-(18, 19, 191.20, 4),
-(19, 20, 551.20, 5),
-(20, 1, 199.20, 2),
-(21, 2, 399.20, 3),
-(22, 3, 175.20, 4),
-(23, 4, 255.20, 5),
-(24, 5, 191.20, 2),
-(25, 6, 127.20, 3),
-(26, 7, 111.20, 4),
-(27, 8, 175.20, 5),
-(28, 9, 95.20, 2),
-(29, 10, 159.20, 3),
-(30, 11, 71.20, 4),
-(31, 12, 135.20, 5),
-(32, 13, 311.20, 2),
-(33, 14, 119.20, 3),
-(34, 15, 263.20, 4),
-(35, 16, 231.20, 5),
-(36, 17, 79.20, 2),
-(37, 18, 127.20, 3),
-(38, 19, 175.20, 4),
-(39, 20, 39.20, 5),
-(40, 1, 28.00, 2),
-(41, 2, 135.20, 3),
-(42, 3, 119.20, 4)
-ON CONFLICT (id_producto, id_proveedor) DO NOTHING;
-
--- ==============================================================
---  12 · USUARIO ADMINISTRADOR Y CLIENTE INICIAL
---  Credenciales:
---    correo      = admin@techzone.com
---    contrasena  = Admin123**
---  El hash es BCrypt de coste 10 (una sola via).
--- ==============================================================
-
-INSERT INTO persona (id_persona, nombres, apellido_paterno, apellido_materno,
-    id_tipo_documento, numero_documento, telefono, direccion,
-    referencia, id_ubigeo, fecha_nacimiento, fecha_registro, vigente) VALUES
-(1, 'CARLOS FELIPE', 'ARROYO', 'VEGA',
-    1, '73234768', '967662103', 'El Vivero S/N',
-    NULL, 140120, '2005-04-12', now(), TRUE);
-
-INSERT INTO usuario (id_usuario, id_persona, id_rol, correo,
-    contrasena, fecha_ultimo_acceso, estado,
-    fecha_creacion, intentos_fallidos, bloqueado_hasta) VALUES
-(1, 1, 1, 'admin@techzone.com',
-'$2a$10$cxaeON97QlnXDP8R1FJH/eyPk27GK01Xtx8eKhI8JCW0MXCPEAT5S', NULL, 'ACTIVO',
-now(), 0, NULL);
-
--- Cliente inicial asociado al administrador Carlos Felipe
-INSERT INTO cliente (id_cliente, id_persona, fecha_ultima_compra, total_gastado, vigente) VALUES
-(1, 1, NULL, 0.00, TRUE)
-ON CONFLICT (id_cliente) DO NOTHING;
-
--- Carrito activo inicial
-INSERT INTO carrito (id_carrito, id_cliente, fecha_carrito) VALUES
-(1, 1, now())
-ON CONFLICT (id_carrito) DO NOTHING;
-
--- ==============================================================
---  13 · CENTRO DE AYUDA · contenido inicial
---  Seccion 'auditoria' solo la ve el administrador (id_rol 1).
--- ==============================================================
-
-INSERT INTO centro_ayuda (id_ayuda, seccion, titulo, contenido, orden, activo) VALUES
-(1, 'cuenta', 'Mi cuenta',
- 'Edita tu perfil, cambia tu contrasena y cierra sesion desde el menu superior. Tu correo de acceso no puede modificarse: si necesitas otro, solicitalo al administrador.',
- 10, TRUE),
-
-(2, 'catalogo', 'Buscar productos',
- 'Usa la barra de busqueda o filtra por marca y categoria. En la ficha de cada producto veras precio, stock disponible, caracteristicas y la galeria de imagenes.',
- 20, TRUE),
-
-(3, 'carrito', 'Mi carrito y mis compras',
- 'Agrega productos al carrito desde cualquier ficha. En el carrito ajusta cantidades o elimina articulos antes de pagar. En "Mis pedidos" puedes seguir el estado de cada compra.',
- 30, TRUE),
-
-(4, 'trabajador', 'Gestion de pedidos y stock',
- 'Los trabajadores pueden consultar el estado de las ventas, actualizar el stock de los productos y realizar la busqueda de documentos (DNI/RUC) al registrar un cliente.',
- 40, TRUE),
-
-(5, 'administracion', 'Panel de administracion',
- 'El administrador gestiona categorias, marcas, productos, proveedores, ventas, pagos, medios de pago, configuracion del sitio y las cuentas de usuario (rol, activacion y bloqueo).',
- 50, TRUE),
-
-(6, 'auditoria', 'Centro de auditoria',
- 'Consulta quien inicio sesion, desde que IP, con que resultado y cuando. Tambien revisa cada accion realizada sobre el sistema con los datos anteriores y posteriores al cambio. Solo el administrador tiene acceso.',
- 60, TRUE),
-
-(7, 'faq', 'Preguntas frecuentes',
- '¿Olvidaste tu contrasena? Solicita un reinicio al administrador.
-¿El producto no aparece? Verifica que este vigente y con stock.
-¿Tu pedido esta pendiente? Los estados son PENDIENTE, COMPLETADA y CANCELADA.',
- 70, TRUE),
-
-(8, 'contacto', 'Contacto',
- 'Correo: techzone@outlook.com
-Telefono: +51 967 662 103
-Horario: Lun - Dom, 09:00 a.m. - 21:00 p.m.
-Atencion: 24/7 por WhatsApp.',
- 80, TRUE);
-
--- Restricciones de visibilidad por rol:
---   ayuda 4 (Gestion de pedidos) -> Administrador(1) y Trabajador(2)
---   ayuda 5 (Panel)              -> solo Administrador(1)
---   ayuda 6 (Auditoria)          -> solo Administrador(1)
-INSERT INTO ayuda_rol (id_ayuda, id_rol) VALUES
-(4, 1), (4, 2),
-(5, 1),
-(6, 1);
-
--- ==============================================================
---  13.1 · CONFIGURACION DEL SITIO · datos iniciales
--- ==============================================================
-
-INSERT INTO configuracion_sitio (
-    id_config, nombre_sitio, logo_url, tagline, email, telefono, horario,
-    whatsapp, whatsapp_texto,
-    mostrar_tiktok, tiktok_url,
-    mostrar_facebook, facebook_url,
-    mostrar_instagram, instagram_url,
-    mostrar_youtube, youtube_url,
-    copyright, libro_reclamaciones_img, libro_reclamaciones_url
-) VALUES (
-    1, 'TechZone', 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/configurtacion_sitio/TechZone.png',
-    'Componentes Gamer y Tecnología de Última Generación',
-    'techzone@gmail.com', '+51 967 662 103', 'Lun - Dom: 09:00 a.m. - 21:00 p.m.',
-    '51967662103', 'Hola TechZone, deseo realizar una consulta sobre un producto.',
-    TRUE, 'https://www.tiktok.com',
-    TRUE, 'https://www.facebook.com',
-    TRUE, 'https://www.instagram.com',
-    TRUE, 'https://www.youtube.com',
-    '© 2026 TechZone Perú. Todos los derechos reservados.',
-    'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/configurtacion_sitio/Libro_de_Reclamaciones.png',
-    '/'
-);
-
--- ==============================================================
---  9.1 · TRIGGERS DE AUDITORIA AUTOMATICA (PostgreSQL)
--- ==============================================================
-
-CREATE OR REPLACE FUNCTION fn_auditoria_producto()
-RETURNS TRIGGER AS $$
-BEGIN
-    IF (TG_OP = 'INSERT') THEN
-        INSERT INTO registro_auditoria (modulo, accion, descripcion, datos_nuevos)
-        VALUES ('producto', 'CREAR', 'Producto creado: ' || NEW.nombre || ' (SKU: ' || COALESCE(NEW.codigo_sku, 'S/N') || ')', to_jsonb(NEW)::text);
-        RETURN NEW;
-    ELSIF (TG_OP = 'UPDATE') THEN
-        INSERT INTO registro_auditoria (modulo, accion, descripcion, datos_previos, datos_nuevos)
-        VALUES ('producto', 'ACTUALIZAR', 'Producto actualizado ID: ' || NEW.id_producto || ' (' || NEW.nombre || ')', to_jsonb(OLD)::text, to_jsonb(NEW)::text);
-        RETURN NEW;
-    ELSIF (TG_OP = 'DELETE') THEN
-        INSERT INTO registro_auditoria (modulo, accion, descripcion, datos_previos)
-        VALUES ('producto', 'ELIMINAR', 'Producto eliminado: ' || OLD.nombre || ' (SKU: ' || COALESCE(OLD.codigo_sku, 'S/N') || ')', to_jsonb(OLD)::text);
-        RETURN OLD;
-    END IF;
-    RETURN NULL;
-END;
-$$ LANGUAGE plpgsql;
-
-DROP TRIGGER IF EXISTS trg_auditoria_producto ON producto;
-CREATE TRIGGER trg_auditoria_producto
-AFTER INSERT OR UPDATE OR DELETE ON producto
-FOR EACH ROW EXECUTE FUNCTION fn_auditoria_producto();
-
-
-CREATE OR REPLACE FUNCTION fn_auditoria_venta()
-RETURNS TRIGGER AS $$
-BEGIN
-    IF (TG_OP = 'INSERT') THEN
-        INSERT INTO registro_auditoria (modulo, accion, descripcion, datos_nuevos)
-        VALUES ('venta', 'CREAR', 'Nueva orden de venta #' || NEW.id_venta || ' por total S/ ' || COALESCE(NEW.total, 0), to_jsonb(NEW)::text);
-        RETURN NEW;
-    ELSIF (TG_OP = 'UPDATE' AND OLD.estado IS DISTINCT FROM NEW.estado) THEN
-        INSERT INTO registro_auditoria (modulo, accion, descripcion, datos_previos, datos_nuevos)
-        VALUES ('venta', 'ACTUALIZAR', 'Cambio de estado en venta #' || NEW.id_venta || ': ' || OLD.estado || ' -> ' || NEW.estado, to_jsonb(OLD)::text, to_jsonb(NEW)::text);
-        RETURN NEW;
-    END IF;
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-DROP TRIGGER IF EXISTS trg_auditoria_venta ON venta;
-CREATE TRIGGER trg_auditoria_venta
-AFTER INSERT OR UPDATE ON venta
-FOR EACH ROW EXECUTE FUNCTION fn_auditoria_venta();
-
--- ==============================================================
---  14 · REPOSICIONAR SECUENCIAS
---  IMPORTANTE: los INSERT de arriba fijaron ids a mano.
---  Reposicionamos las secuencias para que los proximos registros
---  generados automaticamente no colisionen con los IDs existentes.
---  Todas las tablas de auditoria (registro_acceso, registro_auditoria)
---  arrancan limpias exactamente desde el ID 1.
--- ==============================================================
-
-ALTER TABLE tipo_documento      ALTER COLUMN id_tipo_documento      RESTART WITH 4;
-ALTER TABLE rol                 ALTER COLUMN id_rol                 RESTART WITH 5;
-ALTER TABLE categoria           ALTER COLUMN id_categoria           RESTART WITH 3;
-ALTER TABLE marca               ALTER COLUMN id_marca               RESTART WITH 11;
-ALTER TABLE producto            ALTER COLUMN id_producto            RESTART WITH 9;
-ALTER TABLE producto_imagen     ALTER COLUMN id_producto_imagen     RESTART WITH 9;
+ALTER TABLE producto_imagen     ALTER COLUMN id_producto_imagen     RESTART WITH 158;
 ALTER TABLE proveedor           ALTER COLUMN id_proveedor           RESTART WITH 21;
 ALTER TABLE persona             ALTER COLUMN id_persona             RESTART WITH 2;
 ALTER TABLE cliente             ALTER COLUMN id_cliente             RESTART WITH 2;
