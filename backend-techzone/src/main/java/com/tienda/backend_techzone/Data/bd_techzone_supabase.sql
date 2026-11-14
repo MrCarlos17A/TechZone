@@ -607,7 +607,8 @@ INSERT INTO marca (id_marca, nombre, vigente, logo_url) VALUES
 (11, 'INTEL',     TRUE, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/marcas/INTEL.webp'),
 (12, 'AMD',       TRUE, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/marcas/AMD.webp'),
 (13, 'SAMSUNG',   TRUE, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/marcas/SAMSUNG.webp'),
-(14, 'RYZEN',     TRUE, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/marcas/RYZEN.webp');
+(14, 'RYZEN',     TRUE, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/marcas/RYZEN.webp'),
+(15, 'RAZER',     TRUE, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/marcas/RAZER.webp');
 
 -- Productos del catalogo oficial TechZone (42 productos en 7 categorias)
 INSERT INTO producto (id_producto, id_marca, id_categoria, codigo_sku, nombre,
@@ -694,7 +695,7 @@ INSERT INTO producto (id_producto, id_marca, id_categoria, codigo_sku, nombre,
    'Mouse gamer ergonómico Redragon M711 Cobra con sensor optico Pixart P3325 hasta 10000 DPI, 7 botones programables y textura lateral antideslizante.', 35.00, 40, TRUE),
 (41, 7, 7, 'KIAU01', 'AURICULARES HYPERX CLOUD III WIRELESS 120H BATERÍA',
    'Audifonos gaming inalambricos HyperX Cloud III Wireless con autonomia bestial de 120 horas, almohadillas de espuma viscoelastica y microfono de 10mm.', 169.00, 16, TRUE),
-(42, 5, 7, 'REMO02', 'RAZER DEATHADDER V3 PRO WIRELESS GAMING MOUSE',
+(42, 15, 7, 'RAMO01', 'RAZER DEATHADDER V3 PRO WIRELESS GAMING MOUSE',
    'Mouse inalambrico ergonomico para diestros Razer DeathAdder V3 Pro de 63g con sensor optico Focus Pro 30K y switches opticos Razer de 3ra generacion.', 149.00, 18, TRUE);
 
 -- Galeria multi-vista de productos (estilo Promart) con angulos y etiquetas
@@ -1102,7 +1103,7 @@ FOR EACH ROW EXECUTE FUNCTION fn_auditoria_venta();
 ALTER TABLE tipo_documento      ALTER COLUMN id_tipo_documento      RESTART WITH 4;
 ALTER TABLE rol                 ALTER COLUMN id_rol                 RESTART WITH 5;
 ALTER TABLE categoria           ALTER COLUMN id_categoria           RESTART WITH 3;
-ALTER TABLE marca               ALTER COLUMN id_marca               RESTART WITH 11;
+ALTER TABLE marca               ALTER COLUMN id_marca               RESTART WITH 16;
 ALTER TABLE producto            ALTER COLUMN id_producto            RESTART WITH 9;
 ALTER TABLE producto_imagen     ALTER COLUMN id_producto_imagen     RESTART WITH 158;
 ALTER TABLE proveedor           ALTER COLUMN id_proveedor           RESTART WITH 21;
