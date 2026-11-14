@@ -1335,6 +1335,87 @@
             </button>
           </div>
 
+          <!-- Filtros Avanzados: Categoría, Marca, Rango de Precio y Ordenación -->
+          <div class="glass-panel p-3 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-900/70 shadow-xs flex flex-wrap items-center justify-between gap-3 text-xs">
+            <div class="flex flex-wrap items-center gap-2.5 flex-1">
+              <!-- Filtro Categoría -->
+              <div class="flex items-center gap-1.5">
+                <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Categoría:</span>
+                <select
+                  [ngModel]="filtroCategoriaProducto()"
+                  (ngModelChange)="filtroCategoriaProducto.set($event); paginaProductos.set(1)"
+                  class="bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-white px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 focus:outline-none focus:border-blue-500 font-medium">
+                  <option value="todas">Todas ({{ categorias().length }})</option>
+                  @for (c of categorias(); track c.idCategoria) {
+                    <option [ngValue]="c.idCategoria">{{ c.nombre }}</option>
+                  }
+                </select>
+              </div>
+
+              <!-- Filtro Marca -->
+              <div class="flex items-center gap-1.5">
+                <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Marca:</span>
+                <select
+                  [ngModel]="filtroMarcaProducto()"
+                  (ngModelChange)="filtroMarcaProducto.set($event); paginaProductos.set(1)"
+                  class="bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-white px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 focus:outline-none focus:border-blue-500 font-medium">
+                  <option value="todas">Todas ({{ marcas().length }})</option>
+                  @for (m of marcas(); track m.idMarca) {
+                    <option [ngValue]="m.idMarca">{{ m.nombre }}</option>
+                  }
+                </select>
+              </div>
+
+              <!-- Filtro Rango de Precio -->
+              <div class="flex items-center gap-1.5">
+                <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Precio S/:</span>
+                <div class="flex items-center gap-1">
+                  <input
+                    type="number"
+                    min="0"
+                    placeholder="Mín"
+                    [ngModel]="filtroPrecioMin()"
+                    (ngModelChange)="filtroPrecioMin.set($event !== null && $event !== '' ? +$event : null); paginaProductos.set(1)"
+                    class="w-20 bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-white px-2 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 focus:outline-none focus:border-blue-500 font-mono text-center text-xs"
+                  />
+                  <span class="text-slate-400 font-bold">-</span>
+                  <input
+                    type="number"
+                    min="0"
+                    placeholder="Máx"
+                    [ngModel]="filtroPrecioMax()"
+                    (ngModelChange)="filtroPrecioMax.set($event !== null && $event !== '' ? +$event : null); paginaProductos.set(1)"
+                    class="w-20 bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-white px-2 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 focus:outline-none focus:border-blue-500 font-mono text-center text-xs"
+                  />
+                </div>
+              </div>
+
+              <!-- Ordenar por Precio -->
+              <div class="flex items-center gap-1.5">
+                <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Orden:</span>
+                <select
+                  [ngModel]="filtroOrdenPrecio()"
+                  (ngModelChange)="filtroOrdenPrecio.set($event); paginaProductos.set(1)"
+                  class="bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-white px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 focus:outline-none focus:border-blue-500 font-medium">
+                  <option value="ninguno">Por Defecto</option>
+                  <option value="asc">Precio: Menor a Mayor</option>
+                  <option value="desc">Precio: Mayor a Menor</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Botón Limpiar Filtros -->
+            @if (hayFiltrosProductoActivos()) {
+              <button
+                type="button"
+                (click)="limpiarFiltrosProducto()"
+                class="px-3 py-1.5 rounded-xl text-xs font-semibold text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/60 border border-rose-200 dark:border-rose-800/50 transition-all flex items-center gap-1 cursor-pointer">
+                <span class="material-symbols-outlined text-sm">filter_alt_off</span>
+                <span>Limpiar Filtros</span>
+              </button>
+            }
+          </div>
+
           <!-- Tabla de Productos -->
           <div class="glass-panel rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 shadow-sm dark:shadow-xl overflow-x-auto">
             <table class="w-full text-left text-xs text-slate-700 dark:text-slate-300">
@@ -1522,6 +1603,7 @@
       <!-- ================= 6. IMÁGENES ================= -->
       @if (tabActiva() === 'imagenes') {
         <div class="space-y-4 animate-fadeIn">
+          <!-- Encabezado y Selector de Modo de Vista -->
           <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
             <div>
               <h2 class="text-xl font-black text-slate-900 dark:text-white font-heading flex items-center gap-2">
@@ -1529,16 +1611,36 @@
               </h2>
               <p class="text-xs text-slate-600 dark:text-slate-400">Total registradas: {{ imagenes().length }} imágenes vinculadas a productos</p>
             </div>
-            <div class="flex items-center gap-2.5 w-full sm:w-auto">
-              <select
-                [ngModel]="filtroProductoImagen()"
-                (ngModelChange)="filtroProductoImagen.set($event); paginaImagenes.set(1)"
-                class="bg-white dark:bg-slate-950 text-xs text-slate-900 dark:text-slate-200 px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500">
-                <option value="todos">Todos los Productos ({{ imagenes().length }})</option>
-                @for (p of productos(); track p.idProducto) {
-                  <option [ngValue]="p.idProducto">{{ p.nombre }}</option>
-                }
-              </select>
+
+            <div class="flex items-center gap-2 w-full sm:w-auto">
+              <!-- Selector de Vista: Carpetas vs Cuadrícula Plana -->
+              <div class="inline-flex p-1 rounded-xl bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs">
+                <button
+                  type="button"
+                  (click)="modoVistaImagenes.set('carpetas')"
+                  class="px-3 py-1.5 rounded-lg font-bold flex items-center gap-1.5 transition-all cursor-pointer"
+                  [class.bg-blue-600]="modoVistaImagenes() === 'carpetas'"
+                  [class.text-white]="modoVistaImagenes() === 'carpetas'"
+                  [class.shadow-xs]="modoVistaImagenes() === 'carpetas'"
+                  [class.text-slate-600]="modoVistaImagenes() !== 'carpetas'"
+                  [class.dark:text-slate-400]="modoVistaImagenes() !== 'carpetas'">
+                  <span class="material-symbols-outlined text-sm">folder_open</span>
+                  <span>Vista por Carpetas</span>
+                </button>
+                <button
+                  type="button"
+                  (click)="modoVistaImagenes.set('cuadricula')"
+                  class="px-3 py-1.5 rounded-lg font-bold flex items-center gap-1.5 transition-all cursor-pointer"
+                  [class.bg-blue-600]="modoVistaImagenes() === 'cuadricula'"
+                  [class.text-white]="modoVistaImagenes() === 'cuadricula'"
+                  [class.shadow-xs]="modoVistaImagenes() === 'cuadricula'"
+                  [class.text-slate-600]="modoVistaImagenes() !== 'cuadricula'"
+                  [class.dark:text-slate-400]="modoVistaImagenes() !== 'cuadricula'">
+                  <span class="material-symbols-outlined text-sm">grid_view</span>
+                  <span>Cuadrícula Plana</span>
+                </button>
+              </div>
+
               <button
                 (click)="abrirModalNuevaImagen()"
                 class="glow-button px-4 py-2 rounded-xl text-xs font-semibold text-white flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
@@ -1548,100 +1650,450 @@
             </div>
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-            @for (img of imagenesPaginadas(); track img.idProductoImagen) {
-              <div class="glass-panel rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 shadow-sm p-3.5 flex flex-col justify-between group hover:border-blue-500/50 hover:shadow-md transition-all">
-                <div class="space-y-2.5">
-                  <div class="aspect-square w-full rounded-xl bg-slate-50 dark:bg-slate-950 flex items-center justify-center overflow-hidden border border-slate-100 dark:border-slate-800/80 relative">
-                    <img [src]="img.urlImagen" [alt]="img.nombreProducto || getProductoDeImagen(img)?.nombre || 'Producto'" class="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform" />
-                    
-                    <!-- Badge Principal / Set Principal button -->
-                    <div class="absolute top-2 right-2">
-                      @if (img.esPrincipal) {
-                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500 text-white shadow-sm flex items-center gap-1">
-                          <span class="material-symbols-outlined text-xs">star</span> Principal
+          <!-- MODO 1: EXPLORADOR JERÁRQUICO POR CARPETAS (Categoría -> Marca -> Producto -> Galería) -->
+          @if (modoVistaImagenes() === 'carpetas') {
+            <div class="space-y-4">
+              <!-- Barra de Navegación / Breadcrumbs de Carpetas -->
+              <div class="glass-panel p-3 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-900/80 shadow-xs flex flex-wrap items-center justify-between gap-2 text-xs">
+                <div class="flex items-center gap-1.5 overflow-x-auto py-1">
+                  <!-- Botón Raíz -->
+                  <button
+                    type="button"
+                    (click)="irRaizCarpetas()"
+                    class="px-2.5 py-1 rounded-lg font-bold flex items-center gap-1 transition-colors cursor-pointer"
+                    [class.text-blue-600]="!carpetaCategoriaSel()"
+                    [class.dark:text-blue-400]="!carpetaCategoriaSel()"
+                    [class.bg-blue-50]="!carpetaCategoriaSel()"
+                    [class.dark:bg-blue-950/40]="!carpetaCategoriaSel()"
+                    [class.text-slate-600]="!!carpetaCategoriaSel()"
+                    [class.dark:text-slate-400]="!!carpetaCategoriaSel()"
+                    [class.hover:bg-slate-100]="!!carpetaCategoriaSel()"
+                    [class.dark:hover:bg-slate-800]="!!carpetaCategoriaSel()">
+                    <span class="material-symbols-outlined text-sm">folder</span>
+                    <span>Categorías</span>
+                  </button>
+
+                  <!-- Nivel Categoría -->
+                  @if (carpetaCategoriaSel()) {
+                    <span class="text-slate-400 font-bold">/</span>
+                    <button
+                      type="button"
+                      (click)="irACategoriaCarpetas()"
+                      class="px-2.5 py-1 rounded-lg font-bold flex items-center gap-1 transition-colors cursor-pointer"
+                      [class.text-blue-600]="!carpetaMarcaSel()"
+                      [class.dark:text-blue-400]="!carpetaMarcaSel()"
+                      [class.bg-blue-50]="!carpetaMarcaSel()"
+                      [class.dark:bg-blue-950/40]="!carpetaMarcaSel()"
+                      [class.text-slate-600]="!!carpetaMarcaSel()"
+                      [class.dark:text-slate-400]="!!carpetaMarcaSel()"
+                      [class.hover:bg-slate-100]="!!carpetaMarcaSel()"
+                      [class.dark:hover:bg-slate-800]="!!carpetaMarcaSel()">
+                      <span class="material-symbols-outlined text-sm">category</span>
+                      <span>{{ carpetaCategoriaSel()!.nombre }}</span>
+                    </button>
+                  }
+
+                  <!-- Nivel Marca -->
+                  @if (carpetaMarcaSel()) {
+                    <span class="text-slate-400 font-bold">/</span>
+                    <button
+                      type="button"
+                      (click)="irAMarcaCarpetas()"
+                      class="px-2.5 py-1 rounded-lg font-bold flex items-center gap-1 transition-colors cursor-pointer"
+                      [class.text-blue-600]="!carpetaProductoSel()"
+                      [class.dark:text-blue-400]="!carpetaProductoSel()"
+                      [class.bg-blue-50]="!carpetaProductoSel()"
+                      [class.dark:bg-blue-950/40]="!carpetaProductoSel()"
+                      [class.text-slate-600]="!!carpetaProductoSel()"
+                      [class.dark:text-slate-400]="!!carpetaProductoSel()"
+                      [class.hover:bg-slate-100]="!!carpetaProductoSel()"
+                      [class.dark:hover:bg-slate-800]="!!carpetaProductoSel()">
+                      <span class="material-symbols-outlined text-sm">verified</span>
+                      <span>{{ carpetaMarcaSel()!.nombre }}</span>
+                    </button>
+                  }
+
+                  <!-- Nivel Producto -->
+                  @if (carpetaProductoSel()) {
+                    <span class="text-slate-400 font-bold">/</span>
+                    <span class="px-2.5 py-1 rounded-lg font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/40 flex items-center gap-1">
+                      <span class="material-symbols-outlined text-sm">inventory_2</span>
+                      <span class="truncate max-w-[200px]">{{ carpetaProductoSel()!.nombre }}</span>
+                    </span>
+                  }
+                </div>
+
+                <!-- Botón Volver nivel superior -->
+                @if (carpetaProductoSel()) {
+                  <button
+                    type="button"
+                    (click)="irAMarcaCarpetas()"
+                    class="px-3 py-1 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors flex items-center gap-1 cursor-pointer">
+                    <span class="material-symbols-outlined text-sm">arrow_back</span>
+                    <span>Volver a {{ carpetaMarcaSel()!.nombre }}</span>
+                  </button>
+                } @else if (carpetaMarcaSel()) {
+                  <button
+                    type="button"
+                    (click)="irACategoriaCarpetas()"
+                    class="px-3 py-1 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors flex items-center gap-1 cursor-pointer">
+                    <span class="material-symbols-outlined text-sm">arrow_back</span>
+                    <span>Volver a {{ carpetaCategoriaSel()!.nombre }}</span>
+                  </button>
+                } @else if (carpetaCategoriaSel()) {
+                  <button
+                    type="button"
+                    (click)="irRaizCarpetas()"
+                    class="px-3 py-1 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors flex items-center gap-1 cursor-pointer">
+                    <span class="material-symbols-outlined text-sm">arrow_back</span>
+                    <span>Volver a Categorías</span>
+                  </button>
+                }
+              </div>
+
+              <!-- NIVEL 1: Lista de Carpetas de Categorías -->
+              @if (!carpetaCategoriaSel()) {
+                <div>
+                  <div class="mb-3 flex items-center justify-between">
+                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Selecciona una categoría de productos:</span>
+                    <span class="text-xs text-slate-400">{{ categorias().length }} carpetas</span>
+                  </div>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    @for (cat of categorias(); track cat.idCategoria) {
+                      <div
+                        (click)="seleccionarCarpetaCategoria(cat)"
+                        class="glass-panel p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 hover:border-blue-500 hover:shadow-md cursor-pointer transition-all group flex items-start gap-3.5">
+                        <div class="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-950/30 text-amber-500 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform shadow-xs">
+                          <span class="material-symbols-outlined text-2xl">folder</span>
+                        </div>
+                        <div class="min-w-0 flex-1">
+                          <h4 class="text-sm font-bold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors truncate">
+                            {{ cat.nombre }}
+                          </h4>
+                          <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-2">
+                            <span>{{ conteoProductosCategoria(cat.idCategoria) }} productos</span>
+                            <span>•</span>
+                            <span class="font-semibold text-blue-600 dark:text-blue-400">{{ conteoImagenesCategoria(cat.idCategoria) }} fotos</span>
+                          </p>
+                        </div>
+                        <span class="material-symbols-outlined text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:translate-x-0.5 transition-all self-center text-sm">chevron_right</span>
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
+
+              <!-- NIVEL 2: Lista de Carpetas de Marcas dentro de la Categoría -->
+              @if (carpetaCategoriaSel() && !carpetaMarcaSel()) {
+                <div>
+                  <div class="mb-3 flex items-center justify-between">
+                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Marcas con productos en {{ carpetaCategoriaSel()!.nombre }}:</span>
+                    <span class="text-xs text-slate-400">{{ marcasEnCategoria(carpetaCategoriaSel()!.idCategoria).length }} marcas</span>
+                  </div>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    @for (marca of marcasEnCategoria(carpetaCategoriaSel()!.idCategoria); track marca.idMarca) {
+                      <div
+                        (click)="seleccionarCarpetaMarca(marca)"
+                        class="glass-panel p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 hover:border-blue-500 hover:shadow-md cursor-pointer transition-all group flex items-start gap-3.5">
+                        <div class="w-12 h-12 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 flex items-center justify-center p-1.5 shrink-0 group-hover:scale-105 transition-transform">
+                          @if (marca.logoUrl) {
+                            <img [src]="marca.logoUrl" [alt]="marca.nombre" class="w-full h-full object-contain" />
+                          } @else {
+                            <span class="material-symbols-outlined text-blue-600 text-xl">folder_special</span>
+                          }
+                        </div>
+                        <div class="min-w-0 flex-1">
+                          <h4 class="text-sm font-bold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors truncate">
+                            {{ marca.nombre }}
+                          </h4>
+                          <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-2">
+                            <span>{{ conteoProductosMarcaEnCat(carpetaCategoriaSel()!.idCategoria, marca.idMarca) }} productos</span>
+                            <span>•</span>
+                            <span class="font-semibold text-blue-600 dark:text-blue-400">{{ conteoImagenesMarcaEnCat(carpetaCategoriaSel()!.idCategoria, marca.idMarca) }} fotos</span>
+                          </p>
+                        </div>
+                        <span class="material-symbols-outlined text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:translate-x-0.5 transition-all self-center text-sm">chevron_right</span>
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
+
+              <!-- NIVEL 3: Lista de Carpetas de Productos dentro de Marca y Categoría -->
+              @if (carpetaMarcaSel() && !carpetaProductoSel()) {
+                <div>
+                  <div class="mb-3 flex items-center justify-between">
+                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Productos de {{ carpetaMarcaSel()!.nombre }} en {{ carpetaCategoriaSel()!.nombre }}:</span>
+                    <span class="text-xs text-slate-400">{{ productosEnMarcaYCategoria(carpetaCategoriaSel()!.idCategoria, carpetaMarcaSel()!.idMarca).length }} productos</span>
+                  </div>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    @for (prod of productosEnMarcaYCategoria(carpetaCategoriaSel()!.idCategoria, carpetaMarcaSel()!.idMarca); track prod.idProducto) {
+                      <div
+                        (click)="seleccionarCarpetaProducto(prod)"
+                        class="glass-panel p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 hover:border-blue-500 hover:shadow-md cursor-pointer transition-all group flex flex-col justify-between">
+                        <div class="space-y-3">
+                          <div class="flex items-center justify-between text-[11px]">
+                            <span class="font-mono font-bold text-xs bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded text-slate-700 dark:text-slate-300">
+                              {{ prod.codigoSku }}
+                            </span>
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                              {{ conteoImagenesProducto(prod.idProducto) }} fotos
+                            </span>
+                          </div>
+
+                          <div class="aspect-video w-full rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 flex items-center justify-center overflow-hidden p-2">
+                            @if (imagenesDeProducto(prod.idProducto).length > 0) {
+                              <img [src]="imagenesDeProducto(prod.idProducto)[0].urlImagen" [alt]="prod.nombre" class="w-full h-full object-contain group-hover:scale-105 transition-transform" />
+                            } @else {
+                              <span class="material-symbols-outlined text-slate-400 text-3xl">image_not_supported</span>
+                            }
+                          </div>
+
+                          <h4 class="text-xs font-bold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2 leading-snug">
+                            {{ prod.nombre }}
+                          </h4>
+                        </div>
+
+                        <div class="pt-3 mt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
+                          <span class="font-mono font-bold text-blue-600 dark:text-blue-400">
+                            S/ {{ (prod.precioVenta || 0) | number:'1.2-2' }}
+                          </span>
+                          <span class="text-[11px] font-semibold text-slate-500 group-hover:text-blue-600 dark:group-hover:text-blue-400 flex items-center gap-0.5">
+                            <span>Ver galería</span>
+                            <span class="material-symbols-outlined text-xs">arrow_forward</span>
+                          </span>
+                        </div>
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
+
+              <!-- NIVEL 4: Galería de Fotos del Producto Seleccionado -->
+              @if (carpetaProductoSel()) {
+                <div class="space-y-4">
+                  <!-- Cabecera Informativa del Producto -->
+                  <div class="glass-panel p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div class="space-y-1">
+                      <div class="flex items-center gap-2">
+                        <span class="font-mono font-bold text-xs bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded text-slate-700 dark:text-slate-300">
+                          SKU: {{ carpetaProductoSel()!.codigoSku }}
                         </span>
-                      } @else {
-                        <button
-                          (click)="establecerImagenPrincipal(img.idProductoImagen)"
-                          class="opacity-0 group-hover:opacity-100 px-2 py-0.5 rounded-full text-[10px] font-bold bg-white/90 dark:bg-slate-900/90 text-slate-700 dark:text-slate-300 hover:text-amber-600 border border-slate-200 dark:border-slate-700 shadow-sm flex items-center gap-1 transition-all cursor-pointer"
-                          title="Establecer como imagen principal de este producto">
-                          <span class="material-symbols-outlined text-xs">star_border</span> Hacer Principal
-                        </button>
+                        <span class="text-xs text-slate-400">•</span>
+                        <span class="text-xs font-semibold text-blue-600 dark:text-blue-400">{{ carpetaMarcaSel()!.nombre }}</span>
+                        <span class="text-xs text-slate-400">•</span>
+                        <span class="text-xs font-semibold text-slate-500">{{ carpetaCategoriaSel()!.nombre }}</span>
+                      </div>
+                      <h3 class="text-base font-bold text-slate-900 dark:text-white">
+                        {{ carpetaProductoSel()!.nombre }}
+                      </h3>
+                      <p class="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-3">
+                        <span>Precio: <strong class="text-slate-900 dark:text-white font-mono">S/ {{ (carpetaProductoSel()!.precioVenta || 0) | number:'1.2-2' }}</strong></span>
+                        <span>Stock: <strong class="text-slate-900 dark:text-white font-mono">{{ carpetaProductoSel()!.stock || 0 }} uds.</strong></span>
+                        <span>Total fotos: <strong class="text-blue-600 dark:text-blue-400 font-mono">{{ imagenesDeProducto(carpetaProductoSel()!.idProducto).length }}</strong></span>
+                      </p>
+                    </div>
+
+                    <button
+                      type="button"
+                      (click)="abrirModalNuevaImagen(carpetaProductoSel()!.idProducto)"
+                      class="glow-button px-4 py-2 rounded-xl text-xs font-semibold text-white flex items-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0">
+                      <span class="material-symbols-outlined text-sm">add_photo_alternate</span>
+                      <span>Subir foto a este producto</span>
+                    </button>
+                  </div>
+
+                  <!-- Cuadrícula de Fotos del Producto -->
+                  @if (imagenesDeProducto(carpetaProductoSel()!.idProducto).length === 0) {
+                    <div class="p-8 text-center glass-panel rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/40">
+                      <span class="material-symbols-outlined text-4xl text-slate-400 mb-2">add_photo_alternate</span>
+                      <p class="text-sm font-bold text-slate-700 dark:text-slate-300">Este producto aún no tiene fotos vinculadas</p>
+                      <button
+                        (click)="abrirModalNuevaImagen(carpetaProductoSel()!.idProducto)"
+                        class="mt-3 glow-button px-4 py-2 rounded-xl text-xs font-semibold text-white inline-flex items-center gap-1.5 cursor-pointer">
+                        <span class="material-symbols-outlined text-sm">upload</span>
+                        <span>Subir la primera foto</span>
+                      </button>
+                    </div>
+                  } @else {
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                      @for (img of imagenesDeProducto(carpetaProductoSel()!.idProducto); track img.idProductoImagen) {
+                        <div
+                          class="glass-panel rounded-2xl overflow-hidden border bg-white dark:bg-slate-900/60 shadow-sm p-3.5 flex flex-col justify-between group transition-all"
+                          [class.border-amber-400]="img.esPrincipal"
+                          [class.dark:border-amber-500]="img.esPrincipal"
+                          [class.ring-2]="img.esPrincipal"
+                          [class.ring-amber-400/40]="img.esPrincipal"
+                          [class.border-slate-200]="!img.esPrincipal"
+                          [class.dark:border-slate-800]="!img.esPrincipal">
+                          <div class="space-y-2.5">
+                            <div class="aspect-square w-full rounded-xl bg-slate-50 dark:bg-slate-950 flex items-center justify-center overflow-hidden border border-slate-100 dark:border-slate-800/80 relative">
+                              <img [src]="img.urlImagen" [alt]="carpetaProductoSel()!.nombre" class="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform" />
+
+                              <!-- Badge Principal / Botón para hacer principal -->
+                              <div class="absolute top-2 right-2">
+                                @if (img.esPrincipal) {
+                                  <span class="px-2.5 py-1 rounded-full text-[10px] font-black bg-amber-500 text-white shadow-md flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-xs">star</span> PORTADA (PRINCIPAL)
+                                  </span>
+                                } @else {
+                                  <button
+                                    (click)="establecerImagenPrincipal(img.idProductoImagen)"
+                                    class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-white/95 dark:bg-slate-900/95 text-slate-700 dark:text-slate-300 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/40 border border-slate-300 dark:border-slate-700 shadow-sm flex items-center gap-1 transition-all cursor-pointer"
+                                    title="Establecer esta foto como la portada principal del producto">
+                                    <span class="material-symbols-outlined text-xs">star_border</span> Hacer Principal
+                                  </button>
+                                }
+                              </div>
+                            </div>
+
+                            <div class="flex items-center justify-between text-[11px] pt-1">
+                              <span class="font-mono text-slate-500 dark:text-slate-400 font-semibold">ID #{{ img.idProductoImagen }}</span>
+                              @if (img.esPrincipal) {
+                                <span class="text-[10px] font-bold text-amber-600 dark:text-amber-400 flex items-center gap-0.5">
+                                  <span class="material-symbols-outlined text-xs">verified</span> Visible en la Tienda
+                                </span>
+                              } @else {
+                                <span class="text-[10px] text-slate-400">Foto secundaria</span>
+                              }
+                            </div>
+                          </div>
+
+                          <div class="pt-2.5 mt-2.5 border-t border-slate-100 dark:border-slate-800/60 flex items-center justify-between gap-1">
+                            <a [href]="img.urlImagen" target="_blank" class="p-1.5 rounded-lg text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white text-xs hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex items-center gap-1" title="Ver imagen original en Supabase">
+                              <span class="material-symbols-outlined text-sm">open_in_new</span>
+                              <span class="text-[10px]">Ver</span>
+                            </a>
+                            <button (click)="abrirModalEditarImagen(img)" class="p-1.5 rounded-lg text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 dark:text-indigo-400 dark:hover:text-indigo-300 dark:hover:bg-indigo-500/10 text-xs transition-colors flex items-center gap-1 cursor-pointer" title="Editar producto vinculado o imagen">
+                              <span class="material-symbols-outlined text-sm">edit</span>
+                              <span class="text-[10px]">Editar</span>
+                            </button>
+                            <button (click)="eliminarImagen(img.idProductoImagen)" class="p-1.5 rounded-lg text-red-500 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-500/10 text-xs transition-colors flex items-center gap-1 cursor-pointer" title="Eliminar imagen permanentemente">
+                              <span class="material-symbols-outlined text-sm">delete</span>
+                              <span class="text-[10px]">Eliminar</span>
+                            </button>
+                          </div>
+                        </div>
                       }
                     </div>
-                  </div>
+                  }
+                </div>
+              }
+            </div>
+          }
 
-                  <div class="space-y-1">
-                    <div class="flex items-center justify-between text-[11px]">
-                      <span class="font-mono text-slate-500 dark:text-slate-400 font-semibold">#{{ img.idProductoImagen }}</span>
-                      <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300 border border-blue-200 dark:border-blue-800/40">
-                        {{ getProductoDeImagen(img)?.marca?.nombre || img.marcaProducto || 'Oficial' }}
-                      </span>
-                    </div>
+          <!-- MODO 2: VISTA DE CUADRÍCULA PLANA CON PAGINACIÓN (Vista clásica) -->
+          @if (modoVistaImagenes() === 'cuadricula') {
+            <div class="space-y-4">
+              <div class="flex items-center justify-between gap-3 p-3 rounded-2xl glass-panel border border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-900/80">
+                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Filtrar por producto:</span>
+                <select
+                  [ngModel]="filtroProductoImagen()"
+                  (ngModelChange)="filtroProductoImagen.set($event); paginaImagenes.set(1)"
+                  class="bg-white dark:bg-slate-950 text-xs text-slate-900 dark:text-slate-200 px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500">
+                  <option value="todos">Todos los Productos ({{ imagenes().length }})</option>
+                  @for (p of productos(); track p.idProducto) {
+                    <option [ngValue]="p.idProducto">{{ p.nombre }}</option>
+                  }
+                </select>
+              </div>
 
-                    <h4 class="text-xs font-bold text-slate-900 dark:text-white line-clamp-2 leading-snug" [title]="getProductoDeImagen(img)?.nombre || img.nombreProducto || 'Sin producto'">
-                      {{ getProductoDeImagen(img)?.nombre || img.nombreProducto || 'Sin producto asignado' }}
-                    </h4>
-
-                    <div class="flex items-center justify-between pt-1.5 gap-2">
-                      <div class="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 shadow-xs">
-                        <span class="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase">SKU:</span>
-                        <span class="font-mono font-black text-xs text-slate-900 dark:text-white tracking-wide">{{ getProductoDeImagen(img)?.codigoSku || img.skuProducto || 'N/A' }}</span>
+              <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                @for (img of imagenesPaginadas(); track img.idProductoImagen) {
+                  <div class="glass-panel rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 shadow-sm p-3.5 flex flex-col justify-between group hover:border-blue-500/50 hover:shadow-md transition-all">
+                    <div class="space-y-2.5">
+                      <div class="aspect-square w-full rounded-xl bg-slate-50 dark:bg-slate-950 flex items-center justify-center overflow-hidden border border-slate-100 dark:border-slate-800/80 relative">
+                        <img [src]="img.urlImagen" [alt]="img.nombreProducto || getProductoDeImagen(img)?.nombre || 'Producto'" class="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform" />
+                        
+                        <!-- Badge Principal / Set Principal button -->
+                        <div class="absolute top-2 right-2">
+                          @if (img.esPrincipal) {
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500 text-white shadow-sm flex items-center gap-1">
+                              <span class="material-symbols-outlined text-xs">star</span> Principal
+                            </span>
+                          } @else {
+                            <button
+                              (click)="establecerImagenPrincipal(img.idProductoImagen)"
+                              class="opacity-0 group-hover:opacity-100 px-2 py-0.5 rounded-full text-[10px] font-bold bg-white/90 dark:bg-slate-900/90 text-slate-700 dark:text-slate-300 hover:text-amber-600 border border-slate-200 dark:border-slate-700 shadow-sm flex items-center gap-1 transition-all cursor-pointer"
+                              title="Establecer como imagen principal de este producto">
+                              <span class="material-symbols-outlined text-xs">star_border</span> Hacer Principal
+                            </button>
+                          }
+                        </div>
                       </div>
-                      <span class="text-sm font-black text-blue-600 dark:text-blue-400 font-mono whitespace-nowrap">
-                        S/ {{ (getProductoDeImagen(img)?.precioVenta || img.precioProducto || 0) | number:'1.2-2' }}
-                      </span>
+
+                      <div class="space-y-1">
+                        <div class="flex items-center justify-between text-[11px]">
+                          <span class="font-mono text-slate-500 dark:text-slate-400 font-semibold">#{{ img.idProductoImagen }}</span>
+                          <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300 border border-blue-200 dark:border-blue-800/40">
+                            {{ getProductoDeImagen(img)?.marca?.nombre || img.marcaProducto || 'Oficial' }}
+                          </span>
+                        </div>
+
+                        <h4 class="text-xs font-bold text-slate-900 dark:text-white line-clamp-2 leading-snug" [title]="getProductoDeImagen(img)?.nombre || img.nombreProducto || 'Sin producto'">
+                          {{ getProductoDeImagen(img)?.nombre || img.nombreProducto || 'Sin producto asignado' }}
+                        </h4>
+
+                        <div class="flex items-center justify-between pt-1.5 gap-2">
+                          <div class="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 shadow-xs">
+                            <span class="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase">SKU:</span>
+                            <span class="font-mono font-black text-xs text-slate-900 dark:text-white tracking-wide">{{ getProductoDeImagen(img)?.codigoSku || img.skuProducto || 'N/A' }}</span>
+                          </div>
+                          <span class="text-sm font-black text-blue-600 dark:text-blue-400 font-mono whitespace-nowrap">
+                            S/ {{ (getProductoDeImagen(img)?.precioVenta || img.precioProducto || 0) | number:'1.2-2' }}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="pt-2.5 mt-2.5 border-t border-slate-100 dark:border-slate-800/60 flex items-center justify-between gap-1">
+                      <a [href]="img.urlImagen" target="_blank" class="p-1.5 rounded-lg text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white text-xs hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex items-center gap-1" title="Ver imagen original en Supabase">
+                        <span class="material-symbols-outlined text-sm">open_in_new</span>
+                        <span class="text-[10px]">Ver</span>
+                      </a>
+                      <button (click)="abrirModalEditarImagen(img)" class="p-1.5 rounded-lg text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 dark:text-indigo-400 dark:hover:text-indigo-300 dark:hover:bg-indigo-500/10 text-xs transition-colors flex items-center gap-1 cursor-pointer" title="Editar producto vinculado o imagen">
+                        <span class="material-symbols-outlined text-sm">edit</span>
+                        <span class="text-[10px]">Editar</span>
+                      </button>
+                      <button (click)="eliminarImagen(img.idProductoImagen)" class="p-1.5 rounded-lg text-red-500 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-500/10 text-xs transition-colors flex items-center gap-1 cursor-pointer" title="Eliminar imagen permanentemente">
+                        <span class="material-symbols-outlined text-sm">delete</span>
+                        <span class="text-[10px]">Eliminar</span>
+                      </button>
                     </div>
                   </div>
-                </div>
-
-                <div class="pt-2.5 mt-2.5 border-t border-slate-100 dark:border-slate-800/60 flex items-center justify-between gap-1">
-                  <a [href]="img.urlImagen" target="_blank" class="p-1.5 rounded-lg text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white text-xs hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex items-center gap-1" title="Ver imagen original en Supabase">
-                    <span class="material-symbols-outlined text-sm">open_in_new</span>
-                    <span class="text-[10px]">Ver</span>
-                  </a>
-                  <button (click)="abrirModalEditarImagen(img)" class="p-1.5 rounded-lg text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 dark:text-indigo-400 dark:hover:text-indigo-300 dark:hover:bg-indigo-500/10 text-xs transition-colors flex items-center gap-1 cursor-pointer" title="Editar producto vinculado o imagen">
-                    <span class="material-symbols-outlined text-sm">edit</span>
-                    <span class="text-[10px]">Editar</span>
-                  </button>
-                  <button (click)="eliminarImagen(img.idProductoImagen)" class="p-1.5 rounded-lg text-red-500 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-500/10 text-xs transition-colors flex items-center gap-1 cursor-pointer" title="Eliminar imagen permanentemente">
-                    <span class="material-symbols-outlined text-sm">delete</span>
-                    <span class="text-[10px]">Eliminar</span>
-                  </button>
-                </div>
+                }
               </div>
-            }
-          </div>
 
-          <!-- Paginación de Imágenes (Unificada a 15 por página) -->
-          @if (totalPaginasImagenes() > 1) {
-            <div class="glass-panel rounded-2xl p-3 border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 bg-white/80 dark:bg-slate-900/60 shadow-xs">
-              <span class="text-xs text-slate-600 dark:text-slate-400 font-medium flex items-center gap-1.5">
-                <span class="material-symbols-outlined text-sm text-blue-600 dark:text-blue-400">auto_stories</span>
-                <span>Página <strong class="text-blue-600 dark:text-blue-400 font-black">{{ paginaImagenes() }}</strong> de <strong class="text-slate-900 dark:text-white font-black">{{ totalPaginasImagenes() }}</strong></span>
-                <span class="text-slate-400 dark:text-slate-600 mx-1">•</span>
-                <span class="text-slate-500 dark:text-slate-400 font-medium">{{ imagenesFiltradas().length }} imágenes</span>
-              </span>
+              <!-- Paginación de Imágenes (Unificada a 15 por página) -->
+              @if (totalPaginasImagenes() > 1) {
+                <div class="glass-panel rounded-2xl p-3 border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 bg-white/80 dark:bg-slate-900/60 shadow-xs">
+                  <span class="text-xs text-slate-600 dark:text-slate-400 font-medium flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-sm text-blue-600 dark:text-blue-400">auto_stories</span>
+                    <span>Página <strong class="text-blue-600 dark:text-blue-400 font-black">{{ paginaImagenes() }}</strong> de <strong class="text-slate-900 dark:text-white font-black">{{ totalPaginasImagenes() }}</strong></span>
+                    <span class="text-slate-400 dark:text-slate-600 mx-1">•</span>
+                    <span class="text-slate-500 dark:text-slate-400 font-medium">{{ imagenesFiltradas().length }} imágenes</span>
+                  </span>
 
-              <div class="flex items-center gap-2">
-                <button
-                  (click)="paginaImagenes.set(paginaImagenes() - 1)"
-                  [disabled]="paginaImagenes() <= 1"
-                  class="px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs border cursor-pointer active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 border-slate-300 dark:border-slate-700 hover:bg-blue-50 dark:hover:bg-blue-950/40 hover:text-blue-700 dark:hover:text-blue-300 hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-sm"
-                  title="Ir a página anterior">
-                  <span class="material-symbols-outlined text-sm">chevron_left</span>
-                  <span>Anterior</span>
-                </button>
-                <button
-                  (click)="paginaImagenes.set(paginaImagenes() + 1)"
-                  [disabled]="paginaImagenes() >= totalPaginasImagenes()"
-                  class="px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs border cursor-pointer active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 border-slate-300 dark:border-slate-700 hover:bg-blue-50 dark:hover:bg-blue-950/40 hover:text-blue-700 dark:hover:text-blue-300 hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-sm"
-                  title="Ir a página siguiente">
-                  <span>Siguiente</span>
-                  <span class="material-symbols-outlined text-sm">chevron_right</span>
-                </button>
-              </div>
+                  <div class="flex items-center gap-2">
+                    <button
+                      (click)="paginaImagenes.set(paginaImagenes() - 1)"
+                      [disabled]="paginaImagenes() <= 1"
+                      class="px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs border cursor-pointer active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 border-slate-300 dark:border-slate-700 hover:bg-blue-50 dark:hover:bg-blue-950/40 hover:text-blue-700 dark:hover:text-blue-300 hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-sm"
+                      title="Ir a página anterior">
+                      <span class="material-symbols-outlined text-sm">chevron_left</span>
+                      <span>Anterior</span>
+                    </button>
+                    <button
+                      (click)="paginaImagenes.set(paginaImagenes() + 1)"
+                      [disabled]="paginaImagenes() >= totalPaginasImagenes()"
+                      class="px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs border cursor-pointer active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 border-slate-300 dark:border-slate-700 hover:bg-blue-50 dark:hover:bg-blue-950/40 hover:text-blue-700 dark:hover:text-blue-300 hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-sm"
+                      title="Ir a página siguiente">
+                      <span>Siguiente</span>
+                      <span class="material-symbols-outlined text-sm">chevron_right</span>
+                    </button>
+                  </div>
+                </div>
+              }
             </div>
           }
         </div>

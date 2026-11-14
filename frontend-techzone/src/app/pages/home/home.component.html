@@ -102,41 +102,41 @@
     </div>
   </section>
 
-  <!-- Categories Grid -->
+  <!-- Categories Bar (Unificada, sin iconos repetidos) -->
   @if (categorias().length > 0) {
     <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between mb-8">
+      <div class="flex items-center justify-between mb-5">
         <div>
-          <h2 class="text-2xl font-bold text-slate-900 dark:text-white font-heading">Categorías Principales</h2>
-          <p class="text-sm text-slate-500 dark:text-slate-400">Encuentra los componentes que necesitas</p>
+          <h2 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white font-heading">Categorías Principales</h2>
+          <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">Encuentra los componentes que necesitas</p>
         </div>
-        <a routerLink="/productos" class="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 flex items-center gap-1">
+        <a routerLink="/productos" class="text-xs sm:text-sm font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 flex items-center gap-1">
           Ver todas <span class="material-symbols-outlined text-base">arrow_forward</span>
         </a>
       </div>
 
-      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+      <!-- Barra integrada de categorías -->
+      <div class="p-2 sm:p-2.5 rounded-2xl bg-white/70 dark:bg-[#070f26]/80 backdrop-blur-xl border border-blue-500/25 shadow-lg shadow-blue-950/15 flex flex-wrap items-center justify-center gap-2 sm:gap-2.5">
         @for (cat of categorias(); track cat.idCategoria) {
           <a
             [routerLink]="['/productos']"
             [queryParams]="{ categoria: cat.idCategoria }"
-            class="glass-panel p-5 rounded-2xl flex flex-col items-center justify-center text-center hover:border-blue-500/50 hover:bg-slate-100/60 dark:hover:bg-slate-900/80 transition-all group">
-            <div class="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-blue-600 dark:text-blue-400 group-hover:scale-110 group-hover:bg-blue-500/20 transition-all mb-3">
-              <span class="material-symbols-outlined text-2xl">memory</span>
-            </div>
-            <span class="text-xs font-semibold text-slate-800 dark:text-slate-200 group-hover:text-blue-600 dark:group-hover:text-white transition-colors">{{ cat.nombre }}</span>
+            class="group relative px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl font-semibold text-xs sm:text-sm text-slate-700 dark:text-slate-200 bg-white/60 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 hover:border-blue-500/60 hover:bg-gradient-to-r hover:from-blue-600 hover:to-indigo-600 hover:text-white hover:shadow-md hover:shadow-blue-500/25 transition-all duration-300 flex items-center gap-2">
+            <span class="w-1.5 h-1.5 rounded-full bg-blue-500 group-hover:bg-white transition-colors"></span>
+            <span>{{ cat.nombre }}</span>
           </a>
         }
       </div>
     </section>
   }
 
-  <!-- Featured Products Section -->
-  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <!-- Featured Products Section (9 por página con paginación) -->
+  <section id="seccion-productos" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-24">
     <div class="flex items-center justify-between mb-8">
       <div>
         <span class="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest">Lo Más Pedido</span>
         <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white font-heading">Productos Destacados</h2>
+        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Mostrando 9 por página para una navegación ligera y rápida</p>
       </div>
       <a routerLink="/productos" class="glow-button px-4 py-2 rounded-xl text-xs font-semibold text-white">
         Ver Todo el Catálogo
@@ -144,17 +144,61 @@
     </div>
 
     @if (cargando()) {
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        @for (i of [1,2,3,4]; track i) {
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        @for (i of [1,2,3,4,5,6,7,8,9]; track i) {
           <div class="glass-card rounded-2xl h-80 animate-pulse bg-slate-200 dark:bg-slate-900/50"></div>
         }
       </div>
-    } @else if (destacados().length > 0) {
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        @for (prod of destacados(); track prod.idProducto) {
+    } @else if (productosPaginados().length > 0) {
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        @for (prod of productosPaginados(); track prod.idProducto) {
           <app-product-card [producto]="prod" />
         }
       </div>
+
+      <!-- Controles de Paginación en Home -->
+      @if (totalPaginas() > 1) {
+        <div class="mt-10 flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-2xl glass-panel border border-blue-500/20">
+          <span class="text-xs text-slate-600 dark:text-slate-400 font-medium">
+            Página {{ paginaActual() }} de {{ totalPaginas() }} ({{ destacados().length }} productos en total)
+          </span>
+
+          <div class="flex items-center gap-2">
+            <button
+              (click)="cambiarPagina(paginaActual() - 1)"
+              [disabled]="paginaActual() === 1"
+              class="px-3 py-1.5 rounded-xl text-xs font-semibold border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-1 cursor-pointer">
+              <span class="material-symbols-outlined text-base">chevron_left</span> Anterior
+            </button>
+
+            @for (pag of paginasArray(); track pag) {
+              <button
+                (click)="cambiarPagina(pag)"
+                class="w-8 h-8 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center border"
+                [class.bg-blue-600]="paginaActual() === pag"
+                [class.text-white]="paginaActual() === pag"
+                [class.border-blue-600]="paginaActual() === pag"
+                [class.shadow-md]="paginaActual() === pag"
+                [class.shadow-blue-500/30]="paginaActual() === pag"
+                [class.bg-white]="paginaActual() !== pag"
+                [class.dark:bg-slate-900]="paginaActual() !== pag"
+                [class.text-slate-700]="paginaActual() !== pag"
+                [class.dark:text-slate-300]="paginaActual() !== pag"
+                [class.border-slate-300]="paginaActual() !== pag"
+                [class.dark:border-slate-800]="paginaActual() !== pag">
+                {{ pag }}
+              </button>
+            }
+
+            <button
+              (click)="cambiarPagina(paginaActual() + 1)"
+              [disabled]="paginaActual() === totalPaginas()"
+              class="px-3 py-1.5 rounded-xl text-xs font-semibold border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-1 cursor-pointer">
+              Siguiente <span class="material-symbols-outlined text-base">chevron_right</span>
+            </button>
+          </div>
+        </div>
+      }
     } @else {
       <div class="text-center py-12 glass-panel rounded-2xl">
         <span class="material-symbols-outlined text-4xl text-slate-400 dark:text-slate-500 mb-2 block">inventory_2</span>

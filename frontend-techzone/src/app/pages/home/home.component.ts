@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { ProductoService } from '../../services/producto.service';
@@ -18,6 +18,35 @@ export class HomeComponent implements OnInit {
   categorias = signal<Categoria[]>([]);
   marcas = signal<Marca[]>([]);
   cargando = signal(true);
+
+  // Paginacion en Home a 9 productos
+  readonly porPagina = 9;
+  paginaActual = signal(1);
+
+  totalPaginas = computed(() => {
+    const total = this.destacados().length;
+    return Math.max(1, Math.ceil(total / this.porPagina));
+  });
+
+  productosPaginados = computed(() => {
+    const inicio = (this.paginaActual() - 1) * this.porPagina;
+    return this.destacados().slice(inicio, inicio + this.porPagina);
+  });
+
+  paginasArray = computed(() => {
+    const total = this.totalPaginas();
+    return Array.from({ length: total }, (_, i) => i + 1);
+  });
+
+  cambiarPagina(nuevaPagina: number): void {
+    if (nuevaPagina >= 1 && nuevaPagina <= this.totalPaginas()) {
+      this.paginaActual.set(nuevaPagina);
+      const el = document.getElementById('seccion-productos');
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+  }
 
   heroSlides = [
     {

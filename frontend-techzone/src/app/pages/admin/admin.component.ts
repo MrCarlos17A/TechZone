@@ -115,6 +115,14 @@ export class AdminComponent implements OnInit {
   detallesVenta = signal<DetalleVentaAdmin[]>([]);
   imagenes = signal<ProductoImagenAdmin[]>([]);
   filtroProductoImagen = signal<number | 'todos'>('todos');
+  
+  // Explorador Jerárquico de Galería de Imágenes (Supabase Storage: Categoría -> Marca -> Producto)
+  modoVistaImagenes = signal<'carpetas' | 'cuadricula'>('carpetas');
+  carpetaCategoriaSel = signal<Categoria | null>(null);
+  carpetaMarcaSel = signal<Marca | null>(null);
+  carpetaProductoSel = signal<Producto | null>(null);
+  busquedaExploradorImagenes = signal<string>('');
+
   mostrarModalNuevaImagen = signal(false);
   idProductoParaImagen = signal<number | null>(null);
   urlNuevaImagen = signal('');
@@ -322,8 +330,34 @@ export class AdminComponent implements OnInit {
   // Productos
   filtroProductos = signal('');
   filtroStockProducto = signal<'todos' | 'critico' | 'agotado' | 'disponible'>('todos');
+  filtroCategoriaProducto = signal<number | 'todas'>('todas');
+  filtroMarcaProducto = signal<number | 'todas'>('todas');
+  filtroPrecioMin = signal<number | null>(null);
+  filtroPrecioMax = signal<number | null>(null);
+  filtroOrdenPrecio = signal<'ninguno' | 'asc' | 'desc'>('ninguno');
   paginaProductos = signal(1);
   tamanoProductos = signal(15);
+
+  hayFiltrosProductoActivos = computed(() => {
+    return !!this.filtroProductos().trim() ||
+      this.filtroStockProducto() !== 'todos' ||
+      this.filtroCategoriaProducto() !== 'todas' ||
+      this.filtroMarcaProducto() !== 'todas' ||
+      this.filtroPrecioMin() !== null ||
+      this.filtroPrecioMax() !== null ||
+      this.filtroOrdenPrecio() !== 'ninguno';
+  });
+
+  limpiarFiltrosProducto(): void {
+    this.filtroProductos.set('');
+    this.filtroStockProducto.set('todos');
+    this.filtroCategoriaProducto.set('todas');
+    this.filtroMarcaProducto.set('todas');
+    this.filtroPrecioMin.set(null);
+    this.filtroPrecioMax.set(null);
+    this.filtroOrdenPrecio.set('ninguno');
+    this.paginaProductos.set(1);
+  }
 
   // Ventas y Filtros Multidimensionales
   filtroVentas = signal('');
@@ -1272,8 +1306,13 @@ export class AdminComponent implements OnInit {
   productosFiltrados = computed(() => {
     const q = this.filtroProductos().toLowerCase().trim();
     const stockFiltro = this.filtroStockProducto();
+    const catFiltro = this.filtroCategoriaProducto();
+    const marcaFiltro = this.filtroMarcaProducto();
+    const pMin = this.filtroPrecioMin();
+    const pMax = this.filtroPrecioMax();
+    const ordenPrecio = this.filtroOrdenPrecio();
 
-    return this.productos().filter(p => {
+    let list = this.productos().filter(p => {
       const matchQ = !q ||
         (p.nombre && p.nombre.toLowerCase().includes(q)) ||
         (p.codigoSku && p.codigoSku.toLowerCase().includes(q)) ||
@@ -1286,8 +1325,23 @@ export class AdminComponent implements OnInit {
       else if (stockFiltro === 'agotado') matchStock = s <= 0;
       else if (stockFiltro === 'disponible') matchStock = s > 5;
 
-      return matchQ && matchStock;
+      const matchCat = catFiltro === 'todas' || p.categoria?.idCategoria === Number(catFiltro);
+      const matchMarca = marcaFiltro === 'todas' || p.marca?.idMarca === Number(marcaFiltro);
+
+      const precio = p.precioVenta ?? 0;
+      const matchPMin = pMin === null || precio >= pMin;
+      const matchPMax = pMax === null || precio <= pMax;
+
+      return matchQ && matchStock && matchCat && matchMarca && matchPMin && matchPMax;
     });
+
+    if (ordenPrecio === 'asc') {
+      list = [...list].sort((a, b) => (a.precioVenta ?? 0) - (b.precioVenta ?? 0));
+    } else if (ordenPrecio === 'desc') {
+      list = [...list].sort((a, b) => (b.precioVenta ?? 0) - (a.precioVenta ?? 0));
+    }
+
+    return list;
   });
 
   verEnGestorStockCritico(prod?: Producto): void {
@@ -2786,6 +2840,86 @@ export class AdminComponent implements OnInit {
       if (matchFallback) return matchFallback;
     }
     return undefined;
+  }
+
+  // Métodos de navegación del Explorador de Imágenes
+  seleccionarCarpetaCategoria(cat: Categoria): void {
+    this.carpetaCategoriaSel.set(cat);
+    this.carpetaMarcaSel.set(null);
+    this.carpetaProductoSel.set(null);
+  }
+
+  seleccionarCarpetaMarca(marca: Marca): void {
+    this.carpetaMarcaSel.set(marca);
+    this.carpetaProductoSel.set(null);
+  }
+
+  seleccionarCarpetaProducto(prod: Producto): void {
+    this.carpetaProductoSel.set(prod);
+  }
+
+  irRaizCarpetas(): void {
+    this.carpetaCategoriaSel.set(null);
+    this.carpetaMarcaSel.set(null);
+    this.carpetaProductoSel.set(null);
+  }
+
+  irACategoriaCarpetas(): void {
+    this.carpetaMarcaSel.set(null);
+    this.carpetaProductoSel.set(null);
+  }
+
+  irAMarcaCarpetas(): void {
+    this.carpetaProductoSel.set(null);
+  }
+
+  conteoProductosCategoria(idCat: number): number {
+    return this.productos().filter(p => p.categoria?.idCategoria === idCat).length;
+  }
+
+  conteoImagenesCategoria(idCat: number): number {
+    return this.imagenes().filter(img => {
+      const p = this.getProductoDeImagen(img);
+      return p?.categoria?.idCategoria === idCat;
+    }).length;
+  }
+
+  marcasEnCategoria(idCat: number): Marca[] {
+    const marcasIds = new Set(
+      this.productos()
+        .filter(p => p.categoria?.idCategoria === idCat && p.marca?.idMarca)
+        .map(p => p.marca!.idMarca)
+    );
+    return this.marcas().filter(m => marcasIds.has(m.idMarca));
+  }
+
+  conteoProductosMarcaEnCat(idCat: number, idMarca: number): number {
+    return this.productos().filter(p => p.categoria?.idCategoria === idCat && p.marca?.idMarca === idMarca).length;
+  }
+
+  conteoImagenesMarcaEnCat(idCat: number, idMarca: number): number {
+    return this.imagenes().filter(img => {
+      const p = this.getProductoDeImagen(img);
+      return p?.categoria?.idCategoria === idCat && p?.marca?.idMarca === idMarca;
+    }).length;
+  }
+
+  productosEnMarcaYCategoria(idCat: number, idMarca: number): Producto[] {
+    return this.productos().filter(p => p.categoria?.idCategoria === idCat && p.marca?.idMarca === idMarca);
+  }
+
+  conteoImagenesProducto(idProd: number): number {
+    return this.imagenes().filter(img => {
+      const p = this.getProductoDeImagen(img);
+      return p?.idProducto === idProd;
+    }).length;
+  }
+
+  imagenesDeProducto(idProd: number): ProductoImagenAdmin[] {
+    return this.imagenes().filter(img => {
+      const p = this.getProductoDeImagen(img);
+      return p?.idProducto === idProd;
+    });
   }
 
   establecerImagenPrincipal(idImagen: number): void {

@@ -11,7 +11,10 @@ import { TemaService } from '../../services/tema.service';
   selector: 'app-navbar',
   standalone: true,
   imports: [CommonModule, RouterLink, RouterLinkActive, FormsModule],
-  templateUrl: './navbar.component.html'
+  templateUrl: './navbar.component.html',
+  host: {
+    class: 'sticky top-0 z-50 block w-full'
+  }
 })
 export class NavbarComponent {
   readonly authService = inject(AuthService);
