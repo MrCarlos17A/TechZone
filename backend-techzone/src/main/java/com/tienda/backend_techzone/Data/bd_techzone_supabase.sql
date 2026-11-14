@@ -607,8 +607,7 @@ INSERT INTO marca (id_marca, nombre, vigente, logo_url) VALUES
 (11, 'INTEL',     TRUE, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/marcas/INTEL.webp'),
 (12, 'AMD',       TRUE, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/marcas/AMD.webp'),
 (13, 'SAMSUNG',   TRUE, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/marcas/SAMSUNG.webp'),
-(14, 'RAZER',     TRUE, 'https://upload.wikimedia.org/wikipedia/en/thumb/4/40/Razer_snake_logo.svg/800px-Razer_snake_logo.svg.png'),
-(15, 'NZXT',      TRUE, 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/NZXT_logo.svg/1200px-NZXT_logo.svg.png');
+(14, 'RYZEN',     TRUE, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/marcas/RYZEN.webp');
 
 -- Productos del catalogo oficial TechZone (42 productos en 7 categorias)
 INSERT INTO producto (id_producto, id_marca, id_categoria, codigo_sku, nombre,
@@ -657,7 +656,7 @@ INSERT INTO producto (id_producto, id_marca, id_categoria, codigo_sku, nombre,
    'Placa base entusiasta AMD X670E AORUS Master, VRM digital de 16+2+2 fases, blindaje termico Thermal Guard III y conectividad Wi-Fi 6E dual.', 499.00, 7, TRUE),
 (22, 1, 4, 'ASMB02', 'ASUS TUF GAMING B760-PLUS WIFI D4',
    'Placa madre robusta ASUS TUF Gaming B760, disenada para maxima durabilidad 24/7 con componentes de grado militar, 3 slots M.2 y SafeSlot Core+.', 219.00, 14, TRUE),
-(23, 15, 4, 'NZMB01', 'NZXT N7 B650 MATTE WHITE WIFI',
+(23, 1, 4, 'ASMB03', 'NZXT N7 B650 MATTE WHITE WIFI',
    'Placa base de diseno minimalista NZXT N7 en acabado blanco mate con cubierta de metal sin costuras, controles integrados de ventiladores y RGB CAM.', 319.00, 6, TRUE),
 (24, 2, 4, 'MSMB02', 'MSI PRO Z790-P WIFI DDR5',
    'Placa base orientada a estaciones de trabajo y empresas MSI PRO Z790, disipador extendido PWM, conexion USB 3.2 Gen 2x2 Type-C a 20Gbps.', 239.00, 12, TRUE),
@@ -679,7 +678,7 @@ INSERT INTO producto (id_producto, id_marca, id_categoria, codigo_sku, nombre,
    'Fuente de poder insignia ROG Thor 1000W Platinum II con wattimetro OLED integrado, refrigeracion silenciosa y cables mallados individuales.', 389.00, 5, TRUE),
 (33, 2, 6, 'MSPS01', 'MSI MAG A850GL PCIE5 850W 80 PLUS GOLD',
    'Fuente de poder MSI MAG A850GL preparada para PCIe 5.0 y ATX 3.0 con conector nativo de 16 pines con indicador amarillo de acople seguro.', 149.00, 12, TRUE),
-(34, 15, 6, 'NZCL01', 'COOLER LÍQUIDO NZXT KRAKEN ELITE 360 RGB',
+(34, 4, 6, 'COCL02', 'COOLER LÍQUIDO NZXT KRAKEN ELITE 360 RGB',
    'Sistema AIO de refrigeracion liquida NZXT Kraken Elite 360mm con pantalla LCD de 2.36 pulgadas a 60 FPS y ventiladores RGB Core de presion estatica.', 329.00, 8, TRUE),
 (35, 4, 6, 'COCL01', 'COOLER LÍQUIDO CORSAIR ICUE LINK H150I RGB 360MM',
    'Refrigeracion liquida de 360mm con ecosistema sin cables iCUE LINK de conexion magnetica, pasta termica preaplicada y ventiladores QX RGB.', 289.00, 7, TRUE),
@@ -695,7 +694,7 @@ INSERT INTO producto (id_producto, id_marca, id_categoria, codigo_sku, nombre,
    'Mouse gamer ergonómico Redragon M711 Cobra con sensor optico Pixart P3325 hasta 10000 DPI, 7 botones programables y textura lateral antideslizante.', 35.00, 40, TRUE),
 (41, 7, 7, 'KIAU01', 'AURICULARES HYPERX CLOUD III WIRELESS 120H BATERÍA',
    'Audifonos gaming inalambricos HyperX Cloud III Wireless con autonomia bestial de 120 horas, almohadillas de espuma viscoelastica y microfono de 10mm.', 169.00, 16, TRUE),
-(42, 14, 7, 'RAMO01', 'RAZER DEATHADDER V3 PRO WIRELESS GAMING MOUSE',
+(42, 5, 7, 'REMO02', 'RAZER DEATHADDER V3 PRO WIRELESS GAMING MOUSE',
    'Mouse inalambrico ergonomico para diestros Razer DeathAdder V3 Pro de 63g con sensor optico Focus Pro 30K y switches opticos Razer de 3ra generacion.', 149.00, 18, TRUE);
 
 -- Galeria multi-vista de productos (estilo Promart) con angulos y etiquetas
