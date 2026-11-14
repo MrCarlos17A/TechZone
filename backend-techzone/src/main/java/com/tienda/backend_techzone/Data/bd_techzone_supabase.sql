@@ -812,6 +812,32 @@ INSERT INTO producto_imagen (id_producto_imagen, id_producto, url_imagen, es_pri
 (110, 42, 'https://c1.neweggimages.com/ProductImageCompressAll1280/26-816-200-02.jpg', FALSE, 2, 'Switches Ópticos Razer Gen-3'),
 (111, 42, 'https://c1.neweggimages.com/ProductImageCompressAll1280/26-816-200-03.jpg', FALSE, 3, 'Grip Tape Antideslizante');
 
+-- ==============================================================
+--  PROVEEDORES OFICIALES MAYORISTAS
+-- ==============================================================
+INSERT INTO proveedor (id_proveedor, razon_social, id_tipo_documento, numero_documento, telefono_contacto, correo, nombre_encargado, vigente) VALUES
+(1,  'ASUSTeK Computer Inc.',            2, '20558662471', '987654321', 'contacto@asus.com.pe',        'Roberto Salazar',   TRUE),
+(2,  'Micro-Star INTL Co., Ltd.',        2, '20512345678', '912345678', 'ventas@msi.com',             'Maria Torres',      TRUE),
+(3,  'GIGABYTE Technology Co., Ltd.',    2, '20698765432', '923456789', 'ventas@gigabyte.com',        'Juan Perez',        TRUE),
+(4,  'NVIDIA Corporation',               2, '20456789123', '934567890', 'ventas@nvidia.com',          'Carlos Mendez',     TRUE),
+(5,  'CORSAIR Gaming, Inc.',             2, '20534567891', '945678901', 'ventas@corsair.com',         'Ana Lopez',         TRUE),
+(6,  'Logitech International S.A.',      2, '20645678912', '956789012', 'ventas@logitech.com',        'Pedro Ruiz',        TRUE),
+(7,  'Kingston Technology Company, Inc.',2, '20467891234', '967890123', 'ventas@kingston.com',        'Luis Garcia',       TRUE),
+(8,  'Dell Technologies Inc.',           2, '20578912345', '978901234', 'ventas@dell.com',            'Sofia Martinez',    TRUE),
+(9,  'HP Inc.',                          2, '20689123456', '989012345', 'ventas@hp.com',              'Diego Rodriguez',   TRUE),
+(10, 'Lenovo Group Limited',             2, '20491234567', '990123456', 'ventas@lenovo.com',          'Carmen Vargas',     TRUE),
+(11, 'Synexo Corporation',               2, '20601234567', '901234567', 'ventas@synexo.com',          'Miguel Sanchez',    TRUE),
+(12, 'Ingram Micro Inc.',                2, '20512345679', '912345670', 'ventas@ingrammicro.com',     'Rosa Chen',         TRUE),
+(13, 'Arrow Electronics, Inc.',          2, '20623456789', '923456780', 'ventas@arrow.com',           'Fernando Torres',   TRUE),
+(14, 'Avnet, Inc.',                      2, '20434567890', '934567891', 'ventas@avnet.com',           'Patricia Gomez',    TRUE),
+(15, 'Tech Data Corporation',            2, '20545678901', '945678902', 'ventas@techdata.com',        'Andres Lopez',      TRUE),
+(16, 'Wortmann AG (Terra Computer)',     2, '20656789012', '956789013', 'ventas@wortmann.com',        'Elena Rodriguez',   TRUE),
+(17, 'Acer Inc.',                        2, '20467890123', '967890124', 'ventas@acer.com',            'Roberto Diaz',      TRUE),
+(18, 'Seagate Technology LLC',           2, '20578901234', '978901235', 'ventas@seagate.com',         'Monica Herrera',    TRUE),
+(19, 'Western Digital Corporation',      2, '20689012345', '989012346', 'ventas@westerndigital.com',  'Jorge Ramos',       TRUE),
+(20, 'Samsung Electronics Co., Ltd.',    2, '20490123456', '990123457', 'ventas@samsung.com',         'Lucia Fernandez',   TRUE)
+ON CONFLICT (id_proveedor) DO NOTHING;
+
 -- Relaciones de suministro Producto - Proveedor para los 42 productos
 INSERT INTO producto_proveedor (id_producto, id_proveedor, precio_compra, tiempo_pedido_dias) VALUES
 (1, 2, 218.98, 3),
