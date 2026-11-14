@@ -26,16 +26,6 @@ export class ProductoService {
   }
 
   getProductos(filtros?: { q?: string; categoria?: number; marca?: number }): Observable<Producto[]> {
-    const sinFiltros = !filtros || (!filtros.q && !filtros.categoria && !filtros.marca);
-    if (sinFiltros) {
-      if (!this.productosCache$) {
-        this.productosCache$ = this.http.get<Producto[]>(`${this.baseUrl}/productos`).pipe(
-          shareReplay({ bufferSize: 1, refCount: false })
-        );
-      }
-      return this.productosCache$;
-    }
-
     let params = new HttpParams();
     if (filtros?.q) params = params.set('q', filtros.q);
     if (filtros?.categoria) params = params.set('categoria', filtros.categoria.toString());

@@ -20,15 +20,16 @@
       </span>
     }
 
-    @if (urlImagen) {
+    @if (urlImagen && !imagenError) {
       <img
         [src]="urlImagen"
         [alt]="producto.nombre"
+        (error)="onImgError()"
         class="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
         loading="lazy"
       />
     } @else {
-      <div class="flex flex-col items-center justify-center text-slate-400 gap-1.5 p-4">
+      <div class="flex flex-col items-center justify-center text-slate-400 gap-1.5 p-4 select-none">
         <span class="material-symbols-outlined text-4xl text-slate-400">memory</span>
         <span class="text-[9px] text-slate-400 font-semibold tracking-wider uppercase text-center">TechZone Component</span>
       </div>

@@ -22,6 +22,11 @@ export class ProductCardComponent {
 
   agregando = false;
   agregadoExitoso = false;
+  imagenError = false;
+
+  onImgError(): void {
+    this.imagenError = true;
+  }
 
   get urlImagen(): string {
     if (this.producto.imagenes && this.producto.imagenes.length > 0) {

@@ -32,9 +32,9 @@ export class ProductosComponent implements OnInit {
     this.productoService.getMarcas().subscribe(m => this.marcas.set(m));
 
     this.route.queryParams.subscribe(params => {
-      if (params['q']) this.busqueda.set(params['q']);
-      if (params['categoria']) this.categoriaSeleccionada.set(+params['categoria']);
-      if (params['marca']) this.marcaSeleccionada.set(+params['marca']);
+      this.busqueda.set(params['q'] || '');
+      this.categoriaSeleccionada.set(params['categoria'] ? +params['categoria'] : null);
+      this.marcaSeleccionada.set(params['marca'] ? +params['marca'] : null);
       this.cargarProductos();
     });
   }
