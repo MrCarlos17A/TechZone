@@ -858,6 +858,253 @@ INSERT INTO producto_imagen (id_producto_imagen, id_producto, url_imagen, es_pri
 (156, 42, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/perifericos-gaming/audifonos/hyper-x/hyperx-cloud-stinger-3-wireless-gaming-headset/hyperx_cloud_stinger_03.webp', FALSE, 3, 'Razer DeathAdder V3 Pro - Vista 3'),
 (157, 42, 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/productos/perifericos-gaming/audifonos/hyper-x/hyperx-cloud-stinger-3-wireless-gaming-headset/hyperx_cloud_stinger_04.webp', FALSE, 4, 'Razer DeathAdder V3 Pro - Vista 4');
 
+-- ==============================================================
+--  PROVEEDORES OFICIALES MAYORISTAS
+-- ==============================================================
+INSERT INTO proveedor (id_proveedor, razon_social, id_tipo_documento, numero_documento, telefono_contacto, correo, nombre_encargado, vigente) VALUES
+(1,  'ASUSTeK Computer Inc.',            2, '20558662471', '987654321', 'contacto@asus.com.pe',        'Roberto Salazar',   TRUE),
+(2,  'Micro-Star INTL Co., Ltd.',        2, '20512345678', '912345678', 'ventas@msi.com',             'Maria Torres',      TRUE),
+(3,  'GIGABYTE Technology Co., Ltd.',    2, '20698765432', '923456789', 'ventas@gigabyte.com',        'Juan Perez',        TRUE),
+(4,  'NVIDIA Corporation',               2, '20456789123', '934567890', 'ventas@nvidia.com',          'Carlos Mendez',     TRUE),
+(5,  'CORSAIR Gaming, Inc.',             2, '20534567891', '945678901', 'ventas@corsair.com',         'Ana Lopez',         TRUE),
+(6,  'Logitech International S.A.',      2, '20645678912', '956789012', 'ventas@logitech.com',        'Pedro Ruiz',        TRUE),
+(7,  'Kingston Technology Company, Inc.',2, '20467891234', '967890123', 'ventas@kingston.com',        'Luis Garcia',       TRUE),
+(8,  'Dell Technologies Inc.',           2, '20578912345', '978901234', 'ventas@dell.com',            'Sofia Martinez',    TRUE),
+(9,  'HP Inc.',                          2, '20689123456', '989012345', 'ventas@hp.com',              'Diego Rodriguez',   TRUE),
+(10, 'Lenovo Group Limited',             2, '20491234567', '990123456', 'ventas@lenovo.com',          'Carmen Vargas',     TRUE),
+(11, 'Synexo Corporation',               2, '20601234567', '901234567', 'ventas@synexo.com',          'Miguel Sanchez',    TRUE),
+(12, 'Ingram Micro Inc.',                2, '20512345679', '912345670', 'ventas@ingrammicro.com',     'Rosa Chen',         TRUE),
+(13, 'Arrow Electronics, Inc.',          2, '20623456789', '923456780', 'ventas@arrow.com',           'Fernando Torres',   TRUE),
+(14, 'Avnet, Inc.',                      2, '20434567890', '934567891', 'ventas@avnet.com',           'Patricia Gomez',    TRUE),
+(15, 'Tech Data Corporation',            2, '20545678901', '945678902', 'ventas@techdata.com',        'Andres Lopez',      TRUE),
+(16, 'Wortmann AG (Terra Computer)',     2, '20656789012', '956789013', 'ventas@wortmann.com',        'Elena Rodriguez',   TRUE),
+(17, 'Acer Inc.',                        2, '20467890123', '967890124', 'ventas@acer.com',            'Roberto Diaz',      TRUE),
+(18, 'Seagate Technology LLC',           2, '20578901234', '978901235', 'ventas@seagate.com',         'Monica Herrera',    TRUE),
+(19, 'Western Digital Corporation',      2, '20689012345', '989012346', 'ventas@westerndigital.com',  'Jorge Ramos',       TRUE),
+(20, 'Samsung Electronics Co., Ltd.',    2, '20490123456', '990123457', 'ventas@samsung.com',         'Lucia Fernandez',   TRUE)
+ON CONFLICT (id_proveedor) DO NOTHING;
+
+-- Relaciones de suministro Producto - Proveedor para los 42 productos
+INSERT INTO producto_proveedor (id_producto, id_proveedor, precio_compra, tiempo_pedido_dias) VALUES
+(1, 2, 218.98, 3),
+(2, 3, 287.20, 4),
+(3, 4, 206.61, 5),
+(4, 5, 263.20, 2),
+(5, 6, 559.20, 3),
+(6, 7, 719.20, 4),
+(7, 8, 1992.00, 5),
+(8, 9, 703.20, 2),
+(9, 10, 1672.00, 3),
+(10, 11, 1560.00, 4),
+(11, 12, 679.20, 5),
+(12, 13, 920.00, 2),
+(13, 14, 496.00, 3),
+(14, 15, 359.20, 4),
+(15, 16, 263.20, 5),
+(16, 17, 391.20, 2),
+(17, 18, 559.20, 3),
+(18, 19, 191.20, 4),
+(19, 20, 551.20, 5),
+(20, 1, 199.20, 2),
+(21, 2, 399.20, 3),
+(22, 3, 175.20, 4),
+(23, 4, 255.20, 5),
+(24, 5, 191.20, 2),
+(25, 6, 127.20, 3),
+(26, 7, 111.20, 4),
+(27, 8, 175.20, 5),
+(28, 9, 95.20, 2),
+(29, 10, 159.20, 3),
+(30, 11, 71.20, 4),
+(31, 12, 135.20, 5),
+(32, 13, 311.20, 2),
+(33, 14, 119.20, 3),
+(34, 15, 263.20, 4),
+(35, 16, 231.20, 5),
+(36, 17, 79.20, 2),
+(37, 18, 127.20, 3),
+(38, 19, 175.20, 4),
+(39, 20, 39.20, 5),
+(40, 1, 28.00, 2),
+(41, 2, 135.20, 3),
+(42, 3, 119.20, 4)
+ON CONFLICT (id_producto, id_proveedor) DO NOTHING;
+
+-- ==============================================================
+--  12 · USUARIO ADMINISTRADOR Y CLIENTE INICIAL
+--  Credenciales:
+--    correo      = admin@techzone.com
+--    contrasena  = Admin123**
+--  El hash es BCrypt de coste 10 (una sola via).
+-- ==============================================================
+
+INSERT INTO persona (id_persona, nombres, apellido_paterno, apellido_materno,
+    id_tipo_documento, numero_documento, telefono, direccion,
+    referencia, id_ubigeo, fecha_nacimiento, fecha_registro, vigente) VALUES
+(1, 'CARLOS FELIPE', 'ARROYO', 'VEGA',
+    1, '73234768', '967662103', 'El Vivero S/N',
+    NULL, 140120, '2005-04-12', now(), TRUE);
+
+INSERT INTO usuario (id_usuario, id_persona, id_rol, correo,
+    contrasena, fecha_ultimo_acceso, estado,
+    fecha_creacion, intentos_fallidos, bloqueado_hasta) VALUES
+(1, 1, 1, 'admin@techzone.com',
+'$2a$10$cxaeON97QlnXDP8R1FJH/eyPk27GK01Xtx8eKhI8JCW0MXCPEAT5S', NULL, 'ACTIVO',
+now(), 0, NULL);
+
+-- Cliente inicial asociado al administrador Carlos Felipe
+INSERT INTO cliente (id_cliente, id_persona, fecha_ultima_compra, total_gastado, vigente) VALUES
+(1, 1, NULL, 0.00, TRUE)
+ON CONFLICT (id_cliente) DO NOTHING;
+
+-- Carrito activo inicial
+INSERT INTO carrito (id_carrito, id_cliente, fecha_carrito) VALUES
+(1, 1, now())
+ON CONFLICT (id_carrito) DO NOTHING;
+
+-- ==============================================================
+--  13 · CENTRO DE AYUDA · contenido inicial
+--  Seccion 'auditoria' solo la ve el administrador (id_rol 1).
+-- ==============================================================
+
+INSERT INTO centro_ayuda (id_ayuda, seccion, titulo, contenido, orden, activo) VALUES
+(1, 'cuenta', 'Mi cuenta',
+ 'Edita tu perfil, cambia tu contrasena y cierra sesion desde el menu superior. Tu correo de acceso no puede modificarse: si necesitas otro, solicitalo al administrador.',
+ 10, TRUE),
+
+(2, 'catalogo', 'Buscar productos',
+ 'Usa la barra de busqueda o filtra por marca y categoria. En la ficha de cada producto veras precio, stock disponible, caracteristicas y la galeria de imagenes.',
+ 20, TRUE),
+
+(3, 'carrito', 'Mi carrito y mis compras',
+ 'Agrega productos al carrito desde cualquier ficha. En el carrito ajusta cantidades o elimina articulos antes de pagar. En "Mis pedidos" puedes seguir el estado de cada compra.',
+ 30, TRUE),
+
+(4, 'trabajador', 'Gestion de pedidos y stock',
+ 'Los trabajadores pueden consultar el estado de las ventas, actualizar el stock de los productos y realizar la busqueda de documentos (DNI/RUC) al registrar un cliente.',
+ 40, TRUE),
+
+(5, 'administracion', 'Panel de administracion',
+ 'El administrador gestiona categorias, marcas, productos, proveedores, ventas, pagos, medios de pago, configuracion del sitio y las cuentas de usuario (rol, activacion y bloqueo).',
+ 50, TRUE),
+
+(6, 'auditoria', 'Centro de auditoria',
+ 'Consulta quien inicio sesion, desde que IP, con que resultado y cuando. Tambien revisa cada accion realizada sobre el sistema con los datos anteriores y posteriores al cambio. Solo el administrador tiene acceso.',
+ 60, TRUE),
+
+(7, 'faq', 'Preguntas frecuentes',
+ '¿Olvidaste tu contrasena? Solicita un reinicio al administrador.
+¿El producto no aparece? Verifica que este vigente y con stock.
+¿Tu pedido esta pendiente? Los estados son PENDIENTE, COMPLETADA y CANCELADA.',
+ 70, TRUE),
+
+(8, 'contacto', 'Contacto',
+ 'Correo: techzone@outlook.com
+Telefono: +51 967 662 103
+Horario: Lun - Dom, 09:00 a.m. - 21:00 p.m.
+Atencion: 24/7 por WhatsApp.',
+ 80, TRUE);
+
+-- Restricciones de visibilidad por rol:
+--   ayuda 4 (Gestion de pedidos) -> Administrador(1) y Trabajador(2)
+--   ayuda 5 (Panel)              -> solo Administrador(1)
+--   ayuda 6 (Auditoria)          -> solo Administrador(1)
+INSERT INTO ayuda_rol (id_ayuda, id_rol) VALUES
+(4, 1), (4, 2),
+(5, 1),
+(6, 1);
+
+-- ==============================================================
+--  13.1 · CONFIGURACION DEL SITIO · datos iniciales
+-- ==============================================================
+
+INSERT INTO configuracion_sitio (
+    id_config, nombre_sitio, logo_url, tagline, email, telefono, horario,
+    whatsapp, whatsapp_texto,
+    mostrar_tiktok, tiktok_url,
+    mostrar_facebook, facebook_url,
+    mostrar_instagram, instagram_url,
+    mostrar_youtube, youtube_url,
+    copyright, libro_reclamaciones_img, libro_reclamaciones_url
+) VALUES (
+    1, 'TechZone', 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/configurtacion_sitio/TechZone.webp',
+    'Componentes Gamer y Tecnología de Última Generación',
+    'techzone@gmail.com', '+51 967 662 103', 'Lun - Dom: 09:00 a.m. - 21:00 p.m.',
+    '51967662103', 'Hola TechZone, deseo realizar una consulta sobre un producto.',
+    TRUE, 'https://www.tiktok.com',
+    TRUE, 'https://www.facebook.com',
+    TRUE, 'https://www.instagram.com',
+    TRUE, 'https://www.youtube.com',
+    '© 2026 TechZone Perú. Todos los derechos reservados.',
+    'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/configurtacion_sitio/Libro_de_Reclamaciones.webp',
+    '/'
+);
+
+-- ==============================================================
+--  9.1 · TRIGGERS DE AUDITORIA AUTOMATICA (PostgreSQL)
+-- ==============================================================
+
+CREATE OR REPLACE FUNCTION fn_auditoria_producto()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF (TG_OP = 'INSERT') THEN
+        INSERT INTO registro_auditoria (modulo, accion, descripcion, datos_nuevos)
+        VALUES ('producto', 'CREAR', 'Producto creado: ' || NEW.nombre || ' (SKU: ' || COALESCE(NEW.codigo_sku, 'S/N') || ')', to_jsonb(NEW)::text);
+        RETURN NEW;
+    ELSIF (TG_OP = 'UPDATE') THEN
+        INSERT INTO registro_auditoria (modulo, accion, descripcion, datos_previos, datos_nuevos)
+        VALUES ('producto', 'ACTUALIZAR', 'Producto actualizado ID: ' || NEW.id_producto || ' (' || NEW.nombre || ')', to_jsonb(OLD)::text, to_jsonb(NEW)::text);
+        RETURN NEW;
+    ELSIF (TG_OP = 'DELETE') THEN
+        INSERT INTO registro_auditoria (modulo, accion, descripcion, datos_previos)
+        VALUES ('producto', 'ELIMINAR', 'Producto eliminado: ' || OLD.nombre || ' (SKU: ' || COALESCE(OLD.codigo_sku, 'S/N') || ')', to_jsonb(OLD)::text);
+        RETURN OLD;
+    END IF;
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trg_auditoria_producto ON producto;
+CREATE TRIGGER trg_auditoria_producto
+AFTER INSERT OR UPDATE OR DELETE ON producto
+FOR EACH ROW EXECUTE FUNCTION fn_auditoria_producto();
+
+
+CREATE OR REPLACE FUNCTION fn_auditoria_venta()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF (TG_OP = 'INSERT') THEN
+        INSERT INTO registro_auditoria (modulo, accion, descripcion, datos_nuevos)
+        VALUES ('venta', 'CREAR', 'Nueva orden de venta #' || NEW.id_venta || ' por total S/ ' || COALESCE(NEW.total, 0), to_jsonb(NEW)::text);
+        RETURN NEW;
+    ELSIF (TG_OP = 'UPDATE' AND OLD.estado IS DISTINCT FROM NEW.estado) THEN
+        INSERT INTO registro_auditoria (modulo, accion, descripcion, datos_previos, datos_nuevos)
+        VALUES ('venta', 'ACTUALIZAR', 'Cambio de estado en venta #' || NEW.id_venta || ': ' || OLD.estado || ' -> ' || NEW.estado, to_jsonb(OLD)::text, to_jsonb(NEW)::text);
+        RETURN NEW;
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trg_auditoria_venta ON venta;
+CREATE TRIGGER trg_auditoria_venta
+AFTER INSERT OR UPDATE ON venta
+FOR EACH ROW EXECUTE FUNCTION fn_auditoria_venta();
+
+-- ==============================================================
+--  14 · REPOSICIONAR SECUENCIAS
+--  IMPORTANTE: los INSERT de arriba fijaron ids a mano.
+--  Reposicionamos las secuencias para que los proximos registros
+--  generados automaticamente no colisionen con los IDs existentes.
+--  Todas las tablas de auditoria (registro_acceso, registro_auditoria)
+--  arrancan limpias exactamente desde el ID 1.
+-- ==============================================================
+
+ALTER TABLE tipo_documento      ALTER COLUMN id_tipo_documento      RESTART WITH 4;
+ALTER TABLE rol                 ALTER COLUMN id_rol                 RESTART WITH 5;
+ALTER TABLE categoria           ALTER COLUMN id_categoria           RESTART WITH 3;
+ALTER TABLE marca               ALTER COLUMN id_marca               RESTART WITH 11;
+ALTER TABLE producto            ALTER COLUMN id_producto            RESTART WITH 9;
 ALTER TABLE producto_imagen     ALTER COLUMN id_producto_imagen     RESTART WITH 158;
 ALTER TABLE proveedor           ALTER COLUMN id_proveedor           RESTART WITH 21;
 ALTER TABLE persona             ALTER COLUMN id_persona             RESTART WITH 2;
