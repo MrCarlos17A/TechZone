@@ -1532,7 +1532,7 @@
             <div class="flex items-center gap-2.5 w-full sm:w-auto">
               <select
                 [ngModel]="filtroProductoImagen()"
-                (ngModelChange)="filtroProductoImagen.set($event)"
+                (ngModelChange)="filtroProductoImagen.set($event); paginaImagenes.set(1)"
                 class="bg-white dark:bg-slate-950 text-xs text-slate-900 dark:text-slate-200 px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500">
                 <option value="todos">Todos los Productos ({{ imagenes().length }})</option>
                 @for (p of productos(); track p.idProducto) {
@@ -1549,7 +1549,7 @@
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-            @for (img of imagenesFiltradas(); track img.idProductoImagen) {
+            @for (img of imagenesPaginadas(); track img.idProductoImagen) {
               <div class="glass-panel rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 shadow-sm p-3.5 flex flex-col justify-between group hover:border-blue-500/50 hover:shadow-md transition-all">
                 <div class="space-y-2.5">
                   <div class="aspect-square w-full rounded-xl bg-slate-50 dark:bg-slate-950 flex items-center justify-center overflow-hidden border border-slate-100 dark:border-slate-800/80 relative">
@@ -1613,6 +1613,37 @@
               </div>
             }
           </div>
+
+          <!-- Paginación de Imágenes (Unificada a 15 por página) -->
+          @if (totalPaginasImagenes() > 1) {
+            <div class="glass-panel rounded-2xl p-3 border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 bg-white/80 dark:bg-slate-900/60 shadow-xs">
+              <span class="text-xs text-slate-600 dark:text-slate-400 font-medium flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-sm text-blue-600 dark:text-blue-400">auto_stories</span>
+                <span>Página <strong class="text-blue-600 dark:text-blue-400 font-black">{{ paginaImagenes() }}</strong> de <strong class="text-slate-900 dark:text-white font-black">{{ totalPaginasImagenes() }}</strong></span>
+                <span class="text-slate-400 dark:text-slate-600 mx-1">•</span>
+                <span class="text-slate-500 dark:text-slate-400 font-medium">{{ imagenesFiltradas().length }} imágenes</span>
+              </span>
+
+              <div class="flex items-center gap-2">
+                <button
+                  (click)="paginaImagenes.set(paginaImagenes() - 1)"
+                  [disabled]="paginaImagenes() <= 1"
+                  class="px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs border cursor-pointer active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 border-slate-300 dark:border-slate-700 hover:bg-blue-50 dark:hover:bg-blue-950/40 hover:text-blue-700 dark:hover:text-blue-300 hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-sm"
+                  title="Ir a página anterior">
+                  <span class="material-symbols-outlined text-sm">chevron_left</span>
+                  <span>Anterior</span>
+                </button>
+                <button
+                  (click)="paginaImagenes.set(paginaImagenes() + 1)"
+                  [disabled]="paginaImagenes() >= totalPaginasImagenes()"
+                  class="px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs border cursor-pointer active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 border-slate-300 dark:border-slate-700 hover:bg-blue-50 dark:hover:bg-blue-950/40 hover:text-blue-700 dark:hover:text-blue-300 hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-sm"
+                  title="Ir a página siguiente">
+                  <span>Siguiente</span>
+                  <span class="material-symbols-outlined text-sm">chevron_right</span>
+                </button>
+              </div>
+            </div>
+          }
         </div>
       }
 

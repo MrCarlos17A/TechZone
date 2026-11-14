@@ -144,6 +144,21 @@ export class AdminComponent implements OnInit {
       return prod ? prod.idProducto === Number(filtro) : false;
     });
   });
+
+  paginaImagenes = signal(1);
+  tamanoImagenes = signal(15);
+
+  imagenesPaginadas = computed(() => {
+    const list = this.imagenesFiltradas();
+    const page = this.paginaImagenes();
+    const size = this.tamanoImagenes();
+    const start = (page - 1) * size;
+    return list.slice(start, start + size);
+  });
+
+  totalPaginasImagenes = computed(() => {
+    return Math.max(1, Math.ceil(this.imagenesFiltradas().length / this.tamanoImagenes()));
+  });
   ubigeos = signal<UbigeoAdmin[]>([]);
   
   roles = signal<RolAdmin[]>([]);
@@ -294,19 +309,21 @@ export class AdminComponent implements OnInit {
   readonly LOGO_OFICIAL_BASE = 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/configurtacion_sitio/TechZone.png';
 
   // ==========================================
-  // PAGINACIÓN Y FILTROS REACTIVOS
+  // PAGINACIÓN Y FILTROS REACTIVOS (Unificado a 15 por página)
   // ==========================================
+  readonly REGISTROS_POR_PAGINA_DEFAULT = 15;
+
   // Ubigeos
   filtroUbigeos = signal('');
   filtroEstadoUbigeos = signal<'todos' | 'vigentes' | 'inactivos'>('todos');
   paginaUbigeos = signal(1);
-  tamanoUbigeos = signal(10);
+  tamanoUbigeos = signal(15);
 
   // Productos
   filtroProductos = signal('');
   filtroStockProducto = signal<'todos' | 'critico' | 'agotado' | 'disponible'>('todos');
   paginaProductos = signal(1);
-  tamanoProductos = signal(10);
+  tamanoProductos = signal(15);
 
   // Ventas y Filtros Multidimensionales
   filtroVentas = signal('');
@@ -319,7 +336,7 @@ export class AdminComponent implements OnInit {
   filtroMedioPagoVenta = signal<string>('TODOS');
   mostrarAnaliticaVentas = signal(true);
   paginaVentas = signal(1);
-  tamanoVentas = signal(10);
+  tamanoVentas = signal(15);
 
   // Detalles de Venta y Filtros Multidimensionales
   filtroDetallesVenta = signal('');
@@ -331,7 +348,7 @@ export class AdminComponent implements OnInit {
   filtroMarcaDetallesVenta = signal<number | 'todas'>('todas');
   mostrarAnaliticaDetalles = signal(true);
   paginaDetallesVenta = signal(1);
-  tamanoDetallesVenta = signal(10);
+  tamanoDetallesVenta = signal(15);
 
   // Catálogo de meses y años para selectores analíticos
   aniosAnaliticos = [2026, 2025, 2024];
@@ -353,35 +370,35 @@ export class AdminComponent implements OnInit {
   // Personas
   filtroPersonas = signal('');
   paginaPersonas = signal(1);
-  tamanoPersonas = signal(10);
+  tamanoPersonas = signal(15);
 
   // Productos - Proveedor
   filtroProductosProveedor = signal('');
   paginaProductosProveedor = signal(1);
-  tamanoProductosProveedor = signal(10);
+  tamanoProductosProveedor = signal(15);
 
   // Clientes
   filtroClientes = signal('');
   paginaClientes = signal(1);
-  tamanoClientes = signal(10);
+  tamanoClientes = signal(15);
 
   // Empleados
   filtroEmpleados = signal('');
   paginaEmpleados = signal(1);
-  tamanoEmpleados = signal(10);
+  tamanoEmpleados = signal(15);
 
   // Usuarios
   filtroUsuarios = signal('');
   paginaUsuarios = signal(1);
-  tamanoUsuarios = signal(10);
+  tamanoUsuarios = signal(15);
 
   // Auditoría
   tipoVistaAuditoria = signal<'acciones' | 'accesos'>('acciones');
   filtroAuditoriaModulo = signal('TODOS');
   paginaAuditoria = signal(1);
-  tamanoAuditoria = signal(10);
+  tamanoAuditoria = signal(15);
   paginaAccesos = signal(1);
-  tamanoAccesos = signal(10);
+  tamanoAccesos = signal(15);
 
 
 
