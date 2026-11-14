@@ -916,11 +916,6 @@ INSERT INTO carrito (id_carrito, id_cliente, fecha_carrito) VALUES
 (1, 1, now())
 ON CONFLICT (id_carrito) DO NOTHING;
 
--- Detalle del carrito de demostracion
-INSERT INTO detalle_carrito (id_detalle_carrito, id_carrito, id_producto, cantidad) VALUES
-(1, 1, 1, 1)
-ON CONFLICT (id_detalle_carrito) DO NOTHING;
-
 -- ==============================================================
 --  13 · CENTRO DE AYUDA · contenido inicial
 --  Seccion 'auditoria' solo la ve el administrador (id_rol 1).
@@ -1071,7 +1066,7 @@ ALTER TABLE cliente             ALTER COLUMN id_cliente             RESTART WITH
 ALTER TABLE empleado            ALTER COLUMN id_empleado            RESTART WITH 1;
 ALTER TABLE usuario             ALTER COLUMN id_usuario             RESTART WITH 2;
 ALTER TABLE carrito             ALTER COLUMN id_carrito             RESTART WITH 2;
-ALTER TABLE detalle_carrito     ALTER COLUMN id_detalle_carrito     RESTART WITH 2;
+ALTER TABLE detalle_carrito     ALTER COLUMN id_detalle_carrito     RESTART WITH 1;
 ALTER TABLE venta               ALTER COLUMN id_venta               RESTART WITH 1;
 ALTER TABLE detalle_venta       ALTER COLUMN id_detalle_venta       RESTART WITH 1;
 ALTER TABLE pago                ALTER COLUMN id_pago                RESTART WITH 1;
