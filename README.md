@@ -119,13 +119,13 @@ flowchart TD
     C_PROD -->|Consultas optimizadas| SUPA_DB
     C_PROD -.->|URLs CDN| SUPA_STORAGE
 
-    UI_CHECKOUT -->|GET /api/dni/{num}| C_DNI
+    UI_CHECKOUT -->|GET /api/dni/:numero| C_DNI
     C_DNI -->|Consulta identidad| RENIEC
 
     UI_CHECKOUT -->|POST /api/ventas| C_VENTA
     C_VENTA -->|Transacción ACID| SUPA_DB
 
-    UI_VOUCHER -->|GET /api/ventas/mis-pedidos/{id}| C_VENTA
+    UI_VOUCHER -->|GET /api/ventas/mis-pedidos/:id| C_VENTA
     UI_ADMIN -->|Token JWT + RBAC| GW
     GW --> C_ADMIN
     C_ADMIN --> SUPA_DB
@@ -188,7 +188,7 @@ flowchart TD
     UI --> B1["Badge: 'Lanzamiento'<br/>(Si novedad = true)"]
     UI --> B2["Badge: 'Nuevo Ingreso'<br/>(Si es novedad por fecha reciente)"]
     
-    ADMIN["Acción Admin: Toggle Novedad<br/>(PUT /api/admin/productos/{id}/toggle-novedad)"] --> BD_UPDATE["Actualiza columna 'novedad' en BD"]
+    ADMIN["Acción Admin: Toggle Novedad<br/>PUT /api/admin/productos/:id/toggle-novedad"] --> BD_UPDATE["Actualiza columna 'novedad' en BD"]
     BD_UPDATE --> QUERY
 ```
 
