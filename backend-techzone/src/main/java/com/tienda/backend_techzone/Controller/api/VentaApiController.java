@@ -205,9 +205,35 @@ public class VentaApiController {
                 medio = medioPagoRepository.findAll().stream().findFirst().orElse(null);
             }
             if (medio != null) {
-                String codOp = (req != null && req.codigoOperacion() != null && !req.codigoOperacion().isBlank())
-                        ? req.codigoOperacion().trim()
-                        : "OP-" + String.format("%06d", venta.getIdVenta());
+                String nombreMedio = medio.getNombre() != null ? medio.getNombre().toUpperCase() : "";
+                String codOp;
+
+                if (nombreMedio.contains("YAPE")) {
+                    codOp = (req != null && req.codigoOperacion() != null && req.codigoOperacion().startsWith("OP-YAPE-"))
+                            ? req.codigoOperacion().trim()
+                            : "OP-YAPE-" + String.format("%06d", venta.getIdVenta());
+                } else if (nombreMedio.contains("PLIN")) {
+                    codOp = (req != null && req.codigoOperacion() != null && req.codigoOperacion().startsWith("OP-PLIN-"))
+                            ? req.codigoOperacion().trim()
+                            : "OP-PLIN-" + String.format("%06d", venta.getIdVenta());
+                } else if (nombreMedio.contains("TARJETA") || nombreMedio.contains("CREDITO") || nombreMedio.contains("DEBITO")) {
+                    if (req != null && req.codigoOperacion() != null && req.codigoOperacion().contains("****")) {
+                        codOp = req.codigoOperacion().trim();
+                    } else {
+                        codOp = "AUT-" + String.format("%06d", venta.getIdVenta()) + " (TARJETA-****-ONLINE)";
+                    }
+                } else if (nombreMedio.contains("TRANSFERENCIA")) {
+                    if (req != null && req.codigoOperacion() != null && !req.codigoOperacion().isBlank()) {
+                        String rawOp = req.codigoOperacion().trim();
+                        codOp = rawOp.startsWith("TRF-") ? rawOp : "TRF-" + rawOp;
+                    } else {
+                        codOp = "TRF-BCP-" + String.format("%06d", venta.getIdVenta());
+                    }
+                } else {
+                    codOp = (req != null && req.codigoOperacion() != null && !req.codigoOperacion().isBlank())
+                            ? req.codigoOperacion().trim()
+                            : "OP-" + String.format("%06d", venta.getIdVenta());
+                }
 
                 Pago pago = Pago.builder()
                         .venta(venta)

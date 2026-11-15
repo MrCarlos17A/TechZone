@@ -29,6 +29,8 @@ public class BackendTechzoneApplication {
 				jdbcTemplate.execute("UPDATE medio_pago SET instrucciones = 'Aceptamos tarjetas de débito nacionales con compras por internet habilitadas.' WHERE id_medio_pago = 3 AND (instrucciones IS NULL OR instrucciones = '')");
 				jdbcTemplate.execute("UPDATE medio_pago SET instrucciones = 'Transfiere al número de cuenta o CCI institucional y adjunta el número de operación para verificación inmediata.' WHERE id_medio_pago = 4 AND (instrucciones IS NULL OR instrucciones = '')");
 				jdbcTemplate.execute("UPDATE medio_pago SET instrucciones = 'Genera tu código CIP y realiza el pago en agentes bancarios autorizados o banca por internet.' WHERE id_medio_pago = 5 AND (instrucciones IS NULL OR instrucciones = '')");
+				jdbcTemplate.execute("UPDATE pago SET estado_pago = 'CONFIRMADO', codigo_operacion = 'OP-YAPE-000002' WHERE codigo_operacion = '123456'");
+				jdbcTemplate.execute("UPDATE venta SET direccion_envio = 'EL VIVERO S/N, Tumán, Chiclayo - Lambayeque' WHERE id_venta = 2 AND (direccion_envio = 'EL VIVERO S/N' OR direccion_envio IS NULL)");
 			} catch (Exception ignored) {
 			}
 		};

@@ -484,7 +484,7 @@
                 </div>
 
                 <p class="text-[11px] text-slate-500 dark:text-slate-400">
-                  Transfiere o escanea el QR a nombre de <strong>TechZone SAC</strong> (967 662 103) e ingresa el número de celular de origen y el código de operación fiscal de tu constancia.
+                  Ingresa tu número de celular registrado en tu billetera digital y el <strong>Código de Aprobación</strong> de 6 dígitos generado en tu aplicación (menú lateral) para autorizar la compra en línea.
                 </p>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -500,14 +500,14 @@
                     />
                   </div>
                   <div>
-                    <label class="text-[11px] font-semibold text-slate-700 dark:text-slate-300 block mb-1">Código de Operación (6 dígitos) *</label>
+                    <label class="text-[11px] font-semibold text-slate-700 dark:text-slate-300 block mb-1">Código de Aprobación (6 dígitos) *</label>
                     <input
-                      type="text"
+                      type="password"
                       [ngModel]="codOpPago()"
                       (ngModelChange)="onCodOpChange($event)"
                       maxlength="6"
-                      placeholder="Ej. 123456"
-                      class="w-full bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-slate-200 px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500 font-mono"
+                      placeholder="••••••"
+                      class="w-full bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-slate-200 px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500 font-mono tracking-widest text-center"
                     />
                   </div>
                 </div>

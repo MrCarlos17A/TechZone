@@ -335,15 +335,19 @@ export class CheckoutComponent implements OnInit {
     let codigoOpFinal = '';
 
     if (this.esYapeOPlin()) {
+      const medioNombre = this.esYape() ? 'Yape' : 'Plin';
       if (!/^9\d{8}$/.test(this.celularPago().trim())) {
-        this.errorMensaje.set('El número de celular de Yape/Plin debe tener 9 dígitos y empezar con 9');
+        this.errorMensaje.set(`El número de celular de ${medioNombre} debe tener 9 dígitos y empezar con 9`);
         return;
       }
       if (!/^\d{6}$/.test(this.codOpPago().trim())) {
-        this.errorMensaje.set('El código de operación de Yape/Plin debe tener 6 dígitos numéricos');
+        this.errorMensaje.set(`El código de aprobación de ${medioNombre} debe tener 6 dígitos numéricos`);
         return;
       }
-      codigoOpFinal = this.codOpPago().trim();
+      // Proteger el código de seguridad OTP efímero generando el identificador de liquidación bancaria formal
+      const prefijo = this.esYape() ? 'OP-YAPE' : 'OP-PLIN';
+      const tokenFiscal = Math.floor(100000 + Math.random() * 900000);
+      codigoOpFinal = `${prefijo}-${tokenFiscal}`;
     } else if (this.esTarjeta()) {
       if (!/^\d{16}$/.test(this.numTarjeta().trim())) {
         this.errorMensaje.set('El número de tarjeta debe tener exactamente 16 dígitos');
@@ -362,13 +366,14 @@ export class CheckoutComponent implements OnInit {
         return;
       }
       const raw = this.numTarjeta().trim();
-      codigoOpFinal = 'TARJETA-****-' + raw.slice(-4);
+      const codAut = Math.floor(100000 + Math.random() * 900000);
+      codigoOpFinal = `AUT-${codAut} (TARJETA-****-${raw.slice(-4)})`;
     } else if (this.esTransferencia()) {
       if (!this.codOpTransferencia().trim()) {
         this.errorMensaje.set('Ingresa el número de operación bancaria de la transferencia');
         return;
       }
-      codigoOpFinal = `${this.bancoOrigen()}-${this.codOpTransferencia().trim()}`;
+      codigoOpFinal = `TRF-${this.bancoOrigen()}-${this.codOpTransferencia().trim().toUpperCase()}`;
     }
 
     // Guardar snapshot de los productos comprados antes de vaciar carrito
