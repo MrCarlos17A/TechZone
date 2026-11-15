@@ -72,12 +72,45 @@ export class CheckoutComponent implements OnInit {
   totalComprado = signal(0);
   subtotalComprado = signal(0);
   igvComprado = signal(0);
+  distritoNombreSnapshot = signal<string>('');
+  medioPagoNombreSnapshot = signal<string>('');
 
   ngOnInit(): void {
     if (!this.authService.isAuthenticated()) {
       this.router.navigate(['/login'], { queryParams: { returnUrl: '/checkout' } });
       return;
     }
+
+    // 1. Recuperar comprobante recién emitido en sesión (persistencia ante F5 / recarga)
+    try {
+      if (typeof window !== 'undefined' && window.sessionStorage) {
+        const guardado = sessionStorage.getItem('techzone_checkout_exito');
+        if (guardado) {
+          const snap = JSON.parse(guardado);
+          if (snap && snap.idVenta) {
+            this.idVentaCreada.set(snap.idVenta);
+            this.fechaEmision.set(new Date(snap.fechaEmision || Date.now()));
+            this.itemsComprados.set(snap.items || []);
+            this.totalComprado.set(snap.total || 0);
+            this.subtotalComprado.set(snap.subtotal || 0);
+            this.igvComprado.set(snap.igv || 0);
+            this.tipoComprobante.set(snap.tipoComprobante || 'boleta');
+            this.dni.set(snap.dni || '');
+            this.nombres.set(snap.nombres || '');
+            this.apellidoPaterno.set(snap.apellidoPaterno || '');
+            this.apellidoMaterno.set(snap.apellidoMaterno || '');
+            this.telefono.set(snap.telefono || '');
+            this.direccion.set(snap.direccion || '');
+            this.distritoNombreSnapshot.set(snap.distritoNombre || '');
+            this.medioPagoNombreSnapshot.set(snap.medioPagoNombre || '');
+            this.rucFactura.set(snap.rucFactura || '');
+            this.razonSocialFactura.set(snap.razonSocialFactura || '');
+            this.exito.set(true);
+            return;
+          }
+        }
+      }
+    } catch {}
 
     this.carritoService.cargarCarrito();
 
@@ -365,8 +398,36 @@ export class CheckoutComponent implements OnInit {
         this.procesando.set(false);
         this.exito.set(true);
         this.idVentaCreada.set(res.idVenta);
+        this.distritoNombreSnapshot.set(this.getDistritoNombre());
+        this.medioPagoNombreSnapshot.set(this.getNombreMedioPago());
         this.productoService.limpiarCache();
         this.carritoService.cargarCarrito();
+
+        // Persistir comprobante en sessionStorage para soportar F5 / recargas
+        try {
+          if (typeof window !== 'undefined' && window.sessionStorage) {
+            const snap = {
+              idVenta: res.idVenta,
+              fechaEmision: this.fechaEmision().toISOString(),
+              items: this.itemsComprados(),
+              total: this.totalComprado(),
+              subtotal: this.subtotalComprado(),
+              igv: this.igvComprado(),
+              tipoComprobante: this.tipoComprobante(),
+              dni: this.dni(),
+              nombres: this.nombres(),
+              apellidoPaterno: this.apellidoPaterno(),
+              apellidoMaterno: this.apellidoMaterno(),
+              telefono: this.telefono(),
+              direccion: this.direccion(),
+              distritoNombre: this.distritoNombreSnapshot(),
+              medioPagoNombre: this.medioPagoNombreSnapshot(),
+              rucFactura: this.rucFactura(),
+              razonSocialFactura: this.razonSocialFactura()
+            };
+            sessionStorage.setItem('techzone_checkout_exito', JSON.stringify(snap));
+          }
+        } catch {}
       },
       error: (err) => {
         this.procesando.set(false);
@@ -376,15 +437,30 @@ export class CheckoutComponent implements OnInit {
   }
 
   getDistritoNombre(): string {
+    if (this.distritoNombreSnapshot()) {
+      return this.distritoNombreSnapshot();
+    }
     const id = this.idUbigeoSel();
     const d = this.distritos().find(x => x.idUbigeo === id);
     return d ? d.distrito : '';
   }
 
   getNombreMedioPago(): string {
+    if (this.medioPagoNombreSnapshot()) {
+      return this.medioPagoNombreSnapshot();
+    }
     const id = this.medioPagoSeleccionado();
     const m = this.mediosPago().find(x => x.idMedioPago === id);
     return m ? m.nombre : 'Medio no seleccionado';
+  }
+
+  limpiarComprobanteSesion(): void {
+    try {
+      if (typeof window !== 'undefined' && window.sessionStorage) {
+        sessionStorage.removeItem('techzone_checkout_exito');
+      }
+    } catch {}
+    this.exito.set(false);
   }
 
   imprimirComprobante(): void {
