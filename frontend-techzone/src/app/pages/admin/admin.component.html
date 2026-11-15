@@ -4561,21 +4561,21 @@
       @if (tabActiva() === 'ayuda') {
         <div class="space-y-6 animate-fadeIn">
           
-          <!-- Banner Hero Ejecutivo -->
-          <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#070f26] via-[#0c1a40] to-[#070f26] p-6 sm:p-8 text-white border border-blue-500/30 shadow-xl shadow-blue-950/20">
+          <!-- Banner Hero Ejecutivo Renovado (Fondo Azul TechZone de Alto Contraste) -->
+          <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-700 p-6 sm:p-8 text-white border border-blue-400/40 shadow-xl shadow-blue-900/20">
             <div class="relative z-10 max-w-3xl space-y-3">
-              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-blue-500/20 text-blue-300 border border-blue-400/40">
-                <span class="material-symbols-outlined text-sm text-blue-400">help_center</span>
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-white/20 text-white border border-white/30 backdrop-blur-xs">
+                <span class="material-symbols-outlined text-sm text-white">auto_stories</span>
                 Base de Conocimiento Oficial TechZone
               </span>
-              <h2 class="text-2xl sm:text-3xl font-black tracking-tight font-heading">
+              <h2 class="text-2xl sm:text-3xl font-black tracking-tight text-white font-heading">
                 Centro de Ayuda & Manual Administrativo
               </h2>
-              <p class="text-xs sm:text-sm text-blue-100/90 leading-relaxed">
+              <p class="text-xs sm:text-sm text-blue-50 leading-relaxed font-normal">
                 Guías interactivas, protocolos operativos de despacho, conciliación de pasarelas de pago y mejores prácticas para el equipo de gestión. Haz clic en cualquier tema para desplegar su guía paso a paso.
               </p>
 
-              <!-- Buscador de Guías -->
+              <!-- Buscador de Guías de Alto Contraste -->
               <div class="pt-2 flex flex-col sm:flex-row gap-3">
                 <div class="relative flex-1">
                   <input
@@ -4583,13 +4583,13 @@
                     [ngModel]="busquedaAyuda()"
                     (ngModelChange)="busquedaAyuda.set($event)"
                     placeholder="Buscar tema, procedimiento o palabra clave (ej. stock, factura, SIP, anular)..."
-                    class="w-full bg-white/10 text-xs sm:text-sm text-white pl-10 pr-10 py-2.5 rounded-2xl border border-blue-400/30 focus:outline-none focus:border-blue-400 focus:bg-white/15 focus:ring-2 focus:ring-blue-400/20 placeholder-blue-200/60 transition-all shadow-inner"
+                    class="w-full bg-white text-slate-800 text-xs sm:text-sm pl-10 pr-10 py-3 rounded-2xl border border-blue-200/60 focus:outline-none focus:ring-3 focus:ring-white/40 focus:border-white placeholder-slate-400 shadow-md transition-all font-medium"
                   />
-                  <span class="material-symbols-outlined absolute left-3 top-2.5 text-blue-300 text-lg">search</span>
+                  <span class="material-symbols-outlined absolute left-3 top-3 text-blue-600 text-lg">search</span>
                   @if (busquedaAyuda()) {
                     <button
                       (click)="busquedaAyuda.set('')"
-                      class="absolute right-3 top-2.5 text-blue-200 hover:text-white cursor-pointer"
+                      class="absolute right-3 top-3 text-slate-400 hover:text-slate-700 cursor-pointer"
                       title="Limpiar búsqueda">
                       <span class="material-symbols-outlined text-base">close</span>
                     </button>
@@ -4598,7 +4598,8 @@
               </div>
             </div>
 
-            <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -right-10 -bottom-10 w-72 h-72 bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute right-20 top-0 w-48 h-48 bg-cyan-400/15 rounded-full blur-2xl pointer-events-none"></div>
           </div>
 
           <!-- Filtros por Categoría de Procedimiento -->
@@ -4732,8 +4733,8 @@
                       </div>
                       <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200/80 dark:border-slate-800 space-y-1.5">
                         <span class="inline-block px-2 py-0.5 rounded bg-blue-600 text-white font-bold text-[10px]">Paso 2</span>
-                        <p class="font-bold text-slate-900 dark:text-white">Imágenes en Storage</p>
-                        <p class="text-[11px] text-slate-500 dark:text-slate-400">Sube la foto desde tu dispositivo o ingresa una URL. El backend la aloja directamente en el bucket oficial de Supabase.</p>
+                        <p class="font-bold text-slate-900 dark:text-white">Galería & Storage Jerárquico</p>
+                        <p class="text-[11px] text-slate-500 dark:text-slate-400">Sube de 1 a 8 fotos WebP en lote. El sistema organiza automáticamente las carpetas en Supabase: Categoría → Marca → Producto.</p>
                       </div>
                       <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200/80 dark:border-slate-800 space-y-1.5">
                         <span class="inline-block px-2 py-0.5 rounded bg-blue-600 text-white font-bold text-[10px]">Paso 3</span>
@@ -4795,18 +4796,19 @@
                     </p>
 
                     <div class="flex flex-col sm:flex-row items-center justify-between gap-2 p-3 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800 text-center font-bold text-[11px]">
-                      <div class="flex-1 py-1 px-2 rounded-lg bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300">1. PENDIENTE (Pago Registrado)</div>
+                      <div class="flex-1 py-1 px-2 rounded-lg bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300">1. PENDIENTE (En Almacén)</div>
                       <span class="material-symbols-outlined text-slate-400 hidden sm:inline">arrow_forward</span>
-                      <div class="flex-1 py-1 px-2 rounded-lg bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-300">2. EN PREPARACIÓN (Almacén)</div>
+                      <div class="flex-1 py-1 px-2 rounded-lg bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-300">2. EN PREPARACIÓN (Empaque)</div>
                       <span class="material-symbols-outlined text-slate-400 hidden sm:inline">arrow_forward</span>
-                      <div class="flex-1 py-1 px-2 rounded-lg bg-purple-100 dark:bg-purple-950/60 text-purple-800 dark:text-purple-300">3. EN CAMINO (Despachado)</div>
+                      <div class="flex-1 py-1 px-2 rounded-lg bg-purple-100 dark:bg-purple-950/60 text-purple-800 dark:text-purple-300">3. EN CAMINO (Con Courier)</div>
                       <span class="material-symbols-outlined text-slate-400 hidden sm:inline">arrow_forward</span>
                       <div class="flex-1 py-1 px-2 rounded-lg bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300">4. ENTREGADO (Completado)</div>
                     </div>
 
                     <ul class="space-y-1.5 list-disc pl-5">
-                      <li><strong>Emisión de Boleta / Factura:</strong> Al hacer clic en el icono de documento en la fila del pedido, se abrirá la boleta o factura electrónica oficial con el logo de TechZone, RUC 20608945123, desglose de IGV (18%) y código QR.</li>
-                      <li><strong>Asignación de Empleado:</strong> Puedes asignar al colaborador responsable del empaque y despacho para registrar la autoría en auditoría.</li>
+                      <li><strong>Emisión de Boleta / Factura SUNAT:</strong> Al hacer clic en el comprobante, el sistema asigna automáticamente el tratamiento legal: <strong>Señor(a):</strong> para personas naturales (DNI / Pasaporte) y <strong>Señor(es):</strong> para personas jurídicas (RUC 20).</li>
+                      <li><strong>Datos Formales del Emisor:</strong> Cabecera con Razón Social, RUC 20608945123, Dirección, Central Telefónica, Correo oficial (<em>ventas@techzone.com</em>) y Web en líneas independientes sin emojis.</li>
+                      <li><strong>Asignación de Empleado & Auditoría:</strong> Permite asignar al personal encargado del despacho para registro inmutable en auditoría forense.</li>
                     </ul>
 
                     <div class="flex justify-end pt-1">
@@ -4858,20 +4860,20 @@
                       <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-1">
                         <div class="flex items-center gap-1.5 text-blue-600 dark:text-blue-400 font-bold">
                           <span class="material-symbols-outlined text-base">credit_card</span>
-                          <span>Pasarela SIP 3DS Secure</span>
+                          <span>Pasarela SIP & Tarjetas Tokenizadas</span>
                         </div>
                         <p class="text-[11px] text-slate-500 dark:text-slate-400">
-                          Las tarjetas de crédito y débito se procesan bajo el estándar de tokenización 3DS Secure. Cada transacción emite un código de autorización y se asocia al comprobante.
+                          Las tarjetas de crédito y débito se procesan bajo tokenización segura. El sistema emite un código oficial de autorización fiscal: <strong>AUT-XXXXXX (TARJETA-****-XXXX)</strong> y registra el pago como CONFIRMADO al instante.
                         </p>
                       </div>
 
                       <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-1">
                         <div class="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-bold">
                           <span class="material-symbols-outlined text-base">qr_code_scanner</span>
-                          <span>Billeteras Móviles (Yape / Plin)</span>
+                          <span>Billeteras Móviles (Yape & Plin)</span>
                         </div>
                         <p class="text-[11px] text-slate-500 dark:text-slate-400">
-                          El cliente digita el número de operación generado por la app. En el módulo <strong>Registro de Pagos</strong>, el administrador puede contrastar y cambiar el estado a <em>CONFIRMADO</em>.
+                          El código de 6 dígitos ingresado por el cliente es un OTP temporal de autorización bancaria y <em>nunca se guarda ni expone en el comprobante</em>. El sistema asigna un código formal de auditoría: <strong>OP-YAPE-XXXXXX</strong> o <strong>OP-PLIN-XXXXXX</strong>.
                         </p>
                       </div>
                     </div>
