@@ -76,4 +76,41 @@ class ProductoServiceTest {
         });
         verify(productoRepository, times(1)).findByIdConRelaciones(999L);
     }
+
+    @Test
+    @DisplayName("Debe listar productos marcados o clasificados como novedad")
+    void debeListarProductosNovedades() {
+        Producto p = new Producto();
+        p.setIdProducto(5L);
+        p.setNombre("Ryzen 9 9950X");
+        p.setNovedad(true);
+        p.setVigente(true);
+
+        when(productoRepository.findNovedades()).thenReturn(List.of(p));
+
+        List<Producto> novedades = productoService.listarProductosNovedades();
+
+        assertNotNull(novedades);
+        assertEquals(1, novedades.size());
+        assertTrue(novedades.get(0).getNovedad());
+        verify(productoRepository, times(1)).findNovedades();
+    }
+
+    @Test
+    @DisplayName("Debe alternar el estado de novedad de un producto")
+    void debeAlternarEstadoNovedad() {
+        Producto p = new Producto();
+        p.setIdProducto(7L);
+        p.setNombre("Teclado Mecanico RGB");
+        p.setNovedad(false);
+
+        when(productoRepository.findByIdConRelaciones(7L)).thenReturn(Optional.of(p));
+        when(productoRepository.save(any(Producto.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Producto actualizado = productoService.toggleNovedad(7L);
+
+        assertNotNull(actualizado);
+        assertTrue(actualizado.getNovedad());
+        verify(productoRepository, times(1)).save(p);
+    }
 }
