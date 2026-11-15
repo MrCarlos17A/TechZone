@@ -409,11 +409,14 @@
                 Store</span>
             </div>
           </div>
-          <p class="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wide">TechZone Gaming Store S.A.C.</p>
-          <p class="text-[11px] text-slate-500 dark:text-slate-400">Distribuidora de Componentes & Periféricos Gaming</p>
-          
+          <p class="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wide">TechZone Gaming Store
+            S.A.C.</p>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400">Distribuidora de Componentes & Periféricos Gaming
+          </p>
+
           <div class="pt-1 space-y-0.5 text-[11px] text-slate-600 dark:text-slate-400 font-sans">
-            <p><span class="font-semibold text-slate-700 dark:text-slate-300">Dirección:</span> Av. Javier Prado Este 4200, Santiago de Surco - Lima</p>
+            <p><span class="font-semibold text-slate-700 dark:text-slate-300">Dirección:</span> Av. Javier Prado Este
+              4200, Santiago de Surco - Lima</p>
             <p><span class="font-semibold text-slate-700 dark:text-slate-300">Teléfono:</span> (01) 710-8900</p>
             <p><span class="font-semibold text-slate-700 dark:text-slate-300">Correo:</span> ventas@techzone.com</p>
             <p><span class="font-semibold text-slate-700 dark:text-slate-300">Web:</span> www.techzone.com</p>
@@ -438,15 +441,19 @@
       <div
         class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs bg-slate-50 dark:bg-slate-950/70 p-4 rounded-2xl border border-slate-200 dark:border-slate-800/80">
         <div class="space-y-1.5">
-          <p><span class="text-slate-500 dark:text-slate-400 font-semibold">Señor(es):</span> <strong
+          <p><span class="text-slate-500 dark:text-slate-400 font-semibold">{{ esFactura(comp) ? 'Señor(es):' : 'Señor(a):' }}</span> <strong
               class="text-slate-900 dark:text-white uppercase">{{ comp.clienteNombre || 'CLIENTE REGISTRADO' }}</strong>
           </p>
           @if (esFactura(comp)) {
           <p><span class="text-slate-500 dark:text-slate-400 font-semibold">RUC Adquirente:</span> <strong
               class="text-blue-600 dark:text-blue-400 font-mono font-bold">{{ comp.clienteDocumento || '-' }}</strong>
           </p>
-          } @else {
+          } @else if (comp.clienteDocumento && comp.clienteDocumento.length === 8) {
           <p><span class="text-slate-500 dark:text-slate-400 font-semibold">Documento (DNI):</span> <strong
+              class="text-blue-600 dark:text-blue-400 font-mono font-bold">{{ comp.clienteDocumento }}</strong>
+          </p>
+          } @else {
+          <p><span class="text-slate-500 dark:text-slate-400 font-semibold">Doc. Identidad / Pasaporte:</span> <strong
               class="text-blue-600 dark:text-blue-400 font-mono font-bold">{{ comp.clienteDocumento || '-' }}</strong>
           </p>
           }

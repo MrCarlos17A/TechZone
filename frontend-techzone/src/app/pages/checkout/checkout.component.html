@@ -85,12 +85,12 @@
         <!-- Datos del Cliente y Emisión -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs bg-slate-50 dark:bg-slate-950/70 p-4 rounded-2xl border border-slate-200 dark:border-slate-800/80">
           <div class="space-y-1">
-            <p><span class="text-slate-500 dark:text-slate-400 font-semibold">Cliente:</span> <strong class="text-slate-900 dark:text-white uppercase">{{ nombres() }} {{ apellidoPaterno() }} {{ apellidoMaterno() }}</strong></p>
             @if (tipoComprobante() === 'factura') {
-              <p><span class="text-slate-500 dark:text-slate-400 font-semibold">Razón Social:</span> <strong class="text-slate-900 dark:text-white uppercase">{{ razonSocialFactura() }}</strong></p>
+              <p><span class="text-slate-500 dark:text-slate-400 font-semibold">Señor(es):</span> <strong class="text-slate-900 dark:text-white uppercase">{{ razonSocialFactura() || (nombres() + ' ' + apellidoPaterno()) }}</strong></p>
               <p><span class="text-slate-500 dark:text-slate-400 font-semibold">RUC Adquirente:</span> <strong class="text-blue-600 dark:text-indigo-400 font-mono">{{ rucFactura() }}</strong></p>
             } @else {
-              <p><span class="text-slate-500 dark:text-slate-400 font-semibold">DNI:</span> <strong class="text-blue-600 dark:text-indigo-400 font-mono">{{ dni() }}</strong></p>
+              <p><span class="text-slate-500 dark:text-slate-400 font-semibold">Señor(a):</span> <strong class="text-slate-900 dark:text-white uppercase">{{ nombres() }} {{ apellidoPaterno() }} {{ apellidoMaterno() }}</strong></p>
+              <p><span class="text-slate-500 dark:text-slate-400 font-semibold">{{ dni().length === 8 ? 'Documento (DNI):' : 'Doc. Identidad / Pasaporte:' }}</span> <strong class="text-blue-600 dark:text-indigo-400 font-mono">{{ dni() }}</strong></p>
             }
             <p><span class="text-slate-500 dark:text-slate-400 font-semibold">Teléfono:</span> <span class="text-slate-700 dark:text-slate-300 font-mono">{{ telefono() }}</span></p>
           </div>
