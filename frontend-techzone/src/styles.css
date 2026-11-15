@@ -166,6 +166,9 @@ html.light ::-webkit-scrollbar-thumb {
 
   app-navbar,
   app-footer,
+  aside,
+  header,
+  nav,
   .no-print,
   button,
   .glow-button {

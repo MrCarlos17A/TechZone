@@ -28,4 +28,7 @@ public class Rol {
     @Column(name = "vigente")
     @Builder.Default
     private Boolean vigente = true;
+
+    @Column(name = "permisos", columnDefinition = "TEXT")
+    private String permisos;
 }

@@ -77,6 +77,7 @@ export class AdminComponent implements OnInit {
   private readonly toastService = inject(ToastService);
   private readonly excelExportService = inject(ExcelExportService);
   private readonly router = inject(Router);
+  readonly Math = Math;
 
   tabActiva = signal<TabAdmin>('dashboard');
   sidebarContraido = signal(false);
@@ -130,6 +131,66 @@ export class AdminComponent implements OnInit {
   previewNuevaImagen = signal<string | null>(null);
   esPrincipalNuevaImagen = signal(true);
   guardandoNuevaImagen = signal(false);
+
+  // Gestor Avanzado de Subida Múltiple (1 a 8 fotos) y Carpetas en Supabase Storage
+  carpetaSubcategoriaSel = signal<'audifonos' | 'teclados' | null>(null);
+  modoCarpetaSubida = signal<'existente' | 'nueva'>('existente');
+  catSelSubida = signal<Categoria | null>(null);
+  subcatPerifericosSubida = signal<'audifonos' | 'teclados' | null>(null);
+  marcaSelSubida = signal<Marca | null>(null);
+  productoSelSubida = signal<Producto | null>(null);
+  nombreNuevaCarpetaProducto = signal<string>('');
+  precioNuevoProductoSubida = signal<number>(99.00);
+  stockNuevoProductoSubida = signal<number>(10);
+  descripcionNuevaCarpetaProducto = signal<string>('');
+  archivosSubidaLote = signal<{ archivo: File; preview: string; nombreGenerado: string; esPrincipal: boolean }[]>([]);
+  indicePrincipalLote = signal<number>(0);
+  subiendoLote = signal<boolean>(false);
+  progresoSubidaLote = signal<string>('');
+
+  marcasDisponiblesSubida = computed(() => {
+    return [...this.marcas()].sort((a, b) => a.nombre.localeCompare(b.nombre));
+  });
+
+  productosDisponiblesSubida = computed(() => {
+    const cat = this.catSelSubida();
+    const marca = this.marcaSelSubida();
+    let prods = this.productos();
+    if (cat) {
+      prods = prods.filter(p => p.categoria?.idCategoria === cat.idCategoria);
+      if (cat.idCategoria === 7 && this.subcatPerifericosSubida()) {
+        const sub = this.subcatPerifericosSubida()!;
+        prods = prods.filter(p => {
+          const mNorm = (p.marca?.nombre || '').toLowerCase();
+          if (sub === 'audifonos') return mNorm.includes('hyperx') || p.marca?.idMarca === 16;
+          if (sub === 'teclados') return mNorm.includes('msi') || p.marca?.idMarca === 2;
+          return true;
+        });
+      }
+    }
+    if (marca) {
+      prods = prods.filter(p => p.marca?.idMarca === marca.idMarca);
+    }
+    return prods;
+  });
+
+  rutaSupabasePrevista = computed(() => {
+    const cat = this.catSelSubida();
+    const marca = this.marcaSelSubida();
+    const catSlug = cat ? this.generarSlug(cat.nombre) : '[categoria]';
+    let subRuta = '';
+    if (cat?.idCategoria === 7 && this.subcatPerifericosSubida()) {
+      subRuta = this.subcatPerifericosSubida() + '/';
+    }
+    const marcaSlug = marca ? this.generarSlug(marca.nombre) : '[marca]';
+    let prodSlug = '';
+    if (this.modoCarpetaSubida() === 'existente') {
+      prodSlug = this.productoSelSubida() ? this.generarSlug(this.productoSelSubida()!.nombre) : '[producto]';
+    } else {
+      prodSlug = this.nombreNuevaCarpetaProducto().trim() ? this.generarSlug(this.nombreNuevaCarpetaProducto()) : '[nueva-carpeta]';
+    }
+    return `productos/${catSlug}/${subRuta}${marcaSlug}/${prodSlug}/`;
+  });
 
   // Modal Editar Imagen
   mostrarModalEditarImagen = signal(false);
@@ -217,6 +278,8 @@ export class AdminComponent implements OnInit {
   nuevoPrecio = signal<number>(0);
   nuevoStock = signal<number>(1);
   nuevaDesc = signal('');
+  nuevoDestacado = signal<boolean>(false);
+  nuevoNovedad = signal<boolean>(false);
   idCatSel = signal<number | null>(null);
   idMarcaSel = signal<number | null>(null);
   urlImagenProducto = signal('');
@@ -335,8 +398,35 @@ export class AdminComponent implements OnInit {
   filtroPrecioMin = signal<number | null>(null);
   filtroPrecioMax = signal<number | null>(null);
   filtroOrdenPrecio = signal<'ninguno' | 'asc' | 'desc'>('ninguno');
+  filtroSoloDestacados = signal<boolean>(false);
+  filtroSoloNovedades = signal<boolean>(false);
   paginaProductos = signal(1);
   tamanoProductos = signal(15);
+
+  totalDestacados = computed(() => this.productos().filter(p => !!p.destacado).length);
+  totalNovedades = computed(() => this.productos().filter(p => !!p.novedad).length);
+
+  // Gestor y Modal de Sustitución de Productos Destacados (Límite 9)
+  modalSustitucionDestacadoAbierto = signal<boolean>(false);
+  productoSustitutoEntrante = signal<Producto | null>(null);
+  productoSustitutoSaliente = signal<Producto | null>(null);
+  busquedaSustituto = signal<string>('');
+
+  productosDestacadosActuales = computed(() =>
+    this.productos().filter(p => !!p.destacado)
+  );
+
+  productosCandidatosSustitucion = computed(() => {
+    const q = this.busquedaSustituto().trim().toLowerCase();
+    const noDestacados = this.productos().filter(p => !p.destacado && (p.vigente === null || p.vigente));
+    if (!q) return noDestacados.slice(0, 8);
+    return noDestacados.filter(p =>
+      (p.nombre || '').toLowerCase().includes(q) ||
+      (p.codigoSku || '').toLowerCase().includes(q) ||
+      (p.marca?.nombre || '').toLowerCase().includes(q) ||
+      (p.categoria?.nombre || '').toLowerCase().includes(q)
+    ).slice(0, 12);
+  });
 
   hayFiltrosProductoActivos = computed(() => {
     return !!this.filtroProductos().trim() ||
@@ -345,7 +435,9 @@ export class AdminComponent implements OnInit {
       this.filtroMarcaProducto() !== 'todas' ||
       this.filtroPrecioMin() !== null ||
       this.filtroPrecioMax() !== null ||
-      this.filtroOrdenPrecio() !== 'ninguno';
+      this.filtroOrdenPrecio() !== 'ninguno' ||
+      this.filtroSoloDestacados() ||
+      this.filtroSoloNovedades();
   });
 
   limpiarFiltrosProducto(): void {
@@ -356,6 +448,8 @@ export class AdminComponent implements OnInit {
     this.filtroPrecioMin.set(null);
     this.filtroPrecioMax.set(null);
     this.filtroOrdenPrecio.set('ninguno');
+    this.filtroSoloDestacados.set(false);
+    this.filtroSoloNovedades.set(false);
     this.paginaProductos.set(1);
   }
 
@@ -567,6 +661,11 @@ export class AdminComponent implements OnInit {
 
   recargarUbigeos(): void {
     this.adminService.getUbigeos().subscribe({ next: ub => this.ubigeos.set(ub), error: () => {} });
+  }
+
+  recargarCarritos(): void {
+    this.adminService.getCarritos().subscribe({ next: cr => this.carritos.set(cr), error: () => {} });
+    this.adminService.getDetallesCarrito().subscribe({ next: dc => this.detallesCarrito.set(dc), error: () => {} });
   }
 
   recargarMediosPago(): void {
@@ -798,6 +897,19 @@ export class AdminComponent implements OnInit {
     }
     this.tabActiva.set(tab);
     this.sidebarMovilAbierto.set(false);
+    if (tab === 'productos-proveedor') {
+      this.recargarProductosProveedor();
+    } else if (tab === 'ventas') {
+      this.recargarVentas();
+    } else if (tab === 'detalles-venta') {
+      this.recargarDetallesVenta();
+      this.recargarVentas();
+    } else if (tab === 'pagos') {
+      this.recargarPagos();
+      this.recargarVentas();
+    } else if (tab === 'carritos' || tab === 'detalles-carrito') {
+      this.recargarCarritos();
+    }
   }
 
   // ==========================================
@@ -1332,7 +1444,10 @@ export class AdminComponent implements OnInit {
       const matchPMin = pMin === null || precio >= pMin;
       const matchPMax = pMax === null || precio <= pMax;
 
-      return matchQ && matchStock && matchCat && matchMarca && matchPMin && matchPMax;
+      const matchDestacado = !this.filtroSoloDestacados() || !!p.destacado;
+      const matchNovedad = !this.filtroSoloNovedades() || !!p.novedad;
+
+      return matchQ && matchStock && matchCat && matchMarca && matchPMin && matchPMax && matchDestacado && matchNovedad;
     });
 
     if (ordenPrecio === 'asc') {
@@ -1878,6 +1993,8 @@ export class AdminComponent implements OnInit {
       this.nuevaDesc.set(p.descripcion || '');
       this.idCatSel.set(p.categoria?.idCategoria || null);
       this.idMarcaSel.set(p.marca?.idMarca || null);
+      this.nuevoDestacado.set(!!p.destacado);
+      this.nuevoNovedad.set(!!p.novedad);
     } else {
       this.esEdicionProducto.set(false);
       this.idProductoEditando.set(null);
@@ -1887,6 +2004,8 @@ export class AdminComponent implements OnInit {
       this.nuevaDesc.set('');
       this.idCatSel.set(this.categorias().length > 0 ? this.categorias()[0].idCategoria : null);
       this.idMarcaSel.set(this.marcas().length > 0 ? this.marcas()[0].idMarca : null);
+      this.nuevoDestacado.set(false);
+      this.nuevoNovedad.set(false);
     }
     this.archivoImagen = null;
     this.archivoImagenProducto = null;
@@ -1968,7 +2087,9 @@ export class AdminComponent implements OnInit {
       stock,
       descripcion: this.nuevaDesc().trim(),
       categoria: { idCategoria: catId },
-      marca: { idMarca: marcaId }
+      marca: { idMarca: marcaId },
+      destacado: this.nuevoDestacado(),
+      novedad: this.nuevoNovedad()
     };
 
     if (this.esEdicionProducto()) {
@@ -2048,6 +2169,202 @@ export class AdminComponent implements OnInit {
         error: (err) => this.toastService.error(err.error?.mensaje || 'Error al crear producto')
       });
     }
+  }
+
+  guardarEnCache(): void {
+    try {
+      const snap = {
+        productos: this.productos(),
+        categorias: this.categorias(),
+        marcas: this.marcas(),
+        productosProveedor: this.productosProveedor(),
+        timestamp: Date.now()
+      };
+      sessionStorage.setItem('tz_admin_cache', JSON.stringify(snap));
+    } catch (_) {}
+  }
+
+  cargarDesdeCache(): void {
+    try {
+      const str = sessionStorage.getItem('tz_admin_cache');
+      if (str) {
+        const snap = JSON.parse(str);
+        if (snap && Array.isArray(snap.productosProveedor) && snap.productosProveedor.length > 0 && this.productosProveedor().length === 0) {
+          this.productosProveedor.set(snap.productosProveedor);
+        }
+      }
+    } catch (_) {}
+  }
+
+  validarPrecioSubida(valor: any): void {
+    if (valor === null || valor === undefined || valor === '') {
+      this.precioNuevoProductoSubida.set(0);
+      return;
+    }
+    const num = Number(valor);
+    if (isNaN(num) || num <= 0) {
+      this.precioNuevoProductoSubida.set(0);
+    } else {
+      this.precioNuevoProductoSubida.set(Number(Math.abs(num).toFixed(2)));
+    }
+  }
+
+  validarStockSubida(valor: any): void {
+    if (valor === null || valor === undefined || valor === '') {
+      this.stockNuevoProductoSubida.set(0);
+      return;
+    }
+    const num = Number(valor);
+    if (isNaN(num) || num < 0) {
+      this.stockNuevoProductoSubida.set(0);
+    } else {
+      this.stockNuevoProductoSubida.set(Math.floor(Math.abs(num)));
+    }
+  }
+
+  onNuevoPrecioChange(valor: any): void {
+    if (valor === null || valor === undefined || valor === '') {
+      this.nuevoPrecio.set(0);
+      return;
+    }
+    const num = Number(valor);
+    this.nuevoPrecio.set(isNaN(num) || num <= 0 ? 0 : Number(Math.abs(num).toFixed(2)));
+  }
+
+  onNuevoStockChange(valor: any): void {
+    if (valor === null || valor === undefined || valor === '') {
+      this.nuevoStock.set(0);
+      return;
+    }
+    const num = Number(valor);
+    this.nuevoStock.set(isNaN(num) || num < 0 ? 0 : Math.floor(Math.abs(num)));
+  }
+
+  bloquearTeclasNegativas(event: KeyboardEvent): void {
+    if (event.key === '-' || event.key === 'e' || event.key === '+' || event.key === 'E') {
+      event.preventDefault();
+    }
+  }
+
+  bloquearTeclasStock(event: KeyboardEvent): void {
+    if (event.key === '-' || event.key === 'e' || event.key === '+' || event.key === 'E' || event.key === '.' || event.key === ',') {
+      event.preventDefault();
+    }
+  }
+
+  abrirModalSustitucionParaEntrante(entrante: Producto): void {
+    this.productoSustitutoEntrante.set(entrante);
+    this.productoSustitutoSaliente.set(null);
+    this.busquedaSustituto.set('');
+    this.modalSustitucionDestacadoAbierto.set(true);
+  }
+
+  abrirModalSustitucionParaSaliente(saliente: Producto): void {
+    this.productoSustitutoSaliente.set(saliente);
+    this.productoSustitutoEntrante.set(null);
+    this.busquedaSustituto.set('');
+    this.modalSustitucionDestacadoAbierto.set(true);
+  }
+
+  cerrarModalSustitucion(): void {
+    this.modalSustitucionDestacadoAbierto.set(false);
+    this.productoSustitutoEntrante.set(null);
+    this.productoSustitutoSaliente.set(null);
+    this.busquedaSustituto.set('');
+  }
+
+  ejecutarSustitucion(saliente: Producto, entrante: Producto): void {
+    if (!saliente || !entrante || saliente.idProducto === entrante.idProducto) return;
+
+    // 1. Optimistic update en memoria (0ms)
+    this.productos.update(list => list.map(item => {
+      if (item.idProducto === saliente.idProducto) return { ...item, destacado: false };
+      if (item.idProducto === entrante.idProducto) return { ...item, destacado: true };
+      return item;
+    }));
+    this.guardarEnCache();
+    this.cerrarModalSustitucion();
+
+    // 2. Persistir en backend y Supabase
+    this.productoService.adminSustituirDestacado(saliente.idProducto, entrante.idProducto).subscribe({
+      next: () => {
+        this.toastService.exito(`"${entrante.nombre}" ahora es destacado en reemplazo de "${saliente.nombre}"`);
+      },
+      error: (err) => {
+        this.productos.update(list => list.map(item => {
+          if (item.idProducto === saliente.idProducto) return { ...item, destacado: true };
+          if (item.idProducto === entrante.idProducto) return { ...item, destacado: false };
+          return item;
+        }));
+        this.guardarEnCache();
+        this.toastService.error(err.error?.mensaje || 'Error al sustituir producto destacado');
+      }
+    });
+  }
+
+  toggleDestacadoProducto(prod: Producto): void {
+    const nuevoEstado = !prod.destacado;
+
+    // Validación estricta de límite de 9 productos destacados
+    if (nuevoEstado && this.totalDestacados() >= 9) {
+      this.abrirModalSustitucionParaEntrante(prod);
+      return;
+    }
+
+    // 1. Actualización optimista inmediata en memoria (0ms)
+    this.productos.update(list => list.map(item =>
+      item.idProducto === prod.idProducto ? { ...item, destacado: nuevoEstado } : item
+    ));
+    this.guardarEnCache();
+
+    // 2. Persistir en backend y Supabase
+    this.productoService.adminToggleDestacado(prod.idProducto, nuevoEstado).subscribe({
+      next: () => {
+        this.toastService.exito(
+          nuevoEstado
+            ? `"${prod.nombre}" ahora se mostrará como destacado en el Inicio (${this.totalDestacados()}/9)`
+            : `"${prod.nombre}" fue removido de los destacados (${this.totalDestacados()}/9)`
+        );
+      },
+      error: (err) => {
+        this.productos.update(list => list.map(item =>
+          item.idProducto === prod.idProducto ? { ...item, destacado: !nuevoEstado } : item
+        ));
+        this.guardarEnCache();
+        this.toastService.error(err.error?.mensaje || 'Error al alternar estado destacado');
+      }
+    });
+  }
+
+  toggleNovedadProducto(prod: Producto): void {
+    const nuevoEstado = !prod.novedad;
+    // 1. Actualización optimista inmediata en memoria (0ms)
+    this.productos.update(list => list.map(item =>
+      item.idProducto === prod.idProducto ? { ...item, novedad: nuevoEstado } : item
+    ));
+    this.guardarEnCache();
+
+    // 2. Persistir en backend y Supabase
+    this.productoService.adminToggleNovedad(prod.idProducto).subscribe({
+      next: (actualizado) => {
+        this.productos.update(list => list.map(item =>
+          item.idProducto === prod.idProducto ? { ...item, novedad: actualizado.novedad } : item
+        ));
+        this.guardarEnCache();
+        this.toastService.exito(
+          nuevoEstado
+            ? `"${prod.nombre}" fijado como Novedad / Lanzamiento Oficial`
+            : `"${prod.nombre}" desmarcado de Novedades (vuelve al orden automático)`
+        );
+      },
+      error: (err) => {
+        this.productos.update(list => list.map(item =>
+          item.idProducto === prod.idProducto ? { ...item, novedad: !nuevoEstado } : item
+        ));
+        this.guardarEnCache();
+        this.toastService.error(err.error?.mensaje || 'Error al actualizar estado de novedad');
+      }
+    });
   }
 
   eliminarProducto(p: Producto): void {
@@ -2932,22 +3249,340 @@ export class AdminComponent implements OnInit {
     });
   }
 
+  generarSlug(texto: string): string {
+    return (texto || '')
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[̀-ͯ]/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+  }
+
   abrirModalNuevaImagen(idProducto?: number): void {
-    this.idProductoParaImagen.set(idProducto || (this.productos().length > 0 ? this.productos()[0].idProducto : null));
+    let prodTarget: Producto | null = null;
+    if (idProducto) {
+      prodTarget = this.productos().find(p => p.idProducto === idProducto) || null;
+    } else if (this.carpetaProductoSel()) {
+      prodTarget = this.carpetaProductoSel();
+    }
+
+    if (prodTarget) {
+      this.modoCarpetaSubida.set('existente');
+      this.productoSelSubida.set(prodTarget);
+      this.idProductoParaImagen.set(prodTarget.idProducto);
+      this.catSelSubida.set(prodTarget.categoria || null);
+      this.marcaSelSubida.set(prodTarget.marca || null);
+      if (prodTarget.categoria?.idCategoria === 7) {
+        const mNorm = (prodTarget.marca?.nombre || '').toLowerCase();
+        this.subcatPerifericosSubida.set(mNorm.includes('hyperx') || prodTarget.marca?.idMarca === 16 ? 'audifonos' : 'teclados');
+      } else {
+        this.subcatPerifericosSubida.set(null);
+      }
+    } else {
+      this.modoCarpetaSubida.set('existente');
+      const catActual = this.carpetaCategoriaSel() || (this.categorias().length > 0 ? this.categorias()[0] : null);
+      this.catSelSubida.set(catActual);
+      this.subcatPerifericosSubida.set(this.carpetaSubcategoriaSel() || null);
+      const marcasDisp = this.marcasDisponiblesSubida();
+      this.marcaSelSubida.set(this.carpetaMarcaSel() || (marcasDisp.length > 0 ? marcasDisp[0] : null));
+      const prodsDisp = this.productosDisponiblesSubida();
+      const primerProd = prodsDisp.length > 0 ? prodsDisp[0] : null;
+      this.productoSelSubida.set(primerProd);
+      this.idProductoParaImagen.set(primerProd?.idProducto || null);
+    }
+
+    this.nombreNuevaCarpetaProducto.set('');
+    this.precioNuevoProductoSubida.set(99.00);
+    this.stockNuevoProductoSubida.set(10);
+    this.descripcionNuevaCarpetaProducto.set('');
+    this.archivosSubidaLote.set([]);
+    this.indicePrincipalLote.set(0);
+    this.subiendoLote.set(false);
+    this.progresoSubidaLote.set('');
     this.urlNuevaImagen.set('');
     this.archivoNuevaImagen = null;
     this.previewNuevaImagen.set(null);
-    this.esPrincipalNuevaImagen.set(true);
-    this.guardandoNuevaImagen.set(false);
     this.mostrarModalNuevaImagen.set(true);
   }
 
   cerrarModalNuevaImagen(): void {
     this.mostrarModalNuevaImagen.set(false);
-    this.archivoNuevaImagen = null;
-    this.urlNuevaImagen.set('');
-    this.previewNuevaImagen.set(null);
-    this.guardandoNuevaImagen.set(false);
+    this.archivosSubidaLote.set([]);
+    this.subiendoLote.set(false);
+    this.progresoSubidaLote.set('');
+  }
+
+  cambiarModoCarpetaSubida(modo: 'existente' | 'nueva'): void {
+    this.modoCarpetaSubida.set(modo);
+    this.recalcularNombresLote();
+  }
+
+  onCategoriaSubidaChange(cat: Categoria | null): void {
+    this.catSelSubida.set(cat);
+    if (cat?.idCategoria === 7 && !this.subcatPerifericosSubida()) {
+      this.subcatPerifericosSubida.set('audifonos');
+    } else if (cat?.idCategoria !== 7) {
+      this.subcatPerifericosSubida.set(null);
+    }
+    const marcasDisp = this.marcasDisponiblesSubida();
+    this.marcaSelSubida.set(marcasDisp.length > 0 ? marcasDisp[0] : null);
+    const prodsDisp = this.productosDisponiblesSubida();
+    const prod = prodsDisp.length > 0 ? prodsDisp[0] : null;
+    this.productoSelSubida.set(prod);
+    this.idProductoParaImagen.set(prod?.idProducto || null);
+    this.recalcularNombresLote();
+  }
+
+  onSubcatPerifericosSubidaChange(sub: 'audifonos' | 'teclados' | null): void {
+    this.subcatPerifericosSubida.set(sub);
+    const marcasDisp = this.marcasDisponiblesSubida();
+    this.marcaSelSubida.set(marcasDisp.length > 0 ? marcasDisp[0] : null);
+    const prodsDisp = this.productosDisponiblesSubida();
+    const prod = prodsDisp.length > 0 ? prodsDisp[0] : null;
+    this.productoSelSubida.set(prod);
+    this.idProductoParaImagen.set(prod?.idProducto || null);
+    this.recalcularNombresLote();
+  }
+
+  onMarcaSubidaChange(marca: Marca | null): void {
+    this.marcaSelSubida.set(marca);
+    const prodsDisp = this.productosDisponiblesSubida();
+    const prod = prodsDisp.length > 0 ? prodsDisp[0] : null;
+    this.productoSelSubida.set(prod);
+    this.idProductoParaImagen.set(prod?.idProducto || null);
+    this.recalcularNombresLote();
+  }
+
+  onProductoSubidaChange(prod: Producto | null): void {
+    this.productoSelSubida.set(prod);
+    this.idProductoParaImagen.set(prod?.idProducto || null);
+    this.recalcularNombresLote();
+  }
+
+  onNombreNuevaCarpetaChange(nombre: string): void {
+    this.nombreNuevaCarpetaProducto.set(nombre);
+    this.recalcularNombresLote();
+  }
+
+  onSeleccionarArchivosLote(event: any): void {
+    const files: FileList = event.target?.files;
+    if (!files || files.length === 0) return;
+    const listaActual = [...this.archivosSubidaLote()];
+    const nuevosArchivos = Array.from(files);
+
+    if (listaActual.length + nuevosArchivos.length > 8) {
+      this.toastService.advertencia('Se permite un máximo de 8 fotos por producto / lote.');
+    }
+
+    const permitidos = nuevosArchivos.slice(0, Math.max(0, 8 - listaActual.length));
+    permitidos.forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        const preview = e.target.result;
+        this.archivosSubidaLote.update(lista => [
+          ...lista,
+          {
+            archivo: file,
+            preview,
+            nombreGenerado: file.name,
+            esPrincipal: lista.length === 0
+          }
+        ]);
+        this.recalcularNombresLote();
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  removerArchivoLote(index: number): void {
+    this.archivosSubidaLote.update(lista => {
+      const nueva = lista.filter((_, i) => i !== index);
+      if (index === this.indicePrincipalLote()) {
+        this.indicePrincipalLote.set(0);
+      } else if (index < this.indicePrincipalLote()) {
+        this.indicePrincipalLote.update(i => i - 1);
+      }
+      return nueva;
+    });
+    this.recalcularNombresLote();
+  }
+
+  marcarPrincipalLote(index: number): void {
+    this.indicePrincipalLote.set(index);
+    this.recalcularNombresLote();
+  }
+
+  recalcularNombresLote(): void {
+    let slugBase = 'producto';
+    if (this.modoCarpetaSubida() === 'existente') {
+      const prod = this.productoSelSubida();
+      if (prod) slugBase = this.generarSlug(prod.nombre);
+    } else {
+      const nombreNueva = this.nombreNuevaCarpetaProducto().trim();
+      if (nombreNueva) slugBase = this.generarSlug(nombreNueva);
+    }
+
+    let offset = 0;
+    if (this.modoCarpetaSubida() === 'existente' && this.productoSelSubida()) {
+      const idProd = this.productoSelSubida()!.idProducto;
+      offset = this.conteoImagenesProducto(idProd);
+    }
+
+    const principalIdx = this.indicePrincipalLote();
+    this.archivosSubidaLote.update(lista =>
+      lista.map((item, i) => ({
+        ...item,
+        nombreGenerado: `${slugBase}_item${offset + i + 1}.webp`,
+        esPrincipal: i === principalIdx
+      }))
+    );
+  }
+
+  convertirAWebP(file: File, nombreFinal: string): Promise<File> {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let ancho = img.width;
+        let alto = img.height;
+        const maxDim = 1200;
+
+        if (ancho > maxDim || alto > maxDim) {
+          if (ancho > alto) {
+            alto = Math.round((alto * maxDim) / ancho);
+            ancho = maxDim;
+          } else {
+            ancho = Math.round((ancho * maxDim) / alto);
+            alto = maxDim;
+          }
+        }
+        canvas.width = ancho;
+        canvas.height = alto;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          return resolve(new File([file], nombreFinal, { type: file.type }));
+        }
+        ctx.drawImage(img, 0, 0, ancho, alto);
+        canvas.toBlob(
+          blob => {
+            if (!blob) {
+              return resolve(new File([file], nombreFinal, { type: file.type }));
+            }
+            const webpFile = new File([blob], nombreFinal, { type: 'image/webp' });
+            resolve(webpFile);
+          },
+          'image/webp',
+          0.90
+        );
+      };
+      img.onerror = () => {
+        resolve(new File([file], nombreFinal, { type: file.type }));
+      };
+      img.src = URL.createObjectURL(file);
+    });
+  }
+
+  async procesarSubidaLote(): Promise<void> {
+    const lista = this.archivosSubidaLote();
+    if (lista.length === 0) {
+      this.toastService.advertencia('Selecciona de 1 a 8 imágenes para subir');
+      return;
+    }
+
+    const cat = this.catSelSubida();
+    const marca = this.marcaSelSubida();
+    if (!cat) {
+      this.toastService.advertencia('Selecciona la categoría de destino');
+      return;
+    }
+    if (!marca) {
+      this.toastService.advertencia('Selecciona la marca oficial');
+      return;
+    }
+
+    this.subiendoLote.set(true);
+    this.progresoSubidaLote.set('Iniciando subida a Supabase Storage...');
+
+    try {
+      let targetProd: Producto | null = null;
+
+      if (this.modoCarpetaSubida() === 'existente') {
+        targetProd = this.productoSelSubida();
+        if (!targetProd) {
+          this.toastService.advertencia('Selecciona el producto / carpeta de destino');
+          this.subiendoLote.set(false);
+          return;
+        }
+      } else {
+        const nombreProd = this.nombreNuevaCarpetaProducto().trim();
+        if (!nombreProd) {
+          this.toastService.advertencia('Ingresa el nombre del nuevo producto / carpeta');
+          this.subiendoLote.set(false);
+          return;
+        }
+        this.progresoSubidaLote.set('Creando carpeta y registro de producto...');
+        const nuevoPayload = {
+          nombre: nombreProd,
+          codigoSku: (marca.nombre.substring(0, 2) + '0' + Math.floor(100 + Math.random() * 900)).toUpperCase(),
+          idCategoria: cat.idCategoria,
+          idMarca: marca.idMarca,
+          precioVenta: this.precioNuevoProductoSubida() || 99,
+          stock: this.stockNuevoProductoSubida() || 10,
+          descripcion: this.descripcionNuevaCarpetaProducto().trim() || `${nombreProd} oficial.`,
+          vigente: true
+        };
+
+        const prodCreado = await new Promise<Producto>((res, rej) => {
+          this.productoService.adminCrearProducto(nuevoPayload).subscribe({
+            next: (p) => res(p),
+            error: (err) => rej(err)
+          });
+        });
+        targetProd = prodCreado;
+        this.productos.update(prods => [prodCreado, ...prods]);
+      }
+
+      let subidasExitosas = 0;
+      for (let i = 0; i < lista.length; i++) {
+        const item = lista[i];
+        this.progresoSubidaLote.set(`Subiendo ${i + 1} de ${lista.length}: ${item.nombreGenerado}...`);
+        const archivoWebp = await this.convertirAWebP(item.archivo, item.nombreGenerado);
+
+        await new Promise<void>((resolve) => {
+          this.productoService.adminSubirImagen(targetProd!.idProducto, archivoWebp, item.esPrincipal).subscribe({
+            next: (imgCreada) => {
+              subidasExitosas++;
+              this.imagenes.update(imgs => [imgCreada as any, ...imgs]);
+              resolve();
+            },
+            error: (err) => {
+              console.error('Error subiendo imagen', err);
+              resolve();
+            }
+          });
+        });
+      }
+
+      this.toastService.exito(`Se subieron exitosamente ${subidasExitosas} fotos a Supabase Storage`);
+      this.guardarEnCache();
+      this.cerrarModalNuevaImagen();
+      this.recargarImagenes();
+      this.recargarProductos();
+
+      if (targetProd) {
+        this.carpetaCategoriaSel.set(cat);
+        if (cat.idCategoria === 7 && this.subcatPerifericosSubida()) {
+          this.carpetaSubcategoriaSel.set(this.subcatPerifericosSubida());
+        }
+        this.carpetaMarcaSel.set(marca);
+        this.carpetaProductoSel.set(targetProd);
+      }
+    } catch (err: any) {
+      this.toastService.error(err?.error?.mensaje || 'Error al procesar la subida');
+    } finally {
+      this.subiendoLote.set(false);
+      this.progresoSubidaLote.set('');
+    }
   }
 
   onUrlNuevaImagenChange(url: string): void {

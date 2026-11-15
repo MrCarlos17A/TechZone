@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
+@lombok.extern.slf4j.Slf4j
 public class ProductoService {
 
     private final ProductoRepository productoRepository;
@@ -17,7 +18,7 @@ public class ProductoService {
 
     @Transactional(readOnly = true)
     public List<Producto> ListarProductos() {
-        return productoRepository.findAll();
+        return new java.util.ArrayList<>(new java.util.LinkedHashSet<>(productoRepository.findAllConRelaciones()));
     }
 
     public List<Producto> listarProductos() {
@@ -77,6 +78,12 @@ public class ProductoService {
         if (producto.getVigente() == null) {
             producto.setVigente(true);
         }
+        if (producto.getNovedad() == null) {
+            producto.setNovedad(false);
+        }
+        if (producto.getFechaIngreso() == null) {
+            producto.setFechaIngreso(java.time.LocalDateTime.now());
+        }
         producto.setCodigoSku(generarSku(producto));
         return productoRepository.save(producto);
     }
@@ -84,18 +91,106 @@ public class ProductoService {
     public Producto ActualizarProducto(Long id, Producto producto) {
         Producto existente = productoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado con id: " + id));
-        existente.setNombre(producto.getNombre());
-        existente.setDescripcion(producto.getDescripcion());
-        existente.setPrecioVenta(producto.getPrecioVenta());
-        existente.setStock(producto.getStock());
-        existente.setMarca(producto.getMarca());
-        existente.setCategoria(producto.getCategoria());
-        existente.setCaracteristicas(producto.getCaracteristicas());
+        if (producto.getNombre() != null)
+            existente.setNombre(producto.getNombre());
+        if (producto.getDescripcion() != null)
+            existente.setDescripcion(producto.getDescripcion());
+        if (producto.getPrecioVenta() != null)
+            existente.setPrecioVenta(producto.getPrecioVenta());
+        if (producto.getStock() != null)
+            existente.setStock(producto.getStock());
+        if (producto.getMarca() != null)
+            existente.setMarca(producto.getMarca());
+        if (producto.getCategoria() != null)
+            existente.setCategoria(producto.getCategoria());
+        if (producto.getCaracteristicas() != null)
+            existente.setCaracteristicas(producto.getCaracteristicas());
         if (producto.getVigente() != null) {
             existente.setVigente(producto.getVigente());
         }
+        if (producto.getDestacado() != null) {
+            existente.setDestacado(producto.getDestacado());
+        }
+        if (producto.getNovedad() != null) {
+            existente.setNovedad(producto.getNovedad());
+        }
         validarPrecioStock(existente);
         return productoRepository.save(existente);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Producto> listarProductosDestacados() {
+        try {
+            List<Producto> raw = productoRepository.findDestacados();
+            if (raw != null && !raw.isEmpty()) {
+                List<Producto> destacados = new java.util.ArrayList<>(new java.util.LinkedHashSet<>(raw));
+                destacados.sort(java.util.Comparator.comparing(Producto::getIdProducto));
+                return destacados.stream().limit(9).collect(java.util.stream.Collectors.toList());
+            }
+        } catch (Exception e) {
+            log.error("Error al obtener destacados: {}", e.getMessage(), e);
+        }
+        return listarProductosActivos().stream().limit(9).collect(java.util.stream.Collectors.toList());
+    }
+
+    @Transactional
+    public Producto toggleDestacado(Long idProducto) {
+        Producto p = productoRepository.findByIdConRelaciones(idProducto)
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado con id: " + idProducto));
+        boolean nuevoEstado = p.getDestacado() == null || !p.getDestacado();
+        if (nuevoEstado) {
+            long total = productoRepository.countDestacados();
+            if (total >= 9) {
+                throw new IllegalStateException(
+                        "Límite alcanzado: Ya existen 9 productos destacados en el Inicio. Debes desmarcar uno o usar la sustitución rápida.");
+            }
+        }
+        p.setDestacado(nuevoEstado);
+        return productoRepository.save(p);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Producto> listarProductosNovedades() {
+        try {
+            List<Producto> raw = productoRepository.findNovedades();
+            if (raw != null && !raw.isEmpty()) {
+                return new java.util.ArrayList<>(new java.util.LinkedHashSet<>(raw));
+            }
+        } catch (Exception e) {
+            log.error("Error al obtener novedades: {}", e.getMessage(), e);
+        }
+        return listarProductosActivos();
+    }
+
+    @Transactional
+    public Producto toggleNovedad(Long idProducto) {
+        Producto p = productoRepository.findByIdConRelaciones(idProducto)
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado con id: " + idProducto));
+        boolean nuevoEstado = p.getNovedad() == null || !p.getNovedad();
+        p.setNovedad(nuevoEstado);
+        return productoRepository.save(p);
+    }
+
+    @Transactional
+    public List<Producto> sustituirDestacado(Long idSaliente, Long idEntrante) {
+        if (idSaliente == null || idEntrante == null) {
+            throw new IllegalArgumentException("Los identificadores de productos no pueden ser nulos");
+        }
+        if (idSaliente.equals(idEntrante)) {
+            throw new IllegalArgumentException("El producto saliente y el entrante no pueden ser el mismo");
+        }
+        Producto saliente = productoRepository.findByIdConRelaciones(idSaliente)
+                .orElseThrow(() -> new RuntimeException("Producto saliente no encontrado con id: " + idSaliente));
+        Producto entrante = productoRepository.findByIdConRelaciones(idEntrante)
+                .orElseThrow(() -> new RuntimeException("Producto entrante no encontrado con id: " + idEntrante));
+
+        saliente.setDestacado(false);
+        entrante.setDestacado(true);
+
+        Producto sGuardado = productoRepository.save(saliente);
+        Producto eGuardado = productoRepository.save(entrante);
+
+        return List.of(sGuardado, eGuardado);
     }
 
     public void EliminarProducto(Long id) {
@@ -121,7 +216,8 @@ public class ProductoService {
     }
 
     public List<Producto> ListarProductosPorCategoria(Long idCategoria) {
-        return new java.util.ArrayList<>(new java.util.LinkedHashSet<>(productoRepository.findByCategoriaIdCategoria(idCategoria)));
+        return new java.util.ArrayList<>(
+                new java.util.LinkedHashSet<>(productoRepository.findByCategoriaIdCategoria(idCategoria)));
     }
 
     public List<Producto> ListarProductosPorMarca(Long idMarca) {

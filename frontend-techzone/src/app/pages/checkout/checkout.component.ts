@@ -206,6 +206,16 @@ export class CheckoutComponent implements OnInit {
     return medio ? medio.nombre.toLowerCase() : '';
   }
 
+  esYape(): boolean {
+    const n = this.getNombreMedioSeleccionado();
+    return n.includes('yape') && !n.includes('plin');
+  }
+
+  esPlin(): boolean {
+    const n = this.getNombreMedioSeleccionado();
+    return n.includes('plin');
+  }
+
   esYapeOPlin(): boolean {
     const n = this.getNombreMedioSeleccionado();
     return n.includes('yape') || n.includes('plin');

@@ -48,6 +48,29 @@ export class HomeComponent implements OnInit {
     }
   }
 
+  getCategoryMeta(nombre: string): { icon: string; desc: string; gradient: string } {
+    const n = (nombre || '').toLowerCase();
+    if (n.includes('monitor')) {
+      return { icon: 'tv', desc: 'OLED, Curvos y 240Hz+', gradient: 'from-blue-600/20 to-cyan-600/20 text-cyan-500' };
+    }
+    if (n.includes('tarjeta') || n.includes('video')) {
+      return { icon: 'videogame_asset', desc: 'RTX serie 50 y serie 40', gradient: 'from-emerald-600/20 to-teal-600/20 text-emerald-500' };
+    }
+    if (n.includes('procesador')) {
+      return { icon: 'developer_board', desc: 'Intel Core y AMD Ryzen', gradient: 'from-purple-600/20 to-indigo-600/20 text-purple-500' };
+    }
+    if (n.includes('placa')) {
+      return { icon: 'space_dashboard', desc: 'LGA1851 y AM5 WiFi 7', gradient: 'from-amber-600/20 to-orange-600/20 text-amber-500' };
+    }
+    if (n.includes('memoria') || n.includes('almacenamiento')) {
+      return { icon: 'storage', desc: 'SSDs NVMe M.2 y RAM DDR5', gradient: 'from-pink-600/20 to-rose-600/20 text-pink-500' };
+    }
+    if (n.includes('fuente') || n.includes('refrigeraci')) {
+      return { icon: 'mode_fan', desc: 'AIOs 360mm y Fuentes Gold', gradient: 'from-blue-600/20 to-sky-600/20 text-sky-500' };
+    }
+    return { icon: 'sports_esports', desc: 'Headsets, Teclados y Mouse', gradient: 'from-red-600/20 to-rose-600/20 text-red-500' };
+  }
+
   heroSlides = [
     {
       title: 'Equípate con lo Mejor del Gaming',
@@ -84,12 +107,56 @@ export class HomeComponent implements OnInit {
   }
 
   cargarDatos(): void {
-    this.productoService.getDestacados().subscribe({
+    // 1. Carga inmediata optimista si el administrador acaba de modificar destacados en esta misma máquina
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        const raw = localStorage.getItem('techzone_admin_cache_v2') || localStorage.getItem('techzone_admin_cache');
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed.productos) && parsed.productos.length > 0) {
+            const marcadosCache = parsed.productos.filter((p: Producto) => !!p.destacado);
+            if (marcadosCache.length > 0) {
+              this.destacados.set(marcadosCache.slice(0, 9));
+              this.cargando.set(false);
+            }
+          }
+        }
+      }
+    } catch {}
+
+    // 2. Consulta autoritativa al endpoint de destacados para reflejar fielmente lo marcado en la BD
+    this.productoService.getDestacados(true).subscribe({
       next: (prods) => {
-        this.destacados.set(prods);
-        this.cargando.set(false);
+        if (prods && prods.length > 0) {
+          this.destacados.set(prods.slice(0, 9));
+          this.cargando.set(false);
+        } else {
+          // Fallback al catálogo general si no hay destacados explícitos
+          this.productoService.getProductos().subscribe({
+            next: (todos) => {
+              if (todos && todos.length > 0) {
+                const marcados = todos.filter(p => !!p.destacado);
+                this.destacados.set((marcados.length > 0 ? marcados : todos).slice(0, 9));
+              }
+              this.cargando.set(false);
+            },
+            error: () => this.cargando.set(false)
+          });
+        }
       },
-      error: () => this.cargando.set(false)
+      error: () => {
+        // Fallback hacia catálogo general
+        this.productoService.getProductos().subscribe({
+          next: (todos) => {
+            if (todos && todos.length > 0) {
+              const marcados = todos.filter(p => !!p.destacado);
+              this.destacados.set((marcados.length > 0 ? marcados : todos).slice(0, 9));
+            }
+            this.cargando.set(false);
+          },
+          error: () => this.cargando.set(false)
+        });
+      }
     });
 
     this.productoService.getCategorias().subscribe({

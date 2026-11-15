@@ -50,4 +50,22 @@ public class UsuarioAdminApiController {
     public ResponseEntity<List<Rol>> listarRoles() {
         return ResponseEntity.ok(rolService.listarRoles());
     }
+
+    @PostMapping("/api/admin/roles")
+    public ResponseEntity<?> crearRol(@RequestBody Rol rol) {
+        try {
+            return ResponseEntity.ok(rolService.CrearRol(rol));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("mensaje", e.getMessage()));
+        }
+    }
+
+    @PutMapping("/api/admin/roles/{id}")
+    public ResponseEntity<?> actualizarRol(@PathVariable Long id, @RequestBody Rol rol) {
+        try {
+            return ResponseEntity.ok(rolService.ActualizarRol(id, rol));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("mensaje", e.getMessage()));
+        }
+    }
 }

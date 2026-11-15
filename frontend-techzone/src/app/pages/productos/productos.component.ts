@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -27,6 +27,29 @@ export class ProductosComponent implements OnInit {
   marcaSeleccionada = signal<number | null>(null);
   ordenSeleccionado = signal('defecto');
 
+  // Paginación 3x3 (9 productos por página para evitar sobrecarga)
+  paginaActual = signal(1);
+  porPagina = signal(9);
+
+  productosPaginados = computed(() => {
+    const lista = this.productos();
+    const inicio = (this.paginaActual() - 1) * this.porPagina();
+    return lista.slice(inicio, inicio + this.porPagina());
+  });
+
+  totalPaginas = computed(() => {
+    return Math.max(1, Math.ceil(this.productos().length / this.porPagina()));
+  });
+
+  cambiarPagina(nuevaPagina: number): void {
+    if (nuevaPagina >= 1 && nuevaPagina <= this.totalPaginas()) {
+      this.paginaActual.set(nuevaPagina);
+      if (typeof window !== 'undefined') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+  }
+
   ngOnInit(): void {
     this.productoService.getCategorias().subscribe(cats => this.categorias.set(cats));
     this.productoService.getMarcas().subscribe(m => this.marcas.set(m));
@@ -35,6 +58,7 @@ export class ProductosComponent implements OnInit {
       this.busqueda.set(params['q'] || '');
       this.categoriaSeleccionada.set(params['categoria'] ? +params['categoria'] : null);
       this.marcaSeleccionada.set(params['marca'] ? +params['marca'] : null);
+      this.paginaActual.set(1);
       this.cargarProductos();
     });
   }

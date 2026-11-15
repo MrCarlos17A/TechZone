@@ -15,6 +15,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 $raiz = Split-Path -Parent $MyInvocation.MyCommand.Path
+Set-Location $raiz
 
 # ------------------------------------------------------------
 # 1) .env

@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, shareReplay, tap } from 'rxjs';
+import { Observable, catchError, shareReplay, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { Categoria, Marca, Producto, ProductoImagen } from '../models/producto.models';
 import { AuthService } from './auth.service';
@@ -16,12 +16,14 @@ export class ProductoService {
   private categoriasCache$: Observable<Categoria[]> | null = null;
   private marcasCache$: Observable<Marca[]> | null = null;
   private destacadosCache$: Observable<Producto[]> | null = null;
+  private novedadesCache$: Observable<Producto[]> | null = null;
   private productosCache$: Observable<Producto[]> | null = null;
 
   limpiarCache(): void {
     this.categoriasCache$ = null;
     this.marcasCache$ = null;
     this.destacadosCache$ = null;
+    this.novedadesCache$ = null;
     this.productosCache$ = null;
   }
 
@@ -33,13 +35,22 @@ export class ProductoService {
     return this.http.get<Producto[]>(`${this.baseUrl}/productos`, { params });
   }
 
-  getDestacados(): Observable<Producto[]> {
-    if (!this.destacadosCache$) {
+  getDestacados(forzar = false): Observable<Producto[]> {
+    if (forzar || !this.destacadosCache$) {
       this.destacadosCache$ = this.http.get<Producto[]>(`${this.baseUrl}/productos/destacados`).pipe(
         shareReplay({ bufferSize: 1, refCount: false })
       );
     }
     return this.destacadosCache$;
+  }
+
+  getNovedades(forzar = false): Observable<Producto[]> {
+    if (forzar || !this.novedadesCache$) {
+      this.novedadesCache$ = this.http.get<Producto[]>(`${this.baseUrl}/productos/novedades`).pipe(
+        shareReplay({ bufferSize: 1, refCount: false })
+      );
+    }
+    return this.novedadesCache$;
   }
 
   getProductoById(id: number): Observable<Producto> {
@@ -85,6 +96,49 @@ export class ProductoService {
     return this.http.put<Producto>(`${this.baseUrl}/admin/productos/${id}`, producto, {
       headers: this.authService.getAuthHeaders()
     }).pipe(tap(() => this.limpiarCache()));
+  }
+
+  adminToggleDestacado(idProducto: number, nuevoEstado?: boolean): Observable<Producto> {
+    return this.http.put<Producto>(
+      `${this.baseUrl}/admin/productos/${idProducto}/toggle-destacado`,
+      {},
+      { headers: this.authService.getAuthHeaders() }
+    ).pipe(
+      catchError(() => {
+        // Fallback hacia endpoint estándar de producto en caso de desincronización
+        return this.http.put<Producto>(
+          `${this.baseUrl}/admin/productos/${idProducto}`,
+          { destacado: nuevoEstado },
+          { headers: this.authService.getAuthHeaders() }
+        );
+      }),
+      tap(() => this.limpiarCache())
+    );
+  }
+
+  adminToggleNovedad(idProducto: number, nuevoEstado?: boolean): Observable<Producto> {
+    return this.http.put<Producto>(
+      `${this.baseUrl}/admin/productos/${idProducto}/toggle-novedad`,
+      {},
+      { headers: this.authService.getAuthHeaders() }
+    ).pipe(
+      catchError(() => {
+        return this.http.put<Producto>(
+          `${this.baseUrl}/admin/productos/${idProducto}`,
+          { novedad: nuevoEstado },
+          { headers: this.authService.getAuthHeaders() }
+        );
+      }),
+      tap(() => this.limpiarCache())
+    );
+  }
+
+  adminSustituirDestacado(idSaliente: number, idEntrante: number): Observable<any> {
+    return this.http.put<any>(
+      `${this.baseUrl}/admin/productos/sustituir-destacado`,
+      { idSaliente, idEntrante },
+      { headers: this.authService.getAuthHeaders() }
+    ).pipe(tap(() => this.limpiarCache()));
   }
 
 

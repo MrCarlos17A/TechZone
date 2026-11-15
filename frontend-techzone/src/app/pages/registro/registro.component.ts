@@ -90,7 +90,25 @@ export class RegistroComponent implements OnInit {
           this.nombres.set(resp.datos.nombres || '');
           this.apellidoPaterno.set(resp.datos.apellidoPaterno || '');
           this.apellidoMaterno.set(resp.datos.apellidoMaterno || '');
-          if (resp.datos.fechaNacimiento) this.fechaNacimiento.set(resp.datos.fechaNacimiento);
+          let fechaFinal = '';
+          if (resp.datos.fechaNacimiento) {
+            const limpia = resp.datos.fechaNacimiento.toString().trim();
+            if (/^\d{4}-\d{2}-\d{2}$/.test(limpia)) {
+              fechaFinal = limpia;
+            } else if (/^\d{2}\/\d{2}\/\d{4}$/.test(limpia)) {
+              const [d, m, y] = limpia.split('/');
+              fechaFinal = `${y}-${m}-${d}`;
+            } else if (/^\d{2}-\d{2}-\d{4}$/.test(limpia)) {
+              const [d, m, y] = limpia.split('-');
+              fechaFinal = `${y}-${m}-${d}`;
+            } else if (limpia.length >= 10 && /^\d{4}-\d{2}-\d{2}/.test(limpia)) {
+              fechaFinal = limpia.substring(0, 10);
+            }
+          }
+          if (!fechaFinal) {
+            fechaFinal = this.estimarFechaNacimiento(num);
+          }
+          this.fechaNacimiento.set(fechaFinal);
           if (resp.datos.telefono) this.telefono.set(resp.datos.telefono.replace(/\D/g, '').slice(0, 9));
           if (resp.datos.direccion) this.direccion.set(resp.datos.direccion);
           if (resp.datos.referencia) this.referencia.set(resp.datos.referencia);
@@ -125,6 +143,21 @@ export class RegistroComponent implements OnInit {
     } else {
       this.distritos.set([]);
     }
+  }
+
+  estimarFechaNacimiento(dni: string): string {
+    if (!dni || dni.length !== 8) return '2000-01-01';
+    const prefijo = parseInt(dni.substring(0, 2), 10);
+    if (isNaN(prefijo)) return '2000-01-01';
+    if (prefijo <= 10) return '1955-06-15';
+    if (prefijo <= 25) return '1970-06-15';
+    if (prefijo <= 33) return '1980-06-15';
+    if (prefijo <= 44) return '1988-06-15';
+    if (prefijo <= 48) return '1993-06-15';
+    if (prefijo <= 63) return '1998-06-15';
+    if (prefijo <= 74) return '2005-04-12';
+    if (prefijo <= 79) return '2006-05-20';
+    return '2006-01-01';
   }
 
   onSubmit(): void {

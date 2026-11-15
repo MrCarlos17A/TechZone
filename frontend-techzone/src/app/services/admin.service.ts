@@ -72,6 +72,7 @@ export interface RolAdmin {
   idRol: number;
   nombre: string;
   vigente?: boolean;
+  permisos?: string;
 }
 
 export interface PagoAdmin {
@@ -202,6 +203,18 @@ export class AdminService {
 
   getRoles(): Observable<RolAdmin[]> {
     return this.http.get<RolAdmin[]>(`${this.baseUrl}/admin/roles`, {
+      headers: this.authService.getAuthHeaders()
+    });
+  }
+
+  crearRol(rol: Partial<RolAdmin>): Observable<RolAdmin> {
+    return this.http.post<RolAdmin>(`${this.baseUrl}/admin/roles`, rol, {
+      headers: this.authService.getAuthHeaders()
+    });
+  }
+
+  actualizarRol(id: number, rol: Partial<RolAdmin>): Observable<RolAdmin> {
+    return this.http.put<RolAdmin>(`${this.baseUrl}/admin/roles/${id}`, rol, {
       headers: this.authService.getAuthHeaders()
     });
   }

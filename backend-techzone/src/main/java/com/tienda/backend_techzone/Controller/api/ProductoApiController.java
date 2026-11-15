@@ -56,11 +56,20 @@ public class ProductoApiController {
 
     @GetMapping("/api/productos/destacados")
     public ResponseEntity<List<Producto>> destacados() {
-        List<Producto> activos = productoService.listarProductosActivos();
-        List<Producto> destacados = activos.stream()
-                .limit(8)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(destacados);
+        try {
+            return ResponseEntity.ok(productoService.listarProductosDestacados());
+        } catch (Exception e) {
+            return ResponseEntity.ok(productoService.listarProductosActivos().stream().limit(9).collect(Collectors.toList()));
+        }
+    }
+
+    @GetMapping("/api/productos/novedades")
+    public ResponseEntity<List<Producto>> novedades() {
+        try {
+            return ResponseEntity.ok(productoService.listarProductosNovedades());
+        } catch (Exception e) {
+            return ResponseEntity.ok(productoService.listarProductosActivos());
+        }
     }
 
     @GetMapping("/api/productos/{id}")
@@ -95,6 +104,54 @@ public class ProductoApiController {
             return ResponseEntity.ok(actualizado);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(Map.of("mensaje", e.getMessage()));
+        }
+    }
+
+    @PutMapping("/api/admin/productos/{id}/toggle-destacado")
+    public ResponseEntity<?> toggleDestacado(@PathVariable Long id) {
+        try {
+            Producto actualizado = productoService.toggleDestacado(id);
+            return ResponseEntity.ok(actualizado);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "ok", false,
+                    "mensaje", e.getMessage() != null ? e.getMessage() : "Error al alternar estado destacado"
+            ));
+        }
+    }
+
+    @PutMapping("/api/admin/productos/{id}/toggle-novedad")
+    public ResponseEntity<?> toggleNovedad(@PathVariable Long id) {
+        try {
+            Producto actualizado = productoService.toggleNovedad(id);
+            return ResponseEntity.ok(actualizado);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "ok", false,
+                    "mensaje", e.getMessage() != null ? e.getMessage() : "Error al alternar estado novedad"
+            ));
+        }
+    }
+
+    public record SolicitudSustitucionDestacado(Long idSaliente, Long idEntrante) {}
+
+    @PutMapping("/api/admin/productos/sustituir-destacado")
+    public ResponseEntity<?> sustituirDestacado(@RequestBody SolicitudSustitucionDestacado req) {
+        try {
+            if (req == null || req.idSaliente() == null || req.idEntrante() == null) {
+                return ResponseEntity.badRequest().body(Map.of("ok", false, "mensaje", "Parámetros incompletos para la sustitución"));
+            }
+            List<Producto> actualizados = productoService.sustituirDestacado(req.idSaliente(), req.idEntrante());
+            return ResponseEntity.ok(Map.of(
+                    "ok", true,
+                    "mensaje", "Sustitución de producto destacado realizada exitosamente",
+                    "productos", actualizados
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "ok", false,
+                    "mensaje", e.getMessage() != null ? e.getMessage() : "Error al sustituir producto destacado"
+            ));
         }
     }
 

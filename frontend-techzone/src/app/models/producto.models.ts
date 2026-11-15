@@ -34,6 +34,9 @@ export interface Producto {
   codigoSku?: string;
   caracteristicas?: string;
   vigente?: boolean;
+  destacado?: boolean;
+  novedad?: boolean;
+  fechaIngreso?: string;
   categoria?: Categoria;
   marca?: Marca;
   imagenes?: ProductoImagen[];

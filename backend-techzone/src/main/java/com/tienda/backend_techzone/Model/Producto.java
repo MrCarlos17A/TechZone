@@ -62,6 +62,34 @@ public class Producto {
     @Builder.Default
     private Boolean vigente = true;
 
+    @Column(name = "destacado")
+    @Builder.Default
+    private Boolean destacado = false;
+
+    @Column(name = "novedad")
+    @Builder.Default
+    private Boolean novedad = false;
+
+    @Column(name = "fecha_ingreso")
+    @Builder.Default
+    private java.time.LocalDateTime fechaIngreso = java.time.LocalDateTime.now();
+
+    @PrePersist
+    public void prePersist() {
+        if (fechaIngreso == null) {
+            fechaIngreso = java.time.LocalDateTime.now();
+        }
+        if (novedad == null) {
+            novedad = false;
+        }
+        if (vigente == null) {
+            vigente = true;
+        }
+        if (destacado == null) {
+            destacado = false;
+        }
+    }
+
     @OneToMany(mappedBy = "producto", fetch = FetchType.LAZY)
     @OrderBy("orden ASC, idProductoImagen ASC")
     @ToString.Exclude

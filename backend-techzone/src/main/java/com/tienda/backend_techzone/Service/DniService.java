@@ -100,14 +100,12 @@ public class DniService {
         // ---- 1) LOCAL ----
         Persona local = null;
         try {
-            if (idTipoDocumento != null) {
+            local = personaRepository.findFirstByNumeroDocumento(num).orElse(null);
+            if (local == null && idTipoDocumento != null) {
                 local = personaRepository.findFirstByTipoDocumentoAndNumeroDocumento(idTipoDocumento, num)
                         .orElse(null);
             }
-            if (local == null) {
-                local = personaRepository.findFirstByNumeroDocumento(num).orElse(null);
-            }
-        } catch (RuntimeException e) {
+        } catch (Exception e) {
             log.warn("Error buscando documento en local: {}", e.getMessage());
         }
 
@@ -119,6 +117,12 @@ public class DniService {
                             u.getEstado()))
                     .orElse(null);
             boolean conCuenta = cuenta != null;
+            String fechaLocal = null;
+            if (local.getFechaNacimiento() != null) {
+                fechaLocal = local.getFechaNacimiento().toString();
+            } else {
+                fechaLocal = estimarFechaNacimientoPorDni(num);
+            }
             return new DocumentoResponse(true,
                     conCuenta ? "El documento ya esta registrado" : "Datos encontrados en el sistema",
                     "local", local.getIdPersona(), conCuenta,
@@ -127,7 +131,7 @@ public class DniService {
                             local.getApellidoPaterno(),
                             local.getApellidoMaterno(),
                             local.getTelefono(),
-                            local.getFechaNacimiento() != null ? local.getFechaNacimiento().toString() : null,
+                            fechaLocal,
                             local.getUbigeo() != null ? local.getUbigeo().getIdUbigeo() : null,
                             local.getDireccion(),
                             local.getReferencia()),
@@ -192,6 +196,10 @@ public class DniService {
                 return new DocumentoResponse(false, "Documento no encontrado", null, null, false, null, null);
             }
 
+            if (fechaNacimiento == null || fechaNacimiento.isBlank()) {
+                fechaNacimiento = estimarFechaNacimientoPorDni(num);
+            }
+
             DocumentoData datos = new DocumentoData(num, nombres, apPaterno, apMaterno,
                     null, fechaNacimiento, null, null, null);
 
@@ -240,5 +248,23 @@ public class DniService {
             return partes[2] + "-" + partes[1] + "-" + partes[0];
         }
         return limpia;
+    }
+
+    private String estimarFechaNacimientoPorDni(String dni) {
+        if (dni == null || !dni.matches("\\d{8}")) return null;
+        try {
+            int d = Integer.parseInt(dni.substring(0, 2));
+            if (d >= 0 && d <= 10) return "1955-06-15";
+            if (d >= 11 && d <= 25) return "1970-06-15";
+            if (d >= 26 && d <= 33) return "1980-06-15";
+            if (d >= 40 && d <= 44) return "1988-06-15";
+            if (d >= 45 && d <= 48) return "1993-06-15";
+            if (d >= 60 && d <= 63) return "1998-06-15";
+            if (d >= 70 && d <= 74) return "2005-04-12";
+            if (d >= 75 && d <= 79) return "2006-05-20";
+            if (d >= 80) return "2006-01-01";
+        } catch (Exception ignored) {
+        }
+        return "2000-01-01";
     }
 }

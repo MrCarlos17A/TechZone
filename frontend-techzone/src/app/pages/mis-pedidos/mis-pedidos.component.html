@@ -410,12 +410,26 @@
             } @else {
               <p><span class="text-slate-500 dark:text-slate-400 font-semibold">Documento (DNI):</span> <strong class="text-blue-600 dark:text-blue-400 font-mono font-bold">{{ comp.clienteDocumento || '-' }}</strong></p>
             }
+            @if (comp.direccionEnvio) {
+              <p><span class="text-slate-500 dark:text-slate-400 font-semibold">Dirección de Entrega:</span> <span class="text-slate-700 dark:text-slate-300">{{ comp.direccionEnvio }}</span></p>
+            }
           </div>
 
           <div class="space-y-1.5 sm:text-right">
+            <p><span class="text-slate-500 dark:text-slate-400 font-semibold">Fecha de Emisión:</span> <span class="text-slate-900 dark:text-white font-mono font-medium">{{ (comp.fechaVenta | date:'dd/MM/yyyy HH:mm:ss') || '-' }}</span></p>
             <p><span class="text-slate-500 dark:text-slate-400 font-semibold">Moneda:</span> <span class="text-slate-900 dark:text-white font-bold">SOLES (PEN)</span></p>
-            @if (comp.pagos && comp.pagos[0]?.codigoOperacion) {
-            }
+            <p><span class="text-slate-500 dark:text-slate-400 font-semibold">Medio de Pago:</span> <span class="text-emerald-600 dark:text-emerald-400 font-bold uppercase">{{ (comp.pagos && comp.pagos.length > 0 && comp.pagos[0].medioPago ? comp.pagos[0].medioPago : comp.medioPago) || 'YAPE / BCP' }}</span></p>
+            <p>
+              <span class="text-slate-500 dark:text-slate-400 font-semibold">Cód. Transacción:</span> 
+              <span class="text-blue-600 dark:text-blue-400 font-mono font-bold">{{ (comp.pagos && comp.pagos.length > 0 && comp.pagos[0].codigoOperacion) ? comp.pagos[0].codigoOperacion : ('OP-' + ('000000' + comp.idVenta).slice(-6)) }}</span>
+            </p>
+            <p class="flex items-center sm:justify-end gap-1.5">
+              <span class="text-slate-500 dark:text-slate-400 font-semibold">Estado del Pago:</span>
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-800">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                {{ (comp.pagos && comp.pagos.length > 0 && comp.pagos[0].estadoPago ? comp.pagos[0].estadoPago : 'CONFIRMADO') }}
+              </span>
+            </p>
           </div>
         </div>
 
