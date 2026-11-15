@@ -704,17 +704,32 @@ export class AdminComponent implements OnInit {
       const subtotalCalc = v.total / 1.18;
       const igvCalc = v.total - subtotalCalc;
 
+      const pagoAsoc = this.pagos().find(p => p.venta?.idVenta === v.idVenta);
+      const esFactura = !!(v.clienteDocumento && v.clienteDocumento.length === 11);
+      const tipoComp = esFactura ? 'FACTURA ELECTRÓNICA' : 'BOLETA DE VENTA ELECTRÓNICA';
+      const numComp = `${esFactura ? 'F001' : 'B001'} - ${('00000000' + v.idVenta).slice(-8)}`;
+      const tratamiento = esFactura ? 'Señor(es)' : 'Señor(a)';
+      const codOp = pagoAsoc?.codigoOperacion || pagoAsoc?.codigoTransaccion || ('OP-' + ('000000' + v.idVenta).slice(-6));
+      const estPago = pagoAsoc?.estadoPago || 'CONFIRMADO';
+      const estEnvio = v.estado === 'PENDIENTE' ? 'En Almacén (Pendiente)' : v.estado;
+
       return {
         idVenta: v.idVenta,
-        tipoComprobante: (v.clienteDocumento && v.clienteDocumento.length === 11) ? 'FACTURA' : 'BOLETA',
+        tipoComprobante: tipoComp,
+        numeroComprobante: numComp,
+        tratamientoCliente: tratamiento,
         fechaVenta: v.fechaVenta || '',
         clienteNombre: v.clienteNombre || 'Cliente General',
         clienteDocumento: v.clienteDocumento || '-',
+        direccion: v.direccionEnvio || 'Recojo en Almacén',
         total: v.total,
         subtotal: subtotalCalc,
         igv: igvCalc,
         estado: v.estado,
-        medioPago: v.medioPago || 'YAPE / TARJETA',
+        estadoEnvio: estEnvio,
+        estadoPago: estPago,
+        medioPago: (pagoAsoc?.medioPago?.nombre || v.medioPago || 'YAPE / BCP').toUpperCase(),
+        codigoOperacion: codOp,
         detalles: dvVenta.map(dv => {
           const pInfo = prods.find(p => p.idProducto === dv.producto?.idProducto);
           return {
@@ -775,17 +790,33 @@ export class AdminComponent implements OnInit {
       const totalCalc = subtotalTotal * 1.18;
       const igvCalc = totalCalc - subtotalTotal;
 
+      const pagoAsoc = this.pagos().find(p => p.venta?.idVenta === vId);
+      const esFactura = !!(vInfo.clienteDocumento && vInfo.clienteDocumento.length === 11);
+      const tipoComp = esFactura ? 'FACTURA ELECTRÓNICA' : 'BOLETA DE VENTA ELECTRÓNICA';
+      const numComp = `${esFactura ? 'F001' : 'B001'} - ${('00000000' + vId).slice(-8)}`;
+      const tratamiento = esFactura ? 'Señor(es)' : 'Señor(a)';
+      const codOp = pagoAsoc?.codigoOperacion || pagoAsoc?.codigoTransaccion || ('OP-' + ('000000' + vId).slice(-6));
+      const estPago = pagoAsoc?.estadoPago || 'CONFIRMADO';
+      const estLogistico = dvItems[0]?.venta?.estado || vInfo.estado || 'PENDIENTE';
+      const estEnvio = estLogistico === 'PENDIENTE' ? 'En Almacén (Pendiente)' : estLogistico;
+
       return {
         idVenta: vId,
-        tipoComprobante: (vInfo.clienteDocumento && vInfo.clienteDocumento.length === 11) ? 'FACTURA' : 'BOLETA',
+        tipoComprobante: tipoComp,
+        numeroComprobante: numComp,
+        tratamientoCliente: tratamiento,
         fechaVenta: dvItems[0]?.venta?.fechaVenta || vInfo.fechaVenta || '',
         clienteNombre: vInfo.clienteNombre || 'Cliente General',
         clienteDocumento: vInfo.clienteDocumento || '-',
+        direccion: vInfo.direccionEnvio || 'Recojo en Almacén',
         total: totalCalc,
         subtotal: subtotalTotal,
         igv: igvCalc,
-        estado: dvItems[0]?.venta?.estado || vInfo.estado || 'ENTREGADO',
-        medioPago: vInfo.medioPago || 'YAPE / TARJETA',
+        estado: estLogistico,
+        estadoEnvio: estEnvio,
+        estadoPago: estPago,
+        medioPago: (pagoAsoc?.medioPago?.nombre || vInfo.medioPago || 'YAPE / BCP').toUpperCase(),
+        codigoOperacion: codOp,
         detalles: dvItems.map(dv => {
           const pInfo = prods.find(p => p.idProducto === dv.producto?.idProducto);
           return {

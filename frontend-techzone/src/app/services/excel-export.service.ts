@@ -3,6 +3,8 @@ import { Injectable } from '@angular/core';
 export interface VentaExportData {
   idVenta: number;
   tipoComprobante: string;
+  numeroComprobante?: string;
+  tratamientoCliente?: string;
   fechaVenta: string;
   clienteNombre: string;
   clienteDocumento: string;
@@ -13,7 +15,10 @@ export interface VentaExportData {
   subtotal: number;
   igv: number;
   estado: string;
+  estadoEnvio?: string;
+  estadoPago?: string;
   medioPago: string;
+  codigoOperacion?: string;
   detalles: {
     idDetalleVenta: number;
     idProducto: number;
@@ -362,18 +367,21 @@ export class ExcelExportService {
    <Column ss:Width="110"/>
    <Column ss:Width="170"/>
 
-   <!-- Encabezado Corporativo -->
+   <!-- Encabezado Corporativo Oficial TechZone -->
    <Row ss:Height="30">
-    <Cell ss:MergeAcross="3" ss:StyleID="HeaderTitle"><Data ss:Type="String"> TECHZONE GAMING STORE S.A.C. - BALANCE GERENCIAL DE VENTAS</Data></Cell>
+    <Cell ss:MergeAcross="4" ss:StyleID="HeaderTitle"><Data ss:Type="String"> TECHZONE GAMING STORE S.A.C. - BALANCE GERENCIAL DE VENTAS</Data></Cell>
    </Row>
    <Row ss:Height="20">
-    <Cell ss:MergeAcross="3" ss:StyleID="HeaderSubtitle"><Data ss:Type="String"> RUC: 20608945123 | Emisión: ${fechaEmision} | Período: ${this.escaparXml(filtros.periodo.toUpperCase())} ${filtros.mes ? '| Mes: ' + filtros.mes : ''} ${filtros.anio ? '| Año: ' + filtros.anio : ''}</Data></Cell>
+    <Cell ss:MergeAcross="4" ss:StyleID="HeaderSubtitle"><Data ss:Type="String"> RUC: 20608945123 | Dirección: Av. Javier Prado Este 4200, Santiago de Surco - Lima | Teléfono: (01) 710-8900</Data></Cell>
+   </Row>
+   <Row ss:Height="20">
+    <Cell ss:MergeAcross="4" ss:StyleID="HeaderSubtitle"><Data ss:Type="String"> Correo: ventas@techzone.com | Web: www.techzone.com | Emisión: ${fechaEmision} | Período: ${this.escaparXml(filtros.periodo.toUpperCase())} ${filtros.mes ? '| Mes: ' + filtros.mes : ''} ${filtros.anio ? '| Año: ' + filtros.anio : ''}</Data></Cell>
    </Row>
    <Row ss:Height="10"/>
 
    <!-- Cuadro de Balances Principales -->
    <Row ss:Height="22">
-    <Cell ss:MergeAcross="3" ss:StyleID="SectionHeader"><Data ss:Type="String"> 1. CUADRO DE RESULTADOS Y BALANCES FINANCIEROS</Data></Cell>
+    <Cell ss:MergeAcross="4" ss:StyleID="SectionHeader"><Data ss:Type="String"> 1. CUADRO DE RESULTADOS Y BALANCES FINANCIEROS</Data></Cell>
    </Row>
    <Row>
     <Cell ss:StyleID="TableHeader"><Data ss:Type="String">CONCEPTO / INDICADOR</Data></Cell>
@@ -656,10 +664,12 @@ export class ExcelExportService {
         rows += `
    <Row>
     <Cell ss:StyleID="CellCenter"><Data ss:Type="String">#${v.idVenta}</Data></Cell>
-    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">${this.escaparXml(v.tipoComprobante)}</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">${this.escaparXml(v.numeroComprobante || v.tipoComprobante)}</Data></Cell>
     <Cell ss:StyleID="CellCenter"><Data ss:Type="String">${this.escaparXml(v.fechaVenta ? v.fechaVenta.slice(0, 19).replace('T', ' ') : '-')}</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">${this.escaparXml(v.tratamientoCliente || 'Señor(a)')}</Data></Cell>
     <Cell ss:StyleID="CellNormal"><Data ss:Type="String">${this.escaparXml(v.clienteDocumento || '-')}</Data></Cell>
     <Cell ss:StyleID="CellNormal"><Data ss:Type="String">${this.escaparXml(v.clienteNombre || 'Cliente')}</Data></Cell>
+    <Cell ss:StyleID="CellNormal"><Data ss:Type="String">${this.escaparXml(v.direccion || 'Recojo en Almacén')}</Data></Cell>
     <Cell ss:StyleID="CellNormal"><Data ss:Type="String">${this.escaparXml(d.codigoSku || '-')}</Data></Cell>
     <Cell ss:StyleID="CellBold"><Data ss:Type="String">${this.escaparXml(d.nombreProducto)}</Data></Cell>
     <Cell ss:StyleID="CellNormal"><Data ss:Type="String">${this.escaparXml(d.categoria)}</Data></Cell>
@@ -667,8 +677,10 @@ export class ExcelExportService {
     <Cell ss:StyleID="CellInteger"><Data ss:Type="Number">${d.cantidad}</Data></Cell>
     <Cell ss:StyleID="CellCurrency"><Data ss:Type="Number">${d.precioUnitario.toFixed(2)}</Data></Cell>
     <Cell ss:StyleID="CellCurrencyBold"><Data ss:Type="Number">${d.subtotal.toFixed(2)}</Data></Cell>
-    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">${this.escaparXml(v.estado)}</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">${this.escaparXml(v.estadoEnvio || v.estado)}</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">${this.escaparXml(v.estadoPago || 'CONFIRMADO')}</Data></Cell>
     <Cell ss:StyleID="CellCenter"><Data ss:Type="String">${this.escaparXml(v.medioPago || '-')}</Data></Cell>
+    <Cell ss:StyleID="CellCenter"><Data ss:Type="String">${this.escaparXml(v.codigoOperacion || '-')}</Data></Cell>
    </Row>`;
       });
     });
@@ -676,30 +688,36 @@ export class ExcelExportService {
     return `
  <Worksheet ss:Name="Libro Transaccional">
   <Table ss:DefaultColumnWidth="120">
-   <Column ss:Width="70"/>
+   <Column ss:Width="65"/>
+   <Column ss:Width="140"/>
+   <Column ss:Width="125"/>
    <Column ss:Width="90"/>
-   <Column ss:Width="130"/>
-   <Column ss:Width="100"/>
+   <Column ss:Width="105"/>
    <Column ss:Width="180"/>
+   <Column ss:Width="200"/>
    <Column ss:Width="90"/>
-   <Column ss:Width="240"/>
+   <Column ss:Width="220"/>
+   <Column ss:Width="110"/>
+   <Column ss:Width="95"/>
+   <Column ss:Width="65"/>
+   <Column ss:Width="105"/>
+   <Column ss:Width="105"/>
+   <Column ss:Width="130"/>
+   <Column ss:Width="110"/>
    <Column ss:Width="120"/>
-   <Column ss:Width="100"/>
-   <Column ss:Width="70"/>
-   <Column ss:Width="110"/>
-   <Column ss:Width="110"/>
-   <Column ss:Width="110"/>
-   <Column ss:Width="110"/>
+   <Column ss:Width="140"/>
 
    <Row ss:Height="24">
-    <Cell ss:MergeAcross="13" ss:StyleID="SectionHeader"><Data ss:Type="String"> AUDITORÍA Y DETALLE TRANSACCIONAL COMPLETO</Data></Cell>
+    <Cell ss:MergeAcross="17" ss:StyleID="SectionHeader"><Data ss:Type="String"> AUDITORÍA Y DETALLE TRANSACCIONAL COMPLETO</Data></Cell>
    </Row>
    <Row>
     <Cell ss:StyleID="TableHeader"><Data ss:Type="String"># VENTA</Data></Cell>
     <Cell ss:StyleID="TableHeader"><Data ss:Type="String">COMPROBANTE</Data></Cell>
     <Cell ss:StyleID="TableHeader"><Data ss:Type="String">FECHA / HORA</Data></Cell>
+    <Cell ss:StyleID="TableHeader"><Data ss:Type="String">TRATAMIENTO</Data></Cell>
     <Cell ss:StyleID="TableHeader"><Data ss:Type="String">DOCUMENTO</Data></Cell>
     <Cell ss:StyleID="TableHeader"><Data ss:Type="String">CLIENTE</Data></Cell>
+    <Cell ss:StyleID="TableHeader"><Data ss:Type="String">DIRECCIÓN ENTREGA</Data></Cell>
     <Cell ss:StyleID="TableHeader"><Data ss:Type="String">SKU</Data></Cell>
     <Cell ss:StyleID="TableHeader"><Data ss:Type="String">PRODUCTO</Data></Cell>
     <Cell ss:StyleID="TableHeader"><Data ss:Type="String">CATEGORÍA</Data></Cell>
@@ -707,8 +725,10 @@ export class ExcelExportService {
     <Cell ss:StyleID="TableHeader"><Data ss:Type="String">CANT.</Data></Cell>
     <Cell ss:StyleID="TableHeader"><Data ss:Type="String">P. UNIT. (S/)</Data></Cell>
     <Cell ss:StyleID="TableHeader"><Data ss:Type="String">SUBTOTAL (S/)</Data></Cell>
-    <Cell ss:StyleID="TableHeader"><Data ss:Type="String">ESTADO</Data></Cell>
+    <Cell ss:StyleID="TableHeader"><Data ss:Type="String">ESTADO ENVÍO</Data></Cell>
+    <Cell ss:StyleID="TableHeader"><Data ss:Type="String">ESTADO PAGO</Data></Cell>
     <Cell ss:StyleID="TableHeader"><Data ss:Type="String">MEDIO PAGO</Data></Cell>
+    <Cell ss:StyleID="TableHeader"><Data ss:Type="String">CÓD. OPERACIÓN</Data></Cell>
    </Row>
    ${rows}
   </Table>

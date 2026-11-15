@@ -441,8 +441,9 @@
       <div
         class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs bg-slate-50 dark:bg-slate-950/70 p-4 rounded-2xl border border-slate-200 dark:border-slate-800/80">
         <div class="space-y-1.5">
-          <p><span class="text-slate-500 dark:text-slate-400 font-semibold">{{ esFactura(comp) ? 'Señor(es):' : 'Señor(a):' }}</span> <strong
-              class="text-slate-900 dark:text-white uppercase">{{ comp.clienteNombre || 'CLIENTE REGISTRADO' }}</strong>
+          <p><span class="text-slate-500 dark:text-slate-400 font-semibold">{{ esFactura(comp) ? 'Señor(es):' :
+              'Señor(a):' }}</span> <strong class="text-slate-900 dark:text-white uppercase">{{ comp.clienteNombre ||
+              'CLIENTE REGISTRADO' }}</strong>
           </p>
           @if (esFactura(comp)) {
           <p><span class="text-slate-500 dark:text-slate-400 font-semibold">RUC Adquirente:</span> <strong
