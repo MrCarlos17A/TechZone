@@ -6,29 +6,47 @@
   @if (exito()) {
     <div class="max-w-3xl mx-auto space-y-6 animate-fadeIn">
       
-      <!-- Banner de Éxito -->
-      <div class="glass-panel p-6 rounded-3xl border border-emerald-500/30 bg-emerald-50 dark:bg-emerald-950/20 text-center space-y-2 shadow-sm">
-        <div class="w-14 h-14 bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center text-3xl mx-auto border border-emerald-500/40">
-          <span class="material-symbols-outlined text-3xl">check</span>
+      <!-- Barra de Acciones y Confirmación Superior (Oculta al imprimir) -->
+      <div class="no-print glass-panel p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/80 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="flex items-center gap-3 text-center sm:text-left">
+          <div class="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center flex-shrink-0">
+            <span class="material-symbols-outlined text-2xl">check_circle</span>
+          </div>
+          <div>
+            <h2 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white font-heading">
+              ¡Pedido #{{ idVentaCreada() }} confirmado con éxito!
+            </h2>
+            <p class="text-xs text-slate-500 dark:text-slate-400">
+              Comprobante electrónico oficial emitido para tu compra.
+            </p>
+          </div>
         </div>
-        <h2 class="text-2xl font-black text-slate-900 dark:text-white font-heading">¡Compra Finalizada con Éxito!</h2>
-        <p class="text-xs text-slate-600 dark:text-slate-300">Tu pedido <span class="font-bold text-blue-600 dark:text-blue-400 font-mono">#{{ idVentaCreada() }}</span> ha sido procesado. Aquí tienes tu comprobante electrónico oficial.</p>
-        
-        <div class="pt-2 flex flex-wrap justify-center gap-3">
-          <button (click)="imprimirComprobante()" class="glow-button px-5 py-2.5 rounded-xl text-xs font-bold text-white flex items-center gap-2 cursor-pointer shadow-md">
-            <span class="material-symbols-outlined text-base">print</span> Imprimir / Guardar Comprobante
+
+        <div class="flex items-center flex-wrap justify-center sm:justify-end gap-2.5">
+          <button
+            type="button"
+            (click)="imprimirComprobante()"
+            class="glow-button px-4 py-2 rounded-xl text-xs font-bold text-white flex items-center gap-1.5 cursor-pointer shadow-md transition-all">
+            <span class="material-symbols-outlined text-base">print</span>
+            <span>Imprimir / PDF</span>
           </button>
-          <a routerLink="/mis-pedidos" class="px-5 py-2.5 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 hover:text-blue-600 dark:hover:text-white flex items-center gap-1.5 transition-colors">
-            <span class="material-symbols-outlined text-base">receipt_long</span> Ver Mis Pedidos
+          <a
+            routerLink="/mis-pedidos"
+            class="px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-300 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 hover:text-blue-600 dark:hover:text-white flex items-center gap-1.5 transition-colors">
+            <span class="material-symbols-outlined text-base">receipt_long</span>
+            <span>Mis Pedidos</span>
           </a>
-          <a routerLink="/" class="px-5 py-2.5 rounded-xl text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white flex items-center gap-1.5 transition-colors">
-            <span class="material-symbols-outlined text-base">home</span> Ir al Inicio
+          <a
+            routerLink="/"
+            class="px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white flex items-center gap-1 transition-colors">
+            <span class="material-symbols-outlined text-base">home</span>
+            <span>Inicio</span>
           </a>
         </div>
       </div>
 
       <!-- Representación Impresa Oficial del Comprobante (Boleta / Factura) -->
-      <div id="comprobante-fiscal" class="p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl text-slate-800 dark:text-slate-200 space-y-6 relative overflow-hidden">
+      <div id="comprobante-fiscal" class="p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl text-slate-800 dark:text-slate-200 space-y-6 relative overflow-hidden comprobante-imprimible">
         
         <!-- Marca de agua decorativa -->
         <div class="absolute -right-12 -bottom-12 opacity-5 pointer-events-none select-none">
