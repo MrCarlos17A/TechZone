@@ -380,9 +380,14 @@ export class CheckoutComponent implements OnInit {
 
     this.procesando.set(true);
 
-    const dirCompleta = this.referencia().trim()
-      ? `${this.direccion().trim().toUpperCase()} (REF: ${this.referencia().trim().toUpperCase()})`
-      : this.direccion().trim().toUpperCase();
+    const distritoStr = this.getDistritoNombre();
+    let dirCompleta = this.direccion().trim().toUpperCase();
+    if (this.referencia().trim()) {
+      dirCompleta += ` (REF: ${this.referencia().trim().toUpperCase()})`;
+    }
+    if (distritoStr && !dirCompleta.includes(distritoStr.toUpperCase())) {
+      dirCompleta += `, ${distritoStr.toUpperCase()}`;
+    }
 
     this.ventaService.checkout({
       direccionEnvio: dirCompleta,

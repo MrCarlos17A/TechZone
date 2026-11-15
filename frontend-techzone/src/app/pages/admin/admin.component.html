@@ -6446,8 +6446,27 @@
             </p>
             <p class="flex items-center sm:justify-end gap-1.5">
               <span class="text-slate-500 dark:text-slate-400 font-semibold">Estado del Pago:</span>
-              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-800">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+              <span
+                class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border"
+                [class.bg-emerald-100]="(comp.pagos && comp.pagos[0]?.estadoPago === 'CONFIRMADO') || (comp.pagos && comp.pagos[0]?.estadoPago === 'APROBADO') || !comp.pagos || comp.pagos.length === 0"
+                [class.text-emerald-800]="(comp.pagos && comp.pagos[0]?.estadoPago === 'CONFIRMADO') || (comp.pagos && comp.pagos[0]?.estadoPago === 'APROBADO') || !comp.pagos || comp.pagos.length === 0"
+                [class.border-emerald-300]="(comp.pagos && comp.pagos[0]?.estadoPago === 'CONFIRMADO') || (comp.pagos && comp.pagos[0]?.estadoPago === 'APROBADO') || !comp.pagos || comp.pagos.length === 0"
+                [class.dark:bg-emerald-950/60]="(comp.pagos && comp.pagos[0]?.estadoPago === 'CONFIRMADO') || (comp.pagos && comp.pagos[0]?.estadoPago === 'APROBADO') || !comp.pagos || comp.pagos.length === 0"
+                [class.dark:text-emerald-400]="(comp.pagos && comp.pagos[0]?.estadoPago === 'CONFIRMADO') || (comp.pagos && comp.pagos[0]?.estadoPago === 'APROBADO') || !comp.pagos || comp.pagos.length === 0"
+                [class.bg-amber-100]="comp.pagos && comp.pagos[0]?.estadoPago === 'PENDIENTE'"
+                [class.text-amber-800]="comp.pagos && comp.pagos[0]?.estadoPago === 'PENDIENTE'"
+                [class.border-amber-300]="comp.pagos && comp.pagos[0]?.estadoPago === 'PENDIENTE'"
+                [class.dark:bg-amber-950/60]="comp.pagos && comp.pagos[0]?.estadoPago === 'PENDIENTE'"
+                [class.dark:text-amber-400]="comp.pagos && comp.pagos[0]?.estadoPago === 'PENDIENTE'"
+                [class.bg-rose-100]="comp.pagos && (comp.pagos[0]?.estadoPago === 'RECHAZADO' || comp.pagos[0]?.estadoPago === 'CANCELADO')"
+                [class.text-rose-800]="comp.pagos && (comp.pagos[0]?.estadoPago === 'RECHAZADO' || comp.pagos[0]?.estadoPago === 'CANCELADO')"
+                [class.border-rose-300]="comp.pagos && (comp.pagos[0]?.estadoPago === 'RECHAZADO' || comp.pagos[0]?.estadoPago === 'CANCELADO')"
+                [class.dark:bg-rose-950/60]="comp.pagos && (comp.pagos[0]?.estadoPago === 'RECHAZADO' || comp.pagos[0]?.estadoPago === 'CANCELADO')"
+                [class.dark:text-rose-400]="comp.pagos && (comp.pagos[0]?.estadoPago === 'RECHAZADO' || comp.pagos[0]?.estadoPago === 'CANCELADO')">
+                <span class="w-1.5 h-1.5 rounded-full"
+                  [class.bg-emerald-500]="(comp.pagos && comp.pagos[0]?.estadoPago === 'CONFIRMADO') || (comp.pagos && comp.pagos[0]?.estadoPago === 'APROBADO') || !comp.pagos || comp.pagos.length === 0"
+                  [class.bg-amber-500]="comp.pagos && comp.pagos[0]?.estadoPago === 'PENDIENTE'"
+                  [class.bg-rose-500]="comp.pagos && (comp.pagos[0]?.estadoPago === 'RECHAZADO' || comp.pagos[0]?.estadoPago === 'CANCELADO')"></span>
                 {{ (comp.pagos && comp.pagos.length > 0 && comp.pagos[0].estadoPago ? comp.pagos[0].estadoPago : 'CONFIRMADO') }}
               </span>
             </p>

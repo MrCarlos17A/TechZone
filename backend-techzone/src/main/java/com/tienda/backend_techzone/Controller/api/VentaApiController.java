@@ -123,14 +123,33 @@ public class VentaApiController {
         }
 
         // 4. Ubigeo y referencia
+        Ubigeo ubi = null;
         if (req != null && req.idUbigeo() != null) {
-            ubigeoRepository.findById(req.idUbigeo()).ifPresent(persona::setUbigeo);
+            ubi = ubigeoRepository.findById(req.idUbigeo()).orElse(null);
+            if (ubi != null) {
+                persona.setUbigeo(ubi);
+            }
         }
+        if (persona.getUbigeo() != null && ubi == null) {
+            ubi = persona.getUbigeo();
+        }
+
         if (req != null && req.referencia() != null && !req.referencia().isBlank()) {
             persona.setReferencia(req.referencia().trim().toUpperCase());
         }
         persona.setDireccion(direccion);
         personaRepository.save(persona);
+
+        String direccionCompleta = direccion;
+        if (ubi != null) {
+            String ubiTexto = (ubi.getDistrito() != null ? ubi.getDistrito() : "")
+                    + (ubi.getProvincia() != null ? ", " + ubi.getProvincia() : "")
+                    + (ubi.getDepartamento() != null ? " - " + ubi.getDepartamento() : "");
+            ubiTexto = ubiTexto.trim();
+            if (!ubiTexto.isEmpty() && (ubi.getDistrito() == null || !direccionCompleta.toUpperCase().contains(ubi.getDistrito().toUpperCase()))) {
+                direccionCompleta = direccionCompleta + ", " + ubiTexto;
+            }
+        }
 
         Cliente cliente = clienteRepository.findFirstByPersona(persona)
                 .orElseGet(() -> clienteRepository.save(Cliente.builder()
@@ -174,7 +193,7 @@ public class VentaApiController {
         }
 
         try {
-            Venta venta = ventaService.registrarVenta(cliente.getIdCliente(), listaDetalles, direccion);
+            Venta venta = ventaService.registrarVenta(cliente.getIdCliente(), listaDetalles, direccionCompleta);
 
             // Registrar pago (garantizado para toda orden de compra)
             Long idMedio = (req != null && req.idMedioPago() != null) ? req.idMedioPago() : null;
@@ -196,7 +215,7 @@ public class VentaApiController {
                         .montoPago(venta.getTotal())
                         .fechaPago(LocalDateTime.now())
                         .codigoOperacion(codOp)
-                        .estadoPago("PENDIENTE")
+                        .estadoPago("CONFIRMADO")
                         .build();
                 pagoRepository.save(pago);
             }
