@@ -107,36 +107,21 @@ export class HomeComponent implements OnInit {
   }
 
   cargarDatos(): void {
-    // 1. Carga inmediata optimista si el administrador acaba de modificar destacados en esta misma máquina
-    try {
-      if (typeof window !== 'undefined' && window.localStorage) {
-        const raw = localStorage.getItem('techzone_admin_cache_v2') || localStorage.getItem('techzone_admin_cache');
-        if (raw) {
-          const parsed = JSON.parse(raw);
-          if (Array.isArray(parsed.productos) && parsed.productos.length > 0) {
-            const marcadosCache = parsed.productos.filter((p: Producto) => !!p.destacado);
-            if (marcadosCache.length > 0) {
-              this.destacados.set(marcadosCache.slice(0, 9));
-              this.cargando.set(false);
-            }
-          }
-        }
-      }
-    } catch {}
+    this.cargando.set(true);
 
-    // 2. Consulta autoritativa al endpoint de destacados para reflejar fielmente lo marcado en la BD
-    this.productoService.getDestacados(true).subscribe({
+    // Consulta de destacados con cache reactiva en memoria (sin flashes de localStorage)
+    this.productoService.getDestacados(false).subscribe({
       next: (prods) => {
         if (prods && prods.length > 0) {
-          this.destacados.set(prods.slice(0, 9));
+          this.destacados.set(prods);
           this.cargando.set(false);
         } else {
-          // Fallback al catálogo general si no hay destacados explícitos
+          // Fallback al catalogo general si no hay destacados explicitos
           this.productoService.getProductos().subscribe({
             next: (todos) => {
               if (todos && todos.length > 0) {
                 const marcados = todos.filter(p => !!p.destacado);
-                this.destacados.set((marcados.length > 0 ? marcados : todos).slice(0, 9));
+                this.destacados.set(marcados.length > 0 ? marcados : todos);
               }
               this.cargando.set(false);
             },
@@ -145,12 +130,12 @@ export class HomeComponent implements OnInit {
         }
       },
       error: () => {
-        // Fallback hacia catálogo general
+        // Fallback hacia catalogo general
         this.productoService.getProductos().subscribe({
           next: (todos) => {
             if (todos && todos.length > 0) {
               const marcados = todos.filter(p => !!p.destacado);
-              this.destacados.set((marcados.length > 0 ? marcados : todos).slice(0, 9));
+              this.destacados.set(marcados.length > 0 ? marcados : todos);
             }
             this.cargando.set(false);
           },
