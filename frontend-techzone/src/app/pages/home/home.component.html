@@ -6,33 +6,33 @@
       
       @for (item of heroSlides; track item.title; let idx = $index) {
         <div
-          class="absolute inset-0 transition-opacity duration-1000 ease-in-out bg-gradient-to-br"
-          [ngClass]="item.gradient"
+          class="absolute inset-0 transition-opacity duration-1000 ease-in-out"
           [class.opacity-100]="slideActivo() === idx"
           [class.opacity-0]="slideActivo() !== idx">
           
-          <!-- Background image from Supabase Storage -->
+          <!-- Background image from Supabase Storage with high clarity and real colors -->
           @if (item.image) {
-            <img [src]="item.image" [alt]="item.title" class="absolute inset-0 w-full h-full object-cover opacity-30 mix-blend-luminosity" />
+            <img [src]="item.image" [alt]="item.title" class="absolute inset-0 w-full h-full object-cover object-center" />
           }
 
           <!-- Background decorative element -->
-          <div class="absolute -right-10 -bottom-10 opacity-10 pointer-events-none select-none">
+          <div class="absolute -right-10 -bottom-10 opacity-5 pointer-events-none select-none">
             <span class="material-symbols-outlined text-[260px] text-white">{{ item.icon }}</span>
           </div>
 
-          <div class="relative z-10 h-full flex flex-col justify-end p-8 md:p-14 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent">
-            <span class="inline-block px-3.5 py-1 rounded-full text-xs font-bold tracking-wider uppercase bg-blue-600/90 text-white w-max mb-3 shadow-lg shadow-blue-600/40 border border-blue-400/30">
+          <!-- Elegant soft gradient: dark on left for text readability, fully transparent on center & right -->
+          <div class="relative z-10 h-full flex flex-col justify-end p-8 md:p-14 bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-transparent sm:bg-gradient-to-r sm:from-slate-950/85 sm:via-slate-950/30 sm:to-transparent">
+            <span class="inline-block px-3.5 py-1 rounded-full text-xs font-bold tracking-wider uppercase bg-blue-600/90 text-white w-max mb-3 shadow-lg shadow-blue-600/40 border border-blue-400/30 backdrop-blur-xs">
               {{ item.badge }}
             </span>
-            <h1 class="text-2xl sm:text-4xl md:text-5xl font-black text-white font-heading max-w-2xl leading-tight drop-shadow-md">
+            <h1 class="text-2xl sm:text-4xl md:text-5xl font-black text-white font-heading max-w-2xl leading-tight drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)]">
               {{ item.title }}
             </h1>
-            <p class="mt-2 text-sm sm:text-base text-slate-200 max-w-xl">
+            <p class="mt-2 text-sm sm:text-base text-slate-100 max-w-xl font-medium drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
               {{ item.desc }}
             </p>
             <div class="mt-6 flex gap-4">
-              <a routerLink="/productos" class="glow-button px-6 py-3 rounded-xl text-sm font-semibold text-white inline-flex items-center gap-2 shadow-lg">
+              <a routerLink="/productos" class="glow-button px-6 py-3 rounded-xl text-sm font-semibold text-white inline-flex items-center gap-2 shadow-lg hover:scale-105 transition-transform">
                 Ver Catálogo <span class="material-symbols-outlined text-base">arrow_forward</span>
               </a>
             </div>
@@ -117,14 +117,14 @@
         </a>
       </div>
 
-      <!-- Grilla de Categorías (Sin iconos, diseño limpio y estilizado) -->
-      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-3">
+      <!-- Slider de Categorias (Escalabilidad fluida con scroll horizontal, nunca colapsa) -->
+      <div class="flex gap-3.5 overflow-x-auto pb-4 pt-1 px-0.5 scrollbar-none snap-x snap-mandatory">
         @for (cat of categorias(); track cat.idCategoria) {
           @let meta = getCategoryMeta(cat.nombre);
           <a
             [routerLink]="['/productos']"
             [queryParams]="{ categoria: cat.idCategoria }"
-            class="group p-3.5 rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-slate-900/60 shadow-sm hover:border-blue-500/60 hover:bg-blue-50/50 dark:hover:bg-blue-950/20 hover:shadow-md hover:shadow-blue-500/10 hover:-translate-y-0.5 transition-all duration-200 flex flex-col justify-center items-center text-center cursor-pointer">
+            class="group snap-start shrink-0 min-w-[155px] flex-1 max-w-[200px] p-4 rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-slate-900/60 shadow-sm hover:border-blue-500/60 hover:bg-blue-50/50 dark:hover:bg-blue-950/20 hover:shadow-md hover:shadow-blue-500/10 hover:-translate-y-0.5 transition-all duration-200 flex flex-col justify-center items-center text-center cursor-pointer">
             <span class="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-tight">
               {{ cat.nombre }}
             </span>

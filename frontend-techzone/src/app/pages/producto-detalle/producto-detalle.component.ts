@@ -26,6 +26,7 @@ export class ProductoDetalleComponent implements OnInit {
   cargando = signal<boolean>(true);
   agregando = signal<boolean>(false);
   agregadoExitoso = signal<boolean>(false);
+  procesandoCompra = signal<boolean>(false);
 
   // Computado de la imagen seleccionada activa
   imagenActual = computed<ProductoImagen | null>(() => {
@@ -169,11 +170,49 @@ export class ProductoDetalleComponent implements OnInit {
       return;
     }
 
-    this.carritoService.agregarProducto(prod.idProducto, this.cantidad()).subscribe({
+    const cantDeseada = this.cantidad();
+    const existente = this.carritoService.items().find(it => it.idProducto === prod.idProducto);
+
+    // Si ya esta en el carrito con la cantidad exacta, navegar directamente a checkout
+    if (existente && existente.cantidad === cantDeseada) {
+      this.router.navigate(['/checkout']);
+      return;
+    }
+
+    this.procesandoCompra.set(true);
+
+    // Si ya esta pero con cantidad diferente, sincronizar cantidad a la seleccionada
+    if (existente) {
+      this.carritoService.actualizarCantidad(existente.idDetalle, cantDeseada).subscribe({
+        next: () => {
+          this.procesandoCompra.set(false);
+          this.router.navigate(['/checkout']);
+        },
+        error: (err) => {
+          this.procesandoCompra.set(false);
+          alert(err.error?.mensaje || 'No se pudo actualizar la cantidad en el carrito');
+        }
+      });
+      return;
+    }
+
+    // Si no esta en el carrito, agregarlo con la cantidad seleccionada
+    const imagenUrlParaCarrito = this.imagenSeleccionadaUrl() ||
+      ((prod.imagenes && prod.imagenes.length > 0) ? (prod.imagenes.find(i => i.esPrincipal)?.urlImagen || prod.imagenes[0].urlImagen) : '');
+
+    this.carritoService.agregarProducto(prod.idProducto, cantDeseada, {
+      nombre: prod.nombre,
+      codigoSku: prod.codigoSku,
+      precioVenta: prod.precioVenta,
+      stock: prod.stock,
+      imagenUrl: imagenUrlParaCarrito
+    }).subscribe({
       next: () => {
+        this.procesandoCompra.set(false);
         this.router.navigate(['/checkout']);
       },
       error: (err) => {
+        this.procesandoCompra.set(false);
         alert(err.error?.mensaje || 'No se pudo procesar la compra');
       }
     });

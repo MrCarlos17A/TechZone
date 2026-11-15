@@ -60,7 +60,7 @@ export class HomeComponent implements OnInit {
       return { icon: 'developer_board', desc: 'Intel Core y AMD Ryzen', gradient: 'from-purple-600/20 to-indigo-600/20 text-purple-500' };
     }
     if (n.includes('placa')) {
-      return { icon: 'space_dashboard', desc: 'LGA1851 y AM5 WiFi 7', gradient: 'from-amber-600/20 to-orange-600/20 text-amber-500' };
+      return { icon: 'space_dashboard', desc: 'LGA1851 y AM5 WiFi 7', gradient: 'from-blue-600/20 to-indigo-600/20 text-blue-500' };
     }
     if (n.includes('memoria') || n.includes('almacenamiento')) {
       return { icon: 'storage', desc: 'SSDs NVMe M.2 y RAM DDR5', gradient: 'from-pink-600/20 to-rose-600/20 text-pink-500' };

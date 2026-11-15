@@ -365,6 +365,7 @@ export class CheckoutComponent implements OnInit {
         this.procesando.set(false);
         this.exito.set(true);
         this.idVentaCreada.set(res.idVenta);
+        this.productoService.limpiarCache();
         this.carritoService.cargarCarrito();
       },
       error: (err) => {
