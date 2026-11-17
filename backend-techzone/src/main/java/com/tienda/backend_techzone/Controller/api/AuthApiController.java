@@ -4,7 +4,12 @@ import com.tienda.backend_techzone.Model.Persona;
 import com.tienda.backend_techzone.Model.RegistroAcceso;
 import com.tienda.backend_techzone.Model.Rol;
 import com.tienda.backend_techzone.Model.Usuario;
-import com.tienda.backend_techzone.Repository.*;
+import com.tienda.backend_techzone.Repository.PersonaRepository;
+import com.tienda.backend_techzone.Repository.RegistroAccesoRepository;
+import com.tienda.backend_techzone.Repository.RolRepository;
+import com.tienda.backend_techzone.Repository.TipoDocumentoRepository;
+import com.tienda.backend_techzone.Repository.UbigeoRepository;
+import com.tienda.backend_techzone.Repository.UsuarioRepository;
 import com.tienda.backend_techzone.Security.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
@@ -297,7 +302,7 @@ public class AuthApiController {
         if (req.idUbigeo() != null) {
             ubigeoRepository.findById(req.idUbigeo()).ifPresent(persona::setUbigeo);
         }
-        LocalDate fNac = EmpleadoAdminApiController.parsearFechaSegura(req.fechaNacimiento());
+        LocalDate fNac = parsearFechaSegura(req.fechaNacimiento());
         if (fNac != null) {
             persona.setFechaNacimiento(fNac);
         }
@@ -384,5 +389,28 @@ public class AuthApiController {
 
     private ResponseEntity<Map<String, Object>> respuesta(int estado, String mensaje) {
         return ResponseEntity.status(estado).body(Map.of("mensaje", mensaje));
+    }
+
+    private LocalDate parsearFechaSegura(String fechaStr) {
+        if (fechaStr == null || fechaStr.isBlank()) return null;
+        String limpia = fechaStr.trim();
+        if (limpia.length() >= 10 && limpia.charAt(4) == '-' && limpia.charAt(7) == '-') {
+            try {
+                return LocalDate.parse(limpia.substring(0, 10));
+            } catch (Exception ignored) {}
+        }
+        if (limpia.length() >= 10 && (limpia.charAt(2) == '/' || limpia.charAt(2) == '-')) {
+            String[] p = limpia.substring(0, 10).split("[/-]");
+            if (p.length == 3 && p[2].length() == 4) {
+                try {
+                    return LocalDate.of(Integer.parseInt(p[2]), Integer.parseInt(p[1]), Integer.parseInt(p[0]));
+                } catch (Exception ignored) {}
+            }
+        }
+        try {
+            return LocalDate.parse(limpia);
+        } catch (Exception ignored) {
+            return null;
+        }
     }
 }
