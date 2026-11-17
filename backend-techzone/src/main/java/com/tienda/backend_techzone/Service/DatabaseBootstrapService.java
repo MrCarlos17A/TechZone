@@ -1,7 +1,15 @@
 package com.tienda.backend_techzone.Service;
 
-import com.tienda.backend_techzone.Model.*;
-import com.tienda.backend_techzone.Repository.*;
+import com.tienda.backend_techzone.Model.Empleado;
+import com.tienda.backend_techzone.Model.Persona;
+import com.tienda.backend_techzone.Model.Rol;
+import com.tienda.backend_techzone.Model.TipoDocumento;
+import com.tienda.backend_techzone.Model.Usuario;
+import com.tienda.backend_techzone.Repository.EmpleadoRepository;
+import com.tienda.backend_techzone.Repository.PersonaRepository;
+import com.tienda.backend_techzone.Repository.RolRepository;
+import com.tienda.backend_techzone.Repository.TipoDocumentoRepository;
+import com.tienda.backend_techzone.Repository.UsuarioRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -305,6 +313,20 @@ public class DatabaseBootstrapService implements ApplicationRunner {
                     }
                     if (usuarioExistente.getPersona() == null) {
                         usuarioExistente.setPersona(p);
+                        modificado = true;
+                    }
+                    // Desbloqueo y sincronizacion de credenciales para colaboradores
+                    if (usuarioExistente.getCorreo() != null && usuarioExistente.getCorreo().equalsIgnoreCase("gabriel.ipanaque@techzone.pe")) {
+                        usuarioExistente.setIntentosFallidos(0);
+                        usuarioExistente.setBloqueadoHasta(null);
+                        usuarioExistente.setEstado("activo");
+                        String claveCod = passwordEncoder.encode("Gabriel123**");
+                        usuarioExistente.setPassword(claveCod);
+                        usuarioExistente.setContrasena(claveCod);
+                        modificado = true;
+                    } else if (usuarioExistente.getBloqueadoHasta() != null && usuarioExistente.getBloqueadoHasta().isBefore(LocalDateTime.now())) {
+                        usuarioExistente.setIntentosFallidos(0);
+                        usuarioExistente.setBloqueadoHasta(null);
                         modificado = true;
                     }
                     if (modificado) {

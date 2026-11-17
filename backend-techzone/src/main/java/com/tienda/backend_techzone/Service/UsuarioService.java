@@ -86,11 +86,19 @@ public class UsuarioService {
         }
         if (usuario.getEstado() != null && !usuario.getEstado().isBlank()) {
             existente.setEstado(usuario.getEstado());
+            if ("activo".equalsIgnoreCase(usuario.getEstado())) {
+                existente.setIntentosFallidos(0);
+                existente.setBloqueadoHasta(null);
+            }
         }
         String nuevaClave = usuario.getPassword();
         if (nuevaClave != null && !nuevaClave.isBlank() && !nuevaClave.equals(existente.getPassword())) {
             validarContrasenaSegura(nuevaClave);
-            existente.setPassword(passwordEncoder.encode(nuevaClave));
+            String encoded = passwordEncoder.encode(nuevaClave);
+            existente.setPassword(encoded);
+            existente.setContrasena(encoded);
+            existente.setIntentosFallidos(0);
+            existente.setBloqueadoHasta(null);
         }
         return usuarioRepository.save(existente);
     }
