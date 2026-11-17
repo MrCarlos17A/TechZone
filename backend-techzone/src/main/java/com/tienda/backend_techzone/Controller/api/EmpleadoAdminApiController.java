@@ -48,7 +48,7 @@ public class EmpleadoAdminApiController {
         }
     }
 
-    private LocalDate parsearFechaSegura(String fechaStr) {
+    public static LocalDate parsearFechaSegura(String fechaStr) {
         if (fechaStr == null || fechaStr.isBlank()) return null;
         String limpia = fechaStr.trim();
         if (limpia.length() >= 10 && limpia.charAt(4) == '-' && limpia.charAt(7) == '-') {

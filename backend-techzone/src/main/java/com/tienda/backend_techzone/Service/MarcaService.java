@@ -12,6 +12,9 @@ public class MarcaService {
 
     private final MarcaRepository marcaRepository;
 
+    @jakarta.persistence.PersistenceContext
+    private jakarta.persistence.EntityManager entityManager;
+
     public MarcaService(MarcaRepository marcaRepository) {
         this.marcaRepository = marcaRepository;
     }
@@ -50,9 +53,6 @@ public class MarcaService {
     public void eliminarMarca(Long id) {
         EliminarMarca(id);
     }
-
-    @jakarta.persistence.PersistenceContext
-    private jakarta.persistence.EntityManager entityManager;
 
     @org.springframework.transaction.annotation.Transactional
     public Marca CrearMarca(Marca marca) {

@@ -70,6 +70,7 @@ public class AuthApiController {
     public record SolicitudRegistro(
             String nombres,
             String apellidos,
+            String apellidoPaterno,
             String apellidoMaterno,
             String correo,
             String telefono,
@@ -80,7 +81,13 @@ public class AuthApiController {
             String direccion,
             String referencia,
             Long idUbigeo
-    ) {}
+    ) {
+        public String obtenerApellidoPaterno() {
+            if (apellidos != null && !apellidos.isBlank()) return apellidos.trim();
+            if (apellidoPaterno != null && !apellidoPaterno.isBlank()) return apellidoPaterno.trim();
+            return null;
+        }
+    }
 
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> login(
@@ -184,7 +191,8 @@ public class AuthApiController {
         if (req.nombres() == null || req.nombres().trim().length() < 2) {
             return respuesta(400, "Los nombres son obligatorios y deben tener al menos 2 caracteres");
         }
-        if (req.apellidos() == null || req.apellidos().trim().length() < 2) {
+        String apPat = req.obtenerApellidoPaterno();
+        if (apPat == null || apPat.length() < 2) {
             return respuesta(400, "El apellido paterno es obligatorio y debe tener al menos 2 caracteres");
         }
         if (req.apellidoMaterno() == null || req.apellidoMaterno().trim().length() < 2) {
@@ -251,7 +259,7 @@ public class AuthApiController {
         persona.setFechaRegistro(LocalDateTime.now());
         persona.setVigente(true);
         persona.setNombres(req.nombres().trim().toUpperCase());
-        persona.setApellidoPaterno(req.apellidos().trim().toUpperCase());
+        persona.setApellidoPaterno(apPat.toUpperCase());
         if (req.apellidoMaterno() != null && !req.apellidoMaterno().isBlank()) {
             persona.setApellidoMaterno(req.apellidoMaterno().trim().toUpperCase());
         }
@@ -273,15 +281,9 @@ public class AuthApiController {
         if (req.idUbigeo() != null) {
             ubigeoRepository.findById(req.idUbigeo()).ifPresent(persona::setUbigeo);
         }
-        if (req.fechaNacimiento() != null && !req.fechaNacimiento().isBlank()) {
-            try {
-                String fStr = req.fechaNacimiento().trim();
-                if (fStr.length() >= 10 && fStr.charAt(4) == '-' && fStr.charAt(7) == '-') {
-                    fStr = fStr.substring(0, 10);
-                }
-                persona.setFechaNacimiento(LocalDate.parse(fStr));
-            } catch (Exception ignored) {
-            }
+        LocalDate fNac = EmpleadoAdminApiController.parsearFechaSegura(req.fechaNacimiento());
+        if (fNac != null) {
+            persona.setFechaNacimiento(fNac);
         }
         persona = personaRepository.save(persona);
 

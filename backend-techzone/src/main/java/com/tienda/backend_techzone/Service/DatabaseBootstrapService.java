@@ -2,8 +2,6 @@ package com.tienda.backend_techzone.Service;
 
 import com.tienda.backend_techzone.Model.*;
 import com.tienda.backend_techzone.Repository.*;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
@@ -28,9 +26,6 @@ public class DatabaseBootstrapService implements ApplicationRunner {
     private final UsuarioRepository usuarioRepository;
     private final EmpleadoRepository empleadoRepository;
     private final PasswordEncoder passwordEncoder;
-
-    @PersistenceContext
-    private EntityManager entityManager;
 
     @Override
     public void run(ApplicationArguments args) {
