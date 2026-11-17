@@ -36,7 +36,12 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.route.snapshot.queryParams['sesionExpirada'] === 'true') {
-      this.error.set('Tu sesión ha expirado por inactividad. Por favor inicia sesión nuevamente.');
+      this.error.set('Tu sesión ha expirado por seguridad o el servidor se reinició. Inicia sesión nuevamente.');
+      this.authService.logout();
+    } else if (this.authService.isAuthenticated()) {
+      // Si ya cuenta con sesion activa legitima, redirigir directamente sin parpadeos
+      const returnUrl = this.route.snapshot.queryParams['returnUrl'] || (this.authService.isStaff() ? '/admin' : '/');
+      this.router.navigateByUrl(returnUrl);
     }
   }
 

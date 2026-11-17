@@ -44,11 +44,8 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     catchError((error: HttpErrorResponse) => {
       // Si el backend responde 401 y no es la ruta de login o registro
       if (error.status === 401 && !req.url.includes('/auth/login') && !req.url.includes('/auth/registro')) {
-        // Solo cerrar sesión si el token realmente expiró o no existe
-        if (!token || isTokenExpired(token)) {
-          authService.logout();
-          router.navigate(['/login'], { queryParams: { sesionExpirada: 'true' } });
-        }
+        authService.logout();
+        router.navigate(['/login'], { queryParams: { sesionExpirada: 'true' } });
       }
       return throwError(() => error);
     })
