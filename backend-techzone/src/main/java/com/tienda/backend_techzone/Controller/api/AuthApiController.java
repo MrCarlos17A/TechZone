@@ -59,7 +59,12 @@ public class AuthApiController {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public record SolicitudLogin(String username, String password) {
+    public record SolicitudLogin(String username, String correo, String password) {
+        public String identificador() {
+            if (username != null && !username.isBlank()) return username.trim().toLowerCase();
+            if (correo != null && !correo.isBlank()) return correo.trim().toLowerCase();
+            return null;
+        }
     }
 
     public record SolicitudRegistro(
@@ -82,11 +87,12 @@ public class AuthApiController {
             @RequestBody SolicitudLogin solicitud,
             HttpServletRequest request) {
 
-        if (solicitud == null || solicitud.username() == null || solicitud.password() == null) {
-            return respuesta(401, "Credenciales inválidas");
+        String identificador = solicitud != null ? solicitud.identificador() : null;
+        if (identificador == null || solicitud.password() == null || solicitud.password().isBlank()) {
+            return respuesta(401, "Credenciales inválidas. Ingresa tu correo y contraseña.");
         }
 
-        String correoLimpio = solicitud.username().trim().toLowerCase();
+        String correoLimpio = identificador;
         String ip = request.getHeader("X-Forwarded-For");
         if (ip == null || ip.isBlank()) {
             ip = request.getRemoteAddr();
@@ -108,6 +114,16 @@ public class AuthApiController {
         if (usuario.estaBloqueado()) {
             registrarAcceso(usuario, correoLimpio, ip, agente, false, "cuenta_bloqueada");
             return respuesta(423, "Cuenta bloqueada temporalmente por intentos fallidos. Intenta más tarde.");
+        }
+
+        if (usuario.getEstado() != null && !"activo".equalsIgnoreCase(usuario.getEstado())) {
+            registrarAcceso(usuario, correoLimpio, ip, agente, false, "cuenta_inactiva");
+            return ResponseEntity.status(403).body(Map.of("mensaje", "Tu cuenta se encuentra inactiva o suspendida. Contacta a administración."));
+        }
+
+        if (usuario.getRol() == null || !Boolean.TRUE.equals(usuario.getRol().getVigente())) {
+            registrarAcceso(usuario, correoLimpio, ip, agente, false, "rol_inactivo");
+            return ResponseEntity.status(403).body(Map.of("mensaje", "El rol asignado a tu cuenta no se encuentra vigente."));
         }
 
         try {
@@ -201,7 +217,7 @@ public class AuthApiController {
         // 4. Teléfono (obligatorio para contacto y notificaciones, 9 dígitos empezando en 9)
         String telLimpio = null;
         if (req.telefono() != null && !req.telefono().isBlank()) {
-            telLimpio = req.telefono().trim();
+            telLimpio = req.telefono().replaceAll("\\D", "").trim();
             if (!telLimpio.matches("^9\\d{8}$")) {
                 return respuesta(400, "El teléfono debe tener 9 dígitos y empezar con 9 (ej. 987654321)");
             }
@@ -214,7 +230,7 @@ public class AuthApiController {
         if (req.numeroDocumento() == null || req.numeroDocumento().isBlank()) {
             return respuesta(400, "El número de documento (DNI) es obligatorio");
         }
-        String numDocLimpio = req.numeroDocumento().trim();
+        String numDocLimpio = req.numeroDocumento().replaceAll("\\D", "").trim();
         if (!numDocLimpio.matches("^\\d{8}$")) {
             return respuesta(400, "El DNI debe tener exactamente 8 dígitos numéricos");
         }
@@ -259,7 +275,11 @@ public class AuthApiController {
         }
         if (req.fechaNacimiento() != null && !req.fechaNacimiento().isBlank()) {
             try {
-                persona.setFechaNacimiento(LocalDate.parse(req.fechaNacimiento().trim()));
+                String fStr = req.fechaNacimiento().trim();
+                if (fStr.length() >= 10 && fStr.charAt(4) == '-' && fStr.charAt(7) == '-') {
+                    fStr = fStr.substring(0, 10);
+                }
+                persona.setFechaNacimiento(LocalDate.parse(fStr));
             } catch (Exception ignored) {
             }
         }

@@ -3037,6 +3037,35 @@ export class AdminComponent implements OnInit {
     return 'Sin nombre';
   }
 
+  obtenerPersonaDeUsuario(u?: any): any {
+    if (!u) return null;
+    if (u.persona) return u.persona;
+    const idPer = u.idPersona || u.id_persona;
+    if (idPer) {
+      const matchPer = this.personas().find(p => p.idPersona === idPer);
+      if (matchPer) return matchPer;
+    }
+    if (u.correo) {
+      const email = String(u.correo).trim().toLowerCase();
+      const matchEmp = this.empleados().find(e => {
+        if (!e.persona) return false;
+        const nom = (e.persona.nombres || '').split(' ')[0].toLowerCase();
+        const ape = (e.persona.apellidoPaterno || '').toLowerCase();
+        return Boolean(nom && ape && email.includes(nom) && email.includes(ape));
+      });
+      if (matchEmp?.persona) return matchEmp.persona;
+
+      const matchCli = this.clientes().find(c => {
+        if (!c.persona) return false;
+        const nom = (c.persona.nombres || '').split(' ')[0].toLowerCase();
+        const ape = (c.persona.apellidoPaterno || '').toLowerCase();
+        return Boolean(nom && ape && email.includes(nom) && email.includes(ape));
+      });
+      if (matchCli?.persona) return matchCli.persona;
+    }
+    return null;
+  }
+
   obtenerClasesBadgeRol(nombreRol?: string): string {
     const r = (nombreRol || '').toUpperCase();
     if (r.includes('ADMIN')) return 'bg-purple-100 text-purple-800 dark:bg-purple-950/60 dark:text-purple-300 border border-purple-200 dark:border-purple-800';

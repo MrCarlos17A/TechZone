@@ -2875,7 +2875,7 @@
                       {{ u.correo }}
                     </td>
                     <td class="p-3 text-slate-800 dark:text-slate-200 font-semibold">
-                      {{ u.persona ? obtenerNombreCompletoPersona(u.persona) : 'Sin titular vinculado' }}
+                      {{ obtenerNombreCompletoPersona(obtenerPersonaDeUsuario(u)) }}
                     </td>
                     <td class="p-3 text-center">
                       <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase inline-flex items-center"

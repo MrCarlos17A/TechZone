@@ -38,8 +38,39 @@ public class EmpleadoAdminApiController {
         Long idRol,
         String cargo,
         String fechaContrato,
+        String fechaContratacion,
         BigDecimal salario
-    ) {}
+    ) {
+        public String obtenerFechaContrato() {
+            if (fechaContrato != null && !fechaContrato.isBlank()) return fechaContrato.trim();
+            if (fechaContratacion != null && !fechaContratacion.isBlank()) return fechaContratacion.trim();
+            return null;
+        }
+    }
+
+    private LocalDate parsearFechaSegura(String fechaStr) {
+        if (fechaStr == null || fechaStr.isBlank()) return null;
+        String limpia = fechaStr.trim();
+        if (limpia.length() >= 10 && limpia.charAt(4) == '-' && limpia.charAt(7) == '-') {
+            try {
+                return LocalDate.parse(limpia.substring(0, 10));
+            } catch (Exception ignored) {}
+        }
+        if (limpia.length() >= 10 && (limpia.charAt(2) == '/' || limpia.charAt(2) == '-')) {
+            String[] p = limpia.substring(0, 10).split("[/-]");
+            if (p.length == 3 && p[2].length() == 4) {
+                try {
+                    return LocalDate.of(Integer.parseInt(p[2]), Integer.parseInt(p[1]), Integer.parseInt(p[0]));
+                } catch (Exception ignored) {}
+            }
+        }
+        try {
+            return LocalDate.parse(limpia);
+        } catch (Exception e) {
+            log.warn("No se pudo parsear fecha '{}': {}", fechaStr, e.getMessage());
+            return null;
+        }
+    }
 
     @GetMapping
     public ResponseEntity<List<Empleado>> listar() {
@@ -58,14 +89,10 @@ public class EmpleadoAdminApiController {
     @PostMapping("/completo")
     public ResponseEntity<?> crearCompleto(@RequestBody CrearEmpleadoReq req) {
         try {
-            LocalDate fNac = null;
-            if (req.fechaNacimiento() != null && !req.fechaNacimiento().isBlank()) {
-                fNac = LocalDate.parse(req.fechaNacimiento().trim());
-            }
-
-            LocalDate fContr = LocalDate.now();
-            if (req.fechaContrato() != null && !req.fechaContrato().isBlank()) {
-                fContr = LocalDate.parse(req.fechaContrato().trim());
+            LocalDate fNac = parsearFechaSegura(req.fechaNacimiento());
+            LocalDate fContr = parsearFechaSegura(req.obtenerFechaContrato());
+            if (fContr == null) {
+                fContr = LocalDate.now();
             }
 
             Empleado creado = empleadoService.CrearEmpleadoCompleto(
@@ -90,6 +117,7 @@ public class EmpleadoAdminApiController {
             }
             return ResponseEntity.status(201).body(creado);
         } catch (Exception e) {
+            log.error("Error al crear colaborador completo: {}", e.getMessage(), e);
             return ResponseEntity.badRequest().body(Map.of("mensaje", e.getMessage() != null ? e.getMessage() : "Error al procesar el registro del colaborador"));
         }
     }
@@ -127,22 +155,22 @@ public class EmpleadoAdminApiController {
         String password,
         Long idRol,
         String fechaContrato,
+        String fechaContratacion,
         BigDecimal salario,
         Boolean vigente
-    ) {}
+    ) {
+        public String obtenerFechaContrato() {
+            if (fechaContrato != null && !fechaContrato.isBlank()) return fechaContrato.trim();
+            if (fechaContratacion != null && !fechaContratacion.isBlank()) return fechaContratacion.trim();
+            return null;
+        }
+    }
 
     @PutMapping("/{id}/completo")
     public ResponseEntity<?> actualizarCompleto(@PathVariable Long id, @RequestBody ActualizarEmpleadoReq req) {
         try {
-            LocalDate fNac = null;
-            if (req.fechaNacimiento() != null && !req.fechaNacimiento().isBlank()) {
-                fNac = LocalDate.parse(req.fechaNacimiento().trim());
-            }
-
-            LocalDate fContr = null;
-            if (req.fechaContrato() != null && !req.fechaContrato().isBlank()) {
-                fContr = LocalDate.parse(req.fechaContrato().trim());
-            }
+            LocalDate fNac = parsearFechaSegura(req.fechaNacimiento());
+            LocalDate fContr = parsearFechaSegura(req.obtenerFechaContrato());
 
             Empleado actualizado = empleadoService.ActualizarEmpleadoCompleto(
                 id,

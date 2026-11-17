@@ -239,7 +239,12 @@ public class EmpleadoService {
             persona.setTipoDocumento(tipoDocumentoRepository.findById(idTipoDocumento).orElse(persona.getTipoDocumento()));
         }
         if (numeroDocumento != null && !numeroDocumento.isBlank()) {
-            persona.setNumeroDocumento(numeroDocumento.trim());
+            String docLimpio = numeroDocumento.trim();
+            Persona personaConMismoDoc = personaRepository.findFirstByNumeroDocumento(docLimpio).orElse(null);
+            if (personaConMismoDoc != null && !personaConMismoDoc.getIdPersona().equals(persona.getIdPersona())) {
+                throw new RuntimeException("El número de documento ya está registrado por otra persona");
+            }
+            persona.setNumeroDocumento(docLimpio);
         }
         if (telefono != null) {
             persona.setTelefono(telefono.trim());
@@ -272,10 +277,10 @@ public class EmpleadoService {
 
             Usuario usuario = usuarioCorreo != null ? usuarioCorreo : usuarioPropio;
             if (usuario == null) {
-                if (password == null || password.isBlank()) {
-                    throw new RuntimeException("La contraseña es obligatoria para aprovisionar la cuenta del colaborador");
+                String passFinal = (password != null && !password.isBlank()) ? password : "TechZone2026*";
+                if (password != null && !password.isBlank()) {
+                    UsuarioService.validarContrasenaSegura(password);
                 }
-                UsuarioService.validarContrasenaSegura(password);
                 Rol rolInicial = idRol != null ? rolRepository.findById(idRol).orElse(null) : null;
                 if (rolInicial == null) {
                     rolInicial = rolRepository.findById(2L).orElse(null);
@@ -284,8 +289,10 @@ public class EmpleadoService {
                         .persona(persona)
                         .rol(rolInicial)
                         .correo(correoLimpio)
-                        .password(passwordEncoder.encode(password))
+                        .password(passwordEncoder.encode(passFinal))
                         .estado(vigente != null && !vigente ? "inactivo" : "activo")
+                        .fechaCreacion(LocalDateTime.now())
+                        .intentosFallidos(0)
                         .build();
             } else {
                 usuario.setPersona(persona);
