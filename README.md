@@ -25,8 +25,8 @@
 TechZone es una plataforma web integral de comercio electrónico y gestión empresarial (ERP/E-Commerce B2C/B2B) orientada a la comercialización, distribución mayorista/minorista y control logístico de hardware gamer de alta gama (tarjetas gráficas serie RTX 50, monitores OLED/QHD de alta tasa de refresco, procesadores, periféricos y accesorios profesionales).
 
 El proyecto está diseñado bajo una arquitectura desacoplada de dos capas (Monorepo Fullstack) con soporte integral para despliegue containerizado en Docker:
-1. **Frontend SPA:** Interfaz moderna y reactiva construida con Angular 21, gestión de estado granular basada en Signals, maquetación con Tailwind CSS, soporte integral para Modo Claro / Modo Oscuro, carrito híbrido con persistencia local aislada por usuario, temporizador de inactividad de 25 minutos para personal administrativo y suite de pruebas unitarias con Vitest.
-2. **Backend API REST:** Servidor robusto desarrollado en Java 25 con Spring Boot 4.1.1, autenticación stateless mediante JWT con firma de ciclo de vida de instancia del servidor (Server Boot Signature), control de accesos por roles (RBAC), gestión de parámetros fiscales SUNAT, persistencia transaccional sobre PostgreSQL en Supabase, almacenamiento multimedia seguro en Supabase Storage y suite de pruebas unitarias con JUnit 5 y Mockito.
+1. **Frontend SPA / SSR:** Interfaz moderna, reactiva y optimizada construida con Angular 19 (Server-Side Rendering), gestión de estado granular basada en Signals, maquetación profesional con Tailwind CSS, soporte integral para Modo Claro / Modo Oscuro, validaciones de formularios en tiempo real con deshabilitación condicional de botones, matriz interactiva de autorización por módulo, carrito híbrido con persistencia local aislada por usuario, temporizador de inactividad de 25 minutos para personal administrativo y suite de pruebas unitarias con Vitest.
+2. **Backend API REST:** Servidor robusto y escalable desarrollado en Java 25 con Spring Boot, arquitectura de seguridad basada en Spring Security con autenticación stateless mediante JWT y firma de ciclo de vida de instancia del servidor (Server Boot Signature), sistema dinámico de control de acceso por roles (RBAC) con permisos granulares por módulo, hashing de contraseñas con BCrypt, gestión de parámetros fiscales SUNAT, persistencia transaccional sobre PostgreSQL en Supabase, almacenamiento multimedia seguro en Supabase Storage y suite de pruebas unitarias con JUnit 5 y Mockito.
 3. **Orquestación en Contenedores:** Configuración completa mediante Docker y Docker Compose para levantar frontend (Nginx) y backend (JVM Temurin) con un único comando sin requerir dependencias locales.
 
 ---
@@ -479,40 +479,86 @@ flowchart TD
 
 ---
 
-## Matriz de Roles, Políticas de Inactividad y Permisos (RBAC)
+## Sistema Dinámico de Roles y Control de Acceso Granular (RBAC)
 
-| Rol | Ámbito | Política de Inactividad | Permisos y Capacidades |
+TechZone cuenta con un sistema de autorización granular dinámico basado en dos niveles de evaluación:
+1. **Acceso al Entorno Administrativo (`esAdministrativo` / `es_administrativo`):** Define si un rol tiene autorización para iniciar sesión o navegar en el backoffice (`/admin`). Si el rol no es administrativo (como Clientes o Usuarios estándar), los módulos de gestión interna quedan completamente ocultos e inaccesibles.
+2. **Matriz de Autorización por Módulo (JSON):** Cada rol administrativo define un esquema de operaciones permitidas (`ver`, `crear`, `editar`, `eliminar`) sobre 12 módulos funcionales del sistema:
+
+| Módulo Funcional | Clave Técnica | Operaciones Disponibles | Propósito Operativo |
+| :--- | :--- | :---: | :--- |
+| **Panel Dashboard** | `dashboard` | `ver` (solo lectura) | Métricas en tiempo real, KPIs de ventas, productos destacados y alertas. |
+| **Catálogo de Productos** | `productos` | `ver`, `crear`, `editar`, `eliminar` | Control de inventario, precios, stock, SKU y fijado de novedades. |
+| **Categorías** | `categorias` | `ver`, `crear`, `editar`, `eliminar` | Clasificación de hardware y líneas de productos. |
+| **Marcas de Productos** | `marcas` | `ver`, `crear`, `editar`, `eliminar` | Gestión de fabricantes y logotipos optimizados en formato WebP. |
+| **Galería de Imágenes** | `imagenes` | `ver`, `crear`, `editar`, `eliminar` | Carga multimedia sincronizada con Supabase Storage CDN. |
+| **Ventas y Despachos** | `ventas` | `ver`, `crear`, `editar`, `eliminar` | Trazabilidad de pedidos, estados de entrega y comprobantes SUNAT. |
+| **Transacciones y Pagos** | `pagos` | `ver`, `crear`, `editar` | Verificación de operaciones bancarias (Yape, Plin, Tarjetas, Transferencias). |
+| **Usuarios y Accesos** | `usuarios` | `ver`, `crear`, `editar`, `eliminar` | Bitácora de cuentas, reseteo de intentos fallidos y estados de acceso. |
+| **Colaboradores & Nómina** | `empleados` | `ver`, `crear`, `editar`, `eliminar` | Personal corporativo, salarios, contratos y cuentas `@techzone.pe`. |
+| **Cartera de Clientes** | `clientes` | `ver`, `crear`, `editar`, `eliminar` | Clientes registrados, historial de compras acumulado y DNI/RUC. |
+| **Roles y Permisos** | `roles` | `ver`, `crear`, `editar`, `eliminar` | Configuración dinámica de la matriz RBAC por módulo. |
+| **Configuración del Sitio** | `configuracion` | `ver`, `crear`, `editar`, `eliminar` | Razón social, RUC emisor, dirección fiscal y leyenda oficial SUNAT. |
+
+### Blindaje y Políticas de Seguridad en Roles
+* **Rol Maestro Administrador:** Cuenta de forma obligatoria con el flag `esAdministrativo = true` y acceso total irrestricto a todas las operaciones de los 12 módulos funcionales, impidiendo bloqueos accidentales del sistema.
+* **Persistencia Desacoplada:** Los roles personalizados configurados desde el backoffice persisten de forma definitiva en la base de datos sin ser sobrescritos por ejecuciones posteriores del servidor.
+
+---
+
+## Matriz de Sesión y Políticas de Inactividad
+
+| Perfil de Usuario | Entorno de Uso | Política de Inactividad | Mecanismo de Protección |
 | :--- | :--- | :--- | :--- |
-| **Administrador** (`ROLE_ADMINISTRADOR`) | Panel Completo (`/admin/**`) | **25 minutos de inactividad física** (aviso preventivo de 120s al min 23). | Control total de inventario, fijado de novedades editoriales, configuración tributaria del sitio (RUC, razón social, dirección fiscal), inspección y emisión de comprobantes, gestión de proveedores, colaboradores, usuarios y auditoría forense con trazabilidad de IP. |
-| **Colaborador** (`ROLE_TRABAJADOR`) | Operativo & Ventas (`/admin/**`) | **25 minutos de inactividad física** (aviso preventivo de 120s al min 23). | Despacho de órdenes de compra, consulta de inventario y stock crítico, verificación de transacciones de pago, visualización de comprobantes fiscales y consulta de clientes. Módulos de auditoría y configuración bloqueados. |
-| **Cliente** (`ROLE_CLIENTE`) | Tienda Pública (`/`) | **8 horas continuas** (sin corte por inactividad física; se destruye al cerrar la pestaña). | Catálogo interactivo con filtros, sección de novedades, carrito híbrido persistente con aislamiento por cuenta, checkout digital con validación de DNI/RUC, pasarela de pago, historial en "Mis Pedidos" y visor de comprobantes electrónicos oficiales. |
+| **Personal Administrativo** (`esAdministrativo = true`) | Panel Backoffice (`/admin/**`) | **25 minutos de inactividad física** (teclado/mouse). | Aviso modal a los 23 min con cuenta regresiva de 120s; cierre forzoso y revocación de sesión al minuto 25. |
+| **Cliente / Usuario Tienda** (`esAdministrativo = false`) | Tienda Pública (`/`) | **8 horas continuas** (sesión activa durante la navegación). | Persistencia en `sessionStorage`; destrucción inmediata al cerrar la ventana o el navegador. |
 
 ---
 
 ## Catálogo de Endpoints REST (API Reference)
 
+### 1. Autenticación, Sesión e Identidad
 | Método | Endpoint | Acceso | Descripción |
 | :--- | :--- | :---: | :--- |
-| `POST` | `/api/auth/login` | Público | Autenticación de credenciales, control de intentos y generación de JWT con Server Boot ID. |
-| `POST` | `/api/auth/registro` | Público | Alta de nuevo cliente en la plataforma con validación previa de identidad. |
-| `GET` | `/api/auth/me` | Autenticado | Endpoint de handshake para validar vigencia e instancia activa del token. |
-| `GET` | `/api/configuracion` | Público | Obtiene los datos comerciales y parámetros tributarios SUNAT de la empresa. |
-| `PUT` | `/api/admin/configuracion` | Admin | Actualiza logotipo, RUC fiscal, razón social, dirección y leyenda oficial SUNAT. |
-| `GET` | `/api/productos` | Público | Listado paginado de catálogo con filtros de categoría, marca y stock. |
-| `GET` | `/api/productos/destacados` | Público | Obtiene los 9 productos destacados para la portada de inicio. |
-| `GET` | `/api/productos/novedades` | Público | Lista ordenada bajo lógica híbrida (fijados manuales + ingresos recientes). |
-| `PUT` | `/api/admin/productos/{id}/toggle-novedad` | Admin | Alterna la marca editorial de novedad de un producto. |
-| `GET` | `/api/dni/{numero}` | Público | Consulta de documento de identidad con validación en RENIEC. |
-| `GET` | `/api/carrito` | Autenticado | Obtiene los ítems y totales del carrito sincronizados en la base de datos. |
-| `POST` | `/api/carrito/items` | Autenticado | Agrega o incrementa un producto en el carrito de la cuenta activa. |
-| `PUT` | `/api/carrito/items/{id}`| Autenticado | Actualiza la cantidad de un ítem en el carrito del usuario. |
-| `DELETE`| `/api/carrito/items/{id}`| Autenticado | Elimina un ítem específico del carrito del usuario. |
+| `POST` | `/api/auth/login` | Público | Autenticación con correo/contraseña, control de 5 intentos y emisión de token JWT. |
+| `POST` | `/api/auth/registro` | Público | Registro de nuevos clientes con verificación de datos y encriptación BCrypt. |
+| `GET` | `/api/auth/me` | Autenticado | Handshake de sesión activa y verificación de Server Boot ID. |
+| `GET` | `/api/dni/{numero}` | Público | Consulta de documento de identidad con validación en RENIEC y caché local. |
+
+### 2. Tienda Pública, Catálogo y Carrito
+| Método | Endpoint | Acceso | Descripción |
+| :--- | :--- | :---: | :--- |
+| `GET` | `/api/configuracion` | Público | Obtiene datos comerciales y tributarios SUNAT de la empresa. |
+| `GET` | `/api/productos` | Público | Catálogo con filtros avanzados por categoría, marca, precio y orden. |
+| `GET` | `/api/productos/destacados` | Público | Retorna los 9 productos destacados para la página de inicio. |
+| `GET` | `/api/productos/novedades` | Público | Lista híbrida de novedades (lanzamientos fijados + ingresos recientes). |
+| `GET` | `/api/carrito` | Autenticado | Obtiene los ítems y totales del carrito sincronizados en PostgreSQL. |
+| `POST` | `/api/carrito/items` | Autenticado | Agrega o incrementa un ítem en el carrito del cliente activo. |
+| `PUT` | `/api/carrito/items/{id}`| Autenticado | Actualiza la cantidad de un ítem en el carrito. |
+| `DELETE`| `/api/carrito/items/{id}`| Autenticado | Elimina un ítem específico del carrito. |
 | `DELETE`| `/api/carrito` | Autenticado | Vacía por completo el carrito de la cuenta activa. |
-| `POST` | `/api/ventas` | Autenticado | Creación de orden de compra, descuento de stock y registro de pago. |
-| `GET` | `/api/ventas/mis-pedidos` | Autenticado | Historial de órdenes realizadas por el cliente autenticado. |
-| `GET` | `/api/ventas/mis-pedidos/{id}` | Autenticado | Detalle completo de orden y comprobante fiscal del cliente. |
-| `GET` | `/api/admin/ventas/{id}` | Admin / Colab | Detalle de venta y datos completos de transacción para panel admin. |
-| `PATCH`| `/api/admin/ventas/{id}/estado` | Admin / Colab | Actualiza el estado logístico del pedido (PREPARACION, CAMINO, ENTREGADO). |
+| `POST` | `/api/ventas` | Autenticado | Creación de orden de compra, descuento de inventario y registro de pago. |
+| `GET` | `/api/ventas/mis-pedidos` | Autenticado | Historial de pedidos realizados por el cliente autenticado. |
+| `GET` | `/api/ventas/mis-pedidos/{id}` | Autenticado | Detalle completo de orden y comprobante electrónico oficial SUNAT. |
+
+### 3. Panel de Administración y Backoffice (RBAC)
+| Método | Endpoint | Acceso | Descripción |
+| :--- | :--- | :---: | :--- |
+| `GET` | `/api/admin/roles` | Admin (`roles:ver`) | Listado de roles con su estado y permisos asignados. |
+| `POST` | `/api/admin/roles` | Admin (`roles:crear`) | Crea un nuevo rol definiendo su tipo administrativo y matriz JSON. |
+| `PUT` | `/api/admin/roles/{id}` | Admin (`roles:editar`) | Actualiza nombre, vigencia, tipo y matriz de permisos del rol. |
+| `DELETE`| `/api/admin/roles/{id}` | Admin (`roles:eliminar`)| Baja lógica de un rol del sistema. |
+| `GET` | `/api/admin/roles/modulos-acciones` | Admin (`roles:ver`) | Obtiene la lista de módulos y acciones válidas del sistema. |
+| `GET` | `/api/admin/empleados` | Admin (`empleados:ver`) | Listado del personal en nómina con cargo, salario y estado. |
+| `POST` | `/api/admin/empleados/completo` | Admin (`empleados:crear`) | Alta integral de colaborador, datos civiles y cuenta `@techzone.pe`. |
+| `PUT` | `/api/admin/empleados/{id}/completo` | Admin (`empleados:editar`)| Edición integral de colaborador, condiciones laborales y accesos. |
+| `DELETE`| `/api/admin/empleados/{id}` | Admin (`empleados:eliminar`)| Desactiva al colaborador y su cuenta de usuario vinculada. |
+| `GET` | `/api/admin/usuarios` | Admin (`usuarios:ver`) | Listado de cuentas con intentos fallidos, rol y estado. |
+| `PUT` | `/api/admin/usuarios/{id}` | Admin (`usuarios:editar`)| Actualiza rol, estado activo/inactivo o resetea intentos fallidos. |
+| `PUT` | `/api/admin/productos/{id}/toggle-novedad` | Admin (`productos:editar`) | Alterna la marca editorial de novedad de un producto. |
+| `PUT` | `/api/admin/configuracion` | Admin (`configuracion:editar`) | Actualiza parámetros fiscales SUNAT y datos de la empresa. |
+| `GET` | `/api/admin/ventas/{id}` | Admin (`ventas:ver`) | Detalle de venta y datos completos de transacción para panel admin. |
+| `PATCH`| `/api/admin/ventas/{id}/estado` | Admin (`ventas:editar`) | Actualiza el estado logístico del pedido (PREPARACION, CAMINO, ENTREGADO). |
 
 ---
 
@@ -527,7 +573,7 @@ El repositorio cuenta con integración continua automatizada mediante **GitHub A
   * `ProductoServiceTest`: Filtrado de productos vigentes, listado de novedades y toggle de estado.
   * `VentaServiceTest`: Registro de compras, cálculo de subtotal, IGV (18%), total y ciclo de estados.
   * *Resultado:* 16 pruebas ejecutadas exitosamente con base de datos H2 en memoria.
-* **Frontend (Angular 21 + Vitest):**
+* **Frontend (Angular 19 + Vitest):**
   * `mis-pedidos.component.spec.ts`: Detección de Boleta vs Factura, carga de comprobante y generación de hash digital.
   * `producto-detalle.component.spec.ts`: Inicialización de componentes, galería de fotos y navegación.
   * `toast.service.spec.ts` y `tema.service.spec.ts`: Gestión de notificaciones y cambio de tema Claro / Oscuro.
