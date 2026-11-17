@@ -66,6 +66,9 @@ public class UsuarioService {
     public Usuario ActualizarUsuario(Long id, Usuario usuario) {
         Usuario existente = usuarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado con id: " + id));
+        if (usuario.getPersona() == null && existente.getPersona() != null) {
+            usuario.setPersona(existente.getPersona());
+        }
         validarUsuario(usuario, id);
         // Solo se valida si el rol cambio: los roles "Usuario"/"Cliente" asignados
         // por el sistema no deben bloquear una edicion o deshabilitacion comun.
@@ -119,7 +122,16 @@ public class UsuarioService {
             throw new RuntimeException("Selecciona un rol para el usuario");
         }
         if (usuario.getPersona() == null) {
-            throw new RuntimeException("Selecciona una persona para el usuario");
+            if (idActual != null) {
+                Usuario enBd = usuarioRepository.findById(idActual).orElse(null);
+                if (enBd != null && enBd.getPersona() != null) {
+                    usuario.setPersona(enBd.getPersona());
+                } else {
+                    throw new RuntimeException("Selecciona una persona para el usuario");
+                }
+            } else {
+                throw new RuntimeException("Selecciona una persona para el usuario");
+            }
         }
         if (usuario.getPersona().getIdPersona() != null) {
             Optional<Usuario> conCuenta = usuarioRepository

@@ -120,18 +120,17 @@ public class DatabaseBootstrapService implements ApplicationRunner {
 
             if (adminPersona == null) {
                 TipoDocumento dniTipo = tipoDocumentoRepository.findById(1L).orElse(null);
-                adminPersona = Persona.builder()
-                        .nombres("CARLOS FELIPE")
-                        .apellidoPaterno("ARROYO")
-                        .apellidoMaterno("VEGA")
-                        .tipoDocumento(dniTipo)
-                        .numeroDocumento("73234768")
-                        .telefono("967662103")
-                        .direccion("El Vivero S/N")
-                        .fechaNacimiento(LocalDate.of(2005, 4, 12))
-                        .fechaRegistro(LocalDateTime.now())
-                        .vigente(true)
-                        .build();
+                adminPersona = new Persona();
+                adminPersona.setNombres("CARLOS FELIPE");
+                adminPersona.setApellidoPaterno("ARROYO");
+                adminPersona.setApellidoMaterno("VEGA");
+                adminPersona.setTipoDocumento(dniTipo);
+                adminPersona.setNumeroDocumento("73234768");
+                adminPersona.setTelefono("967662103");
+                adminPersona.setDireccion("El Vivero S/N");
+                adminPersona.setFechaNacimiento(LocalDate.of(2005, 4, 12));
+                adminPersona.setFechaRegistro(LocalDateTime.now());
+                adminPersona.setVigente(true);
                 adminPersona = personaRepository.save(adminPersona);
                 log.info("Persona Administrador General creada exitosamente: id={}", adminPersona.getIdPersona());
             } else {
@@ -209,13 +208,12 @@ public class DatabaseBootstrapService implements ApplicationRunner {
                     .orElse(null);
 
             if (empExistente == null) {
-                empExistente = Empleado.builder()
-                        .persona(adminPersona)
-                        .cargo("ADMINISTRADOR GENERAL")
-                        .fechaContrato(LocalDate.of(2026, 1, 1))
-                        .salario(new BigDecimal("3500.00"))
-                        .vigente(true)
-                        .build();
+                empExistente = new Empleado();
+                empExistente.setPersona(adminPersona);
+                empExistente.setCargo("ADMINISTRADOR GENERAL");
+                empExistente.setFechaContrato(LocalDate.of(2026, 1, 1));
+                empExistente.setSalario(new BigDecimal("3500.00"));
+                empExistente.setVigente(true);
                 empleadoRepository.save(empExistente);
                 log.info("Empleado Administrador General creado en nómina exitosamente");
             } else {

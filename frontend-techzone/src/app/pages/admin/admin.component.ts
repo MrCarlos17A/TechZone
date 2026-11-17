@@ -3800,10 +3800,12 @@ export class AdminComponent implements OnInit {
       return;
     }
 
+    const personaVinculada = u.persona || this.obtenerPersonaDeUsuario(u);
     const payload: any = {
       correo: u.correo,
       estado: this.formUsuarioEstado(),
-      rol: { idRol: rolId }
+      rol: { idRol: rolId },
+      persona: personaVinculada ? { idPersona: personaVinculada.idPersona } : undefined
     };
 
     const nuevaClave = this.formUsuarioNuevaPassword().trim();
