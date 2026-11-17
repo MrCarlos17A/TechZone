@@ -127,13 +127,16 @@ public class AuthApiController {
 
             String token = jwtService.generarToken(usuario.getCorreo(), roles, usuario.getIdUsuario());
 
+            boolean esAdmin = usuario.getRol() != null && Boolean.TRUE.equals(usuario.getRol().getEsAdministrativo());
             Map<String, Object> cuerpo = new LinkedHashMap<>();
             cuerpo.put("token", token);
             cuerpo.put("tipo", "Bearer");
             cuerpo.put("idUsuario", usuario.getIdUsuario());
             cuerpo.put("correo", usuario.getCorreo());
             cuerpo.put("roles", roles);
-            cuerpo.put("esStaff", roles.contains("ROLE_Administrador") || roles.contains("ROLE_Trabajador"));
+            cuerpo.put("esStaff", esAdmin);
+            cuerpo.put("esAdministrativo", esAdmin);
+            cuerpo.put("permisos", usuario.getRol() != null ? usuario.getRol().getPermisos() : null);
             cuerpo.put("nombre", nombreCompleto(usuario));
             return ResponseEntity.ok(cuerpo);
 
@@ -284,6 +287,8 @@ public class AuthApiController {
         cuerpo.put("correo", usuario.getCorreo());
         cuerpo.put("roles", roles);
         cuerpo.put("esStaff", false);
+        cuerpo.put("esAdministrativo", false);
+        cuerpo.put("permisos", "{\"productos\":[\"ver\"]}");
         cuerpo.put("nombre", nombreCompleto(usuario));
         return ResponseEntity.ok(cuerpo);
     }
@@ -298,13 +303,14 @@ public class AuthApiController {
             return respuesta(401, "Usuario no encontrado");
         }
 
+        boolean esAdmin = usuario.getRol() != null && Boolean.TRUE.equals(usuario.getRol().getEsAdministrativo());
         Map<String, Object> cuerpo = new LinkedHashMap<>();
         cuerpo.put("idUsuario", usuario.getIdUsuario());
         cuerpo.put("correo", usuario.getCorreo());
         cuerpo.put("roles", detalles.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList());
-        cuerpo.put("esStaff", detalles.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .anyMatch(r -> r.equals("ROLE_Administrador") || r.equals("ROLE_Trabajador")));
+        cuerpo.put("esStaff", esAdmin);
+        cuerpo.put("esAdministrativo", esAdmin);
+        cuerpo.put("permisos", usuario.getRol() != null ? usuario.getRol().getPermisos() : null);
         cuerpo.put("nombre", nombreCompleto(usuario));
         return ResponseEntity.ok(cuerpo);
     }

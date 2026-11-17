@@ -29,6 +29,10 @@ public class Rol {
     @Builder.Default
     private Boolean vigente = true;
 
+    @Column(name = "es_administrativo")
+    @Builder.Default
+    private Boolean esAdministrativo = false;
+
     @Column(name = "permisos", columnDefinition = "TEXT")
     private String permisos;
 }

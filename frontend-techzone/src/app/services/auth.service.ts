@@ -45,15 +45,57 @@ export class AuthService {
   readonly isStaff = computed(() => {
     const user = this.currentUser();
     if (!user) return false;
-    if (user.esStaff) return true;
+    // Bloquear incondicionalmente a Cliente y Usuario sin rol administrador
     if (user.roles && Array.isArray(user.roles)) {
-      return user.roles.some(r => {
-        const lower = (r || '').toLowerCase();
-        return lower.includes('admin') || lower.includes('staff') || lower.includes('gerente') || lower.includes('empleado') || lower.includes('colaborador') || lower.includes('trabajador');
+      const esClienteOUsuario = user.roles.some(r => {
+        const u = (r || '').toUpperCase();
+        return u === 'ROLE_CLIENTE' || u === 'CLIENTE' || u === 'ROLE_USUARIO' || u === 'USUARIO';
       });
+      const esAdmin = user.roles.some(r => (r || '').toUpperCase().includes('ADMIN'));
+      if (esClienteOUsuario && !esAdmin) {
+        return false;
+      }
+    }
+    if (user.esAdministrativo !== undefined) {
+      return !!user.esAdministrativo;
+    }
+    if (user.esStaff !== undefined) {
+      return !!user.esStaff;
     }
     return false;
   });
+
+  tienePermiso(modulo: string, accion: 'ver' | 'crear' | 'editar' | 'eliminar' = 'ver'): boolean {
+    const user = this.currentUser();
+    if (!user) return false;
+    if (this.esAdmin()) return true;
+
+    // Obtener matriz de permisos
+    let permisosObj: Record<string, string[]> | null = null;
+    if (user.permisos) {
+      if (typeof user.permisos === 'string') {
+        try {
+          permisosObj = JSON.parse(user.permisos);
+        } catch {
+          permisosObj = null;
+        }
+      } else if (typeof user.permisos === 'object') {
+        permisosObj = user.permisos as Record<string, string[]>;
+      }
+    }
+
+    if (!permisosObj) {
+      // Si no tiene matriz explícita pero es staff, permitir solo lectura
+      return accion === 'ver' && this.isStaff();
+    }
+
+    const accionesModulo = permisosObj[modulo.toLowerCase()];
+    if (!accionesModulo || !Array.isArray(accionesModulo)) {
+      return false;
+    }
+
+    return accionesModulo.includes(accion.toLowerCase());
+  }
 
   hasRole(nombreRol: string): boolean {
     const user = this.currentUser();

@@ -96,9 +96,17 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/api/admin/**")
                         .hasAnyRole("ADMINISTRADOR", "Administrador")
 
-                        // --- Administracion compartida: Administrador o Colaborador / Empleado ---
+                        // --- Administracion compartida: Solo roles con privilegios administrativos ---
                         .requestMatchers("/api/admin/**")
-                        .hasAnyRole("ADMINISTRADOR", "Administrador", "EMPLEADO", "Empleado", "COLABORADOR", "Colaborador", "TRABAJADOR", "Trabajador")
+                        .hasAnyRole(
+                                "ADMINISTRADOR", "Administrador",
+                                "TRABAJADOR", "Trabajador",
+                                "EMPLEADO", "Empleado",
+                                "COLABORADOR", "Colaborador",
+                                "SUPERVISOR DE VENTAS", "Supervisor de Ventas",
+                                "LOGISTICA Y ALMACEN", "LOGÍSTICA Y ALMACÉN", "Logística y Almacén",
+                                "SOPORTE TECNICO", "SOPORTE TÉCNICO", "Soporte Técnico"
+                        )
 
                         // --- Usuario / Cliente autenticado ---
                         .requestMatchers(

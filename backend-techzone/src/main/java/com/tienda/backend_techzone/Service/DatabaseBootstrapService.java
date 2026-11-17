@@ -47,26 +47,34 @@ public class DatabaseBootstrapService implements ApplicationRunner {
     }
 
     private void asegurarRolesCatalogo() {
-        insertarOActualizarRol(1L, "Administrador",
-            "{\"dashboard\":[\"ver\"],\"productos\":[\"ver\",\"crear\",\"editar\",\"eliminar\"],\"categorias\":[\"ver\",\"crear\",\"editar\",\"eliminar\"],\"marcas\":[\"ver\",\"crear\",\"editar\",\"eliminar\"],\"imagenes\":[\"ver\",\"crear\",\"editar\",\"eliminar\"],\"ventas\":[\"ver\",\"crear\",\"editar\",\"eliminar\"],\"pagos\":[\"ver\",\"crear\",\"editar\",\"eliminar\"],\"usuarios\":[\"ver\",\"crear\",\"editar\",\"eliminar\"],\"clientes\":[\"ver\",\"crear\",\"editar\",\"eliminar\"],\"roles\":[\"ver\",\"crear\",\"editar\",\"eliminar\"],\"configuracion\":[\"ver\",\"crear\",\"editar\",\"eliminar\"]}");
+        try {
+            entityManager.createNativeQuery(
+                "ALTER TABLE rol ADD COLUMN IF NOT EXISTS es_administrativo BOOLEAN DEFAULT false"
+            ).executeUpdate();
+        } catch (Exception e) {
+            log.warn("Aviso al verificar columna es_administrativo en rol: {}", e.getMessage());
+        }
 
-        insertarOActualizarRol(2L, "Trabajador",
-            "{\"dashboard\":[\"ver\"],\"productos\":[\"ver\",\"crear\",\"editar\"],\"categorias\":[\"ver\"],\"marcas\":[\"ver\"],\"imagenes\":[\"ver\",\"crear\",\"editar\"],\"ventas\":[\"ver\",\"crear\",\"editar\"],\"pagos\":[\"ver\",\"crear\",\"editar\"],\"usuarios\":[\"ver\"],\"clientes\":[\"ver\",\"crear\",\"editar\"]}");
+        insertarOActualizarRol(1L, "Administrador", true,
+            "{\"dashboard\":[\"ver\"],\"productos\":[\"ver\",\"crear\",\"editar\",\"eliminar\"],\"categorias\":[\"ver\",\"crear\",\"editar\",\"eliminar\"],\"marcas\":[\"ver\",\"crear\",\"editar\",\"eliminar\"],\"imagenes\":[\"ver\",\"crear\",\"editar\",\"eliminar\"],\"ventas\":[\"ver\",\"crear\",\"editar\",\"eliminar\"],\"pagos\":[\"ver\",\"crear\",\"editar\",\"eliminar\"],\"usuarios\":[\"ver\",\"crear\",\"editar\",\"eliminar\"],\"empleados\":[\"ver\",\"crear\",\"editar\",\"eliminar\"],\"clientes\":[\"ver\",\"crear\",\"editar\",\"eliminar\"],\"roles\":[\"ver\",\"crear\",\"editar\",\"eliminar\"],\"configuracion\":[\"ver\",\"crear\",\"editar\",\"eliminar\"],\"auditoria\":[\"ver\"],\"ayuda\":[\"ver\",\"crear\",\"editar\",\"eliminar\"]}");
 
-        insertarOActualizarRol(3L, "Usuario",
-            "{\"dashboard\":[\"ver\"],\"productos\":[\"ver\"]}");
+        insertarOActualizarRol(2L, "Trabajador", true,
+            "{\"dashboard\":[\"ver\"],\"productos\":[\"ver\",\"crear\",\"editar\"],\"categorias\":[\"ver\"],\"marcas\":[\"ver\"],\"imagenes\":[\"ver\"],\"ventas\":[\"ver\",\"crear\",\"editar\"],\"pagos\":[\"ver\"],\"clientes\":[\"ver\",\"crear\",\"editar\"]}");
 
-        insertarOActualizarRol(4L, "Cliente",
+        insertarOActualizarRol(3L, "Usuario", false,
             "{\"productos\":[\"ver\"]}");
 
-        insertarOActualizarRol(5L, "Supervisor de Ventas",
-            "{\"dashboard\":[\"ver\"],\"ventas\":[\"ver\",\"crear\",\"editar\"],\"pagos\":[\"ver\"],\"clientes\":[\"ver\"],\"reportes\":[\"ver\"]}");
+        insertarOActualizarRol(4L, "Cliente", false,
+            "{\"productos\":[\"ver\"]}");
 
-        insertarOActualizarRol(6L, "Logística y Almacén",
-            "{\"productos\":[\"ver\",\"crear\",\"editar\"],\"categorias\":[\"ver\",\"crear\",\"editar\"],\"marcas\":[\"ver\",\"crear\",\"editar\"],\"imagenes\":[\"ver\",\"crear\",\"editar\"],\"ventas\":[\"ver\"]}");
+        insertarOActualizarRol(5L, "Supervisor de Ventas", true,
+            "{\"dashboard\":[\"ver\"],\"ventas\":[\"ver\",\"crear\",\"editar\"],\"pagos\":[\"ver\",\"crear\",\"editar\"],\"clientes\":[\"ver\",\"crear\",\"editar\"],\"productos\":[\"ver\"]}");
 
-        insertarOActualizarRol(7L, "Soporte Técnico",
-            "{\"productos\":[\"ver\"],\"ventas\":[\"ver\"],\"clientes\":[\"ver\"],\"auditoria\":[\"ver\"]}");
+        insertarOActualizarRol(6L, "Logística y Almacén", true,
+            "{\"dashboard\":[\"ver\"],\"productos\":[\"ver\",\"crear\",\"editar\"],\"categorias\":[\"ver\",\"crear\",\"editar\"],\"marcas\":[\"ver\",\"crear\",\"editar\"],\"imagenes\":[\"ver\",\"crear\",\"editar\"],\"ventas\":[\"ver\"]}");
+
+        insertarOActualizarRol(7L, "Soporte Técnico", true,
+            "{\"dashboard\":[\"ver\"],\"usuarios\":[\"ver\"],\"clientes\":[\"ver\"],\"productos\":[\"ver\"],\"ventas\":[\"ver\"],\"auditoria\":[\"ver\"]}");
 
         try {
             entityManager.createNativeQuery(
@@ -75,18 +83,20 @@ public class DatabaseBootstrapService implements ApplicationRunner {
         } catch (Exception ignored) {}
     }
 
-    private void insertarOActualizarRol(Long id, String nombre, String permisos) {
+    private void insertarOActualizarRol(Long id, String nombre, boolean esAdministrativo, String permisos) {
         try {
             entityManager.createNativeQuery(
-                "INSERT INTO rol (id_rol, nombre, vigente, permisos) " +
-                "VALUES (:id, :nombre, true, :permisos) " +
+                "INSERT INTO rol (id_rol, nombre, vigente, es_administrativo, permisos) " +
+                "VALUES (:id, :nombre, true, :esAdmin, :permisos) " +
                 "ON CONFLICT (id_rol) DO UPDATE SET " +
                 "nombre = EXCLUDED.nombre, " +
                 "permisos = EXCLUDED.permisos, " +
+                "es_administrativo = EXCLUDED.es_administrativo, " +
                 "vigente = true"
             )
             .setParameter("id", id)
             .setParameter("nombre", nombre)
+            .setParameter("esAdmin", esAdministrativo)
             .setParameter("permisos", permisos)
             .executeUpdate();
         } catch (Exception e) {

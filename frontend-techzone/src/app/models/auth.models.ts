@@ -25,5 +25,7 @@ export interface AuthResponse {
   correo: string;
   roles: string[];
   esStaff: boolean;
+  esAdministrativo?: boolean;
+  permisos?: Record<string, string[]> | string | null;
   nombre: string;
 }

@@ -323,9 +323,6 @@ public class EmpleadoService {
             }
         }
 
-        if (fechaContrato != null && fechaContrato.isAfter(LocalDate.now())) {
-            throw new RuntimeException("La fecha de contrato no puede ser futura");
-        }
         if (fechaContrato != null) {
             empleado.setFechaContrato(fechaContrato);
         }

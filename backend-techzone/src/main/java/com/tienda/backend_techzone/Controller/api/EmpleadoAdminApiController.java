@@ -2,6 +2,7 @@ package com.tienda.backend_techzone.Controller.api;
 
 import com.tienda.backend_techzone.Model.Empleado;
 import com.tienda.backend_techzone.Service.EmpleadoService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,6 +11,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/admin/empleados")
 public class EmpleadoAdminApiController {
@@ -163,6 +165,7 @@ public class EmpleadoAdminApiController {
             );
             return ResponseEntity.ok(actualizado);
         } catch (Exception e) {
+            log.error("Error al actualizar colaborador #{}: {}", id, e.getMessage(), e);
             return ResponseEntity.badRequest().body(Map.of("mensaje", e.getMessage() != null ? e.getMessage() : "Error al actualizar datos del colaborador"));
         }
     }

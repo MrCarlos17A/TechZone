@@ -204,7 +204,7 @@
           }
         </button>
 
-      @if (authService.esAdmin()) {
+      @if (authService.esAdmin() || tienePermiso('productos', 'ver')) {
         <button
           (click)="cambiarTab('productos-proveedor')"
           class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all group border cursor-pointer" [class.justify-center]="sidebarContraido()" [class.px-2]="sidebarContraido()"
@@ -263,7 +263,7 @@
           }
         </button>
 
-      @if (authService.esAdmin()) {
+      @if (authService.esAdmin() || tienePermiso('empleados', 'ver')) {
         <button
           (click)="cambiarTab('empleados')"
           class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all group border cursor-pointer" [class.justify-center]="sidebarContraido()" [class.px-2]="sidebarContraido()"
@@ -299,7 +299,7 @@
           }
         </button>
 
-      @if (authService.esAdmin()) {
+      @if (authService.esAdmin() || tienePermiso('usuarios', 'ver')) {
         <button
           (click)="cambiarTab('usuarios')"
           class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all group border cursor-pointer" [class.justify-center]="sidebarContraido()" [class.px-2]="sidebarContraido()"
@@ -445,7 +445,7 @@
         @if (!sidebarContraido()) {
           <span class="text-[11px] font-black uppercase tracking-wider text-slate-700 dark:text-slate-400 px-3">Configuración</span>
         }
-      @if (authService.esAdmin()) {
+      @if (authService.esAdmin() || tienePermiso('configuracion', 'ver')) {
         <button
           (click)="cambiarTab('configuracion')"
           class="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold transition-all group border cursor-pointer" [class.justify-center]="sidebarContraido()" [class.px-2]="sidebarContraido()"
@@ -459,7 +459,7 @@
         </button>
       }
 
-      @if (authService.esAdmin()) {
+      @if (authService.esAdmin() || tienePermiso('roles', 'ver')) {
         <button
           (click)="cambiarTab('roles')"
           class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all group border cursor-pointer" [class.justify-center]="sidebarContraido()" [class.px-2]="sidebarContraido()"
@@ -509,7 +509,7 @@
           }
         </button>
 
-      @if (authService.esAdmin()) {
+      @if (authService.esAdmin() || tienePermiso('auditoria', 'ver')) {
         <button
           (click)="cambiarTab('auditoria')"
           class="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold transition-all group border cursor-pointer" [class.justify-center]="sidebarContraido()" [class.px-2]="sidebarContraido()"
@@ -630,11 +630,13 @@
           <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Supabase Storage OK
         </span>
 
-        <button
-          (click)="abrirModalProducto()"
-          class="glow-button px-3.5 py-1.5 rounded-xl text-xs font-semibold text-white flex items-center gap-1.5">
-          <span class="material-symbols-outlined">add</span> <span class="hidden sm:inline">Nuevo Producto</span>
-        </button>
+        @if (tienePermiso('productos', 'crear')) {
+          <button
+            (click)="abrirModalProducto()"
+            class="glow-button px-3.5 py-1.5 rounded-xl text-xs font-semibold text-white flex items-center gap-1.5">
+            <span class="material-symbols-outlined">add</span> <span class="hidden sm:inline">Nuevo Producto</span>
+          </button>
+        }
 
         <button
           (click)="irATienda()"
@@ -1275,11 +1277,13 @@
                 <span class="material-symbols-outlined absolute left-3 top-2.5 text-slate-500 text-xs">search</span>
               </div>
 
-              <button
-                (click)="abrirModalProducto()"
-                class="glow-button px-4 py-2 rounded-xl text-xs font-semibold text-white whitespace-nowrap flex items-center gap-1.5">
-                <span class="material-symbols-outlined">add</span> <span>Nuevo</span>
-              </button>
+              @if (tienePermiso('productos', 'crear')) {
+                <button
+                  (click)="abrirModalProducto()"
+                  class="glow-button px-4 py-2 rounded-xl text-xs font-semibold text-white whitespace-nowrap flex items-center gap-1.5">
+                  <span class="material-symbols-outlined">add</span> <span>Nuevo</span>
+                </button>
+              }
             </div>
           </div>
 
@@ -1512,8 +1516,9 @@
                     <td class="p-3 text-center">
                       <button
                         type="button"
+                        [disabled]="!tienePermiso('productos', 'editar')"
                         (click)="toggleDestacadoProducto(p)"
-                        class="px-2.5 py-1 rounded-lg text-xs font-bold transition-all inline-flex items-center gap-1.5 cursor-pointer border"
+                        class="px-2.5 py-1 rounded-lg text-xs font-bold transition-all inline-flex items-center gap-1.5 cursor-pointer border disabled:cursor-not-allowed disabled:opacity-60"
                         [ngClass]="p.destacado ? 'bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 border-amber-300 dark:border-amber-700 shadow-xs' : (totalDestacados() >= 9 ? 'bg-slate-50 dark:bg-slate-900/60 text-slate-400 border-slate-200 dark:border-slate-800 hover:border-amber-400 hover:text-amber-600' : 'bg-slate-100 dark:bg-slate-900 text-slate-400 border-slate-200 dark:border-slate-800 hover:text-slate-600 dark:hover:text-slate-300')"
                         [title]="p.destacado ? 'Quitar de productos destacados en el Inicio' : (totalDestacados() >= 9 ? 'Límite de 9 alcanzado: Clic para sustituir uno de los destacados actuales' : 'Marcar como producto destacado en el Inicio')">
                         <span class="material-symbols-outlined text-[14px]" [class.fill-1]="p.destacado">{{ p.destacado ? 'star' : (totalDestacados() >= 9 ? 'swap_horiz' : 'star') }}</span>
@@ -1523,8 +1528,9 @@
                     <td class="p-3 text-center">
                       <button
                         type="button"
+                        [disabled]="!tienePermiso('productos', 'editar')"
                         (click)="toggleNovedadProducto(p)"
-                        class="px-2.5 py-1 rounded-lg text-xs font-bold transition-all inline-flex items-center gap-1.5 cursor-pointer border"
+                        class="px-2.5 py-1 rounded-lg text-xs font-bold transition-all inline-flex items-center gap-1.5 cursor-pointer border disabled:cursor-not-allowed disabled:opacity-60"
                         [ngClass]="p.novedad ? 'bg-indigo-100 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-400 border-indigo-300 dark:border-indigo-700 shadow-xs' : 'bg-slate-100 dark:bg-slate-900 text-slate-400 border-slate-200 dark:border-slate-800 hover:text-slate-600 dark:hover:text-slate-300'"
                         [title]="p.novedad ? 'Fijado manualmente como Novedad / Lanzamiento. Clic para quitar' : 'Clic para forzar manualmente como Lanzamiento'">
                         <span class="material-symbols-outlined text-[14px]">{{ p.novedad ? 'auto_awesome' : 'schedule' }}</span>
@@ -1533,19 +1539,21 @@
                     </td>
                     <td class="p-3 text-center">
                       <div class="flex items-center justify-center gap-1.5">
-                        <button
-                          (click)="abrirModalProducto(p)"
-                          class="p-1.5 rounded-lg text-indigo-400 hover:text-indigo-300 hover:bg-indigo-500/10 transition-colors"
-                          title="Editar producto">
-                          <span class="material-symbols-outlined text-sm">edit</span>
-                        </button>
-                        @if (authService.esAdmin()) {
+                        @if (tienePermiso('productos', 'editar')) {
                           <button
-                          (click)="eliminarProducto(p)"
-                          class="p-1.5 rounded-lg text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors"
-                          title="Eliminar producto">
-                          <span class="material-symbols-outlined text-sm">delete</span>
-                        </button>
+                            (click)="abrirModalProducto(p)"
+                            class="p-1.5 rounded-lg text-indigo-400 hover:text-indigo-300 hover:bg-indigo-500/10 transition-colors cursor-pointer"
+                            title="Editar producto">
+                            <span class="material-symbols-outlined text-sm">edit</span>
+                          </button>
+                        }
+                        @if (tienePermiso('productos', 'eliminar')) {
+                          <button
+                            (click)="eliminarProducto(p)"
+                            class="p-1.5 rounded-lg text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors cursor-pointer"
+                            title="Eliminar producto">
+                            <span class="material-symbols-outlined text-sm">delete</span>
+                          </button>
                         }
                       </div>
                     </td>
@@ -1599,9 +1607,11 @@
               </h2>
               <p class="text-xs text-slate-600 dark:text-slate-400 font-medium">Gestiona las familias de artículos de la tienda</p>
             </div>
-            <button (click)="abrirModalCategoria()" class="glow-button px-4 py-2 rounded-xl text-xs font-semibold text-white flex items-center gap-1.5">
-              <span class="material-symbols-outlined">add</span> <span>Nueva Categoría</span>
-            </button>
+            @if (tienePermiso('categorias', 'crear')) {
+              <button (click)="abrirModalCategoria()" class="glow-button px-4 py-2 rounded-xl text-xs font-semibold text-white flex items-center gap-1.5 cursor-pointer">
+                <span class="material-symbols-outlined">add</span> <span>Nueva Categoría</span>
+              </button>
+            }
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
@@ -1612,14 +1622,16 @@
                   <h4 class="text-sm font-bold text-slate-900 dark:text-white">{{ c.nombre }}</h4>
                 </div>
                 <div class="flex items-center gap-1">
-                  <button (click)="abrirModalCategoria(c)" class="p-1.5 rounded text-indigo-400 hover:text-indigo-300 hover:bg-indigo-500/10">
-                    <span class="material-symbols-outlined">edit</span>
-                  </button>
-                  @if (authService.esAdmin()) {
-                          <button (click)="eliminarCategoria(c)" class="p-1.5 rounded text-red-400 hover:text-red-300 hover:bg-red-500/10">
-                    <span class="material-symbols-outlined">delete</span>
-                  </button>
-                        }
+                  @if (tienePermiso('categorias', 'editar')) {
+                    <button (click)="abrirModalCategoria(c)" class="p-1.5 rounded text-indigo-400 hover:text-indigo-300 hover:bg-indigo-500/10 cursor-pointer" title="Editar categoría">
+                      <span class="material-symbols-outlined">edit</span>
+                    </button>
+                  }
+                  @if (tienePermiso('categorias', 'eliminar')) {
+                    <button (click)="eliminarCategoria(c)" class="p-1.5 rounded text-red-400 hover:text-red-300 hover:bg-red-500/10 cursor-pointer" title="Eliminar categoría">
+                      <span class="material-symbols-outlined">delete</span>
+                    </button>
+                  }
                 </div>
               </div>
             }
@@ -1637,9 +1649,11 @@
               </h2>
               <p class="text-xs text-slate-600 dark:text-slate-400 font-medium">Marcas y fabricantes autorizados</p>
             </div>
-            <button (click)="abrirModalMarca()" class="glow-button px-4 py-2 rounded-xl text-xs font-semibold text-white flex items-center gap-1.5">
-              <span class="material-symbols-outlined">add</span> <span>Nueva Marca</span>
-            </button>
+            @if (tienePermiso('marcas', 'crear')) {
+              <button (click)="abrirModalMarca()" class="glow-button px-4 py-2 rounded-xl text-xs font-semibold text-white flex items-center gap-1.5 cursor-pointer">
+                <span class="material-symbols-outlined">add</span> <span>Nueva Marca</span>
+              </button>
+            }
           </div>
 
           <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
@@ -1648,14 +1662,16 @@
                 <div class="flex justify-between items-center mb-2.5">
                   <span class="text-[10px] font-mono px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-semibold">#{{ m.idMarca }}</span>
                   <div class="flex items-center gap-1">
-                    <button (click)="abrirModalMarca(m)" class="p-1.5 rounded-lg text-indigo-500 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 transition-colors" title="Editar marca">
-                      <span class="material-symbols-outlined text-sm">edit</span>
-                    </button>
-                    @if (authService.esAdmin()) {
-                          <button (click)="eliminarMarca(m)" class="p-1.5 rounded-lg text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50 transition-colors" title="Eliminar marca">
-                      <span class="material-symbols-outlined text-sm">delete</span>
-                    </button>
-                        }
+                    @if (tienePermiso('marcas', 'editar')) {
+                      <button (click)="abrirModalMarca(m)" class="p-1.5 rounded-lg text-indigo-500 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 transition-colors cursor-pointer" title="Editar marca">
+                        <span class="material-symbols-outlined text-sm">edit</span>
+                      </button>
+                    }
+                    @if (tienePermiso('marcas', 'eliminar')) {
+                      <button (click)="eliminarMarca(m)" class="p-1.5 rounded-lg text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50 transition-colors cursor-pointer" title="Eliminar marca">
+                        <span class="material-symbols-outlined text-sm">delete</span>
+                      </button>
+                    }
                   </div>
                 </div>
 
@@ -1726,12 +1742,14 @@
                 </button>
               </div>
 
-              <button
-                (click)="abrirModalNuevaImagen()"
-                class="glow-button px-4 py-2 rounded-xl text-xs font-semibold text-white flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
-                <span class="material-symbols-outlined text-sm">add_photo_alternate</span>
-                <span>Subir Imagen</span>
-              </button>
+              @if (tienePermiso('imagenes', 'crear')) {
+                <button
+                  (click)="abrirModalNuevaImagen()"
+                  class="glow-button px-4 py-2 rounded-xl text-xs font-semibold text-white flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
+                  <span class="material-symbols-outlined text-sm">add_photo_alternate</span>
+                  <span>Subir Imagen</span>
+                </button>
+              }
             </div>
           </div>
 
@@ -1979,13 +1997,15 @@
                       </p>
                     </div>
 
-                    <button
-                      type="button"
-                      (click)="abrirModalNuevaImagen(carpetaProductoSel()!.idProducto)"
-                      class="glow-button px-4 py-2 rounded-xl text-xs font-semibold text-white flex items-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0">
-                      <span class="material-symbols-outlined text-sm">add_photo_alternate</span>
-                      <span>Subir foto a este producto</span>
-                    </button>
+                    @if (tienePermiso('imagenes', 'crear')) {
+                      <button
+                        type="button"
+                        (click)="abrirModalNuevaImagen(carpetaProductoSel()!.idProducto)"
+                        class="glow-button px-4 py-2 rounded-xl text-xs font-semibold text-white flex items-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0">
+                        <span class="material-symbols-outlined text-sm">add_photo_alternate</span>
+                        <span>Subir foto a este producto</span>
+                      </button>
+                    }
                   </div>
 
                   <!-- Cuadrícula de Fotos del Producto -->
@@ -2049,14 +2069,20 @@
                               <span class="material-symbols-outlined text-sm">open_in_new</span>
                               <span class="text-[10px]">Ver</span>
                             </a>
-                            <button (click)="abrirModalEditarImagen(img)" class="p-1.5 rounded-lg text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 dark:text-indigo-400 dark:hover:text-indigo-300 dark:hover:bg-indigo-500/10 text-xs transition-colors flex items-center gap-1 cursor-pointer" title="Editar producto vinculado o imagen">
-                              <span class="material-symbols-outlined text-sm">edit</span>
-                              <span class="text-[10px]">Editar</span>
-                            </button>
-                            <button (click)="eliminarImagen(img.idProductoImagen)" class="p-1.5 rounded-lg text-red-500 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-500/10 text-xs transition-colors flex items-center gap-1 cursor-pointer" title="Eliminar imagen permanentemente">
-                              <span class="material-symbols-outlined text-sm">delete</span>
-                              <span class="text-[10px]">Eliminar</span>
-                            </button>
+                            <div class="flex items-center gap-1">
+                              @if (tienePermiso('imagenes', 'editar')) {
+                                <button (click)="abrirModalEditarImagen(img)" class="p-1.5 rounded-lg text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 dark:text-indigo-400 dark:hover:text-indigo-300 dark:hover:bg-indigo-500/10 text-xs transition-colors flex items-center gap-1 cursor-pointer" title="Editar producto vinculado o imagen">
+                                  <span class="material-symbols-outlined text-sm">edit</span>
+                                  <span class="text-[10px]">Editar</span>
+                                </button>
+                              }
+                              @if (tienePermiso('imagenes', 'eliminar')) {
+                                <button (click)="eliminarImagen(img.idProductoImagen)" class="p-1.5 rounded-lg text-red-500 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-500/10 text-xs transition-colors flex items-center gap-1 cursor-pointer" title="Eliminar imagen permanentemente">
+                                  <span class="material-symbols-outlined text-sm">delete</span>
+                                  <span class="text-[10px]">Eliminar</span>
+                                </button>
+                              }
+                            </div>
                           </div>
                         </div>
                       }
@@ -2136,14 +2162,20 @@
                         <span class="material-symbols-outlined text-sm">open_in_new</span>
                         <span class="text-[10px]">Ver</span>
                       </a>
-                      <button (click)="abrirModalEditarImagen(img)" class="p-1.5 rounded-lg text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 dark:text-indigo-400 dark:hover:text-indigo-300 dark:hover:bg-indigo-500/10 text-xs transition-colors flex items-center gap-1 cursor-pointer" title="Editar producto vinculado o imagen">
-                        <span class="material-symbols-outlined text-sm">edit</span>
-                        <span class="text-[10px]">Editar</span>
-                      </button>
-                      <button (click)="eliminarImagen(img.idProductoImagen)" class="p-1.5 rounded-lg text-red-500 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-500/10 text-xs transition-colors flex items-center gap-1 cursor-pointer" title="Eliminar imagen permanentemente">
-                        <span class="material-symbols-outlined text-sm">delete</span>
-                        <span class="text-[10px]">Eliminar</span>
-                      </button>
+                      <div class="flex items-center gap-1">
+                        @if (tienePermiso('imagenes', 'editar')) {
+                          <button (click)="abrirModalEditarImagen(img)" class="p-1.5 rounded-lg text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 dark:text-indigo-400 dark:hover:text-indigo-300 dark:hover:bg-indigo-500/10 text-xs transition-colors flex items-center gap-1 cursor-pointer" title="Editar producto vinculado o imagen">
+                            <span class="material-symbols-outlined text-sm">edit</span>
+                            <span class="text-[10px]">Editar</span>
+                          </button>
+                        }
+                        @if (tienePermiso('imagenes', 'eliminar')) {
+                          <button (click)="eliminarImagen(img.idProductoImagen)" class="p-1.5 rounded-lg text-red-500 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-500/10 text-xs transition-colors flex items-center gap-1 cursor-pointer" title="Eliminar imagen permanentemente">
+                            <span class="material-symbols-outlined text-sm">delete</span>
+                            <span class="text-[10px]">Eliminar</span>
+                          </button>
+                        }
+                      </div>
                     </div>
                   </div>
                 }
@@ -2595,9 +2627,11 @@
               <button (click)="recargarEmpleados()" class="px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 shadow-xs flex items-center gap-1.5 transition-all cursor-pointer">
                 <span class="material-symbols-outlined text-sm">refresh</span> Actualizar
               </button>
-              <button (click)="abrirModalNuevoEmpleado()" class="px-3.5 py-2 rounded-xl text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-md shadow-blue-600/20 flex items-center gap-1.5 transition-all cursor-pointer">
-                <span class="material-symbols-outlined text-sm">person_add</span> Nuevo Colaborador
-              </button>
+              @if (tienePermiso('empleados', 'crear')) {
+                <button (click)="abrirModalNuevoEmpleado()" class="px-3.5 py-2 rounded-xl text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-md shadow-blue-600/20 flex items-center gap-1.5 transition-all cursor-pointer">
+                  <span class="material-symbols-outlined text-sm">person_add</span> Nuevo Colaborador
+                </button>
+              }
             </div>
           </div>
 
@@ -2653,7 +2687,7 @@
                       S/ {{ (emp.salario || 0) | number:'1.2-2' }}
                     </td>
                     <td class="p-3 text-center font-mono text-[11px] text-slate-500">
-                      {{ emp.fechaContratacion ? (emp.fechaContratacion | date:'dd/MM/yyyy') : '-' }}
+                      {{ (emp.fechaContrato || emp.fechaContratacion) ? ((emp.fechaContrato || emp.fechaContratacion) | date:'dd/MM/yyyy') : '-' }}
                     </td>
                     <td class="p-3 text-center">
                       <span class="px-2 py-0.5 rounded-full text-[10px] font-bold"
@@ -2664,22 +2698,26 @@
                     </td>
                     <td class="p-3 text-right">
                       <div class="flex items-center justify-end gap-1.5">
-                        <button
-                          (click)="abrirModalEditarEmpleado(emp)"
-                          class="p-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/50 transition-colors cursor-pointer"
-                          title="Editar colaborador y condiciones">
-                          <span class="material-symbols-outlined text-sm">edit</span>
-                        </button>
-                        <button
-                          (click)="cambiarEstadoEmpleado(emp)"
-                          class="p-1.5 rounded-lg transition-colors cursor-pointer"
-                          [class.text-amber-600]="emp.vigente !== false"
-                          [class.hover:bg-amber-50]="emp.vigente !== false"
-                          [class.text-emerald-600]="emp.vigente === false"
-                          [class.hover:bg-emerald-50]="emp.vigente === false"
-                          [title]="emp.vigente !== false ? 'Desactivar colaborador' : 'Reactivar colaborador'">
-                          <span class="material-symbols-outlined text-sm">{{ emp.vigente !== false ? 'person_off' : 'how_to_reg' }}</span>
-                        </button>
+                        @if (tienePermiso('empleados', 'editar')) {
+                          <button
+                            (click)="abrirModalEditarEmpleado(emp)"
+                            class="p-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/50 transition-colors cursor-pointer"
+                            title="Editar colaborador y condiciones">
+                            <span class="material-symbols-outlined text-sm">edit</span>
+                          </button>
+                        }
+                        @if (tienePermiso('empleados', 'eliminar')) {
+                          <button
+                            (click)="cambiarEstadoEmpleado(emp)"
+                            class="p-1.5 rounded-lg transition-colors cursor-pointer"
+                            [class.text-amber-600]="emp.vigente !== false"
+                            [class.hover:bg-amber-50]="emp.vigente !== false"
+                            [class.text-emerald-600]="emp.vigente === false"
+                            [class.hover:bg-emerald-50]="emp.vigente === false"
+                            [title]="emp.vigente !== false ? 'Desactivar colaborador' : 'Reactivar colaborador'">
+                            <span class="material-symbols-outlined text-sm">{{ emp.vigente !== false ? 'person_off' : 'how_to_reg' }}</span>
+                          </button>
+                        }
                       </div>
                     </td>
                   </tr>
@@ -2738,9 +2776,11 @@
               </h2>
               <p class="text-xs text-slate-600 dark:text-slate-400 font-medium">Directorio de distribuidores oficiales</p>
             </div>
-            <button (click)="abrirModalProveedor()" class="glow-button px-4 py-2 rounded-xl text-xs font-semibold text-white flex items-center gap-1.5">
-              <span class="material-symbols-outlined">add</span> <span>Nuevo Proveedor</span>
-            </button>
+            @if (tienePermiso('productos', 'crear')) {
+              <button (click)="abrirModalProveedor()" class="glow-button px-4 py-2 rounded-xl text-xs font-semibold text-white flex items-center gap-1.5 cursor-pointer">
+                <span class="material-symbols-outlined">add</span> <span>Nuevo Proveedor</span>
+              </button>
+            }
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -2757,14 +2797,16 @@
                     <h4 class="text-base font-bold text-slate-900 dark:text-white mt-1.5">{{ prv.razonSocial }}</h4>
                   </div>
                   <div class="flex items-center gap-1">
-                    <button (click)="abrirModalProveedor(prv)" class="p-1.5 rounded-lg text-indigo-500 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 transition-colors" title="Editar proveedor">
-                      <span class="material-symbols-outlined text-sm">edit</span>
-                    </button>
-                    @if (authService.esAdmin()) {
-                          <button (click)="eliminarProveedor(prv)" class="p-1.5 rounded-lg text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50 transition-colors" title="Eliminar proveedor">
-                      <span class="material-symbols-outlined text-sm">delete</span>
-                    </button>
-                        }
+                    @if (tienePermiso('productos', 'editar')) {
+                      <button (click)="abrirModalProveedor(prv)" class="p-1.5 rounded-lg text-indigo-500 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 transition-colors cursor-pointer" title="Editar proveedor">
+                        <span class="material-symbols-outlined text-sm">edit</span>
+                      </button>
+                    }
+                    @if (tienePermiso('productos', 'eliminar')) {
+                      <button (click)="eliminarProveedor(prv)" class="p-1.5 rounded-lg text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50 transition-colors cursor-pointer" title="Eliminar proveedor">
+                        <span class="material-symbols-outlined text-sm">delete</span>
+                      </button>
+                    }
                   </div>
                 </div>
                 <div class="text-xs space-y-1.5 text-slate-700 dark:text-slate-300 border-t border-slate-100 dark:border-slate-800/60 pt-2.5">
@@ -2858,22 +2900,26 @@
                     </td>
                     <td class="p-3 text-right">
                       <div class="flex items-center justify-end gap-1.5">
-                        <button
-                          (click)="abrirModalEditarUsuario(u)"
-                          class="p-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/50 transition-colors cursor-pointer"
-                          title="Editar rol y credenciales">
-                          <span class="material-symbols-outlined text-sm">edit</span>
-                        </button>
-                        <button
-                          (click)="cambiarEstadoUsuario(u)"
-                          class="p-1.5 rounded-lg transition-colors cursor-pointer"
-                          [class.text-amber-600]="(u.estado || '').toUpperCase() === 'ACTIVO'"
-                          [class.hover:bg-amber-50]="(u.estado || '').toUpperCase() === 'ACTIVO'"
-                          [class.text-emerald-600]="(u.estado || '').toUpperCase() !== 'ACTIVO'"
-                          [class.hover:bg-emerald-50]="(u.estado || '').toUpperCase() !== 'ACTIVO'"
-                          [title]="(u.estado || '').toUpperCase() === 'ACTIVO' ? 'Desactivar usuario' : 'Reactivar usuario'">
-                          <span class="material-symbols-outlined text-sm">{{ (u.estado || '').toUpperCase() === 'ACTIVO' ? 'block' : 'check_circle' }}</span>
-                        </button>
+                        @if (tienePermiso('usuarios', 'editar')) {
+                          <button
+                            (click)="abrirModalEditarUsuario(u)"
+                            class="p-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/50 transition-colors cursor-pointer"
+                            title="Editar rol y credenciales">
+                            <span class="material-symbols-outlined text-sm">edit</span>
+                          </button>
+                        }
+                        @if (tienePermiso('usuarios', 'eliminar')) {
+                          <button
+                            (click)="cambiarEstadoUsuario(u)"
+                            class="p-1.5 rounded-lg transition-colors cursor-pointer"
+                            [class.text-amber-600]="(u.estado || '').toUpperCase() === 'ACTIVO'"
+                            [class.hover:bg-amber-50]="(u.estado || '').toUpperCase() === 'ACTIVO'"
+                            [class.text-emerald-600]="(u.estado || '').toUpperCase() !== 'ACTIVO'"
+                            [class.hover:bg-emerald-50]="(u.estado || '').toUpperCase() !== 'ACTIVO'"
+                            [title]="(u.estado || '').toUpperCase() === 'ACTIVO' ? 'Desactivar usuario' : 'Reactivar usuario'">
+                            <span class="material-symbols-outlined text-sm">{{ (u.estado || '').toUpperCase() === 'ACTIVO' ? 'block' : 'check_circle' }}</span>
+                          </button>
+                        }
                       </div>
                     </td>
                   </tr>
@@ -3191,40 +3237,44 @@
                     <span class="material-symbols-outlined text-sm">description</span>
                     <span class="text-[11px]">Doc</span>
                   </button>
-                  @if (v.estado === 'PENDIENTE') {
-                    <button
-                      (click)="cambiarEstadoVenta(v.idVenta, 'EN_PREPARACION')"
-                      class="px-2.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-bold text-[11px] shadow-sm transition-all cursor-pointer flex items-center gap-1"
-                      title="Marcar en Preparación">
-                      <span class="material-symbols-outlined text-xs">inventory_2</span>
-                      <span>Preparar</span>
-                    </button>
+                  @if (tienePermiso('ventas', 'editar')) {
+                    @if (v.estado === 'PENDIENTE') {
+                      <button
+                        (click)="cambiarEstadoVenta(v.idVenta, 'EN_PREPARACION')"
+                        class="px-2.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-bold text-[11px] shadow-sm transition-all cursor-pointer flex items-center gap-1"
+                        title="Marcar en Preparación">
+                        <span class="material-symbols-outlined text-xs">inventory_2</span>
+                        <span>Preparar</span>
+                      </button>
+                    }
+                    @if (v.estado === 'EN_PREPARACION') {
+                      <button
+                        (click)="cambiarEstadoVenta(v.idVenta, 'EN_CAMINO')"
+                        class="px-2.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold text-[11px] shadow-sm transition-all cursor-pointer flex items-center gap-1"
+                        title="Marcar en Camino (Despachado)">
+                        <span class="material-symbols-outlined text-xs">local_shipping</span>
+                        <span>Despachar</span>
+                      </button>
+                    }
+                    @if (v.estado === 'EN_CAMINO') {
+                      <button
+                        (click)="cambiarEstadoVenta(v.idVenta, 'ENTREGADO')"
+                        class="px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold text-[11px] shadow-sm transition-all cursor-pointer flex items-center gap-1"
+                        title="Marcar como Entregado">
+                        <span class="material-symbols-outlined text-xs">check_circle</span>
+                        <span>Entregar</span>
+                      </button>
+                    }
                   }
-                  @if (v.estado === 'EN_PREPARACION') {
-                    <button
-                      (click)="cambiarEstadoVenta(v.idVenta, 'EN_CAMINO')"
-                      class="px-2.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold text-[11px] shadow-sm transition-all cursor-pointer flex items-center gap-1"
-                      title="Marcar en Camino (Despachado)">
-                      <span class="material-symbols-outlined text-xs">local_shipping</span>
-                      <span>Despachar</span>
-                    </button>
-                  }
-                  @if (v.estado === 'EN_CAMINO') {
-                    <button
-                      (click)="cambiarEstadoVenta(v.idVenta, 'ENTREGADO')"
-                      class="px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold text-[11px] shadow-sm transition-all cursor-pointer flex items-center gap-1"
-                      title="Marcar como Entregado">
-                      <span class="material-symbols-outlined text-xs">check_circle</span>
-                      <span>Entregar</span>
-                    </button>
-                  }
-                  @if (v.estado !== 'ENTREGADO' && v.estado !== 'CANCELADA') {
-                    <button
-                      (click)="cambiarEstadoVenta(v.idVenta, 'CANCELADA')"
-                      class="p-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-900/50 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-900/50 transition-colors cursor-pointer font-bold"
-                      title="Cancelar Pedido">
-                      <span class="material-symbols-outlined text-sm">cancel</span>
-                    </button>
+                  @if (tienePermiso('ventas', 'eliminar')) {
+                    @if (v.estado !== 'ENTREGADO' && v.estado !== 'CANCELADA') {
+                      <button
+                        (click)="cambiarEstadoVenta(v.idVenta, 'CANCELADA')"
+                        class="p-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-900/50 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-900/50 transition-colors cursor-pointer font-bold"
+                        title="Cancelar Pedido">
+                        <span class="material-symbols-outlined text-sm">cancel</span>
+                      </button>
+                    }
                   }
                 </div>
               </td>
@@ -3618,13 +3668,15 @@
                     </td>
                     <td class="p-3 text-center">
                       <div class="flex items-center justify-center gap-1.5">
-                        <button
-                          (click)="abrirModalConciliarPago(pg)"
-                          class="p-1.5 rounded-lg bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/40 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 transition-colors cursor-pointer font-bold inline-flex items-center gap-1 shadow-xs"
-                          title="Conciliar Pago / Editar Código de Operación">
-                          <span class="material-symbols-outlined text-sm">tune</span>
-                          <span class="text-[11px]">Conciliar</span>
-                        </button>
+                        @if (tienePermiso('pagos', 'editar')) {
+                          <button
+                            (click)="abrirModalConciliarPago(pg)"
+                            class="p-1.5 rounded-lg bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/40 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 transition-colors cursor-pointer font-bold inline-flex items-center gap-1 shadow-xs"
+                            title="Conciliar Pago / Editar Código de Operación">
+                            <span class="material-symbols-outlined text-sm">tune</span>
+                            <span class="text-[11px]">Conciliar</span>
+                          </button>
+                        }
                         @if (pg.venta?.idVenta) {
                           <button
                             (click)="verComprobanteVenta(pg.venta!.idVenta)"
@@ -3741,9 +3793,11 @@
               <button (click)="recargarMediosPago()" class="px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 shadow-xs flex items-center gap-1.5 transition-all cursor-pointer">
                 <span class="material-symbols-outlined text-sm">refresh</span> Actualizar
               </button>
-              <button (click)="abrirModalMedioPago()" class="px-3.5 py-2 rounded-xl text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-md shadow-blue-600/20 flex items-center gap-1.5 transition-all cursor-pointer">
-                <span class="material-symbols-outlined text-sm">add_card</span> Nuevo Medio
-              </button>
+              @if (tienePermiso('pagos', 'crear')) {
+                <button (click)="abrirModalMedioPago()" class="px-3.5 py-2 rounded-xl text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-md shadow-blue-600/20 flex items-center gap-1.5 transition-all cursor-pointer">
+                  <span class="material-symbols-outlined text-sm">add_card</span> Nuevo Medio
+                </button>
+              }
             </div>
           </div>
 
@@ -3768,19 +3822,23 @@
                 </div>
                 <p class="text-xs text-slate-600 dark:text-slate-400 line-clamp-2">{{ mp.instrucciones || 'Sin instrucciones adicionales' }}</p>
                 <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
-                  <button
-                    (click)="abrirModalEditarMedioPago(mp)"
-                    class="px-2.5 py-1 rounded-lg text-xs font-semibold text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/50 flex items-center gap-1 cursor-pointer">
-                    <span class="material-symbols-outlined text-sm">edit</span> Editar
-                  </button>
-                  <button
-                    (click)="cambiarEstadoMedioPago(mp)"
-                    class="px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1 cursor-pointer"
-                    [class.text-amber-600]="mp.vigente" [class.hover:bg-amber-50]="mp.vigente"
-                    [class.text-emerald-600]="!mp.vigente" [class.hover:bg-emerald-50]="!mp.vigente">
-                    <span class="material-symbols-outlined text-sm">{{ mp.vigente ? 'toggle_on' : 'toggle_off' }}</span>
-                    <span>{{ mp.vigente ? 'Deshabilitar' : 'Habilitar' }}</span>
-                  </button>
+                  @if (tienePermiso('pagos', 'editar')) {
+                    <button
+                      (click)="abrirModalEditarMedioPago(mp)"
+                      class="px-2.5 py-1 rounded-lg text-xs font-semibold text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/50 flex items-center gap-1 cursor-pointer">
+                      <span class="material-symbols-outlined text-sm">edit</span> Editar
+                    </button>
+                  }
+                  @if (tienePermiso('pagos', 'eliminar')) {
+                    <button
+                      (click)="cambiarEstadoMedioPago(mp)"
+                      class="px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1 cursor-pointer"
+                      [class.text-amber-600]="mp.vigente" [class.hover:bg-amber-50]="mp.vigente"
+                      [class.text-emerald-600]="!mp.vigente" [class.hover:bg-emerald-50]="!mp.vigente">
+                      <span class="material-symbols-outlined text-sm">{{ mp.vigente ? 'toggle_on' : 'toggle_off' }}</span>
+                      <span>{{ mp.vigente ? 'Deshabilitar' : 'Habilitar' }}</span>
+                    </button>
+                  }
                 </div>
               </div>
             }
@@ -3839,7 +3897,9 @@
                     <td class="p-3 font-medium text-slate-900 dark:text-white">{{ dc.producto?.nombre || 'Producto #' + (dc.producto?.idProducto || '-') }}</td>
                     <td class="p-3 text-center font-bold text-slate-900 dark:text-white">{{ dc.cantidad }}</td>
                     <td class="p-3 text-center">
-                      <button (click)="eliminarDetalleCarrito(dc.idDetalleCarrito)" class="p-1 rounded text-red-400 hover:text-red-300 hover:bg-red-500/10"><span class="material-symbols-outlined">delete</span></button>
+                      @if (tienePermiso('ventas', 'eliminar')) {
+                        <button (click)="eliminarDetalleCarrito(dc.idDetalleCarrito)" class="p-1 rounded text-red-400 hover:text-red-300 hover:bg-red-500/10 cursor-pointer" title="Quitar ítem del carrito"><span class="material-symbols-outlined">delete</span></button>
+                      }
                     </td>
                   </tr>
                 }
@@ -4788,9 +4848,11 @@
               <button (click)="recargarRoles()" class="px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 shadow-xs flex items-center gap-1.5 transition-all cursor-pointer">
                 <span class="material-symbols-outlined text-sm">refresh</span> Actualizar
               </button>
-              <button (click)="abrirModalNuevoRol()" class="px-3.5 py-2 rounded-xl text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-md shadow-blue-600/20 flex items-center gap-1.5 transition-all cursor-pointer">
-                <span class="material-symbols-outlined text-sm">add_moderator</span> Nuevo Rol
-              </button>
+              @if (tienePermiso('roles', 'crear')) {
+                <button (click)="abrirModalNuevoRol()" class="px-3.5 py-2 rounded-xl text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-md shadow-blue-600/20 flex items-center gap-1.5 transition-all cursor-pointer">
+                  <span class="material-symbols-outlined text-sm">add_moderator</span> Nuevo Rol
+                </button>
+              }
             </div>
           </div>
 
@@ -4804,11 +4866,18 @@
                         {{ r.nombre.toLowerCase().includes('admin') ? 'shield_person' : r.nombre.toLowerCase().includes('supervisor') ? 'supervisor_account' : r.nombre.toLowerCase().includes('logistica') || r.nombre.toLowerCase().includes('almacen') ? 'inventory_2' : r.nombre.toLowerCase().includes('soporte') ? 'support_agent' : 'badge' }}
                       </span>
                     </div>
-                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold"
-                      [class.bg-emerald-100]="r.vigente !== false" [class.text-emerald-800]="r.vigente !== false"
-                      [class.bg-slate-100]="r.vigente === false" [class.text-slate-600]="r.vigente === false">
-                      {{ r.vigente !== false ? 'ACTIVO' : 'INACTIVO' }}
-                    </span>
+                    <div class="flex flex-col items-end gap-1">
+                      @if (r.esAdministrativo) {
+                        <span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-blue-100 text-blue-800 dark:bg-blue-950/80 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                          Acceso /admin
+                        </span>
+                      }
+                      <span class="px-2 py-0.5 rounded-full text-[10px] font-bold"
+                        [class.bg-emerald-100]="r.vigente !== false" [class.text-emerald-800]="r.vigente !== false"
+                        [class.bg-slate-100]="r.vigente === false" [class.text-slate-600]="r.vigente === false">
+                        {{ r.vigente !== false ? 'ACTIVO' : 'INACTIVO' }}
+                      </span>
+                    </div>
                   </div>
                   <div>
                     <h3 class="text-sm font-bold text-slate-900 dark:text-white uppercase">{{ r.nombre }}</h3>
@@ -4818,11 +4887,13 @@
                   </div>
                 </div>
                 <div class="pt-2 border-t border-slate-100 dark:border-slate-800 flex justify-end">
-                  <button
-                    (click)="abrirModalEditarRol(r)"
-                    class="w-full py-1.5 px-3 rounded-xl text-xs font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/50 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors flex items-center justify-center gap-1.5 cursor-pointer">
-                    <span class="material-symbols-outlined text-sm">tune</span> Configurar Permisos
-                  </button>
+                  @if (tienePermiso('roles', 'editar')) {
+                    <button
+                      (click)="abrirModalEditarRol(r)"
+                      class="w-full py-1.5 px-3 rounded-xl text-xs font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/50 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors flex items-center justify-center gap-1.5 cursor-pointer">
+                      <span class="material-symbols-outlined text-sm">tune</span> Configurar Permisos
+                    </button>
+                  }
                 </div>
               </div>
             }
@@ -4840,9 +4911,11 @@
               </h2>
               <p class="text-xs text-slate-600 dark:text-slate-400 font-medium">Documentos válidos para registro de clientes, facturación y proveedores (DNI, RUC, CE)</p>
             </div>
-            <button (click)="abrirModalTipoDoc()" class="glow-button px-4 py-2 rounded-xl text-xs font-bold text-white flex items-center gap-1.5 shadow-md cursor-pointer">
-              <span class="material-symbols-outlined text-sm">add</span> Nuevo Tipo Doc
-            </button>
+            @if (tienePermiso('configuracion', 'crear')) {
+              <button (click)="abrirModalTipoDoc()" class="glow-button px-4 py-2 rounded-xl text-xs font-bold text-white flex items-center gap-1.5 shadow-md cursor-pointer">
+                <span class="material-symbols-outlined text-sm">add</span> Nuevo Tipo Doc
+              </button>
+            }
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -4853,12 +4926,16 @@
                   <h3 class="text-sm font-bold text-slate-900 dark:text-white mt-1">{{ td.nombre }}</h3>
                 </div>
                 <div class="flex items-center gap-1">
-                  <button (click)="abrirModalTipoDoc(td)" class="p-1.5 rounded-lg text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 cursor-pointer" title="Editar">
-                    <span class="material-symbols-outlined text-sm">edit</span>
-                  </button>
-                  <button (click)="eliminarTipoDoc(td)" class="p-1.5 rounded-lg text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/50 cursor-pointer" title="Eliminar">
-                    <span class="material-symbols-outlined text-sm">delete</span>
-                  </button>
+                  @if (tienePermiso('configuracion', 'editar')) {
+                    <button (click)="abrirModalTipoDoc(td)" class="p-1.5 rounded-lg text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 cursor-pointer" title="Editar">
+                      <span class="material-symbols-outlined text-sm">edit</span>
+                    </button>
+                  }
+                  @if (tienePermiso('configuracion', 'eliminar')) {
+                    <button (click)="eliminarTipoDoc(td)" class="p-1.5 rounded-lg text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/50 cursor-pointer" title="Eliminar">
+                      <span class="material-symbols-outlined text-sm">delete</span>
+                    </button>
+                  }
                 </div>
               </div>
             }
@@ -4900,11 +4977,13 @@
                 <option value="inactivos">Solo Inactivos</option>
               </select>
 
-              <button
-                (click)="abrirModalUbigeo()"
-                class="glow-button px-4 py-2 rounded-xl text-xs font-semibold text-white whitespace-nowrap flex items-center gap-1.5">
-                <span class="material-symbols-outlined">add</span> <span>Nuevo Ubigeo</span>
-              </button>
+              @if (tienePermiso('configuracion', 'crear')) {
+                <button
+                  (click)="abrirModalUbigeo()"
+                  class="glow-button px-4 py-2 rounded-xl text-xs font-semibold text-white whitespace-nowrap flex items-center gap-1.5 cursor-pointer">
+                  <span class="material-symbols-outlined">add</span> <span>Nuevo Ubigeo</span>
+                </button>
+              }
             </div>
           </div>
 
@@ -4931,7 +5010,8 @@
                     <td class="p-3 text-center">
                       <button
                         (click)="toggleVigenciaUbigeo(u)"
-                        class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-all cursor-pointer border"
+                        [disabled]="!tienePermiso('configuracion', 'editar')"
+                        class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-all cursor-pointer border disabled:cursor-not-allowed disabled:opacity-60"
                         [ngClass]="u.vigente !== false ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:text-emerald-400 dark:border-emerald-800/50' : 'bg-rose-50 text-rose-700 border-rose-200 hover:bg-rose-100 dark:bg-rose-950/40 dark:text-rose-400 dark:border-rose-800/50'"
                         title="Click para alternar vigencia">
                         <span class="w-1.5 h-1.5 rounded-full" [ngClass]="u.vigente !== false ? 'bg-emerald-500' : 'bg-rose-500'"></span>
@@ -4940,18 +5020,22 @@
                     </td>
                     <td class="p-3 text-center">
                       <div class="flex items-center justify-center gap-1.5">
-                        <button
-                          (click)="abrirModalUbigeo(u)"
-                          class="p-1.5 rounded-lg text-indigo-400 hover:text-indigo-300 hover:bg-indigo-500/10 transition-colors"
-                          title="Editar Ubigeo">
-                          <span class="material-symbols-outlined text-sm">edit</span>
-                        </button>
-                        <button
-                          (click)="eliminarUbigeo(u)"
-                          class="p-1.5 rounded-lg text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors"
-                          title="Desactivar Ubigeo">
-                          <span class="material-symbols-outlined text-sm">delete</span>
-                        </button>
+                        @if (tienePermiso('configuracion', 'editar')) {
+                          <button
+                            (click)="abrirModalUbigeo(u)"
+                            class="p-1.5 rounded-lg text-indigo-400 hover:text-indigo-300 hover:bg-indigo-500/10 transition-colors cursor-pointer"
+                            title="Editar Ubigeo">
+                            <span class="material-symbols-outlined text-sm">edit</span>
+                          </button>
+                        }
+                        @if (tienePermiso('configuracion', 'eliminar')) {
+                          <button
+                            (click)="eliminarUbigeo(u)"
+                            class="p-1.5 rounded-lg text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors cursor-pointer"
+                            title="Desactivar Ubigeo">
+                            <span class="material-symbols-outlined text-sm">delete</span>
+                          </button>
+                        }
                       </div>
                     </td>
                   </tr>
@@ -6813,7 +6897,7 @@
                 class="w-full bg-slate-50 dark:bg-slate-950 text-xs text-slate-900 dark:text-white px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500 uppercase font-mono"
               />
             </div>
-            <div class="flex items-center gap-4 pb-2">
+            <div class="flex flex-wrap items-center gap-4 pb-2">
               <label class="flex items-center gap-2 cursor-pointer">
                 <input
                   type="checkbox"
@@ -6821,7 +6905,19 @@
                   (change)="formRolVigente.set(!formRolVigente())"
                   class="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
                 />
-                <span class="text-xs font-semibold text-slate-800 dark:text-slate-200">Rol Activo en Sistema</span>
+                <span class="text-xs font-semibold text-slate-800 dark:text-slate-200">Rol Activo</span>
+              </label>
+              <label class="flex items-center gap-2 cursor-pointer bg-blue-50 dark:bg-blue-950/40 px-3 py-1.5 rounded-xl border border-blue-200 dark:border-blue-800/60">
+                <input
+                  type="checkbox"
+                  [checked]="formRolEsAdministrativo()"
+                  (change)="formRolEsAdministrativo.set(!formRolEsAdministrativo())"
+                  class="rounded border-blue-400 text-blue-600 focus:ring-blue-500"
+                />
+                <span class="text-xs font-bold text-blue-700 dark:text-blue-300 flex items-center gap-1">
+                  <span class="material-symbols-outlined text-sm">shield_person</span>
+                  Rol de Tipo Administrativo (Acceso a /admin)
+                </span>
               </label>
             </div>
           </div>

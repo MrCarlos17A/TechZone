@@ -33,13 +33,17 @@ public class RolService {
         if (rol.getVigente() == null) {
             rol.setVigente(true);
         }
+        if (rol.getEsAdministrativo() == null) {
+            rol.setEsAdministrativo(false);
+        }
         Long nextId = ((Number) entityManager.createNativeQuery(
                 "SELECT COALESCE(MAX(id_rol), 0) + 1 FROM rol").getSingleResult()).longValue();
         entityManager.createNativeQuery(
-                "INSERT INTO rol (id_rol, nombre, vigente, permisos) VALUES (:id, :nombre, :vigente, :permisos)")
+                "INSERT INTO rol (id_rol, nombre, vigente, es_administrativo, permisos) VALUES (:id, :nombre, :vigente, :esAdmin, :permisos)")
                 .setParameter("id", nextId)
                 .setParameter("nombre", rol.getNombre().trim())
                 .setParameter("vigente", rol.getVigente())
+                .setParameter("esAdmin", rol.getEsAdministrativo())
                 .setParameter("permisos", rol.getPermisos())
                 .executeUpdate();
         rol.setIdRol(nextId);
@@ -53,6 +57,9 @@ public class RolService {
         existente.setNombre(rol.getNombre().trim());
         if (rol.getVigente() != null) {
             existente.setVigente(rol.getVigente());
+        }
+        if (rol.getEsAdministrativo() != null) {
+            existente.setEsAdministrativo(rol.getEsAdministrativo());
         }
         existente.setPermisos(rol.getPermisos());
         return rolRepository.save(existente);

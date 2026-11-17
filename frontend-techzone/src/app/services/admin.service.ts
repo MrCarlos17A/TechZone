@@ -37,6 +37,7 @@ export interface EmpleadoAdmin {
   nombreCompleto?: string;
   cargo?: string;
   salario?: number;
+  fechaContrato?: string;
   fechaContratacion?: string;
   vigente?: boolean;
 }
@@ -74,6 +75,7 @@ export interface RolAdmin {
   idRol: number;
   nombre: string;
   vigente?: boolean;
+  esAdministrativo?: boolean;
   permisos?: string;
 }
 

@@ -463,7 +463,12 @@ export class AdminComponent implements OnInit {
   idRolEditando = signal<number | null>(null);
   formRolNombre = signal('');
   formRolVigente = signal(true);
+  formRolEsAdministrativo = signal(false);
   formRolPermisos = signal<Record<string, string[]>>({});
+
+  tienePermiso(modulo: string, accion: 'ver' | 'crear' | 'editar' | 'eliminar' = 'ver'): boolean {
+    return this.authService.tienePermiso(modulo, accion);
+  }
 
   readonly MODULOS_SISTEMA = [
     { clave: 'dashboard', label: 'Panel Dashboard' },
@@ -670,6 +675,16 @@ export class AdminComponent implements OnInit {
       this.toastService.advertencia('Acceso restringido para personal administrativo');
       this.router.navigate(['/']);
       return;
+    }
+    const tabsDisponibles: TabAdmin[] = [
+      'dashboard', 'productos', 'categorias', 'marcas', 'imagenes',
+      'ventas', 'pagos', 'clientes', 'empleados', 'usuarios', 'roles', 'configuracion', 'ayuda'
+    ];
+    if (!this.puedeVerTab(this.tabActiva())) {
+      const primera = tabsDisponibles.find(t => this.puedeVerTab(t));
+      if (primera) {
+        this.tabActiva.set(primera);
+      }
     }
     this.cargarDatos();
   }
@@ -1090,17 +1105,8 @@ export class AdminComponent implements OnInit {
   }
 
   cambiarTab(tab: TabAdmin): void {
-    const tabsRestringidasAdmin: TabAdmin[] = [
-      'productos-proveedor',
-      'empleados',
-      'usuarios',
-      'configuracion',
-      'roles',
-      'auditoria'
-    ];
-    if (!this.authService.esAdmin() && tabsRestringidasAdmin.includes(tab)) {
-      this.toastService.advertencia('Acceso restringido: Esta sección requiere privilegios de Administrador.');
-      this.tabActiva.set('productos');
+    if (!this.puedeVerTab(tab)) {
+      this.toastService.advertencia('Acceso restringido: No cuentas con permisos para esta sección.');
       this.sidebarMovilAbierto.set(false);
       return;
     }
@@ -1118,6 +1124,36 @@ export class AdminComponent implements OnInit {
       this.recargarVentas();
     } else if (tab === 'carritos' || tab === 'detalles-carrito') {
       this.recargarCarritos();
+    }
+  }
+
+  puedeVerTab(tab: TabAdmin): boolean {
+    if (this.authService.esAdmin()) return true;
+    switch (tab) {
+      case 'dashboard': return this.tienePermiso('dashboard', 'ver');
+      case 'productos': return this.tienePermiso('productos', 'ver');
+      case 'categorias': return this.tienePermiso('categorias', 'ver');
+      case 'marcas': return this.tienePermiso('marcas', 'ver');
+      case 'imagenes': return this.tienePermiso('imagenes', 'ver');
+      case 'productos-proveedor': return this.authService.esAdmin() || this.tienePermiso('productos', 'ver');
+      case 'personas': return this.tienePermiso('usuarios', 'ver') || this.tienePermiso('clientes', 'ver') || this.tienePermiso('empleados', 'ver');
+      case 'clientes': return this.tienePermiso('clientes', 'ver');
+      case 'empleados': return this.tienePermiso('empleados', 'ver');
+      case 'proveedores': return this.tienePermiso('productos', 'ver');
+      case 'usuarios': return this.tienePermiso('usuarios', 'ver');
+      case 'ventas': return this.tienePermiso('ventas', 'ver');
+      case 'detalles-venta': return this.tienePermiso('ventas', 'ver');
+      case 'pagos': return this.tienePermiso('pagos', 'ver');
+      case 'medios-pago': return this.tienePermiso('pagos', 'ver');
+      case 'carritos': return this.tienePermiso('ventas', 'ver');
+      case 'detalles-carrito': return this.tienePermiso('ventas', 'ver');
+      case 'configuracion': return this.tienePermiso('configuracion', 'ver');
+      case 'roles': return this.tienePermiso('roles', 'ver');
+      case 'tipos-documento': return this.tienePermiso('configuracion', 'ver');
+      case 'ubigeos': return this.tienePermiso('configuracion', 'ver');
+      case 'auditoria': return this.authService.esAdmin() || this.tienePermiso('auditoria', 'ver');
+      case 'ayuda': return true;
+      default: return true;
     }
   }
 
@@ -3295,7 +3331,8 @@ export class AdminComponent implements OnInit {
     this.formEditDireccion.set(emp.persona?.direccion || '');
     this.formEditReferencia.set(emp.persona?.referencia || '');
     this.formEditSalario.set(emp.salario || 1800);
-    this.formEditFechaContrato.set(emp.fechaContratacion ? emp.fechaContratacion.substring(0, 10) : '');
+    const fContr = emp.fechaContrato || emp.fechaContratacion;
+    this.formEditFechaContrato.set(fContr ? fContr.substring(0, 10) : '');
     this.formEditVigente.set(emp.vigente !== false);
     this.formEditPassword.set('');
 
@@ -3419,6 +3456,7 @@ export class AdminComponent implements OnInit {
     this.idRolEditando.set(null);
     this.formRolNombre.set('');
     this.formRolVigente.set(true);
+    this.formRolEsAdministrativo.set(false);
     this.formRolPermisos.set({
       dashboard: ['ver'],
       productos: ['ver']
@@ -3431,6 +3469,7 @@ export class AdminComponent implements OnInit {
     this.idRolEditando.set(r.idRol);
     this.formRolNombre.set(r.nombre || '');
     this.formRolVigente.set(r.vigente !== false);
+    this.formRolEsAdministrativo.set(!!r.esAdministrativo);
 
     let parsedPermisos: Record<string, string[]> = {};
     if (r.permisos) {
@@ -3495,6 +3534,7 @@ export class AdminComponent implements OnInit {
     const payload: Partial<RolAdmin> = {
       nombre,
       vigente: this.formRolVigente(),
+      esAdministrativo: this.formRolEsAdministrativo(),
       permisos: permisosJson
     };
 
