@@ -36,6 +36,17 @@ public class BackendTechzoneApplication {
 				jdbcTemplate.execute("ALTER TABLE IF EXISTS configuracion_sitio ADD COLUMN IF NOT EXISTS direccion_fiscal VARCHAR(200) DEFAULT 'Av. Javier Prado Este 4200, Santiago de Surco - Lima'");
 				jdbcTemplate.execute("ALTER TABLE IF EXISTS configuracion_sitio ADD COLUMN IF NOT EXISTS web VARCHAR(100) DEFAULT 'www.techzone.com'");
 				jdbcTemplate.execute("ALTER TABLE IF EXISTS configuracion_sitio ADD COLUMN IF NOT EXISTS leyenda_fiscal VARCHAR(255) DEFAULT 'Autorizado mediante resolución SUNAT N° 034-005'");
+				jdbcTemplate.execute("UPDATE configuracion_sitio SET ruc = '20608945123' WHERE ruc IS NULL OR ruc = ''");
+				jdbcTemplate.execute("UPDATE configuracion_sitio SET razon_social = 'TECHZONE GAMING STORE S.A.C.' WHERE razon_social IS NULL OR razon_social = ''");
+				jdbcTemplate.execute("UPDATE configuracion_sitio SET direccion_fiscal = 'Av. Javier Prado Este 4200, Santiago de Surco - Lima' WHERE direccion_fiscal IS NULL OR direccion_fiscal = ''");
+				jdbcTemplate.execute("UPDATE configuracion_sitio SET web = 'www.techzone.com' WHERE web IS NULL OR web = ''");
+				jdbcTemplate.execute("UPDATE configuracion_sitio SET leyenda_fiscal = 'Autorizado mediante resolución SUNAT N° 034-005' WHERE leyenda_fiscal IS NULL OR leyenda_fiscal = ''");
+				jdbcTemplate.execute("UPDATE configuracion_sitio SET nombre_sitio = 'TechZone Gaming Store' WHERE nombre_sitio IS NULL OR nombre_sitio = ''");
+				jdbcTemplate.execute("UPDATE configuracion_sitio SET telefono = '+51 967 662 103' WHERE telefono IS NULL OR telefono = ''");
+				jdbcTemplate.execute("UPDATE configuracion_sitio SET email = 'ventas@techzone.com' WHERE email IS NULL OR email = ''");
+				jdbcTemplate.execute("UPDATE configuracion_sitio SET tagline = 'Componentes Gamer y Tecnología de Última Generación' WHERE tagline IS NULL OR tagline = ''");
+				jdbcTemplate.execute("UPDATE configuracion_sitio SET horario = 'Lun - Dom: 09:00 a.m. - 21:00 p.m.' WHERE horario IS NULL OR horario = ''");
+				jdbcTemplate.execute("UPDATE configuracion_sitio SET copyright = '© 2026 TechZone Gaming Store S.A.C. Todos los derechos reservados.' WHERE copyright IS NULL OR copyright = ''");
 			} catch (Exception ignored) {
 			}
 		};

@@ -370,6 +370,8 @@ export class AdminComponent implements OnInit {
   // CONFIGURACIÓN DEL SITIO & ASSETS
   // ==========================================
   configForm: ConfiguracionSitio = {};
+  configFormBackup: ConfiguracionSitio = {};
+  modoEdicionConfig = signal(false);
   guardandoConfig = signal(false);
   guardandoImagenesSitio = signal(false);
   archivoLogoSitio: File | null = null;
@@ -599,9 +601,7 @@ export class AdminComponent implements OnInit {
 
     this.configuracionService.getConfiguracion().subscribe({
       next: cfg => {
-        this.configForm = { ...cfg };
-        this.previewLogoUrl.set(cfg.logoUrl || null);
-        this.previewLibroUrl.set(cfg.libroReclamacionesImg || null);
+        this.aplicarConfiguracion(cfg);
       },
       error: () => {}
     });
@@ -3938,12 +3938,51 @@ export class AdminComponent implements OnInit {
     }
   }
 
+  aplicarConfiguracion(cfg: ConfiguracionSitio): void {
+    this.configForm = {
+      ...cfg,
+      nombreSitio: cfg.nombreSitio || 'TechZone Gaming Store',
+      razonSocial: cfg.razonSocial || 'TECHZONE GAMING STORE S.A.C.',
+      ruc: cfg.ruc || '20608945123',
+      direccionFiscal: cfg.direccionFiscal || 'Av. Javier Prado Este 4200, Santiago de Surco - Lima',
+      telefono: cfg.telefono || '+51 967 662 103',
+      email: cfg.email || 'ventas@techzone.com',
+      tagline: cfg.tagline || 'Componentes Gamer y Tecnología de Última Generación',
+      horario: cfg.horario || 'Lun - Dom: 09:00 a.m. - 21:00 p.m.',
+      copyright: cfg.copyright || '© 2026 TechZone Gaming Store S.A.C. Todos los derechos reservados.',
+      web: cfg.web || 'www.techzone.com',
+      leyendaFiscal: cfg.leyendaFiscal || 'Autorizado mediante resolución SUNAT N° 034-005',
+      mostrarTiktok: cfg.mostrarTiktok ?? true,
+      mostrarFacebook: cfg.mostrarFacebook ?? true,
+      mostrarInstagram: cfg.mostrarInstagram ?? true,
+      mostrarYoutube: cfg.mostrarYoutube ?? true
+    };
+    this.previewLogoUrl.set(cfg.logoUrl || null);
+    this.previewLibroUrl.set(cfg.libroReclamacionesImg || null);
+  }
+
+  habilitarEdicionConfig(): void {
+    this.configFormBackup = JSON.parse(JSON.stringify(this.configForm));
+    this.modoEdicionConfig.set(true);
+    this.toastService.info('Modo edición activado. Realiza los cambios necesarios y presiona Guardar.');
+  }
+
+  cancelarEdicionConfig(): void {
+    if (this.configFormBackup && Object.keys(this.configFormBackup).length > 0) {
+      this.configForm = JSON.parse(JSON.stringify(this.configFormBackup));
+    }
+    this.archivoLogoSitio = null;
+    this.archivoLibroSitio = null;
+    this.modoEdicionConfig.set(false);
+    this.toastService.info('Modificaciones canceladas. Se restauraron los datos originales.');
+  }
+
   private ejecutarGuardadoDatosConfig(): void {
     this.configuracionService.adminGuardarConfiguracion(this.configForm).subscribe({
       next: (cfg) => {
         this.guardandoConfig.set(false);
-        this.configForm = { ...cfg };
-        this.previewLogoUrl.set(cfg.logoUrl || null);
+        this.aplicarConfiguracion(cfg);
+        this.modoEdicionConfig.set(false);
         this.toastService.exito('Identidad y configuración del sitio guardadas exitosamente');
       },
       error: (err) => {

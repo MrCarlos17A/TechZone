@@ -15,10 +15,48 @@ public class ConfiguracionSitioService {
 
     @Transactional(readOnly = true)
     public ConfiguracionSitio ObtenerConfiguracion() {
-        return repository.findById(ID_UNICO).orElseGet(() -> {
+        ConfiguracionSitio cfg = repository.findById(ID_UNICO).orElseGet(() -> {
             ConfiguracionSitio defecto = ConfiguracionSitio.builder().idConfig(ID_UNICO).build();
             return repository.save(defecto);
         });
+        completarValoresPorDefecto(cfg);
+        return cfg;
+    }
+
+    private void completarValoresPorDefecto(ConfiguracionSitio cfg) {
+        if (cfg.getNombreSitio() == null || cfg.getNombreSitio().isBlank()) {
+            cfg.setNombreSitio("TechZone Gaming Store");
+        }
+        if (cfg.getRazonSocial() == null || cfg.getRazonSocial().isBlank()) {
+            cfg.setRazonSocial("TECHZONE GAMING STORE S.A.C.");
+        }
+        if (cfg.getRuc() == null || cfg.getRuc().isBlank()) {
+            cfg.setRuc("20608945123");
+        }
+        if (cfg.getDireccionFiscal() == null || cfg.getDireccionFiscal().isBlank()) {
+            cfg.setDireccionFiscal("Av. Javier Prado Este 4200, Santiago de Surco - Lima");
+        }
+        if (cfg.getTelefono() == null || cfg.getTelefono().isBlank()) {
+            cfg.setTelefono("+51 967 662 103");
+        }
+        if (cfg.getEmail() == null || cfg.getEmail().isBlank()) {
+            cfg.setEmail("ventas@techzone.com");
+        }
+        if (cfg.getTagline() == null || cfg.getTagline().isBlank()) {
+            cfg.setTagline("Componentes Gamer y Tecnología de Última Generación");
+        }
+        if (cfg.getHorario() == null || cfg.getHorario().isBlank()) {
+            cfg.setHorario("Lun - Dom: 09:00 a.m. - 21:00 p.m.");
+        }
+        if (cfg.getCopyright() == null || cfg.getCopyright().isBlank()) {
+            cfg.setCopyright("© 2026 TechZone Gaming Store S.A.C. Todos los derechos reservados.");
+        }
+        if (cfg.getWeb() == null || cfg.getWeb().isBlank()) {
+            cfg.setWeb("www.techzone.com");
+        }
+        if (cfg.getLeyendaFiscal() == null || cfg.getLeyendaFiscal().isBlank()) {
+            cfg.setLeyendaFiscal("Autorizado mediante resolución SUNAT N° 034-005");
+        }
     }
 
     public ConfiguracionSitio obtenerConfiguracion() {
