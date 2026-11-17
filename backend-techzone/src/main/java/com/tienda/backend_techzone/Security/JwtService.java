@@ -33,13 +33,6 @@ import java.util.List;
 @Service
 public class JwtService {
 
-    /**
-     * Identificador unico de la instancia del servidor generado en memoria.
-     * Al apagar o reiniciar el servidor, este identificador cambia, invalidando
-     * inmediatamente todos los tokens emitidos en arranques previos por seguridad.
-     */
-    private static final String INSTANCIA_SERVIDOR_ID = java.util.UUID.randomUUID().toString();
-
     private final JwtEncoder encoder;
     private final JwtDecoderAdapter decoder;
     private final long duracionMinutos;
@@ -89,7 +82,6 @@ public class JwtService {
                 .expiresAt(ahora.plus(validez))
                 .claim("roles", List.copyOf(roles))
                 .claim("idUsuario", idUsuario)
-                .claim("sid", INSTANCIA_SERVIDOR_ID)
                 .build();
 
         JwsHeader header = JwsHeader.with(MacAlgorithm.HS256)
@@ -100,29 +92,21 @@ public class JwtService {
     }
 
     /**
-     * Devuelve el correo (subject) del token. Lanza excepcion si es invalido,
-     * vencio o pertenece a una instancia previa del servidor.
+     * Devuelve el correo (subject) del token. Lanza excepcion si es invalido o vencio.
      */
     public String obtenerCorreo(String token) {
         Jwt jwt = decoder.decodificar(token);
-        String sid = jwt.getClaimAsString("sid");
-        if (sid != null && !INSTANCIA_SERVIDOR_ID.equals(sid)) {
-            throw new org.springframework.security.oauth2.jwt.BadJwtException(
-                    "El token pertenece a una sesion de una instancia previa del servidor.");
-        }
         return jwt.getSubject();
     }
 
     public List<String> obtenerRoles(String token) {
         Jwt jwt = decoder.decodificar(token);
-        validarInstancia(jwt);
         List<String> roles = jwt.getClaimAsStringList("roles");
         return roles == null ? List.of() : roles;
     }
 
     public Long obtenerIdUsuario(String token) {
         Jwt jwt = decoder.decodificar(token);
-        validarInstancia(jwt);
         Object valor = jwt.getClaim("idUsuario");
         return (valor instanceof Number n) ? n.longValue() : null;
     }
@@ -130,18 +114,9 @@ public class JwtService {
     public boolean esValido(String token) {
         try {
             Jwt jwt = decoder.decodificar(token);
-            String sid = jwt.getClaimAsString("sid");
-            return sid == null || INSTANCIA_SERVIDOR_ID.equals(sid);
+            return jwt != null && jwt.getExpiresAt() != null && jwt.getExpiresAt().isAfter(Instant.now());
         } catch (RuntimeException e) {
             return false;
-        }
-    }
-
-    private void validarInstancia(Jwt jwt) {
-        String sid = jwt.getClaimAsString("sid");
-        if (sid != null && !INSTANCIA_SERVIDOR_ID.equals(sid)) {
-            throw new org.springframework.security.oauth2.jwt.BadJwtException(
-                    "El token pertenece a una sesion de una instancia previa del servidor.");
         }
     }
 

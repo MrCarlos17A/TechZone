@@ -18,7 +18,7 @@ export class AuthService {
   readonly isAuthenticated = computed(() => !!this.currentUser());
 
   constructor() {
-    // Si hay sesion en el navegador al arrancar la aplicacion, verificar activamente con el servidor
+    // Sincronizar en segundo plano de manera no destructiva con el servidor si hay sesion activa
     if (typeof window !== 'undefined' && this.isAuthenticated()) {
       this.validarSesionConServidor();
     }
@@ -79,9 +79,10 @@ export class AuthService {
 
   logout(): void {
     if (typeof window !== 'undefined') {
-      localStorage.removeItem('techzone_user');
-      sessionStorage.removeItem('techzone_user');
-      sessionStorage.clear();
+      try {
+        localStorage.removeItem('techzone_user');
+        sessionStorage.removeItem('techzone_user');
+      } catch {}
     }
     this.currentUser.set(null);
     if (this.router.url !== '/login') {
@@ -98,24 +99,63 @@ export class AuthService {
   }
 
   validarSesionConServidor(): void {
+    const t = this.token();
+    if (!t) return;
+    if (this.isTokenExpired(t)) {
+      this.logout();
+      return;
+    }
+
     const headers = this.getAuthHeaders();
-    this.http.get(`${this.apiUrl}/me`, { headers }).subscribe({
-      next: () => {
-        // Token valido en la instancia actual del servidor
+    this.http.get<any>(`${this.apiUrl}/me`, { headers }).subscribe({
+      next: (info) => {
+        if (info && this.currentUser()) {
+          const actual = this.currentUser()!;
+          const actualizado: AuthResponse = {
+            ...actual,
+            nombre: info.nombre || actual.nombre,
+            roles: info.roles || actual.roles,
+            esStaff: info.esStaff !== undefined ? info.esStaff : actual.esStaff,
+            idUsuario: info.idUsuario || actual.idUsuario,
+            correo: info.correo || actual.correo
+          };
+          this.guardarSesion(actualizado);
+        }
       },
-      error: () => {
-        // Servidor apagado, reiniciado o token de instancia previa: cerrar sesion inmediatamente
-        this.logout();
+      error: (err) => {
+        // Solo cerrar sesion si el backend confirma explicitamente 401 (token revocado o expirado)
+        if (err?.status === 401) {
+          this.logout();
+        }
       }
     });
   }
 
+  private isTokenExpired(token: string | null): boolean {
+    if (!token) return true;
+    try {
+      const parts = token.split('.');
+      if (parts.length !== 3) return true;
+      const base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = (typeof window !== 'undefined' && window.atob)
+        ? decodeURIComponent(window.atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''))
+        : '';
+      if (!jsonPayload) return false;
+      const payload = JSON.parse(jsonPayload);
+      if (!payload.exp) return false;
+      return (Date.now() / 1000) >= (payload.exp - 5);
+    } catch {
+      return false;
+    }
+  }
+
   private guardarSesion(resp: AuthResponse): void {
     if (typeof window !== 'undefined') {
-      // Guardar en sessionStorage para que la sesion expire de forma segura al cerrar la pestana o navegador
-      sessionStorage.setItem('techzone_user', JSON.stringify(resp));
-      // Purgar residuos previos en localStorage
-      localStorage.removeItem('techzone_user');
+      try {
+        const serializado = JSON.stringify(resp);
+        localStorage.setItem('techzone_user', serializado);
+        sessionStorage.setItem('techzone_user', serializado);
+      } catch {}
     }
     this.currentUser.set(resp);
   }
@@ -125,19 +165,18 @@ export class AuthService {
       return null;
     }
     try {
-      // Priorizar almacenamiento de sesion volatil
-      const sessionData = sessionStorage.getItem('techzone_user');
-      if (sessionData) {
-        return JSON.parse(sessionData);
+      const raw = localStorage.getItem('techzone_user') || sessionStorage.getItem('techzone_user');
+      if (!raw) return null;
+      const data: AuthResponse = JSON.parse(raw);
+      if (!data || !data.token) return null;
+      if (this.isTokenExpired(data.token)) {
+        try {
+          localStorage.removeItem('techzone_user');
+          sessionStorage.removeItem('techzone_user');
+        } catch {}
+        return null;
       }
-      // Si habia datos remanentes en localStorage, migrarlos a sessionStorage y limpiar localStorage
-      const localData = localStorage.getItem('techzone_user');
-      if (localData) {
-        localStorage.removeItem('techzone_user');
-        sessionStorage.setItem('techzone_user', localData);
-        return JSON.parse(localData);
-      }
-      return null;
+      return data;
     } catch {
       return null;
     }
