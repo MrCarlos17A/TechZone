@@ -40,4 +40,15 @@ public class PagoAdminApiController {
             return ResponseEntity.badRequest().body(Map.of("mensaje", e.getMessage()));
         }
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> actualizar(@PathVariable Long id, @RequestBody Map<String, String> body) {
+        try {
+            String estadoPago = body.get("estadoPago");
+            String codigoOperacion = body.get("codigoOperacion");
+            return ResponseEntity.ok(pagoService.ActualizarPago(id, estadoPago, codigoOperacion));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("mensaje", e.getMessage()));
+        }
+    }
 }

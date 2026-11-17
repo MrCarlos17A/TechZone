@@ -314,6 +314,15 @@ export class AdminService {
     });
   }
 
+  actualizarPago(idPago: number, estadoPago: string, codigoOperacion: string): Observable<PagoAdmin> {
+    return this.http.put<PagoAdmin>(`${this.baseUrl}/admin/pagos/${idPago}`, {
+      estadoPago,
+      codigoOperacion
+    }, {
+      headers: this.authService.getAuthHeaders()
+    });
+  }
+
   // --- Medios de Pago ---
   getMediosPago(): Observable<MedioPagoAdmin[]> {
     return this.http.get<MedioPagoAdmin[]>(`${this.baseUrl}/admin/medios-pago`, {

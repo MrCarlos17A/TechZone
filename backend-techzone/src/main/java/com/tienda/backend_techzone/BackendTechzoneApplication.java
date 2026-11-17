@@ -31,6 +31,11 @@ public class BackendTechzoneApplication {
 				jdbcTemplate.execute("UPDATE medio_pago SET instrucciones = 'Genera tu código CIP y realiza el pago en agentes bancarios autorizados o banca por internet.' WHERE id_medio_pago = 5 AND (instrucciones IS NULL OR instrucciones = '')");
 				jdbcTemplate.execute("UPDATE pago SET estado_pago = 'CONFIRMADO', codigo_operacion = 'OP-YAPE-000002' WHERE codigo_operacion = '123456'");
 				jdbcTemplate.execute("UPDATE venta SET direccion_envio = 'EL VIVERO S/N, Tumán, Chiclayo - Lambayeque' WHERE id_venta = 2 AND (direccion_envio = 'EL VIVERO S/N' OR direccion_envio IS NULL)");
+				jdbcTemplate.execute("ALTER TABLE IF EXISTS configuracion_sitio ADD COLUMN IF NOT EXISTS ruc VARCHAR(11) DEFAULT '20608945123'");
+				jdbcTemplate.execute("ALTER TABLE IF EXISTS configuracion_sitio ADD COLUMN IF NOT EXISTS razon_social VARCHAR(150) DEFAULT 'TECHZONE GAMING STORE S.A.C.'");
+				jdbcTemplate.execute("ALTER TABLE IF EXISTS configuracion_sitio ADD COLUMN IF NOT EXISTS direccion_fiscal VARCHAR(200) DEFAULT 'Av. Javier Prado Este 4200, Santiago de Surco - Lima'");
+				jdbcTemplate.execute("ALTER TABLE IF EXISTS configuracion_sitio ADD COLUMN IF NOT EXISTS web VARCHAR(100) DEFAULT 'www.techzone.com'");
+				jdbcTemplate.execute("ALTER TABLE IF EXISTS configuracion_sitio ADD COLUMN IF NOT EXISTS leyenda_fiscal VARCHAR(255) DEFAULT 'Autorizado mediante resolución SUNAT N° 034-005'");
 			} catch (Exception ignored) {
 			}
 		};

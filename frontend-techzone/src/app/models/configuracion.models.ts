@@ -1,6 +1,11 @@
 export interface ConfiguracionSitio {
   idConfig?: number;
   nombreSitio?: string;
+  ruc?: string;
+  razonSocial?: string;
+  direccionFiscal?: string;
+  web?: string;
+  leyendaFiscal?: string;
   logoUrl?: string;
   tagline?: string;
   email?: string;

@@ -23,6 +23,26 @@ public class ConfiguracionSitio {
     @Builder.Default
     private String nombreSitio = "TechZone";
 
+    @Column(name = "ruc", length = 11)
+    @Builder.Default
+    private String ruc = "20608945123";
+
+    @Column(name = "razon_social", length = 150)
+    @Builder.Default
+    private String razonSocial = "TECHZONE GAMING STORE S.A.C.";
+
+    @Column(name = "direccion_fiscal", length = 200)
+    @Builder.Default
+    private String direccionFiscal = "Av. Javier Prado Este 4200, Santiago de Surco - Lima";
+
+    @Column(name = "web", length = 100)
+    @Builder.Default
+    private String web = "www.techzone.com";
+
+    @Column(name = "leyenda_fiscal", length = 255)
+    @Builder.Default
+    private String leyendaFiscal = "Autorizado mediante resolución SUNAT N° 034-005";
+
     @Column(name = "logo_url", length = 500)
     @Builder.Default
     private String logoUrl = "https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/configurtacion_sitio/TechZone.webp";

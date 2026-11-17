@@ -20,7 +20,7 @@ import { Validaciones } from '../../utils/validaciones';
 export class CheckoutComponent implements OnInit {
   readonly carritoService = inject(CarritoService);
   private readonly ventaService = inject(VentaService);
-  private readonly configuracionService = inject(ConfiguracionService);
+  readonly configuracionService = inject(ConfiguracionService);
   private readonly productoService = inject(ProductoService);
   productos = signal<Producto[]>([]);
   readonly authService = inject(AuthService);

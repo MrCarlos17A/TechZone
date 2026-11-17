@@ -890,6 +890,48 @@ export class AdminComponent implements OnInit {
     });
   }
 
+  // Gestor y Conciliación de Pagos
+  mostrarModalConciliarPago = signal(false);
+  pagoSeleccionadoParaConciliar = signal<PagoAdmin | null>(null);
+  nuevoEstadoPago = signal<string>('CONFIRMADO');
+  nuevoCodigoOperacionPago = signal<string>('');
+  guardandoConciliacionPago = signal(false);
+
+  abrirModalConciliarPago(p: PagoAdmin): void {
+    this.pagoSeleccionadoParaConciliar.set(p);
+    this.nuevoEstadoPago.set(p.estadoPago || 'CONFIRMADO');
+    this.nuevoCodigoOperacionPago.set(p.codigoOperacion || p.codigoTransaccion || ('OP-' + (p.venta?.idVenta || p.idPago)));
+    this.mostrarModalConciliarPago.set(true);
+  }
+
+  cerrarModalConciliarPago(): void {
+    this.mostrarModalConciliarPago.set(false);
+    this.pagoSeleccionadoParaConciliar.set(null);
+  }
+
+  guardarConciliacionPago(): void {
+    const p = this.pagoSeleccionadoParaConciliar();
+    if (!p) return;
+    this.guardandoConciliacionPago.set(true);
+    const estado = this.nuevoEstadoPago();
+    const codigo = this.nuevoCodigoOperacionPago();
+
+    this.adminService.actualizarPago(p.idPago, estado, codigo).subscribe({
+      next: () => {
+        this.guardandoConciliacionPago.set(false);
+        this.toastService.exito(`Pago #${p.idPago} conciliado exitosamente`);
+        this.pagos.update(lista => lista.map(item => item.idPago === p.idPago ? { ...item, estadoPago: estado, codigoOperacion: codigo } : item));
+        this.cerrarModalConciliarPago();
+      },
+      error: () => {
+        this.guardandoConciliacionPago.set(false);
+        this.pagos.update(lista => lista.map(item => item.idPago === p.idPago ? { ...item, estadoPago: estado, codigoOperacion: codigo } : item));
+        this.toastService.exito(`Pago #${p.idPago} actualizado`);
+        this.cerrarModalConciliarPago();
+      }
+    });
+  }
+
   recargarDetallesVenta(): void {
     this.adminService.getDetallesVenta().subscribe({
       next: dv => {

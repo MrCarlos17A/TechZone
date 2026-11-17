@@ -85,4 +85,16 @@ public class PagoService {
         }
         return pagoRepository.save(pago);
     }
+
+    @org.springframework.transaction.annotation.Transactional
+    public Pago ActualizarPago(Long idPago, String estadoPago, String codigoOperacion) {
+        Pago pago = ObtenerPagoPorId(idPago);
+        if (estadoPago != null && !estadoPago.isBlank()) {
+            pago.setEstadoPago(estadoPago.trim().toUpperCase());
+        }
+        if (codigoOperacion != null && !codigoOperacion.isBlank()) {
+            pago.setCodigoOperacion(codigoOperacion.trim());
+        }
+        return pagoRepository.save(pago);
+    }
 }
