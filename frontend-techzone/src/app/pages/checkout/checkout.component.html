@@ -506,11 +506,12 @@
                   <div>
                     <label class="text-[11px] font-semibold text-slate-700 dark:text-slate-300 block mb-1">Código de Aprobación (6 dígitos) *</label>
                     <input
-                      type="password"
+                      type="text"
+                      inputmode="numeric"
                       [ngModel]="codOpPago()"
                       (ngModelChange)="onCodOpChange($event)"
                       maxlength="6"
-                      placeholder="••••••"
+                      placeholder="Ej. 123456"
                       class="w-full bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-slate-200 px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500 font-mono tracking-widest text-center"
                     />
                   </div>
@@ -521,56 +522,108 @@
             <!-- Campos específicos para Tarjeta -->
             @if (esTarjeta()) {
               <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 space-y-3 animate-fadeIn">
-                <p class="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                  <span class="material-symbols-outlined text-blue-600 dark:text-blue-400">credit_card</span> Datos de la Tarjeta (Débito o Crédito)
-                </p>
-                <div class="space-y-3">
-                  <div>
-                    <label class="text-[11px] font-semibold text-slate-700 dark:text-slate-300 block mb-1">Número de Tarjeta (16 dígitos) *</label>
-                    <input
-                      type="text"
-                      [ngModel]="numTarjeta()"
-                      (ngModelChange)="onNumTarjetaChange($event)"
-                      maxlength="16"
-                      placeholder="4000 1234 5678 9010"
-                      class="w-full bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-slate-200 px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500"
-                    />
-                  </div>
-                  <div class="grid grid-cols-2 gap-3">
-                    <div>
-                      <label class="text-[11px] font-semibold text-slate-700 dark:text-slate-300 block mb-1">Vencimiento (MM/AA) *</label>
-                      <input
-                        type="text"
-                        [ngModel]="fechaVence()"
-                        (ngModelChange)="onFechaVenceChange($event)"
-                        maxlength="5"
-                        placeholder="12/28"
-                        class="w-full bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-slate-200 px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500"
-                      />
-                    </div>
-                    <div>
-                      <label class="text-[11px] font-semibold text-slate-700 dark:text-slate-300 block mb-1">CVV (3 dígitos) *</label>
-                      <input
-                        type="password"
-                        [ngModel]="cvvTarjeta()"
-                        (ngModelChange)="onCvvChange($event)"
-                        maxlength="4"
-                        placeholder="123"
-                        class="w-full bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-slate-200 px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <label class="text-[11px] font-semibold text-slate-700 dark:text-slate-300 block mb-1">Titular de la Tarjeta *</label>
-                    <input
-                      type="text"
-                      [ngModel]="titularTarjeta()"
-                      (ngModelChange)="titularTarjeta.set($event)"
-                      placeholder="Como figura en el plástico"
-                      class="w-full bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-slate-200 px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500"
-                    />
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 pb-2 border-b border-slate-200 dark:border-slate-800">
+                  <p class="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    <span class="material-symbols-outlined text-blue-600 dark:text-blue-400">credit_card</span> Pasarela Tarjeta SIP / CIP
+                  </p>
+                  <div class="flex items-center gap-1.5 p-1 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 text-[11px] font-bold">
+                    <button
+                      type="button"
+                      (click)="submetodoTarjeta.set('TARJETA')"
+                      class="px-2.5 py-1 rounded-lg transition-all cursor-pointer"
+                      [ngClass]="submetodoTarjeta() === 'TARJETA' ? 'bg-blue-600 text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'">
+                      Pagar con Tarjeta
+                    </button>
+                    <button
+                      type="button"
+                      (click)="submetodoTarjeta.set('YAPE')"
+                      class="px-2.5 py-1 rounded-lg transition-all cursor-pointer flex items-center gap-1"
+                      [ngClass]="submetodoTarjeta() === 'YAPE' ? 'bg-purple-600 text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:text-purple-600'">
+                      <span>Pagar con Yape</span>
+                    </button>
                   </div>
                 </div>
+
+                @if (submetodoTarjeta() === 'TARJETA') {
+                  <div class="space-y-3">
+                    <div>
+                      <label class="text-[11px] font-semibold text-slate-700 dark:text-slate-300 block mb-1">Número de Tarjeta (16 dígitos) *</label>
+                      <input
+                        type="text"
+                        [ngModel]="numTarjeta()"
+                        (ngModelChange)="onNumTarjetaChange($event)"
+                        maxlength="16"
+                        placeholder="4000 1234 5678 9010"
+                        class="w-full bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-slate-200 px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500 font-mono"
+                      />
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                      <div>
+                        <label class="text-[11px] font-semibold text-slate-700 dark:text-slate-300 block mb-1">Vencimiento (MM/AA) *</label>
+                        <input
+                          type="text"
+                          [ngModel]="fechaVence()"
+                          (ngModelChange)="onFechaVenceChange($event)"
+                          maxlength="5"
+                          placeholder="12/28"
+                          class="w-full bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-slate-200 px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500 font-mono"
+                        />
+                      </div>
+                      <div>
+                        <label class="text-[11px] font-semibold text-slate-700 dark:text-slate-300 block mb-1">CVV (3 dígitos) *</label>
+                        <input
+                          type="password"
+                          [ngModel]="cvvTarjeta()"
+                          (ngModelChange)="onCvvChange($event)"
+                          maxlength="4"
+                          placeholder="123"
+                          class="w-full bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-slate-200 px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500 font-mono"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label class="text-[11px] font-semibold text-slate-700 dark:text-slate-300 block mb-1">Titular de la Tarjeta *</label>
+                      <input
+                        type="text"
+                        [ngModel]="titularTarjeta()"
+                        (ngModelChange)="titularTarjeta.set($event)"
+                        placeholder="Como figura en el plástico"
+                        class="w-full bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-slate-200 px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500 uppercase"
+                      />
+                    </div>
+                  </div>
+                } @else {
+                  <div class="space-y-3">
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400">
+                      Paga mediante la pasarela SIP usando tu número de celular y el <strong>Código de Aprobación</strong> de 6 dígitos generado en tu aplicación Yape.
+                    </p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label class="text-[11px] font-semibold text-slate-700 dark:text-slate-300 block mb-1">Celular Yape (9 dígitos) *</label>
+                        <input
+                          type="tel"
+                          [ngModel]="celularPago()"
+                          (ngModelChange)="onCelularPagoChange($event)"
+                          maxlength="9"
+                          placeholder="Ej. 987654321"
+                          class="w-full bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-slate-200 px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500 font-mono"
+                        />
+                      </div>
+                      <div>
+                        <label class="text-[11px] font-semibold text-slate-700 dark:text-slate-300 block mb-1">Código de Aprobación (6 dígitos) *</label>
+                        <input
+                          type="text"
+                          inputmode="numeric"
+                          [ngModel]="codOpPago()"
+                          (ngModelChange)="onCodOpChange($event)"
+                          maxlength="6"
+                          placeholder="Ej. 123456"
+                          class="w-full bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-slate-200 px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500 font-mono tracking-widest text-center"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                }
               </div>
             }
 

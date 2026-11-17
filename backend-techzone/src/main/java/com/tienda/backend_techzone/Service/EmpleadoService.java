@@ -24,8 +24,48 @@ public class EmpleadoService {
     private final RolRepository rolRepository;
     private final PasswordEncoder passwordEncoder;
 
+    @Transactional
     public List<Empleado> ListarEmpleados() {
-        return empleadoRepository.findAll();
+        asegurarAdministradorComoEmpleado();
+        List<Empleado> lista = empleadoRepository.findAll();
+        for (Empleado emp : lista) {
+            if (emp.getPersona() != null) {
+                usuarioRepository.findFirstByPersona(emp.getPersona()).ifPresent(u -> {
+                    if (u.getRol() != null && u.getRol().getNombre() != null) {
+                        String r = u.getRol().getNombre().toUpperCase();
+                        if (r.contains("ADMIN")) {
+                            emp.setCargo("ADMINISTRADOR GENERAL");
+                        } else {
+                            emp.setCargo(r);
+                        }
+                    }
+                });
+            }
+            if (emp.getCargo() == null || emp.getCargo().isBlank()) {
+                emp.setCargo("COLABORADOR");
+            }
+        }
+        return lista;
+    }
+
+    private void asegurarAdministradorComoEmpleado() {
+        try {
+            Usuario adminUsuario = usuarioRepository.findByCorreo("admin@techzone.com").orElse(null);
+            if (adminUsuario != null && adminUsuario.getPersona() != null) {
+                Persona adminPersona = adminUsuario.getPersona();
+                if (empleadoRepository.findFirstByPersona(adminPersona).isEmpty()) {
+                    Empleado adminEmp = Empleado.builder()
+                            .persona(adminPersona)
+                            .fechaContrato(LocalDate.of(2026, 1, 1))
+                            .salario(new BigDecimal("3500.00"))
+                            .vigente(true)
+                            .build();
+                    adminEmp.setCargo("ADMINISTRADOR GENERAL");
+                    empleadoRepository.save(adminEmp);
+                }
+            }
+        } catch (Exception ignored) {
+        }
     }
 
     public List<Empleado> listarEmpleados() {
@@ -73,8 +113,8 @@ public class EmpleadoService {
         if (password == null || password.length() < 6) {
             throw new RuntimeException("La contrasena debe tener al menos 6 caracteres");
         }
-        if (idRol == null || (idRol != 1 && idRol != 2)) {
-            throw new RuntimeException("Selecciona un rol valido (Administrador o Trabajador)");
+        if (idRol == null || !rolRepository.existsById(idRol)) {
+            throw new RuntimeException("Selecciona un rol valido registrado en el sistema");
         }
         validarSalario(salario);
 
@@ -282,13 +322,29 @@ public class EmpleadoService {
         return empleadoRepository.save(empleado);
     }
 
+    @Transactional
     public Empleado ActualizarEmpleado(Long id, Empleado empleado) {
         Empleado existente = empleadoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Empleado no encontrado con id: " + id));
-        validarSalario(empleado.getSalario());
-        existente.setPersona(empleado.getPersona());
-        existente.setFechaContrato(empleado.getFechaContrato());
-        existente.setSalario(empleado.getSalario());
+        if (empleado.getSalario() != null) {
+            validarSalario(empleado.getSalario());
+            existente.setSalario(empleado.getSalario());
+        }
+        if (empleado.getFechaContrato() != null) {
+            existente.setFechaContrato(empleado.getFechaContrato());
+        }
+        if (empleado.getVigente() != null) {
+            existente.setVigente(empleado.getVigente());
+        }
+        if (empleado.getPersona() != null && existente.getPersona() != null) {
+            Persona pActual = existente.getPersona();
+            Persona pNueva = empleado.getPersona();
+            if (pNueva.getTelefono() != null) pActual.setTelefono(pNueva.getTelefono());
+            if (pNueva.getDireccion() != null) pActual.setDireccion(pNueva.getDireccion());
+            if (pNueva.getReferencia() != null) pActual.setReferencia(pNueva.getReferencia());
+            if (pNueva.getUbigeo() != null) pActual.setUbigeo(pNueva.getUbigeo());
+            personaRepository.save(pActual);
+        }
         return empleadoRepository.save(existente);
     }
 

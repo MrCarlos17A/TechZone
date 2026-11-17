@@ -1,6 +1,7 @@
 package com.tienda.backend_techzone.Model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
@@ -39,4 +40,21 @@ public class Empleado {
     @Column(name = "vigente")
     @Builder.Default
     private Boolean vigente = true;
+
+    @Transient
+    @JsonProperty("cargo")
+    private String cargo;
+
+    @JsonProperty("nombreCompleto")
+    public String getNombreCompleto() {
+        if (persona != null) {
+            return persona.getNombreCompleto();
+        }
+        return "Colaborador #" + idEmpleado;
+    }
+
+    @JsonProperty("fechaContratacion")
+    public LocalDate getFechaContratacion() {
+        return this.fechaContrato;
+    }
 }

@@ -264,6 +264,12 @@ export class AdminService {
     });
   }
 
+  crearEmpleadoCompleto(datos: any): Observable<EmpleadoAdmin> {
+    return this.http.post<EmpleadoAdmin>(`${this.baseUrl}/admin/empleados/completo`, datos, {
+      headers: this.authService.getAuthHeaders()
+    });
+  }
+
   crearEmpleado(datos: any): Observable<EmpleadoAdmin> {
     return this.http.post<EmpleadoAdmin>(`${this.baseUrl}/admin/empleados`, datos, {
       headers: this.authService.getAuthHeaders()

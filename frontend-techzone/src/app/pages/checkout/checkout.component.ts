@@ -61,6 +61,7 @@ export class CheckoutComponent implements OnInit {
   titularTarjeta = signal('');
   codOpTransferencia = signal('');
   bancoOrigen = signal('BCP');
+  submetodoTarjeta = signal<'TARJETA' | 'YAPE'>('TARJETA');
 
   // Estado general y Snapshot para Comprobante
   procesando = signal(false);
@@ -344,30 +345,42 @@ export class CheckoutComponent implements OnInit {
         this.errorMensaje.set(`El código de aprobación de ${medioNombre} debe tener 6 dígitos numéricos`);
         return;
       }
-      // Proteger el código de seguridad OTP efímero generando el identificador de liquidación bancaria formal
       const prefijo = this.esYape() ? 'OP-YAPE' : 'OP-PLIN';
-      const tokenFiscal = Math.floor(100000 + Math.random() * 900000);
+      const tokenFiscal = this.codOpPago().trim();
       codigoOpFinal = `${prefijo}-${tokenFiscal}`;
     } else if (this.esTarjeta()) {
-      if (!/^\d{16}$/.test(this.numTarjeta().trim())) {
-        this.errorMensaje.set('El número de tarjeta debe tener exactamente 16 dígitos');
-        return;
+      if (this.submetodoTarjeta() === 'YAPE') {
+        if (!/^9\d{8}$/.test(this.celularPago().trim())) {
+          this.errorMensaje.set('El número de celular debe tener 9 dígitos y empezar con 9');
+          return;
+        }
+        if (!/^\d{6}$/.test(this.codOpPago().trim())) {
+          this.errorMensaje.set('El código de aprobación de Yape debe tener exactamente 6 dígitos');
+          return;
+        }
+        const tokenFiscal = this.codOpPago().trim();
+        codigoOpFinal = `SIP-YAPE-${tokenFiscal}`;
+      } else {
+        if (!/^\d{16}$/.test(this.numTarjeta().trim())) {
+          this.errorMensaje.set('El número de tarjeta debe tener exactamente 16 dígitos');
+          return;
+        }
+        if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(this.fechaVence().trim())) {
+          this.errorMensaje.set('La fecha de vencimiento debe tener formato MM/AA (ej. 12/28)');
+          return;
+        }
+        if (!/^\d{3,4}$/.test(this.cvvTarjeta().trim())) {
+          this.errorMensaje.set('El código CVV debe tener 3 o 4 dígitos numéricos');
+          return;
+        }
+        if (!this.titularTarjeta().trim()) {
+          this.errorMensaje.set('Ingresa el nombre del titular como figura en la tarjeta');
+          return;
+        }
+        const raw = this.numTarjeta().trim();
+        const codAut = Math.floor(100000 + Math.random() * 900000);
+        codigoOpFinal = `AUT-${codAut} (TARJETA-****-${raw.slice(-4)})`;
       }
-      if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(this.fechaVence().trim())) {
-        this.errorMensaje.set('La fecha de vencimiento debe tener formato MM/AA (ej. 12/28)');
-        return;
-      }
-      if (!/^\d{3,4}$/.test(this.cvvTarjeta().trim())) {
-        this.errorMensaje.set('El código CVV debe tener 3 o 4 dígitos numéricos');
-        return;
-      }
-      if (!this.titularTarjeta().trim()) {
-        this.errorMensaje.set('Ingresa el nombre del titular como figura en la tarjeta');
-        return;
-      }
-      const raw = this.numTarjeta().trim();
-      const codAut = Math.floor(100000 + Math.random() * 900000);
-      codigoOpFinal = `AUT-${codAut} (TARJETA-****-${raw.slice(-4)})`;
     } else if (this.esTransferencia()) {
       if (!this.codOpTransferencia().trim()) {
         this.errorMensaje.set('Ingresa el número de operación bancaria de la transferencia');

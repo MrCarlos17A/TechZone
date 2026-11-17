@@ -363,9 +363,102 @@ export class AdminComponent implements OnInit {
   formColabApMaterno = signal('');
   formColabFechaNacimiento = signal('');
   formColabTelefono = signal('');
-  formColabCargo = signal('ESPECIALISTA');
+  formColabCorreo = signal('');
+  formColabPassword = signal('');
+  mostrarPasswordColab = signal(false);
+  formColabDireccion = signal('');
+  formColabReferencia = signal('');
+  formColabDepartamento = signal('Lima');
+  formColabProvincia = signal('Lima');
+  formColabDistritoId = signal<number | null>(null);
+  formColabCargo = signal('SUPERVISOR_VENTAS');
+  formColabRolId = signal<number>(2);
   formColabSalario = signal<number>(1800);
   formColabFechaContrato = signal(new Date().toISOString().substring(0, 10));
+
+  departamentosColab = computed(() => {
+    const set = new Set<string>();
+    for (const u of this.ubigeos()) {
+      if (u.departamento) set.add(u.departamento);
+    }
+    return Array.from(set).sort();
+  });
+
+  provinciasColab = computed(() => {
+    const dep = this.formColabDepartamento();
+    const set = new Set<string>();
+    for (const u of this.ubigeos()) {
+      if (!dep || u.departamento?.toLowerCase() === dep.toLowerCase()) {
+        if (u.provincia) set.add(u.provincia);
+      }
+    }
+    return Array.from(set).sort();
+  });
+
+  distritosColab = computed(() => {
+    const dep = this.formColabDepartamento();
+    const prov = this.formColabProvincia();
+    return this.ubigeos().filter(u => {
+      const matchDep = !dep || u.departamento?.toLowerCase() === dep.toLowerCase();
+      const matchProv = !prov || u.provincia?.toLowerCase() === prov.toLowerCase();
+      return matchDep && matchProv;
+    }).sort((a, b) => (a.distrito || '').localeCompare(b.distrito || ''));
+  });
+
+  // Edición de Colaborador
+  mostrarModalEditarEmpleado = signal(false);
+  empleadoEditando = signal<EmpleadoAdmin | null>(null);
+  formEditCargo = signal('');
+  formEditSalario = signal<number>(1800);
+  formEditFechaContrato = signal('');
+  formEditVigente = signal(true);
+  formEditTelefono = signal('');
+  formEditDireccion = signal('');
+  formEditReferencia = signal('');
+
+  // ==========================================
+  // MODAL ROLES & PERMISOS
+  // ==========================================
+  mostrarModalRol = signal(false);
+  esEdicionRol = signal(false);
+  idRolEditando = signal<number | null>(null);
+  formRolNombre = signal('');
+  formRolVigente = signal(true);
+  formRolPermisos = signal<Record<string, string[]>>({});
+
+  readonly MODULOS_SISTEMA = [
+    { clave: 'dashboard', label: 'Panel Dashboard' },
+    { clave: 'productos', label: 'Catálogo de Productos' },
+    { clave: 'categorias', label: 'Categorías' },
+    { clave: 'marcas', label: 'Marcas de Productos' },
+    { clave: 'imagenes', label: 'Galería de Imágenes' },
+    { clave: 'ventas', label: 'Ventas y Despachos' },
+    { clave: 'pagos', label: 'Transacciones y Pagos' },
+    { clave: 'usuarios', label: 'Usuarios y Accesos' },
+    { clave: 'empleados', label: 'Colaboradores y Nómina' },
+    { clave: 'clientes', label: 'Cartera de Clientes' },
+    { clave: 'roles', label: 'Roles y Permisos' },
+    { clave: 'configuracion', label: 'Configuración del Sitio' },
+  ];
+  readonly ACCIONES_PERMISO = ['ver', 'crear', 'editar', 'eliminar'] as const;
+
+  // ==========================================
+  // MODAL EDICIÓN USUARIO
+  // ==========================================
+  mostrarModalEditarUsuario = signal(false);
+  usuarioEditando = signal<UsuarioAdmin | null>(null);
+  formUsuarioRolId = signal<number | null>(null);
+  formUsuarioEstado = signal<string>('ACTIVO');
+  formUsuarioNuevaPassword = signal('');
+  mostrarPasswordUsuario = signal(false);
+
+  // ==========================================
+  // MODAL EDICIÓN MEDIO DE PAGO
+  // ==========================================
+  mostrarModalEditarMedioPago = signal(false);
+  medioPagoEditando = signal<MedioPagoAdmin | null>(null);
+  formMedioPagoInstrucciones = signal('');
+  formMedioPagoVigente = signal(true);
 
   // ==========================================
   // CONFIGURACIÓN DEL SITIO & ASSETS
@@ -1520,8 +1613,9 @@ export class AdminComponent implements OnInit {
 
       const matchDestacado = !this.filtroSoloDestacados() || !!p.destacado;
       const matchNovedad = !this.filtroSoloNovedades() || !!p.novedad;
+      const matchVigente = p.vigente !== false;
 
-      return matchQ && matchStock && matchCat && matchMarca && matchPMin && matchPMax && matchDestacado && matchNovedad;
+      return matchQ && matchStock && matchCat && matchMarca && matchPMin && matchPMax && matchDestacado && matchNovedad && matchVigente;
     });
 
     if (ordenPrecio === 'asc') {
@@ -2450,12 +2544,17 @@ export class AdminComponent implements OnInit {
       '¿Eliminar Producto?',
       `¿Estás seguro de que deseas eliminar permanentemente el producto "${p.nombre}"?`,
       () => {
+        // Optimista: retirar inmediatamente de la vista para respuesta instantánea sin parpadeo
+        this.productos.update(list => list.filter(item => item.idProducto !== p.idProducto));
         this.productoService.adminEliminarProducto(p.idProducto).subscribe({
           next: () => {
             this.toastService.exito(`Producto "${p.nombre}" eliminado con éxito`);
             this.recargarProductos();
           },
-          error: (err) => this.toastService.error(err.error?.mensaje || 'Error al eliminar producto')
+          error: (err) => {
+            this.toastService.error(err.error?.mensaje || 'Error al eliminar producto');
+            this.recargarProductos();
+          }
         });
       }
     );
@@ -3011,54 +3110,390 @@ export class AdminComponent implements OnInit {
     });
   }
 
+  alCambiarDepartamentoColab(dep: string): void {
+    this.formColabDepartamento.set(dep);
+    const provs = this.provinciasColab();
+    const primeraProv = provs.length > 0 ? provs[0] : '';
+    this.formColabProvincia.set(primeraProv);
+    const dists = this.distritosColab();
+    this.formColabDistritoId.set(dists.length > 0 ? dists[0].idUbigeo : null);
+  }
+
+  alCambiarProvinciaColab(prov: string): void {
+    this.formColabProvincia.set(prov);
+    const dists = this.distritosColab();
+    this.formColabDistritoId.set(dists.length > 0 ? dists[0].idUbigeo : null);
+  }
+
   guardarNuevoColaborador(): void {
     const nombres = this.formColabNombres().trim();
     const apPat = this.formColabApPaterno().trim();
+    const apMat = this.formColabApMaterno().trim();
     const dni = this.formColabDni().trim();
+    const correo = this.formColabCorreo().trim().toLowerCase();
+    const password = this.formColabPassword().trim();
+    const telefono = this.formColabTelefono().trim();
+
     if (!nombres || !apPat) {
       this.toastService.advertencia('Nombres y apellido paterno son obligatorios');
       return;
     }
+    if (!dni || dni.length !== 8) {
+      this.toastService.advertencia('El DNI debe tener 8 dígitos numéricos');
+      return;
+    }
+    if (!correo || !correo.includes('@')) {
+      this.toastService.advertencia('Ingresa un correo electrónico corporativo válido');
+      return;
+    }
+    if (!password || password.length < 6) {
+      this.toastService.advertencia('La contraseña del usuario debe tener al menos 6 caracteres');
+      return;
+    }
+
     this.guardandoEmpleado.set(true);
 
-    const personaPayload: any = {
+    const payload = {
       nombres: nombres.toUpperCase(),
       apellidoPaterno: apPat.toUpperCase(),
-      apellidoMaterno: this.formColabApMaterno().trim().toUpperCase() || undefined,
-      numeroDocumento: dni || undefined,
-      telefono: this.formColabTelefono().trim() || undefined,
-      fechaNacimiento: this.formColabFechaNacimiento().trim() || undefined,
-      tipoDocumento: { idTipoDocumento: 1, descripcion: 'DNI' },
-      vigente: true
+      apellidoMaterno: apMat ? apMat.toUpperCase() : undefined,
+      idTipoDocumento: 1, // DNI
+      numeroDocumento: dni,
+      telefono: telefono || undefined,
+      fechaNacimiento: this.formColabFechaNacimiento() || undefined,
+      direccion: this.formColabDireccion().trim() || undefined,
+      referencia: this.formColabReferencia().trim() || undefined,
+      idUbigeo: this.formColabDistritoId() || undefined,
+      correo: correo,
+      password: password,
+      idRol: this.formColabRolId() || 2,
+      fechaContrato: this.formColabFechaContrato(),
+      salario: this.formColabSalario()
     };
 
-    this.adminService.crearPersona(personaPayload).subscribe({
-      next: (persGuardada) => {
-        const empPayload: any = {
-          persona: { idPersona: persGuardada.idPersona },
-          cargo: this.formColabCargo(),
-          salario: this.formColabSalario(),
-          fechaContrato: this.formColabFechaContrato(),
-          vigente: true
-        };
-        this.adminService.crearEmpleado(empPayload).subscribe({
-          next: () => {
-            this.guardandoEmpleado.set(false);
-            this.cerrarModalNuevoEmpleado();
-            this.recargarEmpleados();
-            this.toastService.exito('Colaborador registrado exitosamente en la nómina');
-          },
-          error: (err) => {
-            this.guardandoEmpleado.set(false);
-            this.toastService.error(err.error?.mensaje || 'Error al registrar el contrato del colaborador');
-          }
-        });
+    this.adminService.crearEmpleadoCompleto(payload).subscribe({
+      next: () => {
+        this.guardandoEmpleado.set(false);
+        this.cerrarModalNuevoEmpleado();
+        this.recargarEmpleados();
+        this.recargarUsuarios();
+        this.toastService.exito('Colaborador y cuenta de usuario creados exitosamente');
       },
       error: (err) => {
         this.guardandoEmpleado.set(false);
-        this.toastService.error(err.error?.mensaje || 'Error al registrar la persona');
+        this.toastService.error(err.error?.mensaje || 'Error al registrar el colaborador');
       }
     });
+  }
+
+  abrirModalEditarEmpleado(emp: EmpleadoAdmin): void {
+    this.empleadoEditando.set(emp);
+    this.formEditCargo.set(emp.cargo || 'ESPECIALISTA');
+    this.formEditSalario.set(emp.salario || 1800);
+    this.formEditFechaContrato.set(emp.fechaContratacion ? emp.fechaContratacion.substring(0, 10) : '');
+    this.formEditVigente.set(emp.vigente !== false);
+    this.formEditTelefono.set(emp.persona?.telefono || '');
+    this.formEditDireccion.set(emp.persona?.direccion || '');
+    this.formEditReferencia.set(emp.persona?.referencia || '');
+    this.mostrarModalEditarEmpleado.set(true);
+  }
+
+  cerrarModalEditarEmpleado(): void {
+    this.mostrarModalEditarEmpleado.set(false);
+    this.empleadoEditando.set(null);
+  }
+
+  guardarEditarEmpleado(): void {
+    const emp = this.empleadoEditando();
+    if (!emp) return;
+
+    const payload = {
+      salario: this.formEditSalario(),
+      fechaContrato: this.formEditFechaContrato() || undefined,
+      vigente: this.formEditVigente(),
+      persona: {
+        telefono: this.formEditTelefono().trim() || undefined,
+        direccion: this.formEditDireccion().trim() || undefined,
+        referencia: this.formEditReferencia().trim() || undefined
+      }
+    };
+
+    this.adminService.actualizarEmpleado(emp.idEmpleado, payload).subscribe({
+      next: () => {
+        this.toastService.exito('Colaborador actualizado exitosamente');
+        this.cerrarModalEditarEmpleado();
+        this.recargarEmpleados();
+      },
+      error: (err) => {
+        this.toastService.error(err.error?.mensaje || 'Error al actualizar colaborador');
+      }
+    });
+  }
+
+  cambiarEstadoEmpleado(emp: EmpleadoAdmin): void {
+    const nuevoEstado = !emp.vigente;
+    const accion = nuevoEstado ? 'reactivar' : 'desactivar';
+    this.solicitarConfirmacion(
+      `¿${nuevoEstado ? 'Reactivar' : 'Desactivar'} Colaborador?`,
+      `¿Deseas ${accion} a ${emp.nombreCompleto || emp.persona?.nombres || 'este colaborador'}?`,
+      () => {
+        this.adminService.actualizarEmpleado(emp.idEmpleado, { vigente: nuevoEstado }).subscribe({
+          next: () => {
+            this.toastService.exito(`Colaborador ${nuevoEstado ? 'activado' : 'desactivado'}`);
+            this.recargarEmpleados();
+          },
+          error: (err) => this.toastService.error(err.error?.mensaje || 'Error al cambiar estado')
+        });
+      }
+    );
+  }
+
+  // ==========================================
+  // OPERACIONES: ROLES & MATRIZ DE PERMISOS
+  // ==========================================
+  abrirModalNuevoRol(): void {
+    this.esEdicionRol.set(false);
+    this.idRolEditando.set(null);
+    this.formRolNombre.set('');
+    this.formRolVigente.set(true);
+    this.formRolPermisos.set({
+      dashboard: ['ver'],
+      productos: ['ver']
+    });
+    this.mostrarModalRol.set(true);
+  }
+
+  abrirModalEditarRol(r: RolAdmin): void {
+    this.esEdicionRol.set(true);
+    this.idRolEditando.set(r.idRol);
+    this.formRolNombre.set(r.nombre || '');
+    this.formRolVigente.set(r.vigente !== false);
+
+    let parsedPermisos: Record<string, string[]> = {};
+    if (r.permisos) {
+      try {
+        parsedPermisos = JSON.parse(r.permisos);
+      } catch {
+        parsedPermisos = {};
+      }
+    }
+    this.formRolPermisos.set(parsedPermisos);
+    this.mostrarModalRol.set(true);
+  }
+
+  cerrarModalRol(): void {
+    this.mostrarModalRol.set(false);
+    this.idRolEditando.set(null);
+  }
+
+  tienePermisoRol(modulo: string, accion: string): boolean {
+    const actual = this.formRolPermisos();
+    const accionesModulo = actual[modulo] || [];
+    return accionesModulo.includes(accion);
+  }
+
+  togglePermisoRol(modulo: string, accion: string): void {
+    const actual = { ...this.formRolPermisos() };
+    const lista = [...(actual[modulo] || [])];
+    const idx = lista.indexOf(accion);
+    if (idx >= 0) {
+      lista.splice(idx, 1);
+    } else {
+      lista.push(accion);
+    }
+    actual[modulo] = lista;
+    this.formRolPermisos.set(actual);
+  }
+
+  marcarTodosPermisosRol(): void {
+    const nuevo: Record<string, string[]> = {};
+    for (const mod of this.MODULOS_SISTEMA) {
+      nuevo[mod.clave] = ['ver', 'crear', 'editar', 'eliminar'];
+    }
+    this.formRolPermisos.set(nuevo);
+  }
+
+  desmarcarTodosPermisosRol(): void {
+    this.formRolPermisos.set({});
+  }
+
+  guardarRol(): void {
+    const nombre = this.formRolNombre().trim();
+    if (!nombre) {
+      this.toastService.advertencia('Ingresa el nombre del rol');
+      return;
+    }
+    if (nombre.length > 20) {
+      this.toastService.advertencia('El nombre del rol no debe superar 20 caracteres');
+      return;
+    }
+
+    const permisosJson = JSON.stringify(this.formRolPermisos());
+    const payload: Partial<RolAdmin> = {
+      nombre,
+      vigente: this.formRolVigente(),
+      permisos: permisosJson
+    };
+
+    if (this.esEdicionRol()) {
+      const id = this.idRolEditando()!;
+      this.adminService.actualizarRol(id, payload).subscribe({
+        next: () => {
+          this.toastService.exito(`Rol "${nombre}" actualizado exitosamente`);
+          this.cerrarModalRol();
+          this.recargarRoles();
+        },
+        error: (err) => {
+          this.toastService.error(err.error?.mensaje || 'Error al actualizar rol');
+        }
+      });
+    } else {
+      this.adminService.crearRol(payload).subscribe({
+        next: () => {
+          this.toastService.exito(`Rol "${nombre}" creado exitosamente`);
+          this.cerrarModalRol();
+          this.recargarRoles();
+        },
+        error: (err) => {
+          this.toastService.error(err.error?.mensaje || 'Error al crear rol');
+        }
+      });
+    }
+  }
+
+  // ==========================================
+  // OPERACIONES: EDICIÓN DE USUARIOS
+  // ==========================================
+  abrirModalEditarUsuario(u: UsuarioAdmin): void {
+    this.usuarioEditando.set(u);
+    this.formUsuarioRolId.set(u.rol?.idRol || null);
+    this.formUsuarioEstado.set(u.estado ? u.estado.toLowerCase() : 'activo');
+    this.formUsuarioNuevaPassword.set('');
+    this.mostrarPasswordUsuario.set(false);
+    this.mostrarModalEditarUsuario.set(true);
+  }
+
+  cerrarModalEditarUsuario(): void {
+    this.mostrarModalEditarUsuario.set(false);
+    this.usuarioEditando.set(null);
+  }
+
+  guardarEditarUsuario(): void {
+    const u = this.usuarioEditando();
+    if (!u) return;
+
+    const rolId = this.formUsuarioRolId();
+    if (!rolId) {
+      this.toastService.advertencia('Debes seleccionar un rol para el usuario');
+      return;
+    }
+
+    const payload: any = {
+      correo: u.correo,
+      estado: this.formUsuarioEstado(),
+      rol: { idRol: rolId }
+    };
+
+    const nuevaClave = this.formUsuarioNuevaPassword().trim();
+    if (nuevaClave) {
+      if (nuevaClave.length < 6) {
+        this.toastService.advertencia('La nueva contraseña debe tener al menos 6 caracteres');
+        return;
+      }
+      payload.password = nuevaClave;
+    }
+
+    this.adminService.actualizarUsuario(u.idUsuario, payload).subscribe({
+      next: () => {
+        this.toastService.exito('Usuario actualizado exitosamente');
+        this.cerrarModalEditarUsuario();
+        this.recargarUsuarios();
+      },
+      error: (err) => {
+        this.toastService.error(err.error?.mensaje || 'Error al actualizar usuario');
+      }
+    });
+  }
+
+  cambiarEstadoUsuario(u: UsuarioAdmin): void {
+    const estadoActual = (u.estado || 'activo').toLowerCase();
+    const nuevoEstado = estadoActual === 'activo' ? 'inactivo' : 'activo';
+    const accion = nuevoEstado === 'activo' ? 'reactivar' : 'desactivar';
+
+    this.solicitarConfirmacion(
+      `¿${nuevoEstado === 'activo' ? 'Reactivar' : 'Desactivar'} Usuario?`,
+      `¿Deseas ${accion} la cuenta de "${u.correo}"?`,
+      () => {
+        this.adminService.actualizarUsuario(u.idUsuario, {
+          correo: u.correo,
+          estado: nuevoEstado,
+          rol: u.rol
+        }).subscribe({
+          next: () => {
+            this.toastService.exito(`Usuario ${nuevoEstado === 'activo' ? 'activado' : 'desactivado'}`);
+            this.recargarUsuarios();
+          },
+          error: (err) => this.toastService.error(err.error?.mensaje || 'Error al cambiar estado de usuario')
+        });
+      }
+    );
+  }
+
+  // ==========================================
+  // OPERACIONES: EDICIÓN DE MEDIOS DE PAGO
+  // ==========================================
+  abrirModalEditarMedioPago(mp: MedioPagoAdmin): void {
+    this.medioPagoEditando.set(mp);
+    this.formMedioPagoInstrucciones.set(mp.instrucciones || this.getInstruccionesMedioPago(mp));
+    this.formMedioPagoVigente.set(mp.vigente !== false);
+    this.mostrarModalEditarMedioPago.set(true);
+  }
+
+  cerrarModalEditarMedioPago(): void {
+    this.mostrarModalEditarMedioPago.set(false);
+    this.medioPagoEditando.set(null);
+  }
+
+  guardarEditarMedioPago(): void {
+    const mp = this.medioPagoEditando();
+    if (!mp) return;
+
+    const payload = {
+      nombre: mp.nombre,
+      instrucciones: this.formMedioPagoInstrucciones().trim(),
+      vigente: this.formMedioPagoVigente()
+    };
+
+    this.adminService.actualizarMedioPago(mp.idMedioPago, payload).subscribe({
+      next: () => {
+        this.toastService.exito('Medio de pago actualizado');
+        this.cerrarModalEditarMedioPago();
+        this.recargarMediosPago();
+      },
+      error: (err) => this.toastService.error(err.error?.mensaje || 'Error al actualizar medio de pago')
+    });
+  }
+
+  cambiarEstadoMedioPago(mp: MedioPagoAdmin): void {
+    const nuevoEstado = !mp.vigente;
+    const accion = nuevoEstado ? 'habilitar' : 'deshabilitar';
+    this.solicitarConfirmacion(
+      `¿${nuevoEstado ? 'Habilitar' : 'Deshabilitar'} Medio de Pago?`,
+      `¿Deseas ${accion} el método "${mp.nombre}"?`,
+      () => {
+        this.adminService.actualizarMedioPago(mp.idMedioPago, {
+          nombre: mp.nombre,
+          instrucciones: mp.instrucciones,
+          vigente: nuevoEstado
+        }).subscribe({
+          next: () => {
+            this.toastService.exito(`Medio de pago ${nuevoEstado ? 'habilitado' : 'deshabilitado'}`);
+            this.recargarMediosPago();
+          },
+          error: (err) => this.toastService.error(err.error?.mensaje || 'Error al cambiar estado')
+        });
+      }
+    );
   }
 
   eliminarTipoDoc(td: TipoDocumentoAdmin): void {

@@ -2627,6 +2627,7 @@
                   <th class="p-3 text-right">Salario Base</th>
                   <th class="p-3 text-center">Fecha Ingreso</th>
                   <th class="p-3 text-center">Estado</th>
+                  <th class="p-3 text-right">Acciones</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-slate-200 dark:divide-slate-800/60">
@@ -2657,10 +2658,30 @@
                         {{ emp.vigente !== false ? 'ACTIVO' : 'INACTIVO' }}
                       </span>
                     </td>
+                    <td class="p-3 text-right">
+                      <div class="flex items-center justify-end gap-1.5">
+                        <button
+                          (click)="abrirModalEditarEmpleado(emp)"
+                          class="p-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/50 transition-colors cursor-pointer"
+                          title="Editar colaborador y condiciones">
+                          <span class="material-symbols-outlined text-sm">edit</span>
+                        </button>
+                        <button
+                          (click)="cambiarEstadoEmpleado(emp)"
+                          class="p-1.5 rounded-lg transition-colors cursor-pointer"
+                          [class.text-amber-600]="emp.vigente !== false"
+                          [class.hover:bg-amber-50]="emp.vigente !== false"
+                          [class.text-emerald-600]="emp.vigente === false"
+                          [class.hover:bg-emerald-50]="emp.vigente === false"
+                          [title]="emp.vigente !== false ? 'Desactivar colaborador' : 'Reactivar colaborador'">
+                          <span class="material-symbols-outlined text-sm">{{ emp.vigente !== false ? 'person_off' : 'how_to_reg' }}</span>
+                        </button>
+                      </div>
+                    </td>
                   </tr>
                 } @empty {
                   <tr>
-                    <td colspan="7" class="p-8 text-center text-slate-500">
+                    <td colspan="8" class="p-8 text-center text-slate-500">
                       No se encontraron empleados registrados en la nómina.
                     </td>
                   </tr>
@@ -2797,6 +2818,7 @@
                   <th class="p-3 text-center">Último Acceso</th>
                   <th class="p-3 text-center">Intentos</th>
                   <th class="p-3 text-center">Estado</th>
+                  <th class="p-3 text-right">Acciones</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-slate-200 dark:divide-slate-800/60">
@@ -2829,11 +2851,31 @@
                       </span>
                     </td>
                     <td class="p-3 text-center">
-                      <span class="px-2 py-0.5 rounded-full text-[10px] font-bold"
-                        [class.bg-emerald-100]="u.estado === 'ACTIVO'" [class.text-emerald-800]="u.estado === 'ACTIVO'"
-                        [class.bg-rose-100]="u.estado !== 'ACTIVO'" [class.text-rose-800]="u.estado !== 'ACTIVO'">
+                      <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase"
+                        [class.bg-emerald-100]="(u.estado || '').toUpperCase() === 'ACTIVO'" [class.text-emerald-800]="(u.estado || '').toUpperCase() === 'ACTIVO'"
+                        [class.bg-rose-100]="(u.estado || '').toUpperCase() !== 'ACTIVO'" [class.text-rose-800]="(u.estado || '').toUpperCase() !== 'ACTIVO'">
                         {{ u.estado || 'ACTIVO' }}
                       </span>
+                    </td>
+                    <td class="p-3 text-right">
+                      <div class="flex items-center justify-end gap-1.5">
+                        <button
+                          (click)="abrirModalEditarUsuario(u)"
+                          class="p-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/50 transition-colors cursor-pointer"
+                          title="Editar rol y credenciales">
+                          <span class="material-symbols-outlined text-sm">edit</span>
+                        </button>
+                        <button
+                          (click)="cambiarEstadoUsuario(u)"
+                          class="p-1.5 rounded-lg transition-colors cursor-pointer"
+                          [class.text-amber-600]="(u.estado || '').toUpperCase() === 'ACTIVO'"
+                          [class.hover:bg-amber-50]="(u.estado || '').toUpperCase() === 'ACTIVO'"
+                          [class.text-emerald-600]="(u.estado || '').toUpperCase() !== 'ACTIVO'"
+                          [class.hover:bg-emerald-50]="(u.estado || '').toUpperCase() !== 'ACTIVO'"
+                          [title]="(u.estado || '').toUpperCase() === 'ACTIVO' ? 'Desactivar usuario' : 'Reactivar usuario'">
+                          <span class="material-symbols-outlined text-sm">{{ (u.estado || '').toUpperCase() === 'ACTIVO' ? 'block' : 'check_circle' }}</span>
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 } @empty {
@@ -3696,25 +3738,51 @@
               </h2>
               <p class="text-xs text-slate-600 dark:text-slate-400 font-medium">Pasarelas, billeteras digitales y métodos aceptados en checkout</p>
             </div>
+            <div class="flex items-center gap-2">
+              <button (click)="recargarMediosPago()" class="px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 shadow-xs flex items-center gap-1.5 transition-all cursor-pointer">
+                <span class="material-symbols-outlined text-sm">refresh</span> Actualizar
+              </button>
+              <button (click)="abrirModalMedioPago()" class="px-3.5 py-2 rounded-xl text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-md shadow-blue-600/20 flex items-center gap-1.5 transition-all cursor-pointer">
+                <span class="material-symbols-outlined text-sm">add_card</span> Nuevo Medio
+              </button>
+            </div>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             @for (mp of mediosPago(); track mp.idMedioPago) {
-              <div class="glass-panel p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 shadow-xs flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                  <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
-                    <span class="material-symbols-outlined">payments</span>
+              <div class="glass-panel p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 shadow-xs flex flex-col justify-between gap-3">
+                <div class="flex items-start justify-between gap-3">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
+                      <span class="material-symbols-outlined">payments</span>
+                    </div>
+                    <div>
+                      <h3 class="text-sm font-bold text-slate-900 dark:text-white">{{ mp.nombre }}</h3>
+                      <p class="text-[11px] font-mono text-slate-500">ID: #{{ mp.idMedioPago }}</p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 class="text-sm font-bold text-slate-900 dark:text-white">{{ mp.nombre }}</h3>
-                    <p class="text-[11px] font-mono text-slate-500">{{ mp.instrucciones || mp.codigo || 'PAGO DIGITAL' }}</p>
-                  </div>
+                  <span class="px-2.5 py-1 rounded-full text-[10px] font-bold"
+                    [class.bg-emerald-100]="mp.vigente" [class.text-emerald-800]="mp.vigente"
+                    [class.bg-slate-100]="!mp.vigente" [class.text-slate-600]="!mp.vigente">
+                    {{ mp.vigente ? 'ACTIVO' : 'INACTIVO' }}
+                  </span>
                 </div>
-                <span class="px-2.5 py-1 rounded-full text-[10px] font-bold"
-                  [class.bg-emerald-100]="mp.vigente" [class.text-emerald-800]="mp.vigente"
-                  [class.bg-slate-100]="!mp.vigente" [class.text-slate-600]="!mp.vigente">
-                  {{ mp.vigente ? 'ACTIVO' : 'INACTIVO' }}
-                </span>
+                <p class="text-xs text-slate-600 dark:text-slate-400 line-clamp-2">{{ mp.instrucciones || 'Sin instrucciones adicionales' }}</p>
+                <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+                  <button
+                    (click)="abrirModalEditarMedioPago(mp)"
+                    class="px-2.5 py-1 rounded-lg text-xs font-semibold text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/50 flex items-center gap-1 cursor-pointer">
+                    <span class="material-symbols-outlined text-sm">edit</span> Editar
+                  </button>
+                  <button
+                    (click)="cambiarEstadoMedioPago(mp)"
+                    class="px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1 cursor-pointer"
+                    [class.text-amber-600]="mp.vigente" [class.hover:bg-amber-50]="mp.vigente"
+                    [class.text-emerald-600]="!mp.vigente" [class.hover:bg-emerald-50]="!mp.vigente">
+                    <span class="material-symbols-outlined text-sm">{{ mp.vigente ? 'toggle_on' : 'toggle_off' }}</span>
+                    <span>{{ mp.vigente ? 'Deshabilitar' : 'Habilitar' }}</span>
+                  </button>
+                </div>
               </div>
             }
           </div>
@@ -4710,29 +4778,50 @@
       <!-- ================= 14. ROLES Y PERMISOS ================= -->
       @if (tabActiva() === 'roles') {
         <div class="space-y-6 animate-fadeIn">
-          <div>
-            <h2 class="text-xl font-black text-slate-900 dark:text-white font-heading flex items-center gap-2">
-              <span class="material-symbols-outlined text-blue-600 dark:text-blue-400">admin_panel_settings</span> Roles & Permisos
-            </h2>
-            <p class="text-xs text-slate-600 dark:text-slate-400 font-medium">Niveles de acceso y autorización para el equipo de trabajo y clientes</p>
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+              <h2 class="text-xl font-black text-slate-900 dark:text-white font-heading flex items-center gap-2">
+                <span class="material-symbols-outlined text-blue-600 dark:text-blue-400">admin_panel_settings</span> Roles & Permisos
+              </h2>
+              <p class="text-xs text-slate-600 dark:text-slate-400 font-medium">Niveles de acceso y matriz de permisos por módulo del sistema</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <button (click)="recargarRoles()" class="px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 shadow-xs flex items-center gap-1.5 transition-all cursor-pointer">
+                <span class="material-symbols-outlined text-sm">refresh</span> Actualizar
+              </button>
+              <button (click)="abrirModalNuevoRol()" class="px-3.5 py-2 rounded-xl text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-md shadow-blue-600/20 flex items-center gap-1.5 transition-all cursor-pointer">
+                <span class="material-symbols-outlined text-sm">add_moderator</span> Nuevo Rol
+              </button>
+            </div>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             @for (r of roles(); track r.idRol) {
-              <div class="glass-panel p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 shadow-xs space-y-3">
-                <div class="flex justify-between items-start">
-                  <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
-                    <span class="material-symbols-outlined text-xl">shield_person</span>
+              <div class="glass-panel p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 shadow-xs space-y-3 flex flex-col justify-between">
+                <div class="space-y-3">
+                  <div class="flex justify-between items-start">
+                    <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
+                      <span class="material-symbols-outlined text-xl">shield_person</span>
+                    </div>
+                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold"
+                      [class.bg-emerald-100]="r.vigente !== false" [class.text-emerald-800]="r.vigente !== false"
+                      [class.bg-slate-100]="r.vigente === false" [class.text-slate-600]="r.vigente === false">
+                      {{ r.vigente !== false ? 'ACTIVO' : 'INACTIVO' }}
+                    </span>
                   </div>
-                  <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-400">
-                    {{ r.vigente ? 'ACTIVO' : 'INACTIVO' }}
-                  </span>
+                  <div>
+                    <h3 class="text-sm font-bold text-slate-900 dark:text-white uppercase">{{ r.nombre }}</h3>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+                      ID Rol: #{{ r.idRol }} · Privilegios del sistema
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h3 class="text-sm font-bold text-slate-900 dark:text-white uppercase">{{ r.nombre }}</h3>
-                  <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
-                    ID Rol: #{{ r.idRol }} · Privilegios configurados
-                  </p>
+                <div class="pt-2 border-t border-slate-100 dark:border-slate-800 flex justify-end">
+                  <button
+                    (click)="abrirModalEditarRol(r)"
+                    class="w-full py-1.5 px-3 rounded-xl text-xs font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/50 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors flex items-center justify-center gap-1.5 cursor-pointer">
+                    <span class="material-symbols-outlined text-sm">tune</span> Configurar Permisos
+                  </button>
                 </div>
               </div>
             }
@@ -6118,132 +6207,265 @@
     <!-- ============================================================== -->
   <!-- MODAL: NUEVO COLABORADOR (CONSULTA RENIEC & FECHA NACIMIENTO)   -->
   <!-- ============================================================== -->
+  <!-- MODAL: ALTA INTEGRAL DE COLABORADOR & CUENTA                   -->
+  <!-- ============================================================== -->
   @if (mostrarModalNuevoEmpleado()) {
     <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 dark:bg-slate-950/80 backdrop-blur-sm animate-fadeIn">
-      <div class="glass-panel w-full max-w-lg rounded-3xl p-6 space-y-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white shadow-2xl max-h-[90vh] overflow-y-auto">
+      <div class="glass-panel w-full max-w-2xl rounded-3xl p-6 space-y-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white shadow-2xl max-h-[92vh] overflow-y-auto">
         <div class="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3">
           <div class="flex items-center gap-2">
             <span class="material-symbols-outlined text-blue-600 dark:text-blue-400">person_add</span>
-            <h3 class="text-base font-bold text-slate-900 dark:text-white font-heading">
-              Alta de Nuevo Colaborador
-            </h3>
+            <div>
+              <h3 class="text-base font-bold text-slate-900 dark:text-white font-heading">
+                Alta Integral de Colaborador
+              </h3>
+              <p class="text-[11px] text-slate-500">Registro civil, domicilio fiscal y provisión de cuenta corporativa</p>
+            </div>
           </div>
           <button (click)="cerrarModalNuevoEmpleado()" class="text-slate-400 hover:text-slate-700 dark:hover:text-white p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">
             <span class="material-symbols-outlined">close</span>
           </button>
         </div>
 
-        <!-- Consulta DNI Automática -->
-        <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 space-y-2">
-          <label class="text-[11px] font-bold uppercase text-slate-600 dark:text-slate-400 block">DNI Oficial (RENIEC) *</label>
+        <!-- 1. BLOQUE IDENTIDAD & RENIEC -->
+        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-sm">badge</span> 1. Identidad Civil & RENIEC
+            </span>
+            <span class="text-[10px] text-slate-400 font-mono">DNI / Datos Oficiales</span>
+          </div>
+
           <div class="flex gap-2">
-            <input
-              type="text"
-              maxlength="8"
-              [ngModel]="formColabDni()"
-              (ngModelChange)="formColabDni.set($event)"
-              placeholder="Ingresa 8 dígitos..."
-              class="flex-1 bg-white dark:bg-slate-900 text-xs text-slate-800 dark:text-slate-200 px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500 font-mono"
-            />
+            <div class="flex-1">
+              <input
+                type="text"
+                maxlength="8"
+                [ngModel]="formColabDni()"
+                (ngModelChange)="formColabDni.set($event)"
+                placeholder="Ingresa DNI (8 dígitos)..."
+                class="w-full bg-white dark:bg-slate-900 text-xs text-slate-800 dark:text-slate-200 px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500 font-mono"
+              />
+            </div>
             <button
               type="button"
               (click)="consultarDniColaborador()"
               [disabled]="consultandoDniColab()"
-              class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-1.5 disabled:opacity-50 cursor-pointer shadow-xs whitespace-nowrap">
+              class="px-4 py-2 rounded-xl text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-1.5 disabled:opacity-50 cursor-pointer shadow-xs whitespace-nowrap">
               @if (consultandoDniColab()) {
                 <span class="material-symbols-outlined animate-spin text-sm">progress_activity</span>
               } @else {
                 <span class="material-symbols-outlined text-sm">search</span>
               }
-              <span>Consultar</span>
+              <span>Consultar RENIEC</span>
             </button>
           </div>
-        </div>
 
-        <!-- Datos Personales Obtenidos -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <label class="text-[11px] font-bold uppercase text-slate-600 dark:text-slate-400 block mb-1">Nombres *</label>
-            <input
-              type="text"
-              [ngModel]="formColabNombres()"
-              (ngModelChange)="formColabNombres.set($event)"
-              placeholder="Nombres oficiales"
-              class="w-full bg-slate-50 dark:bg-slate-950 text-xs text-slate-900 dark:text-white px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500 uppercase"
-            />
-          </div>
-          <div>
-            <label class="text-[11px] font-bold uppercase text-slate-600 dark:text-slate-400 block mb-1">Apellido Paterno *</label>
-            <input
-              type="text"
-              [ngModel]="formColabApPaterno()"
-              (ngModelChange)="formColabApPaterno.set($event)"
-              placeholder="Apellido paterno"
-              class="w-full bg-slate-50 dark:bg-slate-950 text-xs text-slate-900 dark:text-white px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500 uppercase"
-            />
-          </div>
-          <div>
-            <label class="text-[11px] font-bold uppercase text-slate-600 dark:text-slate-400 block mb-1">Apellido Materno</label>
-            <input
-              type="text"
-              [ngModel]="formColabApMaterno()"
-              (ngModelChange)="formColabApMaterno.set($event)"
-              placeholder="Apellido materno"
-              class="w-full bg-slate-50 dark:bg-slate-950 text-xs text-slate-900 dark:text-white px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500 uppercase"
-            />
-          </div>
-          <div>
-            <div class="flex items-center justify-between mb-1">
-              <label class="text-[11px] font-bold uppercase text-slate-600 dark:text-slate-400">Fecha de Nacimiento</label>
-              @if (formColabFechaNacimiento()) {
-                <span class="text-[9px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 px-1.5 py-0.5 rounded border border-emerald-200 dark:border-emerald-800/40">
-                  RENIEC
-                </span>
-              }
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+            <div>
+              <label class="text-[10px] font-bold uppercase text-slate-600 dark:text-slate-400 block mb-1">Nombres *</label>
+              <input
+                type="text"
+                [ngModel]="formColabNombres()"
+                (ngModelChange)="formColabNombres.set($event)"
+                placeholder="Nombres"
+                class="w-full bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-white px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500 uppercase"
+              />
             </div>
-            <input
-              type="date"
-              [ngModel]="formColabFechaNacimiento()"
-              (ngModelChange)="formColabFechaNacimiento.set($event)"
-              class="w-full bg-slate-50 dark:bg-slate-950 text-xs text-slate-900 dark:text-white px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500"
-            />
+            <div>
+              <label class="text-[10px] font-bold uppercase text-slate-600 dark:text-slate-400 block mb-1">Apellido Paterno *</label>
+              <input
+                type="text"
+                [ngModel]="formColabApPaterno()"
+                (ngModelChange)="formColabApPaterno.set($event)"
+                placeholder="Paterno"
+                class="w-full bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-white px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500 uppercase"
+              />
+            </div>
+            <div>
+              <label class="text-[10px] font-bold uppercase text-slate-600 dark:text-slate-400 block mb-1">Apellido Materno</label>
+              <input
+                type="text"
+                [ngModel]="formColabApMaterno()"
+                (ngModelChange)="formColabApMaterno.set($event)"
+                placeholder="Materno"
+                class="w-full bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-white px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500 uppercase"
+              />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <div>
+              <label class="text-[10px] font-bold uppercase text-slate-600 dark:text-slate-400 block mb-1">Fecha de Nacimiento</label>
+              <input
+                type="date"
+                [ngModel]="formColabFechaNacimiento()"
+                (ngModelChange)="formColabFechaNacimiento.set($event)"
+                class="w-full bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-white px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500"
+              />
+            </div>
+            <div>
+              <label class="text-[10px] font-bold uppercase text-slate-600 dark:text-slate-400 block mb-1">Teléfono Móvil (9 dígitos)</label>
+              <input
+                type="tel"
+                maxlength="9"
+                [ngModel]="formColabTelefono()"
+                (ngModelChange)="formColabTelefono.set($event)"
+                placeholder="Ej. 987654321"
+                class="w-full bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-white px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500 font-mono"
+              />
+            </div>
           </div>
         </div>
 
-        <!-- Datos Contractuales y Laborales -->
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1 border-t border-slate-200 dark:border-slate-800">
-          <div>
-            <label class="text-[11px] font-bold uppercase text-slate-600 dark:text-slate-400 block mb-1">Cargo / Puesto</label>
-            <select
-              [ngModel]="formColabCargo()"
-              (ngModelChange)="formColabCargo.set($event)"
-              class="w-full bg-slate-50 dark:bg-slate-950 text-xs text-slate-900 dark:text-white px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500">
-              <option value="ESPECIALISTA">Especialista</option>
-              <option value="SUPERVISOR">Supervisor</option>
-              <option value="LOGISTICA">Logística / Almacén</option>
-              <option value="SOPORTE">Soporte Técnico</option>
-              <option value="VENTAS">Ventas & Asesoría</option>
-            </select>
+        <!-- 2. BLOQUE DOMICILIO & UBIGEO -->
+        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 space-y-3">
+          <span class="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-sm">home_pin</span> 2. Domicilio & Ubicación
+          </span>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+            <div>
+              <label class="text-[10px] font-bold uppercase text-slate-600 dark:text-slate-400 block mb-1">Departamento</label>
+              <select
+                [ngModel]="formColabDepartamento()"
+                (ngModelChange)="alCambiarDepartamentoColab($event)"
+                class="w-full bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-white px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500">
+                @for (dep of departamentosColab(); track dep) {
+                  <option [value]="dep">{{ dep }}</option>
+                }
+              </select>
+            </div>
+            <div>
+              <label class="text-[10px] font-bold uppercase text-slate-600 dark:text-slate-400 block mb-1">Provincia</label>
+              <select
+                [ngModel]="formColabProvincia()"
+                (ngModelChange)="alCambiarProvinciaColab($event)"
+                class="w-full bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-white px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500">
+                @for (prov of provinciasColab(); track prov) {
+                  <option [value]="prov">{{ prov }}</option>
+                }
+              </select>
+            </div>
+            <div>
+              <label class="text-[10px] font-bold uppercase text-slate-600 dark:text-slate-400 block mb-1">Distrito (Ubigeo)</label>
+              <select
+                [ngModel]="formColabDistritoId()"
+                (ngModelChange)="formColabDistritoId.set($event)"
+                class="w-full bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-white px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500">
+                @for (dst of distritosColab(); track dst.idUbigeo) {
+                  <option [value]="dst.idUbigeo">{{ dst.distrito }}</option>
+                }
+              </select>
+            </div>
           </div>
-          <div>
-            <label class="text-[11px] font-bold uppercase text-slate-600 dark:text-slate-400 block mb-1">Salario Base (S/)</label>
-            <input
-              type="number"
-              [ngModel]="formColabSalario()"
-              (ngModelChange)="formColabSalario.set($event)"
-              min="1025"
-              step="50"
-              class="w-full bg-slate-50 dark:bg-slate-950 text-xs text-slate-900 dark:text-white px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500 font-mono"
-            />
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <div>
+              <label class="text-[10px] font-bold uppercase text-slate-600 dark:text-slate-400 block mb-1">Dirección Exacta</label>
+              <input
+                type="text"
+                [ngModel]="formColabDireccion()"
+                (ngModelChange)="formColabDireccion.set($event)"
+                placeholder="Av. / Jr. / Calle y N°"
+                class="w-full bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-white px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500"
+              />
+            </div>
+            <div>
+              <label class="text-[10px] font-bold uppercase text-slate-600 dark:text-slate-400 block mb-1">Referencia</label>
+              <input
+                type="text"
+                [ngModel]="formColabReferencia()"
+                (ngModelChange)="formColabReferencia.set($event)"
+                placeholder="Cerca a parque / esquina"
+                class="w-full bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-white px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500"
+              />
+            </div>
           </div>
-          <div>
-            <label class="text-[11px] font-bold uppercase text-slate-600 dark:text-slate-400 block mb-1">Fecha Contrato</label>
-            <input
-              type="date"
-              [ngModel]="formColabFechaContrato()"
-              (ngModelChange)="formColabFechaContrato.set($event)"
-              class="w-full bg-slate-50 dark:bg-slate-950 text-xs text-slate-900 dark:text-white px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500"
-            />
+        </div>
+
+        <!-- 3. BLOQUE CUENTA & CONDICIONES LABORALES -->
+        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 space-y-3">
+          <span class="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-sm">lock_person</span> 3. Cuenta de Acceso & Condiciones Laborales
+          </span>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <div>
+              <label class="text-[10px] font-bold uppercase text-slate-600 dark:text-slate-400 block mb-1">Correo Corporativo *</label>
+              <input
+                type="email"
+                [ngModel]="formColabCorreo()"
+                (ngModelChange)="formColabCorreo.set($event)"
+                placeholder="ejemplo@techzone.pe"
+                class="w-full bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-white px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500 font-mono"
+              />
+            </div>
+            <div>
+              <label class="text-[10px] font-bold uppercase text-slate-600 dark:text-slate-400 block mb-1">Contraseña de Acceso *</label>
+              <div class="relative">
+                <input
+                  [type]="mostrarPasswordColab() ? 'text' : 'password'"
+                  [ngModel]="formColabPassword()"
+                  (ngModelChange)="formColabPassword.set($event)"
+                  placeholder="Mínimo 6 caracteres"
+                  class="w-full bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-white px-3 py-2 pr-9 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500 font-mono"
+                />
+                <button
+                  type="button"
+                  (click)="mostrarPasswordColab.set(!mostrarPasswordColab())"
+                  class="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer">
+                  <span class="material-symbols-outlined text-base">{{ mostrarPasswordColab() ? 'visibility_off' : 'visibility' }}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-4 gap-2.5">
+            <div>
+              <label class="text-[10px] font-bold uppercase text-slate-600 dark:text-slate-400 block mb-1">Rol de Usuario</label>
+              <select
+                [ngModel]="formColabRolId()"
+                (ngModelChange)="formColabRolId.set(+$event)"
+                class="w-full bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-white px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500">
+                @for (r of roles(); track r.idRol) {
+                  <option [value]="r.idRol">{{ r.nombre }}</option>
+                }
+              </select>
+            </div>
+            <div>
+              <label class="text-[10px] font-bold uppercase text-slate-600 dark:text-slate-400 block mb-1">Cargo / Función</label>
+              <select
+                [ngModel]="formColabCargo()"
+                (ngModelChange)="formColabCargo.set($event)"
+                class="w-full bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-white px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500">
+                <option value="SUPERVISOR_VENTAS">Supervisor de Ventas</option>
+                <option value="ESPECIALISTA">Especialista Hardware</option>
+                <option value="LOGISTICA">Logística / Almacén</option>
+                <option value="SOPORTE">Soporte Técnico</option>
+                <option value="VENTAS">Asesor Comercial</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-[10px] font-bold uppercase text-slate-600 dark:text-slate-400 block mb-1">Salario Mensual (S/)</label>
+              <input
+                type="number"
+                [ngModel]="formColabSalario()"
+                (ngModelChange)="formColabSalario.set($event)"
+                min="1025"
+                step="50"
+                class="w-full bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-white px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500 font-mono"
+              />
+            </div>
+            <div>
+              <label class="text-[10px] font-bold uppercase text-slate-600 dark:text-slate-400 block mb-1">Fecha Contrato</label>
+              <input
+                type="date"
+                [ngModel]="formColabFechaContrato()"
+                (ngModelChange)="formColabFechaContrato.set($event)"
+                class="w-full bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-white px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500"
+              />
+            </div>
           </div>
         </div>
 
@@ -6264,42 +6486,412 @@
             } @else {
               <span class="material-symbols-outlined text-sm">save</span>
             }
-            <span>Guardar Colaborador</span>
+            <span>Guardar e Incorporar</span>
           </button>
         </div>
       </div>
     </div>
   }
 
-
   <!-- ============================================================== -->
-  <!-- MODAL: CONFIRMACIÓN CENTRALIZADO (Gestalt & Destructivo)       -->
+  <!-- MODAL: EDITAR COLABORADOR                                      -->
   <!-- ============================================================== -->
-  @if (mostrarModalConfirmacion()) {
+  @if (mostrarModalEditarEmpleado()) {
     <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 dark:bg-slate-950/80 backdrop-blur-sm animate-fadeIn">
-      <div class="glass-panel w-full max-w-md rounded-3xl p-6 space-y-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-2xl text-slate-900 dark:text-white">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0"
-               [ngClass]="confirmacionEsPeligro() ? 'bg-red-500/20 text-red-400' : 'bg-indigo-500/20 text-indigo-400'">
-            <span class="material-symbols-outlined text-lg">{{ confirmacionEsPeligro() ? 'warning' : 'info' }}</span>
+      <div class="glass-panel w-full max-w-lg rounded-3xl p-6 space-y-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white shadow-2xl max-h-[90vh] overflow-y-auto">
+        <div class="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3">
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-blue-600 dark:text-blue-400">badge</span>
+            <div>
+              <h3 class="text-base font-bold text-slate-900 dark:text-white font-heading">
+                Editar Colaborador #{{ empleadoEditando()?.idEmpleado }}
+              </h3>
+              <p class="text-[11px] text-slate-500">{{ empleadoEditando()?.nombreCompleto }}</p>
+            </div>
           </div>
+          <button (click)="cerrarModalEditarEmpleado()" class="text-slate-400 hover:text-slate-700 dark:hover:text-white p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+
+        <div class="space-y-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="text-[11px] font-bold uppercase text-slate-600 dark:text-slate-400 block mb-1">Salario Base (S/)</label>
+              <input
+                type="number"
+                [ngModel]="formEditSalario()"
+                (ngModelChange)="formEditSalario.set($event)"
+                min="1025"
+                step="50"
+                class="w-full bg-slate-50 dark:bg-slate-950 text-xs text-slate-900 dark:text-white px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500 font-mono"
+              />
+            </div>
+            <div>
+              <label class="text-[11px] font-bold uppercase text-slate-600 dark:text-slate-400 block mb-1">Fecha Contratación</label>
+              <input
+                type="date"
+                [ngModel]="formEditFechaContrato()"
+                (ngModelChange)="formEditFechaContrato.set($event)"
+                class="w-full bg-slate-50 dark:bg-slate-950 text-xs text-slate-900 dark:text-white px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500"
+              />
+            </div>
+          </div>
+
           <div>
-            <h3 class="text-base font-bold text-slate-900 dark:text-white font-heading">{{ confirmacionTitulo() }}</h3>
-            <p class="text-xs text-slate-600 dark:text-slate-400 mt-0.5 leading-relaxed">{{ confirmacionMensaje() }}</p>
+            <label class="text-[11px] font-bold uppercase text-slate-600 dark:text-slate-400 block mb-1">Teléfono Contacto</label>
+            <input
+              type="tel"
+              maxlength="9"
+              [ngModel]="formEditTelefono()"
+              (ngModelChange)="formEditTelefono.set($event)"
+              class="w-full bg-slate-50 dark:bg-slate-950 text-xs text-slate-900 dark:text-white px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500 font-mono"
+            />
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="text-[11px] font-bold uppercase text-slate-600 dark:text-slate-400 block mb-1">Dirección</label>
+              <input
+                type="text"
+                [ngModel]="formEditDireccion()"
+                (ngModelChange)="formEditDireccion.set($event)"
+                class="w-full bg-slate-50 dark:bg-slate-950 text-xs text-slate-900 dark:text-white px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500"
+              />
+            </div>
+            <div>
+              <label class="text-[11px] font-bold uppercase text-slate-600 dark:text-slate-400 block mb-1">Referencia</label>
+              <input
+                type="text"
+                [ngModel]="formEditReferencia()"
+                (ngModelChange)="formEditReferencia.set($event)"
+                class="w-full bg-slate-50 dark:bg-slate-950 text-xs text-slate-900 dark:text-white px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500"
+              />
+            </div>
+          </div>
+
+          <div class="pt-2 border-t border-slate-200 dark:border-slate-800">
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                [checked]="formEditVigente()"
+                (change)="formEditVigente.set(!formEditVigente())"
+                class="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+              />
+              <span class="text-xs font-semibold text-slate-800 dark:text-slate-200">Colaborador en nómina activa</span>
+            </label>
           </div>
         </div>
-        <div class="flex gap-2 pt-3 justify-end">
-          <button (click)="mostrarModalConfirmacion.set(false)" class="px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-300 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 transition-colors cursor-pointer">
+
+        <div class="flex gap-2 pt-2 justify-end border-t border-slate-200 dark:border-slate-800">
+          <button
+            type="button"
+            (click)="cerrarModalEditarEmpleado()"
+            class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-300 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 transition-colors cursor-pointer">
             Cancelar
           </button>
-          <button (click)="ejecutarConfirmacion()" class="px-5 py-2.5 rounded-xl text-xs font-semibold text-white transition-all shadow-lg"
-                  [ngClass]="confirmacionEsPeligro() ? 'bg-red-600 hover:bg-red-500 shadow-red-600/30' : 'bg-indigo-600 hover:bg-indigo-500 shadow-indigo-600/30'">
-            {{ confirmacionBotonTexto() }}
+          <button
+            type="button"
+            (click)="guardarEditarEmpleado()"
+            class="px-5 py-2 rounded-xl text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 transition-all shadow-md shadow-blue-600/30 flex items-center gap-1.5 cursor-pointer">
+            <span class="material-symbols-outlined text-sm">save</span>
+            <span>Guardar Cambios</span>
           </button>
         </div>
       </div>
     </div>
   }
+
+  <!-- ============================================================== -->
+  <!-- MODAL: GESTIÓN DE ROLES Y MATRIZ DE PERMISOS                   -->
+  <!-- ============================================================== -->
+  @if (mostrarModalRol()) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 dark:bg-slate-950/80 backdrop-blur-sm animate-fadeIn">
+      <div class="glass-panel w-full max-w-3xl rounded-3xl p-6 space-y-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white shadow-2xl max-h-[92vh] overflow-y-auto">
+        <div class="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3">
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-blue-600 dark:text-blue-400">admin_panel_settings</span>
+            <div>
+              <h3 class="text-base font-bold text-slate-900 dark:text-white font-heading">
+                {{ esEdicionRol() ? 'Editar Rol & Matriz de Permisos' : 'Crear Nuevo Rol del Sistema' }}
+              </h3>
+              <p class="text-[11px] text-slate-500">Configuración granular de accesos y operaciones por módulo</p>
+            </div>
+          </div>
+          <button (click)="cerrarModalRol()" class="text-slate-400 hover:text-slate-700 dark:hover:text-white p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+
+        <div class="space-y-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-end">
+            <div>
+              <label class="text-[11px] font-bold uppercase text-slate-600 dark:text-slate-400 block mb-1">Nombre del Rol *</label>
+              <input
+                type="text"
+                maxlength="20"
+                [ngModel]="formRolNombre()"
+                (ngModelChange)="formRolNombre.set($event)"
+                placeholder="Ej. SUPERVISOR_VENTAS"
+                class="w-full bg-slate-50 dark:bg-slate-950 text-xs text-slate-900 dark:text-white px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500 uppercase font-mono"
+              />
+            </div>
+            <div class="flex items-center gap-4 pb-2">
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  [checked]="formRolVigente()"
+                  (change)="formRolVigente.set(!formRolVigente())"
+                  class="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                />
+                <span class="text-xs font-semibold text-slate-800 dark:text-slate-200">Rol Activo en Sistema</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Matriz Interactiva de Permisos -->
+          <div class="space-y-2">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+              <label class="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-sm">lock_open</span> Matriz de Autorización por Módulo
+              </label>
+              <div class="flex items-center gap-2">
+                <button
+                  type="button"
+                  (click)="marcarTodosPermisosRol()"
+                  class="px-2.5 py-1 text-[11px] font-semibold text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/50 rounded-lg cursor-pointer">
+                  Seleccionar Todo
+                </button>
+                <button
+                  type="button"
+                  (click)="desmarcarTodosPermisosRol()"
+                  class="px-2.5 py-1 text-[11px] font-semibold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/50 rounded-lg cursor-pointer">
+                  Deseleccionar Todo
+                </button>
+              </div>
+            </div>
+
+            <div class="border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-slate-100/80 dark:bg-slate-950 text-slate-800 dark:text-slate-200 uppercase text-[10px] font-bold border-b border-slate-200 dark:border-slate-800">
+                  <tr>
+                    <th class="p-2.5">Módulo Funcional</th>
+                    <th class="p-2.5 text-center">Ver</th>
+                    <th class="p-2.5 text-center">Crear</th>
+                    <th class="p-2.5 text-center">Editar</th>
+                    <th class="p-2.5 text-center">Eliminar</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                  @for (mod of MODULOS_SISTEMA; track mod.clave) {
+                    <tr class="hover:bg-slate-50/70 dark:hover:bg-slate-800/30 transition-colors">
+                      <td class="p-2.5 font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                        <span>{{ mod.label }}</span>
+                        <span class="text-[10px] font-mono text-slate-400">({{ mod.clave }})</span>
+                      </td>
+                      @for (acc of ACCIONES_PERMISO; track acc) {
+                        <td class="p-2.5 text-center">
+                          <input
+                            type="checkbox"
+                            [checked]="tienePermisoRol(mod.clave, acc)"
+                            (change)="togglePermisoRol(mod.clave, acc)"
+                            class="rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                          />
+                        </td>
+                      }
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex gap-2 pt-2 justify-end border-t border-slate-200 dark:border-slate-800">
+          <button
+            type="button"
+            (click)="cerrarModalRol()"
+            class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-300 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 transition-colors cursor-pointer">
+            Cancelar
+          </button>
+          <button
+            type="button"
+            (click)="guardarRol()"
+            class="px-5 py-2 rounded-xl text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 transition-all shadow-md shadow-blue-600/30 flex items-center gap-1.5 cursor-pointer">
+            <span class="material-symbols-outlined text-sm">save</span>
+            <span>Guardar Rol y Permisos</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- ============================================================== -->
+  <!-- MODAL: EDITAR USUARIO & SEGURIDAD                              -->
+  <!-- ============================================================== -->
+  @if (mostrarModalEditarUsuario()) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 dark:bg-slate-950/80 backdrop-blur-sm animate-fadeIn">
+      <div class="glass-panel w-full max-w-md rounded-3xl p-6 space-y-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white shadow-2xl max-h-[90vh] overflow-y-auto">
+        <div class="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3">
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-blue-600 dark:text-blue-400">manage_accounts</span>
+            <div>
+              <h3 class="text-base font-bold text-slate-900 dark:text-white font-heading">
+                Editar Cuenta de Usuario
+              </h3>
+              <p class="text-[11px] font-mono text-slate-500">{{ usuarioEditando()?.correo }}</p>
+            </div>
+          </div>
+          <button (click)="cerrarModalEditarUsuario()" class="text-slate-400 hover:text-slate-700 dark:hover:text-white p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+
+        <div class="space-y-3">
+          <div>
+            <label class="text-[11px] font-bold uppercase text-slate-600 dark:text-slate-400 block mb-1">Titular Vinculado</label>
+            <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-300">
+              {{ usuarioEditando()?.persona ? obtenerNombreCompletoPersona(usuarioEditando()!.persona!) : 'Sin titular vinculado' }}
+            </div>
+          </div>
+
+          <div>
+            <label class="text-[11px] font-bold uppercase text-slate-600 dark:text-slate-400 block mb-1">Rol de Autorización</label>
+            <select
+              [ngModel]="formUsuarioRolId()"
+              (ngModelChange)="formUsuarioRolId.set(+$event)"
+              class="w-full bg-slate-50 dark:bg-slate-950 text-xs text-slate-900 dark:text-white px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500">
+              @for (r of roles(); track r.idRol) {
+                <option [value]="r.idRol">{{ r.nombre }}</option>
+              }
+            </select>
+          </div>
+
+          <div>
+            <label class="text-[11px] font-bold uppercase text-slate-600 dark:text-slate-400 block mb-1">Estado de la Cuenta</label>
+            <select
+              [ngModel]="formUsuarioEstado()"
+              (ngModelChange)="formUsuarioEstado.set($event)"
+              class="w-full bg-slate-50 dark:bg-slate-950 text-xs text-slate-900 dark:text-white px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500">
+              <option value="activo">Activo (Acceso permitido)</option>
+              <option value="inactivo">Inactivo / Bloqueado</option>
+            </select>
+          </div>
+
+          <div class="pt-2 border-t border-slate-200 dark:border-slate-800">
+            <label class="text-[11px] font-bold uppercase text-slate-600 dark:text-slate-400 block mb-1">Resetear Contraseña (Opcional)</label>
+            <div class="relative">
+              <input
+                [type]="mostrarPasswordUsuario() ? 'text' : 'password'"
+                [ngModel]="formUsuarioNuevaPassword()"
+                (ngModelChange)="formUsuarioNuevaPassword.set($event)"
+                placeholder="Dejar vacío para conservar actual"
+                class="w-full bg-slate-50 dark:bg-slate-950 text-xs text-slate-900 dark:text-white px-3 py-2 pr-9 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500 font-mono"
+              />
+              <button
+                type="button"
+                (click)="mostrarPasswordUsuario.set(!mostrarPasswordUsuario())"
+                class="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer">
+                <span class="material-symbols-outlined text-base">{{ mostrarPasswordUsuario() ? 'visibility_off' : 'visibility' }}</span>
+              </button>
+            </div>
+            <p class="text-[10px] text-slate-400 mt-1">Si ingresas una nueva contraseña, debe tener al menos 6 caracteres.</p>
+          </div>
+        </div>
+
+        <div class="flex gap-2 pt-2 justify-end border-t border-slate-200 dark:border-slate-800">
+          <button
+            type="button"
+            (click)="cerrarModalEditarUsuario()"
+            class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-300 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 transition-colors cursor-pointer">
+            Cancelar
+          </button>
+          <button
+            type="button"
+            (click)="guardarEditarUsuario()"
+            class="px-5 py-2 rounded-xl text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 transition-all shadow-md shadow-blue-600/30 flex items-center gap-1.5 cursor-pointer">
+            <span class="material-symbols-outlined text-sm">save</span>
+            <span>Guardar Usuario</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- ============================================================== -->
+  <!-- MODAL: EDITAR MEDIO DE PAGO                                    -->
+  <!-- ============================================================== -->
+  @if (mostrarModalEditarMedioPago()) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 dark:bg-slate-950/80 backdrop-blur-sm animate-fadeIn">
+      <div class="glass-panel w-full max-w-md rounded-3xl p-6 space-y-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white shadow-2xl max-h-[90vh] overflow-y-auto">
+        <div class="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3">
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-blue-600 dark:text-blue-400">payments</span>
+            <div>
+              <h3 class="text-base font-bold text-slate-900 dark:text-white font-heading">
+                Editar Medio de Pago
+              </h3>
+              <p class="text-[11px] font-mono text-slate-500">{{ medioPagoEditando()?.nombre }}</p>
+            </div>
+          </div>
+          <button (click)="cerrarModalEditarMedioPago()" class="text-slate-400 hover:text-slate-700 dark:hover:text-white p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+
+        <div class="space-y-3">
+          <div>
+            <label class="text-[11px] font-bold uppercase text-slate-600 dark:text-slate-400 block mb-1">Nombre del Método</label>
+            <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-300">
+              {{ medioPagoEditando()?.nombre }}
+            </div>
+          </div>
+
+          <div>
+            <label class="text-[11px] font-bold uppercase text-slate-600 dark:text-slate-400 block mb-1">Instrucciones al Cliente</label>
+            <textarea
+              rows="3"
+              [ngModel]="formMedioPagoInstrucciones()"
+              (ngModelChange)="formMedioPagoInstrucciones.set($event)"
+              placeholder="Instrucciones que visualiza el cliente al pagar en Checkout"
+              class="w-full bg-slate-50 dark:bg-slate-950 text-xs text-slate-900 dark:text-white px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500">
+            </textarea>
+          </div>
+
+          <div class="pt-2 border-t border-slate-200 dark:border-slate-800">
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                [checked]="formMedioPagoVigente()"
+                (change)="formMedioPagoVigente.set(!formMedioPagoVigente())"
+                class="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+              />
+              <span class="text-xs font-semibold text-slate-800 dark:text-slate-200">Habilitado en Pasarela de Checkout</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="flex gap-2 pt-2 justify-end border-t border-slate-200 dark:border-slate-800">
+          <button
+            type="button"
+            (click)="cerrarModalEditarMedioPago()"
+            class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-300 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 transition-colors cursor-pointer">
+            Cancelar
+          </button>
+          <button
+            type="button"
+            (click)="guardarEditarMedioPago()"
+            class="px-5 py-2 rounded-xl text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 transition-all shadow-md shadow-blue-600/30 flex items-center gap-1.5 cursor-pointer">
+            <span class="material-symbols-outlined text-sm">save</span>
+            <span>Guardar Configuración</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+
 
   <!-- ============================================================== -->
   <!-- MODAL: GESTOR AVANZADO DE SUBIDA Y CARPETAS (Supabase Storage) -->

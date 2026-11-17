@@ -116,9 +116,12 @@ public class UsuarioService {
                 throw new RuntimeException("Esa persona ya tiene una cuenta de acceso");
             }
         }
-        if (usuario.getEstado() != null && !usuario.getEstado().isBlank()
-                && !usuario.getEstado().equals("activo") && !usuario.getEstado().equals("inactivo")) {
-            throw new RuntimeException("El estado debe ser 'activo' o 'inactivo'");
+        if (usuario.getEstado() != null && !usuario.getEstado().isBlank()) {
+            String est = usuario.getEstado().trim().toLowerCase();
+            if (!est.equals("activo") && !est.equals("inactivo")) {
+                throw new RuntimeException("El estado debe ser 'activo' o 'inactivo'");
+            }
+            usuario.setEstado(est);
         }
     }
 
@@ -133,10 +136,8 @@ public class UsuarioService {
         }
         Rol completo = rolRepository.findById(rol.getIdRol())
                 .orElseThrow(() -> new RuntimeException("El rol seleccionado no existe"));
-        String nombre = completo.getNombre();
-        if (!"Administrador".equals(nombre) && !"Trabajador".equals(nombre)) {
-            throw new RuntimeException("El rol solo puede ser Administrador o Trabajador; "
-                    + "'Usuario' y 'Cliente' los asigna el sistema");
+        if (completo.getVigente() != null && !completo.getVigente()) {
+            throw new RuntimeException("El rol seleccionado está inactivo en el sistema");
         }
     }
 }
