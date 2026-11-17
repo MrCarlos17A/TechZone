@@ -254,7 +254,8 @@ public class EmpleadoService {
             persona.setApellidoMaterno(apellidoMaterno.trim());
         }
         if (idTipoDocumento != null) {
-            persona.setTipoDocumento(tipoDocumentoRepository.findById(idTipoDocumento).orElse(persona.getTipoDocumento()));
+            persona.setTipoDocumento(
+                    tipoDocumentoRepository.findById(idTipoDocumento).orElse(persona.getTipoDocumento()));
         }
         if (numeroDocumento != null && !numeroDocumento.isBlank()) {
             String docLimpio = numeroDocumento.trim();
@@ -388,7 +389,10 @@ public class EmpleadoService {
             if (pNueva.getDireccion() != null) pActual.setDireccion(pNueva.getDireccion());
             if (pNueva.getReferencia() != null) pActual.setReferencia(pNueva.getReferencia());
             if (pNueva.getUbigeo() != null) pActual.setUbigeo(pNueva.getUbigeo());
-            personaRepository.save(pActual);
+            if (pActual != null) {
+                pActual = personaRepository.save(pActual);
+                existente.setPersona(pActual);
+            }
         }
         return empleadoRepository.save(existente);
     }

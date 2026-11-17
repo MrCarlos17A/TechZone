@@ -326,13 +326,20 @@ public class AuthApiController {
         }
 
         boolean esAdmin = usuario.getRol() != null && Boolean.TRUE.equals(usuario.getRol().getEsAdministrativo());
+        List<String> roles = (detalles.getAuthorities() != null)
+                ? detalles.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList()
+                : List.of();
+        String permisos = (usuario.getRol() != null && usuario.getRol().getPermisos() != null)
+                ? usuario.getRol().getPermisos()
+                : "{}";
+
         Map<String, Object> cuerpo = new LinkedHashMap<>();
         cuerpo.put("idUsuario", usuario.getIdUsuario());
         cuerpo.put("correo", usuario.getCorreo());
-        cuerpo.put("roles", detalles.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList());
+        cuerpo.put("roles", roles);
         cuerpo.put("esStaff", esAdmin);
         cuerpo.put("esAdministrativo", esAdmin);
-        cuerpo.put("permisos", usuario.getRol() != null ? usuario.getRol().getPermisos() : null);
+        cuerpo.put("permisos", permisos);
         cuerpo.put("nombre", nombreCompleto(usuario));
         return ResponseEntity.ok(cuerpo);
     }
