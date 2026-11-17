@@ -1,0 +1,8 @@
+target/
+.git/
+.gitignore
+.env
+.vscode/
+.idea/
+*.log
+iniciar.ps1
