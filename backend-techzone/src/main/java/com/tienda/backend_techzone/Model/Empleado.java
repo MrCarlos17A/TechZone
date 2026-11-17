@@ -57,4 +57,22 @@ public class Empleado {
     public LocalDate getFechaContratacion() {
         return this.fechaContrato;
     }
+
+    public Long getIdEmpleado() { return idEmpleado; }
+    public void setIdEmpleado(Long idEmpleado) { this.idEmpleado = idEmpleado; }
+
+    public Persona getPersona() { return persona; }
+    public void setPersona(Persona persona) { this.persona = persona; }
+
+    public LocalDate getFechaContrato() { return fechaContrato; }
+    public void setFechaContrato(LocalDate fechaContrato) { this.fechaContrato = fechaContrato; }
+
+    public BigDecimal getSalario() { return salario; }
+    public void setSalario(BigDecimal salario) { this.salario = salario; }
+
+    public Boolean getVigente() { return vigente; }
+    public void setVigente(Boolean vigente) { this.vigente = vigente; }
+
+    public String getCargo() { return cargo; }
+    public void setCargo(String cargo) { this.cargo = cargo; }
 }

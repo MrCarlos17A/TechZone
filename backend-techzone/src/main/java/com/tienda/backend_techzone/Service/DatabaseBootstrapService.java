@@ -17,7 +17,6 @@ import java.util.List;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class DatabaseBootstrapService implements ApplicationRunner {
 
     private final RolRepository rolRepository;
@@ -26,6 +25,21 @@ public class DatabaseBootstrapService implements ApplicationRunner {
     private final UsuarioRepository usuarioRepository;
     private final EmpleadoRepository empleadoRepository;
     private final PasswordEncoder passwordEncoder;
+
+    public DatabaseBootstrapService(
+            RolRepository rolRepository,
+            PersonaRepository personaRepository,
+            TipoDocumentoRepository tipoDocumentoRepository,
+            UsuarioRepository usuarioRepository,
+            EmpleadoRepository empleadoRepository,
+            PasswordEncoder passwordEncoder) {
+        this.rolRepository = rolRepository;
+        this.personaRepository = personaRepository;
+        this.tipoDocumentoRepository = tipoDocumentoRepository;
+        this.usuarioRepository = usuarioRepository;
+        this.empleadoRepository = empleadoRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @Override
     public void run(ApplicationArguments args) {
@@ -267,15 +281,15 @@ public class DatabaseBootstrapService implements ApplicationRunner {
                         sufijo++;
                     }
 
-                    Usuario nuevoU = Usuario.builder()
-                            .persona(p)
-                            .rol(rolTrabajador)
-                            .correo(correoFinal)
-                            .password(passwordEncoder.encode("TechZone2026*"))
-                            .estado(emp.getVigente() != null && emp.getVigente() ? "activo" : "inactivo")
-                            .fechaCreacion(LocalDateTime.now())
-                            .intentosFallidos(0)
-                            .build();
+                    Usuario nuevoU = new Usuario();
+                    nuevoU.setPersona(p);
+                    nuevoU.setRol(rolTrabajador);
+                    nuevoU.setCorreo(correoFinal);
+                    nuevoU.setPassword(passwordEncoder.encode("TechZone2026*"));
+                    nuevoU.setContrasena(passwordEncoder.encode("TechZone2026*"));
+                    nuevoU.setEstado(emp.getVigente() != null && emp.getVigente() ? "activo" : "inactivo");
+                    nuevoU.setFechaCreacion(LocalDateTime.now());
+                    nuevoU.setIntentosFallidos(0);
                     usuarioRepository.save(nuevoU);
                     log.info("Cuenta generada automaticamente para colaborador #{}: {}", emp.getIdEmpleado(), correoFinal);
                 } else {

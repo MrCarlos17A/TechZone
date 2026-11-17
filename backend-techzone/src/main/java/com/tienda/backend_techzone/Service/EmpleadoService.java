@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class EmpleadoService {
 
     private final EmpleadoRepository empleadoRepository;
@@ -24,6 +23,25 @@ public class EmpleadoService {
     private final RolRepository rolRepository;
     private final PasswordEncoder passwordEncoder;
     private final DatabaseBootstrapService databaseBootstrapService;
+
+    public EmpleadoService(
+            EmpleadoRepository empleadoRepository,
+            PersonaRepository personaRepository,
+            UsuarioRepository usuarioRepository,
+            TipoDocumentoRepository tipoDocumentoRepository,
+            UbigeoRepository ubigeoRepository,
+            RolRepository rolRepository,
+            PasswordEncoder passwordEncoder,
+            DatabaseBootstrapService databaseBootstrapService) {
+        this.empleadoRepository = empleadoRepository;
+        this.personaRepository = personaRepository;
+        this.usuarioRepository = usuarioRepository;
+        this.tipoDocumentoRepository = tipoDocumentoRepository;
+        this.ubigeoRepository = ubigeoRepository;
+        this.rolRepository = rolRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.databaseBootstrapService = databaseBootstrapService;
+    }
 
     @Transactional
     public List<Empleado> ListarEmpleados() {

@@ -84,4 +84,43 @@ public class Persona {
         }
         return sb.toString();
     }
+
+    public Long getIdPersona() { return idPersona; }
+    public void setIdPersona(Long idPersona) { this.idPersona = idPersona; }
+
+    public String getNombres() { return nombres; }
+    public void setNombres(String nombres) { this.nombres = nombres; }
+
+    public String getApellidoPaterno() { return apellidoPaterno; }
+    public void setApellidoPaterno(String apellidoPaterno) { this.apellidoPaterno = apellidoPaterno; }
+
+    public String getApellidoMaterno() { return apellidoMaterno; }
+    public void setApellidoMaterno(String apellidoMaterno) { this.apellidoMaterno = apellidoMaterno; }
+
+    public TipoDocumento getTipoDocumento() { return tipoDocumento; }
+    public void setTipoDocumento(TipoDocumento tipoDocumento) { this.tipoDocumento = tipoDocumento; }
+
+    public String getNumeroDocumento() { return numeroDocumento; }
+    public void setNumeroDocumento(String numeroDocumento) { this.numeroDocumento = numeroDocumento; }
+
+    public String getTelefono() { return telefono; }
+    public void setTelefono(String telefono) { this.telefono = telefono; }
+
+    public String getDireccion() { return direccion; }
+    public void setDireccion(String direccion) { this.direccion = direccion; }
+
+    public String getReferencia() { return referencia; }
+    public void setReferencia(String referencia) { this.referencia = referencia; }
+
+    public Ubigeo getUbigeo() { return ubigeo; }
+    public void setUbigeo(Ubigeo ubigeo) { this.ubigeo = ubigeo; }
+
+    public LocalDate getFechaNacimiento() { return fechaNacimiento; }
+    public void setFechaNacimiento(LocalDate fechaNacimiento) { this.fechaNacimiento = fechaNacimiento; }
+
+    public LocalDateTime getFechaRegistro() { return fechaRegistro; }
+    public void setFechaRegistro(LocalDateTime fechaRegistro) { this.fechaRegistro = fechaRegistro; }
+
+    public Boolean getVigente() { return vigente; }
+    public void setVigente(Boolean vigente) { this.vigente = vigente; }
 }

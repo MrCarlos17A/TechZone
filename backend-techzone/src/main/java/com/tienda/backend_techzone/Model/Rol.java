@@ -35,4 +35,19 @@ public class Rol {
 
     @Column(name = "permisos", columnDefinition = "TEXT")
     private String permisos;
+
+    public Long getIdRol() { return idRol; }
+    public void setIdRol(Long idRol) { this.idRol = idRol; }
+
+    public String getNombre() { return nombre; }
+    public void setNombre(String nombre) { this.nombre = nombre; }
+
+    public Boolean getVigente() { return vigente; }
+    public void setVigente(Boolean vigente) { this.vigente = vigente; }
+
+    public Boolean getEsAdministrativo() { return esAdministrativo; }
+    public void setEsAdministrativo(Boolean esAdministrativo) { this.esAdministrativo = esAdministrativo; }
+
+    public String getPermisos() { return permisos; }
+    public void setPermisos(String permisos) { this.permisos = permisos; }
 }
