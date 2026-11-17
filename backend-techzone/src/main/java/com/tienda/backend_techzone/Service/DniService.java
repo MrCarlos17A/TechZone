@@ -155,12 +155,15 @@ public class DniService {
             String url = apiUrl + "?numero=" + num;
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(url))
+                    .timeout(java.time.Duration.ofSeconds(3))
                     .header("Accept", "application/json")
                     .header("Authorization", "Bearer " + apiToken)
                     .GET()
                     .build();
 
-            HttpClient client = HttpClient.newHttpClient();
+            HttpClient client = HttpClient.newBuilder()
+                    .connectTimeout(java.time.Duration.ofSeconds(3))
+                    .build();
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
             if (response.statusCode() != 200) {

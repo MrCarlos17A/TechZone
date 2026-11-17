@@ -33,12 +33,10 @@ public class DatabaseBootstrapService implements ApplicationRunner {
     private EntityManager entityManager;
 
     @Override
-    @Transactional
     public void run(ApplicationArguments args) {
         sincronizarTodo();
     }
 
-    @Transactional
     public synchronized void sincronizarTodo() {
         try {
             asegurarRolesCatalogo();
@@ -50,14 +48,6 @@ public class DatabaseBootstrapService implements ApplicationRunner {
     }
 
     private void asegurarRolesCatalogo() {
-        try {
-            entityManager.createNativeQuery(
-                "ALTER TABLE rol ADD COLUMN IF NOT EXISTS es_administrativo BOOLEAN DEFAULT false"
-            ).executeUpdate();
-        } catch (Exception e) {
-            log.warn("Aviso al verificar columna es_administrativo en rol: {}", e.getMessage());
-        }
-
         insertarOActualizarRol(1L, "Administrador", true,
             "{\"dashboard\":[\"ver\"],\"productos\":[\"ver\",\"crear\",\"editar\",\"eliminar\"],\"categorias\":[\"ver\",\"crear\",\"editar\",\"eliminar\"],\"marcas\":[\"ver\",\"crear\",\"editar\",\"eliminar\"],\"imagenes\":[\"ver\",\"crear\",\"editar\",\"eliminar\"],\"ventas\":[\"ver\",\"crear\",\"editar\",\"eliminar\"],\"pagos\":[\"ver\",\"crear\",\"editar\",\"eliminar\"],\"usuarios\":[\"ver\",\"crear\",\"editar\",\"eliminar\"],\"empleados\":[\"ver\",\"crear\",\"editar\",\"eliminar\"],\"clientes\":[\"ver\",\"crear\",\"editar\",\"eliminar\"],\"roles\":[\"ver\",\"crear\",\"editar\",\"eliminar\"],\"configuracion\":[\"ver\",\"crear\",\"editar\",\"eliminar\"],\"auditoria\":[\"ver\"],\"ayuda\":[\"ver\",\"crear\",\"editar\",\"eliminar\"]}");
 
@@ -78,30 +68,28 @@ public class DatabaseBootstrapService implements ApplicationRunner {
 
         insertarOActualizarRol(7L, "Soporte Técnico", true,
             "{\"dashboard\":[\"ver\"],\"usuarios\":[\"ver\"],\"clientes\":[\"ver\"],\"productos\":[\"ver\"],\"ventas\":[\"ver\"],\"auditoria\":[\"ver\"]}");
-
-        try {
-            entityManager.createNativeQuery(
-                "SELECT setval(pg_get_serial_sequence('rol', 'id_rol'), GREATEST((SELECT MAX(id_rol) FROM rol), 7))"
-            ).getSingleResult();
-        } catch (Exception ignored) {}
     }
 
     private void insertarOActualizarRol(Long id, String nombre, boolean esAdministrativo, String permisos) {
         try {
-            entityManager.createNativeQuery(
-                "INSERT INTO rol (id_rol, nombre, vigente, es_administrativo, permisos) " +
-                "VALUES (:id, :nombre, true, :esAdmin, :permisos) " +
-                "ON CONFLICT (id_rol) DO UPDATE SET " +
-                "nombre = EXCLUDED.nombre, " +
-                "permisos = EXCLUDED.permisos, " +
-                "es_administrativo = EXCLUDED.es_administrativo, " +
-                "vigente = true"
-            )
-            .setParameter("id", id)
-            .setParameter("nombre", nombre)
-            .setParameter("esAdmin", esAdministrativo)
-            .setParameter("permisos", permisos)
-            .executeUpdate();
+            Rol rol = rolRepository.findById(id)
+                    .or(() -> rolRepository.findByNombre(nombre))
+                    .orElse(null);
+
+            if (rol == null) {
+                rol = Rol.builder()
+                        .nombre(nombre)
+                        .esAdministrativo(esAdministrativo)
+                        .permisos(permisos)
+                        .vigente(true)
+                        .build();
+            } else {
+                rol.setNombre(nombre);
+                rol.setEsAdministrativo(esAdministrativo);
+                rol.setPermisos(permisos);
+                rol.setVigente(true);
+            }
+            rolRepository.save(rol);
         } catch (Exception e) {
             log.warn("No se pudo insertar/actualizar rol {}: {}", nombre, e.getMessage());
         }

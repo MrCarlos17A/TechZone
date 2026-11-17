@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -40,8 +41,15 @@ public class UsuarioDetalleService implements UserDetailsService {
             throw new LockedException("Cuenta bloqueada temporalmente por intentos fallidos");
         }
 
-        List<SimpleGrantedAuthority> autoridades = List.of(
-                new SimpleGrantedAuthority("ROLE_" + usuario.getRol().getNombre()));
+        List<SimpleGrantedAuthority> autoridades = new ArrayList<>();
+        if (usuario.getRol() != null && usuario.getRol().getNombre() != null) {
+            String rolNombre = usuario.getRol().getNombre();
+            autoridades.add(new SimpleGrantedAuthority("ROLE_" + rolNombre));
+            autoridades.add(new SimpleGrantedAuthority("ROLE_" + rolNombre.toUpperCase()));
+            if (Boolean.TRUE.equals(usuario.getRol().getEsAdministrativo())) {
+                autoridades.add(new SimpleGrantedAuthority("ROLE_ADMINISTRATIVO"));
+            }
+        }
 
         return User.builder()
                 .username(usuario.getCorreo())

@@ -100,6 +100,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/admin/**")
                         .hasAnyRole(
                                 "ADMINISTRADOR", "Administrador",
+                                "ADMINISTRATIVO",
                                 "TRABAJADOR", "Trabajador",
                                 "EMPLEADO", "Empleado",
                                 "COLABORADOR", "Colaborador",
