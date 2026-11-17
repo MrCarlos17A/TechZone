@@ -13,9 +13,10 @@ import java.util.List;
 public class RolService {
 
     private final RolRepository rolRepository;
+    private final DatabaseBootstrapService databaseBootstrapService;
 
     public List<Rol> ListarRoles() {
-        asegurarRolesBase();
+        databaseBootstrapService.sincronizarTodo();
         return rolRepository.findAll();
     }
 
@@ -25,45 +26,6 @@ public class RolService {
 
     @jakarta.persistence.PersistenceContext
     private jakarta.persistence.EntityManager entityManager;
-
-    private void asegurarRolesBase() {
-        try {
-            insertarRolSiNoExiste("Supervisor de Ventas",
-                    "{\"dashboard\":[\"ver\"],\"ventas\":[\"ver\",\"crear\",\"editar\"],\"pagos\":[\"ver\"],\"clientes\":[\"ver\"]}");
-            insertarRolSiNoExiste("Logística y Almacén",
-                    "{\"productos\":[\"ver\",\"crear\",\"editar\"],\"categorias\":[\"ver\",\"crear\",\"editar\"],\"marcas\":[\"ver\",\"crear\",\"editar\"],\"imagenes\":[\"ver\",\"crear\",\"editar\"],\"ventas\":[\"ver\"]}");
-            insertarRolSiNoExiste("Soporte Técnico",
-                    "{\"productos\":[\"ver\"],\"ventas\":[\"ver\"],\"clientes\":[\"ver\"]}");
-        } catch (Exception e) {
-            System.err.println("Aviso al asegurar roles base: " + e.getMessage());
-        }
-    }
-
-    private void insertarRolSiNoExiste(String nombre, String permisos) {
-        boolean existe = rolRepository.findByNombre(nombre).isPresent();
-        if (!existe) {
-            try {
-                Long nextId = ((Number) entityManager.createNativeQuery(
-                        "SELECT COALESCE(MAX(id_rol), 0) + 1 FROM rol").getSingleResult()).longValue();
-                entityManager.createNativeQuery(
-                        "INSERT INTO rol (id_rol, nombre, vigente, permisos) VALUES (:id, :nombre, true, :permisos) ON CONFLICT (id_rol) DO NOTHING")
-                        .setParameter("id", nextId)
-                        .setParameter("nombre", nombre)
-                        .setParameter("permisos", permisos)
-                        .executeUpdate();
-            } catch (Exception ex) {
-                // Alternativa sin ID explicito en caso de secuencia activa
-                try {
-                    entityManager.createNativeQuery(
-                            "INSERT INTO rol (nombre, vigente, permisos) VALUES (:nombre, true, :permisos)")
-                            .setParameter("nombre", nombre)
-                            .setParameter("permisos", permisos)
-                            .executeUpdate();
-                } catch (Exception ignored) {
-                }
-            }
-        }
-    }
 
     @org.springframework.transaction.annotation.Transactional
     public Rol CrearRol(Rol rol) {

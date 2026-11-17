@@ -23,11 +23,12 @@ public class EmpleadoService {
     private final UbigeoRepository ubigeoRepository;
     private final RolRepository rolRepository;
     private final PasswordEncoder passwordEncoder;
+    private final DatabaseBootstrapService databaseBootstrapService;
 
     @Transactional
     public List<Empleado> ListarEmpleados() {
-        asegurarAdministradorComoEmpleado();
-        List<Empleado> lista = empleadoRepository.findAll();
+        databaseBootstrapService.sincronizarTodo();
+        List<Empleado> lista = empleadoRepository.findAllConRelaciones();
         for (Empleado emp : lista) {
             if (emp.getPersona() != null) {
                 usuarioRepository.findFirstByPersona(emp.getPersona()).ifPresent(u -> {
@@ -46,33 +47,6 @@ public class EmpleadoService {
             }
         }
         return lista;
-    }
-
-    private void asegurarAdministradorComoEmpleado() {
-        try {
-            // 1. Intentar buscar persona con id 1 (Carlos Felipe Arroyo Vega)
-            Persona adminPersona = personaRepository.findById(1L).orElse(null);
-            if (adminPersona == null) {
-                Usuario adminUsuario = usuarioRepository.findByCorreo("admin@techzone.com").orElse(null);
-                if (adminUsuario != null) {
-                    adminPersona = adminUsuario.getPersona();
-                }
-            }
-            if (adminPersona != null) {
-                if (empleadoRepository.findFirstByPersona(adminPersona).isEmpty()) {
-                    Empleado adminEmp = Empleado.builder()
-                            .persona(adminPersona)
-                            .fechaContrato(LocalDate.of(2026, 1, 1))
-                            .salario(new BigDecimal("3500.00"))
-                            .vigente(true)
-                            .cargo("ADMINISTRADOR GENERAL")
-                            .build();
-                    empleadoRepository.save(adminEmp);
-                }
-            }
-        } catch (Exception e) {
-            System.err.println("Aviso al asegurar administrador como empleado: " + e.getMessage());
-        }
     }
 
     public List<Empleado> listarEmpleados() {
@@ -126,7 +100,7 @@ public class EmpleadoService {
         }
         validarSalario(salario);
 
-        String correoLimpio = correo.trim();
+        String correoLimpio = correo.trim().toLowerCase();
         String doc = (numeroDocumento != null && !numeroDocumento.isBlank()) ? numeroDocumento.trim() : null;
 
         // Local-first: si el documento ya esta en el sistema se reusa esa persona
@@ -311,7 +285,7 @@ public class EmpleadoService {
                         .rol(rolInicial)
                         .correo(correoLimpio)
                         .password(passwordEncoder.encode(password))
-                        .estado("activo")
+                        .estado(vigente != null && !vigente ? "inactivo" : "activo")
                         .build();
             } else {
                 usuario.setPersona(persona);
@@ -320,7 +294,9 @@ public class EmpleadoService {
                     UsuarioService.validarContrasenaSegura(password);
                     usuario.setPassword(passwordEncoder.encode(password));
                 }
-                usuario.setEstado("activo");
+                if (vigente != null) {
+                    usuario.setEstado(vigente ? "activo" : "inactivo");
+                }
             }
             if (idRol != null) {
                 Rol rolNuevo = rolRepository.findById(idRol)
@@ -329,14 +305,22 @@ public class EmpleadoService {
                 empleado.setCargo(rolNuevo.getNombre().toUpperCase());
             }
             usuarioRepository.save(usuario);
-        } else if (idRol != null) {
-            Rol rolNuevo = rolRepository.findById(idRol)
-                    .orElseThrow(() -> new RuntimeException("El rol seleccionado no existe"));
-            if (usuarioPropio != null) {
-                usuarioPropio.setRol(rolNuevo);
+        } else {
+            if (idRol != null) {
+                Rol rolNuevo = rolRepository.findById(idRol)
+                        .orElseThrow(() -> new RuntimeException("El rol seleccionado no existe"));
+                if (usuarioPropio != null) {
+                    usuarioPropio.setRol(rolNuevo);
+                    if (vigente != null) {
+                        usuarioPropio.setEstado(vigente ? "activo" : "inactivo");
+                    }
+                    usuarioRepository.save(usuarioPropio);
+                }
+                empleado.setCargo(rolNuevo.getNombre().toUpperCase());
+            } else if (vigente != null && usuarioPropio != null) {
+                usuarioPropio.setEstado(vigente ? "activo" : "inactivo");
                 usuarioRepository.save(usuarioPropio);
             }
-            empleado.setCargo(rolNuevo.getNombre().toUpperCase());
         }
 
         if (fechaContrato != null && fechaContrato.isAfter(LocalDate.now())) {
@@ -356,22 +340,6 @@ public class EmpleadoService {
     }
 
     @Transactional
-    public void eliminarEmpleadoFisico(Long id) {
-        Empleado emp = empleadoRepository.findById(id).orElse(null);
-        if (emp != null) {
-            Persona persona = emp.getPersona();
-            empleadoRepository.delete(emp);
-            if (persona != null) {
-                usuarioRepository.findFirstByPersona(persona).ifPresent(usuarioRepository::delete);
-                try {
-                    personaRepository.delete(persona);
-                } catch (Exception ignored) {
-                }
-            }
-        }
-    }
-
-    @Transactional
     public Empleado ActualizarEmpleado(Long id, Empleado empleado) {
         Empleado existente = empleadoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Empleado no encontrado con id: " + id));
@@ -384,6 +352,12 @@ public class EmpleadoService {
         }
         if (empleado.getVigente() != null) {
             existente.setVigente(empleado.getVigente());
+            if (existente.getPersona() != null) {
+                usuarioRepository.findFirstByPersona(existente.getPersona()).ifPresent(u -> {
+                    u.setEstado(empleado.getVigente() ? "activo" : "inactivo");
+                    usuarioRepository.save(u);
+                });
+            }
         }
         if (empleado.getPersona() != null && existente.getPersona() != null) {
             Persona pActual = existente.getPersona();
@@ -406,10 +380,17 @@ public class EmpleadoService {
         }
     }
 
+    @Transactional
     public void EliminarEmpleado(Long id) {
         Empleado empleado = empleadoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Empleado no encontrado con id: " + id));
         empleado.setVigente(false);
         empleadoRepository.save(empleado);
+        if (empleado.getPersona() != null) {
+            usuarioRepository.findFirstByPersona(empleado.getPersona()).ifPresent(u -> {
+                u.setEstado("inactivo");
+                usuarioRepository.save(u);
+            });
+        }
     }
 }

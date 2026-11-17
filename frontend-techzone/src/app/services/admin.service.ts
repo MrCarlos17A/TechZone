@@ -296,12 +296,6 @@ export class AdminService {
     });
   }
 
-  eliminarEmpleadoFisico(id: number): Observable<any> {
-    return this.http.delete(`${this.baseUrl}/admin/empleados/${id}/fisico`, {
-      headers: this.authService.getAuthHeaders()
-    });
-  }
-
   // --- Proveedores ---
   getProveedores(): Observable<ProveedorAdmin[]> {
     return this.http.get<ProveedorAdmin[]>(`${this.baseUrl}/admin/proveedores`, {

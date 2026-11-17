@@ -18,9 +18,11 @@ public class UsuarioService {
     private final UsuarioRepository usuarioRepository;
     private final RolRepository rolRepository;
     private final PasswordEncoder passwordEncoder;
+    private final DatabaseBootstrapService databaseBootstrapService;
 
     public List<Usuario> ListarUsuarios() {
-        return usuarioRepository.findAll();
+        databaseBootstrapService.sincronizarTodo();
+        return usuarioRepository.findAllConRelaciones();
     }
 
     public List<Usuario> listarUsuarios() {

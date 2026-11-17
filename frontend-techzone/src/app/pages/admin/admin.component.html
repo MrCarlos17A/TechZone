@@ -276,7 +276,7 @@
             <span class="material-symbols-outlined text-base flex-shrink-0 group-hover:scale-110 transition-transform">diversity_3</span>
             @if (!sidebarContraido()) { <span class="truncate">Colaboradores</span> }
           </div>
-          @if (!sidebarContraido() && empleados().length > 0) {
+          @if (!sidebarContraido()) {
             <span class="px-1.5 py-0.5 rounded text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-mono">{{ empleados().length }}</span>
           }
         </button>
@@ -2626,7 +2626,7 @@
                   <th class="p-3"># Acuerdo</th>
                   <th class="p-3">Colaborador</th>
                   <th class="p-3">Documento</th>
-                  <th class="p-3">Cargo / Puesto</th>
+                  <th class="p-3">Rol / Cargo</th>
                   <th class="p-3 text-right">Salario Base</th>
                   <th class="p-3 text-center">Fecha Ingreso</th>
                   <th class="p-3 text-center">Estado</th>
@@ -2644,8 +2644,9 @@
                       {{ emp.persona?.numeroDocumento || '-' }}
                     </td>
                     <td class="p-3">
-                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
-                        {{ emp.cargo || 'ESPECIALISTA' }}
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase"
+                        [ngClass]="obtenerClasesBadgeRol(emp.cargo)">
+                        {{ emp.cargo || 'COLABORADOR' }}
                       </span>
                     </td>
                     <td class="p-3 text-right font-mono font-bold text-slate-900 dark:text-white">
@@ -2678,12 +2679,6 @@
                           [class.hover:bg-emerald-50]="emp.vigente === false"
                           [title]="emp.vigente !== false ? 'Desactivar colaborador' : 'Reactivar colaborador'">
                           <span class="material-symbols-outlined text-sm">{{ emp.vigente !== false ? 'person_off' : 'how_to_reg' }}</span>
-                        </button>
-                        <button
-                          (click)="eliminarEmpleadoFisicoAction(emp)"
-                          class="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50 transition-colors cursor-pointer"
-                          title="Eliminar colaborador definitivamente">
-                          <span class="material-symbols-outlined text-sm">delete_forever</span>
                         </button>
                       </div>
                     </td>
@@ -2841,13 +2836,8 @@
                       {{ u.persona ? obtenerNombreCompletoPersona(u.persona) : 'Sin titular vinculado' }}
                     </td>
                     <td class="p-3 text-center">
-                      <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase"
-                        [class.bg-purple-100]="u.rol?.nombre === 'ADMINISTRADOR'"
-                        [class.text-purple-800]="u.rol?.nombre === 'ADMINISTRADOR'"
-                        [class.bg-blue-100]="u.rol?.nombre === 'EMPLEADO'"
-                        [class.text-blue-800]="u.rol?.nombre === 'EMPLEADO'"
-                        [class.bg-emerald-100]="u.rol?.nombre === 'CLIENTE'"
-                        [class.text-emerald-800]="u.rol?.nombre === 'CLIENTE'">
+                      <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase inline-flex items-center"
+                        [ngClass]="obtenerClasesBadgeRol(u.rol?.nombre)">
                         {{ u.rol?.nombre || 'SIN ROL' }}
                       </span>
                     </td>

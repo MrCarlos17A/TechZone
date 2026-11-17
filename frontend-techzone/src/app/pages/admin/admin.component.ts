@@ -782,20 +782,7 @@ export class AdminComponent implements OnInit {
 
   recargarEmpleados(): void {
     this.adminService.getEmpleados().subscribe({
-      next: emp => {
-        this.empleados.set(emp);
-        const colab2 = emp.find(e => e.idEmpleado === 2);
-        if (colab2) {
-          this.adminService.eliminarEmpleadoFisico(2).subscribe({
-            next: () => {
-              this.empleados.update(list => list.filter(e => e.idEmpleado !== 2));
-              this.recargarUsuarios();
-              this.recargarPersonas();
-            },
-            error: () => {}
-          });
-        }
-      },
+      next: emp => this.empleados.set(emp),
       error: () => {}
     });
   }
@@ -2982,17 +2969,24 @@ export class AdminComponent implements OnInit {
 
   eliminarMedioPago(m: MedioPagoAdmin): void {
     this.solicitarConfirmacion(
-      '¿Eliminar Medio de Pago?',
+      '¿Deshabilitar Medio de Pago?',
       `¿Deseas deshabilitar el método "${m.nombre}"?`,
       () => {
-        this.adminService.eliminarMedioPago(m.idMedioPago).subscribe({
+        this.adminService.actualizarMedioPago(m.idMedioPago, {
+          nombre: m.nombre,
+          instrucciones: m.instrucciones,
+          vigente: false
+        }).subscribe({
           next: () => {
-            this.toastService.exito('Medio de pago eliminado');
-            this.cargarDatos();
+            this.toastService.exito('Medio de pago deshabilitado');
+            this.recargarMediosPago();
           },
-          error: (err) => this.toastService.error(err.error?.mensaje || 'Error al eliminar')
+          error: (err) => this.toastService.error(err.error?.mensaje || 'Error al deshabilitar')
         });
-      }
+      },
+      'Deshabilitar',
+      true,
+      'advertencia'
     );
   }
 
@@ -3005,6 +2999,17 @@ export class AdminComponent implements OnInit {
     if (partes.length > 0) return partes.join(' ').trim().toUpperCase();
     if (p.nombreCompleto) return p.nombreCompleto.toUpperCase();
     return 'Sin nombre';
+  }
+
+  obtenerClasesBadgeRol(nombreRol?: string): string {
+    const r = (nombreRol || '').toUpperCase();
+    if (r.includes('ADMIN')) return 'bg-purple-100 text-purple-800 dark:bg-purple-950/60 dark:text-purple-300 border border-purple-200 dark:border-purple-800';
+    if (r.includes('SUPERVISOR')) return 'bg-indigo-100 text-indigo-800 dark:bg-indigo-950/60 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800';
+    if (r.includes('LOGISTICA') || r.includes('LOGÍSTICA') || r.includes('ALMACEN') || r.includes('ALMACÉN')) return 'bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-200 dark:border-amber-800';
+    if (r.includes('SOPORTE')) return 'bg-cyan-100 text-cyan-800 dark:bg-cyan-950/60 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-800';
+    if (r.includes('TRABAJADOR') || r.includes('EMPLEADO')) return 'bg-blue-100 text-blue-800 dark:bg-blue-950/60 dark:text-blue-300 border border-blue-200 dark:border-blue-800';
+    if (r.includes('CLIENTE')) return 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800';
+    return 'bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-300 border border-slate-200 dark:border-slate-700';
   }
 
   obtenerNombreCompletoCliente(c?: any): string {
@@ -3382,29 +3387,6 @@ export class AdminComponent implements OnInit {
     });
   }
 
-  eliminarEmpleadoFisicoAction(emp: EmpleadoAdmin): void {
-    this.solicitarConfirmacion(
-      '¿Eliminar Colaborador Definitivamente?',
-      `Esta acción eliminará físicamente el registro del colaborador #${emp.idEmpleado} (${emp.nombreCompleto || emp.persona?.nombres}) de la base de datos de forma irreversible.`,
-      () => {
-        this.adminService.eliminarEmpleadoFisico(emp.idEmpleado).subscribe({
-          next: () => {
-            this.toastService.exito('Colaborador eliminado permanentemente de la base de datos');
-            this.recargarEmpleados();
-            this.recargarUsuarios();
-            this.recargarPersonas();
-          },
-          error: (err) => {
-            this.toastService.error(err.error?.mensaje || 'Error al eliminar colaborador');
-          }
-        });
-      },
-      'Eliminar Definitivamente',
-      true,
-      'peligro'
-    );
-  }
-
   cambiarEstadoEmpleado(emp: EmpleadoAdmin): void {
     const nuevoEstado = !emp.vigente;
     const accion = nuevoEstado ? 'reactivar' : 'desactivar';
@@ -3417,6 +3399,8 @@ export class AdminComponent implements OnInit {
           next: () => {
             this.toastService.exito(`Colaborador ${nuevoEstado ? 'activado' : 'desactivado'}`);
             this.recargarEmpleados();
+            this.recargarUsuarios();
+            this.recargarPersonas();
           },
           error: (err) => this.toastService.error(err.error?.mensaje || 'Error al cambiar estado')
         });

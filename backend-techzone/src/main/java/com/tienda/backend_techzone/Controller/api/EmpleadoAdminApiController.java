@@ -167,21 +167,11 @@ public class EmpleadoAdminApiController {
         }
     }
 
-    @DeleteMapping("/{id}/fisico")
-    public ResponseEntity<?> eliminarFisico(@PathVariable Long id) {
-        try {
-            empleadoService.eliminarEmpleadoFisico(id);
-            return ResponseEntity.ok(Map.of("mensaje", "Colaborador eliminado físicamente del sistema"));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Map.of("mensaje", e.getMessage() != null ? e.getMessage() : "Error al eliminar colaborador"));
-        }
-    }
-
     @DeleteMapping("/{id}")
     public ResponseEntity<?> eliminar(@PathVariable Long id) {
         try {
             empleadoService.eliminarEmpleado(id);
-            return ResponseEntity.ok(Map.of("mensaje", "Empleado dado de baja correctamente"));
+            return ResponseEntity.ok(Map.of("mensaje", "Empleado desactivado correctamente"));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(Map.of("mensaje", e.getMessage()));
         }

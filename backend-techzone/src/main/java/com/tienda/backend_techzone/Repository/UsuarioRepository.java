@@ -12,6 +12,9 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     @Query("SELECT u FROM Usuario u LEFT JOIN FETCH u.rol LEFT JOIN FETCH u.persona WHERE LOWER(u.correo) = LOWER(:correo)")
     Optional<Usuario> findByCorreo(@Param("correo") String correo);
 
+    @Query("SELECT u FROM Usuario u LEFT JOIN FETCH u.rol LEFT JOIN FETCH u.persona ORDER BY u.idUsuario ASC")
+    java.util.List<Usuario> findAllConRelaciones();
+
     boolean existsByCorreo(String correo);
     Optional<Usuario> findFirstByPersona(Persona persona);
     Optional<Usuario> findByPersona_IdPersona(Long idPersona);
