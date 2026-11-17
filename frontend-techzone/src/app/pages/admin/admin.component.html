@@ -4801,7 +4801,9 @@
                 <div class="space-y-3">
                   <div class="flex justify-between items-start">
                     <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
-                      <span class="material-symbols-outlined text-xl">shield_person</span>
+                      <span class="material-symbols-outlined text-xl">
+                        {{ r.nombre.toLowerCase().includes('admin') ? 'shield_person' : r.nombre.toLowerCase().includes('supervisor') ? 'supervisor_account' : r.nombre.toLowerCase().includes('logistica') || r.nombre.toLowerCase().includes('almacen') ? 'inventory_2' : r.nombre.toLowerCase().includes('soporte') ? 'support_agent' : 'badge' }}
+                      </span>
                     </div>
                     <span class="px-2 py-0.5 rounded-full text-[10px] font-bold"
                       [class.bg-emerald-100]="r.vigente !== false" [class.text-emerald-800]="r.vigente !== false"
@@ -6437,12 +6439,12 @@
               <label class="text-[10px] font-bold uppercase text-slate-600 dark:text-slate-400 block mb-1">Cargo / Función</label>
               <select
                 [ngModel]="formColabCargo()"
-                (ngModelChange)="formColabCargo.set($event)"
+                (ngModelChange)="alCambiarCargoColab($event)"
                 class="w-full bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-white px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500">
                 <option value="SUPERVISOR_VENTAS">Supervisor de Ventas</option>
-                <option value="ESPECIALISTA">Especialista Hardware</option>
                 <option value="LOGISTICA">Logística / Almacén</option>
                 <option value="SOPORTE">Soporte Técnico</option>
+                <option value="ESPECIALISTA">Especialista Hardware</option>
                 <option value="VENTAS">Asesor Comercial</option>
               </select>
             </div>

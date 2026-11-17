@@ -3072,10 +3072,47 @@ export class AdminComponent implements OnInit {
     this.formColabApMaterno.set('');
     this.formColabFechaNacimiento.set('');
     this.formColabTelefono.set('');
-    this.formColabCargo.set('ESPECIALISTA');
+    this.formColabCorreo.set('');
+    this.formColabPassword.set('');
+    this.formColabDireccion.set('');
+    this.formColabReferencia.set('');
+    this.formColabCargo.set('SUPERVISOR_VENTAS');
     this.formColabSalario.set(1800);
     this.formColabFechaContrato.set(new Date().toISOString().substring(0, 10));
+
+    const supRol = this.roles().find(r => r.nombre.toLowerCase().includes('supervisor'));
+    if (supRol) {
+      this.formColabRolId.set(supRol.idRol);
+    } else {
+      this.formColabRolId.set(2);
+    }
+
+    const dists = this.distritosColab();
+    if (dists.length > 0) {
+      this.formColabDistritoId.set(dists[0].idUbigeo);
+    }
+
     this.mostrarModalNuevoEmpleado.set(true);
+  }
+
+  alCambiarCargoColab(cargo: string): void {
+    this.formColabCargo.set(cargo);
+    const rList = this.roles();
+    let rolEncontrado: RolAdmin | undefined;
+
+    if (cargo === 'SUPERVISOR_VENTAS') {
+      rolEncontrado = rList.find(x => x.nombre.toLowerCase().includes('supervisor'));
+    } else if (cargo === 'LOGISTICA') {
+      rolEncontrado = rList.find(x => x.nombre.toLowerCase().includes('logística') || x.nombre.toLowerCase().includes('logistica') || x.nombre.toLowerCase().includes('almacén') || x.nombre.toLowerCase().includes('almacen'));
+    } else if (cargo === 'SOPORTE') {
+      rolEncontrado = rList.find(x => x.nombre.toLowerCase().includes('soporte'));
+    } else if (cargo === 'ESPECIALISTA' || cargo === 'VENTAS') {
+      rolEncontrado = rList.find(x => x.nombre.toLowerCase().includes('trabajador'));
+    }
+
+    if (rolEncontrado) {
+      this.formColabRolId.set(rolEncontrado.idRol);
+    }
   }
 
   cerrarModalNuevoEmpleado(): void {

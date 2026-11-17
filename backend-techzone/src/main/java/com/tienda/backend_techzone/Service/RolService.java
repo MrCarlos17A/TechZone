@@ -15,6 +15,7 @@ public class RolService {
     private final RolRepository rolRepository;
 
     public List<Rol> ListarRoles() {
+        asegurarRolesBase();
         return rolRepository.findAll();
     }
 
@@ -24,6 +25,29 @@ public class RolService {
 
     @jakarta.persistence.PersistenceContext
     private jakarta.persistence.EntityManager entityManager;
+
+    private void asegurarRolesBase() {
+        try {
+            insertarRolSiNoExiste(5L, "Supervisor de Ventas",
+                    "{\"dashboard\":[\"ver\"],\"ventas\":[\"ver\",\"crear\",\"editar\"],\"pagos\":[\"ver\"],\"clientes\":[\"ver\"]}");
+            insertarRolSiNoExiste(6L, "Logística y Almacén",
+                    "{\"productos\":[\"ver\",\"crear\",\"editar\"],\"categorias\":[\"ver\",\"crear\",\"editar\"],\"marcas\":[\"ver\",\"crear\",\"editar\"],\"imagenes\":[\"ver\",\"crear\",\"editar\"],\"ventas\":[\"ver\"]}");
+            insertarRolSiNoExiste(7L, "Soporte Técnico",
+                    "{\"productos\":[\"ver\"],\"ventas\":[\"ver\"],\"clientes\":[\"ver\"]}");
+        } catch (Exception ignored) {
+        }
+    }
+
+    private void insertarRolSiNoExiste(Long id, String nombre, String permisos) {
+        if (!rolRepository.existsById(id)) {
+            entityManager.createNativeQuery(
+                    "INSERT INTO rol (id_rol, nombre, vigente, permisos) VALUES (:id, :nombre, true, :permisos) ON CONFLICT (id_rol) DO NOTHING")
+                    .setParameter("id", id)
+                    .setParameter("nombre", nombre)
+                    .setParameter("permisos", permisos)
+                    .executeUpdate();
+        }
+    }
 
     @org.springframework.transaction.annotation.Transactional
     public Rol CrearRol(Rol rol) {

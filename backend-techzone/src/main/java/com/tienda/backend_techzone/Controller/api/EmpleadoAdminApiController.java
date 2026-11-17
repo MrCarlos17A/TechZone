@@ -27,7 +27,7 @@ public class EmpleadoAdminApiController {
         Long idTipoDocumento,
         String numeroDocumento,
         String telefono,
-        LocalDate fechaNacimiento,
+        String fechaNacimiento,
         String direccion,
         String referencia,
         Long idUbigeo,
@@ -35,7 +35,7 @@ public class EmpleadoAdminApiController {
         String password,
         Long idRol,
         String cargo,
-        LocalDate fechaContrato,
+        String fechaContrato,
         BigDecimal salario
     ) {}
 
@@ -48,14 +48,24 @@ public class EmpleadoAdminApiController {
     public ResponseEntity<?> obtenerPorId(@PathVariable Long id) {
         try {
             return ResponseEntity.ok(empleadoService.obtenerEmpleadoPorId(id));
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(404).body(Map.of("mensaje", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body(Map.of("mensaje", e.getMessage() != null ? e.getMessage() : "Empleado no encontrado"));
         }
     }
 
     @PostMapping("/completo")
     public ResponseEntity<?> crearCompleto(@RequestBody CrearEmpleadoReq req) {
         try {
+            LocalDate fNac = null;
+            if (req.fechaNacimiento() != null && !req.fechaNacimiento().isBlank()) {
+                fNac = LocalDate.parse(req.fechaNacimiento().trim());
+            }
+
+            LocalDate fContr = LocalDate.now();
+            if (req.fechaContrato() != null && !req.fechaContrato().isBlank()) {
+                fContr = LocalDate.parse(req.fechaContrato().trim());
+            }
+
             Empleado creado = empleadoService.CrearEmpleadoCompleto(
                 req.nombres(),
                 req.apellidoPaterno(),
@@ -63,22 +73,22 @@ public class EmpleadoAdminApiController {
                 req.idTipoDocumento() != null ? req.idTipoDocumento() : 1L,
                 req.numeroDocumento(),
                 req.telefono(),
-                req.fechaNacimiento(),
+                fNac,
                 req.direccion(),
                 req.referencia(),
                 req.idUbigeo(),
                 req.correo(),
                 req.password(),
                 req.idRol(),
-                req.fechaContrato(),
-                req.salario()
+                fContr,
+                req.salario() != null ? req.salario() : BigDecimal.valueOf(1800)
             );
             if (req.cargo() != null && !req.cargo().isBlank()) {
                 creado.setCargo(req.cargo().trim().toUpperCase());
             }
             return ResponseEntity.status(201).body(creado);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(Map.of("mensaje", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("mensaje", e.getMessage() != null ? e.getMessage() : "Error al procesar el registro del colaborador"));
         }
     }
 
