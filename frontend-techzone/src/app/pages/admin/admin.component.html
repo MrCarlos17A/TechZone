@@ -6582,7 +6582,7 @@
           <button
             type="button"
             (click)="guardarNuevoColaborador()"
-            [disabled]="guardandoEmpleado() || !formularioNuevoEmpleadoValido()"
+            [disabled]="guardandoEmpleado()"
             class="px-5 py-2 rounded-xl text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 transition-all shadow-md shadow-blue-600/30 flex items-center gap-1.5 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed">
             @if (guardandoEmpleado()) {
               <span class="material-symbols-outlined animate-spin text-sm">progress_activity</span>
@@ -6867,9 +6867,13 @@
           <button
             type="button"
             (click)="guardarEditarEmpleado()"
-            [disabled]="!formularioEditarEmpleadoValido()"
+            [disabled]="guardandoEdicionEmpleado()"
             class="px-5 py-2 rounded-xl text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-md shadow-blue-600/30 flex items-center gap-1.5 cursor-pointer">
-            <span class="material-symbols-outlined text-sm">save</span>
+            @if (guardandoEdicionEmpleado()) {
+              <span class="material-symbols-outlined animate-spin text-sm">progress_activity</span>
+            } @else {
+              <span class="material-symbols-outlined text-sm">save</span>
+            }
             <span>Guardar Cambios</span>
           </button>
         </div>

@@ -28,12 +28,12 @@ export class Validaciones {
    * Teléfono celular de Perú: exactamente 9 dígitos numéricos empezando con 9.
    */
   static validarTelefono(telefono?: string | null): ResultadoValidacion {
-    const valor = (telefono || '').trim();
+    const valor = (telefono || '').trim().replace(/\D/g, '');
     if (!valor) {
       return { valido: false, mensaje: 'El número de teléfono móvil es obligatorio' };
     }
-    if (!/^9\d{8}$/.test(valor)) {
-      return { valido: false, mensaje: 'El teléfono debe tener exactamente 9 dígitos y empezar con 9' };
+    if (valor.length !== 9) {
+      return { valido: false, mensaje: 'El teléfono debe tener exactamente 9 dígitos' };
     }
     return { valido: true };
   }
@@ -181,6 +181,39 @@ export class Validaciones {
   }
 
   /**
+   * Helper robusto para parsear fechas en formatos dd/mm/yyyy, dd-mm-yyyy o yyyy-mm-dd sin errores de locale.
+   */
+  static parsearFecha(fechaStr?: string | null): Date | null {
+    if (!fechaStr) return null;
+    const val = fechaStr.trim();
+    if (!val) return null;
+
+    // Formato dd/mm/yyyy o dd-mm-yyyy
+    if (/^\d{1,2}[\/\-]\d{1,2}[\/\-]\d{4}/.test(val)) {
+      const partes = val.split(/[\/\-]/);
+      const dia = parseInt(partes[0], 10);
+      const mes = parseInt(partes[1], 10) - 1;
+      const anio = parseInt(partes[2], 10);
+      const d = new Date(anio, mes, dia);
+      return isNaN(d.getTime()) ? null : d;
+    }
+
+    // Formato yyyy-mm-dd
+    if (/^\d{4}[\/\-]\d{1,2}[\/\-]\d{1,2}/.test(val)) {
+      const limpia = val.substring(0, 10);
+      const partes = limpia.split(/[\/\-]/);
+      const anio = parseInt(partes[0], 10);
+      const mes = parseInt(partes[1], 10) - 1;
+      const dia = parseInt(partes[2], 10);
+      const d = new Date(anio, mes, dia);
+      return isNaN(d.getTime()) ? null : d;
+    }
+
+    const d = new Date(val);
+    return isNaN(d.getTime()) ? null : d;
+  }
+
+  /**
    * Fecha válida obligatoria.
    */
   static validarFechaObligatoria(fechaStr?: string | null, etiqueta: string = 'La fecha'): ResultadoValidacion {
@@ -188,8 +221,8 @@ export class Validaciones {
     if (!val) {
       return { valido: false, mensaje: `${etiqueta} es obligatoria` };
     }
-    const d = new Date(val);
-    if (isNaN(d.getTime())) {
+    const d = this.parsearFecha(val);
+    if (!d || isNaN(d.getTime())) {
       return { valido: false, mensaje: `${etiqueta} no tiene un formato válido` };
     }
     return { valido: true };
@@ -202,7 +235,10 @@ export class Validaciones {
     const valFecha = this.validarFechaObligatoria(fechaNacStr, 'La fecha de nacimiento');
     if (!valFecha.valido) return valFecha;
 
-    const nac = new Date(fechaNacStr!.trim());
+    const nac = this.parsearFecha(fechaNacStr);
+    if (!nac) {
+      return { valido: false, mensaje: 'Ingresa una fecha de nacimiento válida' };
+    }
     const hoy = new Date();
     let edad = hoy.getFullYear() - nac.getFullYear();
     const m = hoy.getMonth() - nac.getMonth();
