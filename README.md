@@ -109,29 +109,29 @@ TechZone implementa una arquitectura desacoplada en tres capas principales: la c
 
 ```mermaid
 flowchart TD
-    subgraph FRONTEND["Capa Cliente (Angular 21 SPA)"]
-        UI_STORE["Tienda Web"]
-        UI_CHECKOUT["Checkout"]
-        UI_VOUCHER["Comprobantes"]
-        UI_ADMIN["Panel Admin"]
-        CART_SVC["Carrito Aislado"]
-        IDLE_SVC["Inactividad 25m"]
+    subgraph FRONTEND["Frontend SPA<br/>(Angular 21)"]
+        UI_STORE["Tienda Web<br/>y Catálogo"]
+        UI_CHECKOUT["Pasarela<br/>Checkout"]
+        UI_VOUCHER["Visor Boletas<br/>y Facturas"]
+        UI_ADMIN["Panel Admin<br/>con Signals"]
+        CART_SVC["Carrito Local<br/>Persistente"]
+        IDLE_SVC["Inactividad 25m<br/>(Staff)"]
     end
 
-    subgraph BACKEND["Capa de Negocio (Spring Boot / Java 25)"]
-        GW["Filtro JWT (Server Boot Signature)"]
-        C_AUTH["Auth API"]
-        C_DNI["DNI API"]
-        C_PROD["Producto API"]
-        C_VENTA["Venta API"]
-        C_CART["Carrito API"]
-        C_ADMIN["Admin API"]
+    subgraph BACKEND["Backend API<br/>(Spring Boot 4)"]
+        GW["Filtro JWT<br/>Server Boot ID"]
+        C_AUTH["Controlador<br/>Auth API"]
+        C_DNI["Consulta DNI<br/>y RENIEC"]
+        C_PROD["Catálogo y<br/>Novedades"]
+        C_VENTA["Ventas y<br/>Comprobantes"]
+        C_CART["Gestión de<br/>Carritos"]
+        C_ADMIN["Configuración<br/>y Parámetros"]
     end
 
-    subgraph CLOUD["Capa de Datos y Servicios Externos"]
-        SUPA_DB[("PostgreSQL (Supabase)")]
-        SUPA_STORAGE["Supabase Storage CDN"]
-        RENIEC["API DNI (apis.net.pe)"]
+    subgraph CLOUD["Servicios Cloud"]
+        SUPA_DB[("Base de Datos<br/>PostgreSQL")]
+        SUPA_STORAGE["Storage CDN<br/>Supabase"]
+        RENIEC["Servicio DNI<br/>apis.net.pe"]
     end
 
     UI_STORE --> C_PROD
@@ -177,24 +177,23 @@ sequenceDiagram
     actor Admin as Administrador
 
     Cliente->>Front: Agrega productos al carrito
-    Cliente->>Front: Procede al Checkout e ingresa DNI/RUC
-    Front->>Back: Consulta identidad (GET /api/dni/:doc)
-    Back->>RENIEC: Valida titular en servicio oficial
+    Cliente->>Front: Inicia Checkout con DNI/RUC
+    Front->>Back: GET /api/dni/:doc
+    Back->>RENIEC: Consulta servicio de identidad
     RENIEC-->>Back: Nombres y apellidos oficiales
     Back-->>Front: Datos normalizados
-    Cliente->>Front: Selecciona medio de pago y confirma compra
-    Front->>Back: Emite orden (POST /api/ventas)
+    Cliente->>Front: Selecciona medio de pago y compra
+    Front->>Back: POST /api/ventas (Detalle + Pago)
     Back->>DB: Inicia Transacción ACID
-    Back->>DB: Descuenta stock de productos
-    Back->>DB: Registra venta y detalle de venta
-    Back->>DB: Registra comprobante y pago confirmado
-    Back->>DB: Vacía el carrito del usuario
-    Back-->>Front: Orden confirmada (Código OP-XXXXXX)
-    Admin->>Front: Ingresa al Registro de Ventas (/admin)
-    Front->>Back: Consulta ventas pendientes
-    Back-->>Front: Listado de pedidos
-    Admin->>Front: Abre comprobante oficial (Boleta/Factura)
-    Front-->>Admin: Visualiza e imprime comprobante SUNAT
+    Back->>DB: Descuenta stock en inventario
+    Back->>DB: Registra venta y comprobante
+    Back->>DB: Vacía carrito de compra
+    Back-->>Front: Orden confirmada (OP-XXXXXX)
+    Admin->>Front: Ingresa al Registro de Ventas
+    Front->>Back: GET /api/admin/ventas
+    Back-->>Front: Lista de pedidos
+    Admin->>Front: Solicita Boleta o Factura
+    Front-->>Admin: Visualiza comprobante SUNAT
 ```
 
 **Etapas del Ciclo Logístico:**
@@ -211,21 +210,21 @@ Para la sección de Novedades (`/novedades`), el sistema combina el criterio edi
 
 ```mermaid
 flowchart TD
-    REQ["Petición GET /api/productos/novedades"] --> DB_QUERY["Consulta SQL en PostgreSQL"]
+    REQ["Petición GET<br/>/api/novedades"] --> DB_QUERY["Consulta SQL<br/>en PostgreSQL"]
     
-    DB_QUERY --> P1["1° Prioridad: novedad = true<br/>(Lanzamientos editoriales fijados por Admin)"]
-    DB_QUERY --> P2["2° Prioridad: fecha_ingreso DESC<br/>(Ingresos recientes en almacén)"]
+    DB_QUERY --> P1["1° Prioridad<br/>novedad = true<br/>(Lanzamientos)"]
+    DB_QUERY --> P2["2° Prioridad<br/>fecha_ingreso DESC<br/>(Ingresos)"]
     
-    P1 --> FUSION["Fusión sin duplicados (LinkedHashSet en Java)"]
+    P1 --> FUSION["Fusión sin duplicar<br/>(LinkedHashSet)"]
     P2 --> FUSION
     
-    FUSION --> RESPONSE["Respuesta JSON ordenada (40 productos)"]
-    RESPONSE --> RENDER["Renderizado en catálogo web"]
+    FUSION --> RESPONSE["Respuesta JSON<br/>(40 productos)"]
+    RESPONSE --> RENDER["Renderizado en<br/>Catálogo Web"]
     
-    RENDER --> BADGE1["Badge: 'Lanzamiento' (novedad = true)"]
-    RENDER --> BADGE2["Badge: 'Nuevo Ingreso' (fecha reciente)"]
+    RENDER --> BADGE1["Badge:<br/>'Lanzamiento'"]
+    RENDER --> BADGE2["Badge:<br/>'Nuevo Ingreso'"]
     
-    ADMIN_TOGGLE["Admin: PUT /api/admin/productos/:id/toggle-novedad"] --> UPDATE_BD["Actualiza columna 'novedad' en BD"]
+    ADMIN_TOGGLE["Admin: PUT<br/>toggle-novedad"] --> UPDATE_BD["Actualiza campo<br/>en PostgreSQL"]
     UPDATE_BD --> DB_QUERY
 ```
 
@@ -243,19 +242,19 @@ Generación de la representación impresa del comprobante tributario conforme a 
 
 ```mermaid
 flowchart TD
-    REQ["Usuario solicita ver comprobante (Cliente o Admin)"] --> LOAD["Carga datos completos de la orden"]
+    REQ["Solicitud de<br/>Comprobante"] --> LOAD["Carga datos de<br/>VentaCompleta"]
     
-    LOAD --> EVAL{"Longitud del documento del cliente"}
-    EVAL -- "11 dígitos o Razón Social" --> FACTURA["Serie: F001 (Correlativo 8 dígitos)<br/>Título: FACTURA ELECTRÓNICA"]
-    EVAL -- "8 dígitos (DNI)" --> BOLETA["Serie: B001 (Correlativo 8 dígitos)<br/>Título: BOLETA ELECTRÓNICA"]
+    LOAD --> EVAL{"Longitud<br/>Documento"}
+    EVAL -- "11 dígitos / RUC" --> FACTURA["FACTURA F001<br/>Venta Electrónica"]
+    EVAL -- "8 dígitos (DNI)" --> BOLETA["BOLETA B001<br/>Venta Electrónica"]
     
-    FACTURA --> PARAMS["Inyecta Parámetros Fiscales de la Empresa"]
+    FACTURA --> PARAMS["Inyecta Datos<br/>Fiscales SUNAT"]
     BOLETA --> PARAMS
     
-    PARAMS --> HASH["Genera Código QR y Hash Digital Simulado"]
-    HASH --> MODAL["Renderiza Modal Oficial en Pantalla"]
-    MODAL --> PRINT["Acción Imprimir / Guardar en PDF"]
-    PRINT --> CSS_PRINT["Aplica estilos @media print (A4 limpio y sin interfaz)"]
+    PARAMS --> HASH["Genera Código QR<br/>y Hash Digital"]
+    HASH --> MODAL["Abre Modal Oficial<br/>en Pantalla"]
+    MODAL --> PRINT["Acción Imprimir<br/>window.print()"]
+    PRINT --> CSS_PRINT["Aplica Formato A4<br/>@media print"]
 ```
 
 **Parámetros Fiscales Inyectados:**
@@ -273,24 +272,24 @@ Mecanismo de protección contra ataques de fuerza bruta y accesos no autorizados
 
 ```mermaid
 flowchart TD
-    START["Intento de inicio de sesión"] --> CAPTURE["Captura IP y User-Agent del cliente"]
-    CAPTURE --> FIND{"¿Existe usuario en BD?"}
+    START["Intento de<br/>Login"] --> CAPTURE["Captura IP y<br/>User-Agent"]
+    CAPTURE --> FIND{"¿Existe usuario<br/>en BD?"}
     
-    FIND -- No --> AUDIT_FAIL1["Registra intento fallido en bitácora"] --> RET_401["Error 401: Credenciales inválidas"]
+    FIND -- No --> AUDIT_FAIL1["Registra fallo<br/>en auditoría"] --> RET_401["Error 401:<br/>Credenciales"]
     
-    FIND -- Sí --> LOCKED{"¿Cuenta con bloqueo temporal activo?"}
-    LOCKED -- Sí --> RET_423["Error 423: Cuenta bloqueada temporalmente"]
+    FIND -- Sí --> LOCKED{"¿Cuenta con<br/>bloqueo activo?"}
+    LOCKED -- Sí --> RET_423["Error 423:<br/>Bloqueo 15 min"]
     
-    LOCKED -- No --> CHECK_PASS{"¿Contraseña correcta (BCrypt)?"}
-    CHECK_PASS -- No --> INC["Incrementa intentos fallidos (+1)"]
-    INC --> MAX{"¿Alcanzó 5 intentos fallidos?"}
-    MAX -- Sí --> SET_LOCK["Aplica bloqueo temporal por 15 minutos"]
-    MAX -- No --> AUDIT_FAIL2["Registra intento fallido en bitácora"]
+    LOCKED -- No --> CHECK_PASS{"¿Contraseña válida<br/>con BCrypt?"}
+    CHECK_PASS -- No --> INC["Incrementa<br/>intentos (+1)"]
+    INC --> MAX{"¿Alcanzó 5<br/>intentos?"}
+    MAX -- Sí --> SET_LOCK["Aplica bloqueo<br/>por 15 min"]
+    MAX -- No --> AUDIT_FAIL2["Registra fallo<br/>en auditoría"]
     
-    CHECK_PASS -- Sí --> RESET_COUNT["Resetea contador de intentos a 0"]
-    RESET_COUNT --> GEN_TOKEN["Genera JWT con Server Boot ID"]
-    GEN_TOKEN --> AUDIT_OK["Registra acceso exitoso con IP en bitácora"]
-    AUDIT_OK --> RET_200["200 OK: Acceso autorizado con roles"]
+    CHECK_PASS -- Sí --> RESET_COUNT["Resetea contador<br/>a 0 intentos"]
+    RESET_COUNT --> GEN_TOKEN["Genera JWT con<br/>Server Boot ID"]
+    GEN_TOKEN --> AUDIT_OK["Registra acceso<br/>exitoso con IP"]
+    AUDIT_OK --> RET_200["200 OK:<br/>Acceso concedido"]
 ```
 
 **Tabla de Políticas de Control de Acceso:**
@@ -307,19 +306,19 @@ Flujo de validación en tiempo real para agilizar el llenado de formularios y as
 
 ```mermaid
 flowchart TD
-    INPUT["Usuario digita 8 dígitos de DNI en formulario"] --> CHECK_CACHE{"¿El DNI ya existe en la BD local?"}
+    INPUT["Usuario digita<br/>8 dígitos DNI"] --> CHECK_CACHE{"¿Existe en<br/>BD Local?"}
     
-    CHECK_CACHE -- Sí --> FROM_DB["Recupera datos de persona desde PostgreSQL"]
-    CHECK_CACHE -- No --> CALL_RENIEC["Llama a API externa de RENIEC (apis.net.pe)"]
+    CHECK_CACHE -- Sí --> FROM_DB["Recupera datos<br/>de PostgreSQL"]
+    CHECK_CACHE -- No --> CALL_RENIEC["Consulta API<br/>externa RENIEC"]
     
-    CALL_RENIEC --> NORMALIZE["Normaliza nombres, apellidos paterno y materno"]
-    NORMALIZE --> SAVE_CACHE["Guarda o actualiza registro en tabla 'persona'"]
+    CALL_RENIEC --> NORMALIZE["Normaliza nombres<br/>y apellidos"]
+    NORMALIZE --> SAVE_CACHE["Guarda persona<br/>en PostgreSQL"]
     
-    FROM_DB --> DTO["Construye respuesta unificada JSON"]
+    FROM_DB --> DTO["Construye respuesta<br/>unificada JSON"]
     SAVE_CACHE --> DTO
     
-    DTO --> AUTOFILL["Signals autocompleta nombres y apellidos en la UI"]
-    AUTOFILL --> BADGE["Muestra indicador verde: 'Identidad Validada RENIEC'"]
+    DTO --> AUTOFILL["Signals autocompleta<br/>los campos en UI"]
+    AUTOFILL --> BADGE["Badge verde:<br/>'Validado RENIEC'"]
 ```
 
 **Puntos de Integración:**
@@ -337,36 +336,34 @@ Protección de sesiones ante dos riesgos críticos: abandono del equipo en el pa
 
 ```mermaid
 flowchart TD
-    subgraph BOOT["1. Arranque del Servidor"]
-        INIT_SRV["Servidor inicia (iniciar.ps1 o Docker)"]
-        INIT_SRV --> GEN_SID["Genera INSTANCIA_SERVIDOR_ID único en memoria<br/>(UUID aleatorio en JwtService)"]
+    subgraph BOOT["1. Arranque Servidor"]
+        INIT_SRV["Inicio de Spring Boot"] --> GEN_SID["Genera UUID único<br/>en memoria (sid)"]
     end
 
-    subgraph SESSION["2. Autenticación y Almacenamiento"]
-        LOGIN_OK["Login exitoso en /api/auth/login"]
-        LOGIN_OK --> EMIT_JWT["Emite JWT con claim 'sid' = INSTANCIA_SERVIDOR_ID"]
-        EMIT_JWT --> SAVE_SESS["Frontend guarda sesión en sessionStorage<br/>(Se destruye al cerrar la pestaña o navegador)"]
+    subgraph SESSION["2. Autenticación"]
+        LOGIN_OK["Login exitoso<br/>/api/auth/login"] --> EMIT_JWT["Emite JWT con<br/>claim 'sid' único"]
+        EMIT_JWT --> SAVE_SESS["Guarda sesión en<br/>sessionStorage"]
     end
 
-    subgraph INACTIVITY["3. Control de Inactividad (Panel Admin / Staff)"]
-        START_TIMER["Inicia temporizador pasivo (25 minutos)"]
-        USER_ACTION["Usuario interactúa (mouse, clic, teclado)"] -->|Throttle cada 2s| RESET_TIMER["Reinicia contador a 0"]
+    subgraph INACTIVITY["3. Control Inactividad (Staff)"]
+        START_TIMER["Inicia reloj de<br/>25 minutos"]
+        USER_ACTION["Usuario interactúa<br/>(tecla, clic, mouse)"] -->|Cada 2s| RESET_TIMER["Reinicia reloj<br/>a 0 minutos"]
         
-        START_TIMER --> CHECK_23{"¿Transcurrieron 23 minutos?"}
-        CHECK_23 -- Sí --> SHOW_MODAL["Muestra diálogo con cuenta regresiva de 120s:<br/>'Sesión a punto de expirar'"]
+        START_TIMER --> CHECK_23{"¿Pasaron 23<br/>minutos?"}
+        CHECK_23 -- Sí --> SHOW_MODAL["Abre modal con<br/>cuenta regresiva 120s"]
         
-        SHOW_MODAL --> BTN_CONT["Clic en 'Continuar trabajando'"] --> RESET_TIMER
-        SHOW_MODAL --> TIMEOUT_25{"¿Se alcanzaron los 25 minutos?"}
-        TIMEOUT_25 -- Sí --> LOGOUT_IDLE["Ejecuta authService.logout()<br/>Redirige a /login?inactividad=true"]
+        SHOW_MODAL --> BTN_CONT["Clic 'Continuar'<br/>o tecla"] --> RESET_TIMER
+        SHOW_MODAL --> TIMEOUT_25{"¿Cumplió 25<br/>minutos?"}
+        TIMEOUT_25 -- Sí --> LOGOUT_IDLE["authService.logout()<br/>Redirige a /login"]
     end
 
-    subgraph RESTART_CHECK["4. Detección de Reinicio del Servidor"]
-        RESTART_SRV["Servidor se apaga y vuelve a encender"] --> NEW_SID["Se genera un NUEVO INSTANCIA_SERVIDOR_ID"]
-        REQ_OLD["Petición llega con token de instancia previa"]
-        NEW_SID --> VALIDATE_SID{"¿sid del token == INSTANCIA_SERVIDOR_ID actual?"}
+    subgraph RESTART_CHECK["4. Detección de Reinicio"]
+        RESTART_SRV["Servidor se reinicia"] --> NEW_SID["Se genera un<br/>nuevo sid en memoria"]
+        REQ_OLD["Petición con token<br/>de arranque previo"]
+        NEW_SID --> VALIDATE_SID{"¿sid del token<br/>== sid actual?"}
         REQ_OLD --> VALIDATE_SID
-        VALIDATE_SID -- No --> REJECT_401["BadJwtException: 401 Unauthorized"]
-        REJECT_401 --> AUTO_LOGOUT["AuthInterceptor cierra sesión de inmediato"]
+        VALIDATE_SID -- No --> REJECT_401["Error 401:<br/>BadJwtException"]
+        REJECT_401 --> AUTO_LOGOUT["AuthInterceptor<br/>cierra sesión"]
     end
 
     GEN_SID --> EMIT_JWT
@@ -387,40 +384,40 @@ Garantiza que ningún cliente pierda sus productos seleccionados si cierra sesi�
 
 ```mermaid
 flowchart TD
-    subgraph NAMESPACING["1. Aislamiento por Claves en Navegador (LocalStorage)"]
-        GUEST_KEY["Clave: 'techzone_cart_guest'<br/>(Visitante anónimo no registrado)"]
-        USER_A_KEY["Clave: 'techzone_cart_user_101'<br/>(Carrito privado de Carlos)"]
-        USER_B_KEY["Clave: 'techzone_cart_user_102'<br/>(Carrito privado de María)"]
+    subgraph NAMESPACING["1. Aislamiento por Clave Local"]
+        GUEST_KEY["Clave: guest<br/>(Visitante anónimo)"]
+        USER_A_KEY["Clave: user_101<br/>(Carrito de Carlos)"]
+        USER_B_KEY["Clave: user_102<br/>(Carrito de María)"]
     end
 
-    subgraph GUEST_NAV["2. Experiencia de Compra como Invitado"]
-        ADD_PROD["Visitante agrega productos al carrito"] --> GUEST_KEY
-        VIEW_CART["Accede a /carrito: revisa items y totales"]
+    subgraph GUEST_NAV["2. Modo Invitado"]
+        ADD_PROD["Agrega productos<br/>sin iniciar sesión"] --> GUEST_KEY
+        VIEW_CART["Accede a /carrito<br/>revisa subtotales"]
         GUEST_KEY --> VIEW_CART
         
-        GO_PAY["Clic en 'Proceder al Pago'"]
-        GO_PAY --> IS_AUTH{"¿Usuario autenticado?"}
-        IS_AUTH -- No --> REDIR_LOGIN["Redirige a /login?returnUrl=/checkout"]
-        IS_AUTH -- Sí --> GOTO_PAY["Navega directo a /checkout"]
+        GO_PAY["Clic en botón<br/>'Proceder al Pago'"]
+        GO_PAY --> IS_AUTH{"¿Usuario<br/>autenticado?"}
+        IS_AUTH -- No --> REDIR_LOGIN["Redirige a /login<br/>returnUrl=/checkout"]
+        IS_AUTH -- Sí --> GOTO_PAY["Navega directo<br/>a /checkout"]
     end
 
-    subgraph MERGE_FLOW["3. Fusión de Carrito al Iniciar Sesión (Cart Merge)"]
-        REDIR_LOGIN --> LOGIN_SUCCESS["Inicio de sesión exitoso"]
-        LOGIN_SUCCESS --> HAS_GUEST{"¿Había productos en 'techzone_cart_guest'?"}
+    subgraph MERGE_FLOW["3. Fusión al Iniciar Sesión (Cart Merge)"]
+        REDIR_LOGIN --> LOGIN_SUCCESS["Login exitoso de<br/>Carlos en /login"]
+        LOGIN_SUCCESS --> HAS_GUEST{"¿Hay items en<br/>clave guest?"}
         
-        HAS_GUEST -- Sí --> UPLOAD_GUEST["Sube ítems locales a la cuenta vía POST /api/carrito/items"]
-        UPLOAD_GUEST --> DEL_GUEST["Elimina 'techzone_cart_guest'"]
-        DEL_GUEST --> FETCH_DB["Recupera carrito unificado desde PostgreSQL Supabase"]
+        HAS_GUEST -- Sí --> UPLOAD_GUEST["Sube items a BD<br/>POST /api/carrito"]
+        UPLOAD_GUEST --> DEL_GUEST["Borra clave guest"]
+        DEL_GUEST --> FETCH_DB["Carga carrito unificado<br/>desde PostgreSQL"]
         HAS_GUEST -- No --> FETCH_DB
         
-        FETCH_DB --> BACKUP_USER["Guarda en clave privada 'techzone_cart_user_{id}'"]
+        FETCH_DB --> BACKUP_USER["Respalda en clave<br/>user_101 de Carlos"]
         BACKUP_USER --> GOTO_PAY
     end
 
-    subgraph ISOLATION_FLOW["4. Privacidad en Computadoras Compartidas"]
-        CARLOS_LOGOUT["Carlos cierra sesión"] --> CLEAR_VIEW["Limpia carrito en pantalla"]
-        MARIA_LOGIN["María inicia sesión en la misma máquina"] --> LOAD_MARIA["Carga exclusivamente 'techzone_cart_user_102' y BD de María"]
-        LOAD_MARIA -.-> SHIELD["Aislamiento Total: María jamás ve los productos de Carlos"]
+    subgraph ISOLATION_FLOW["4. Privacidad en Misma PC"]
+        CARLOS_LOGOUT["Carlos cierra sesión"] --> CLEAR_VIEW["Limpia carrito<br/>en pantalla"]
+        MARIA_LOGIN["María inicia sesión<br/>en la misma PC"] --> LOAD_MARIA["Carga solo clave<br/>user_102 de María"]
+        LOAD_MARIA -.-> SHIELD["Aislamiento Total:<br/>María no ve ítems de Carlos"]
     end
 ```
 
@@ -438,41 +435,41 @@ Estructura de despliegue contenerizado que permite levantar la plataforma comple
 
 ```mermaid
 flowchart TD
-    subgraph DOCKER_ENGINE["Host Docker (docker compose up --build)"]
-        subgraph BRIDGE_NET["Red Puente Interna: 'techzone-net'"]
+    subgraph DOCKER_ENGINE["Host Docker (docker compose up)"]
+        subgraph BRIDGE_NET["Red Puente Interna: techzone-net"]
             
             subgraph FRONTEND_CONTAINER["Contenedor: techzone-frontend"]
-                NGINX_SRV["Servidor Web Nginx (Alpine)<br/>Puerto interno: 80"]
-                WEB_ASSETS["Archivos estáticos compilados de Angular 21<br/>(/usr/share/nginx/html)"]
-                SPA_RULE["try_files $uri $uri/ /index.html"]
-                GZIP_COMP["Compresión Gzip activa"]
+                NGINX_SRV["Servidor Nginx<br/>Puerto: 80"]
+                WEB_ASSETS["Angular 21 SPA<br/>/usr/share/nginx/html"]
+                SPA_RULE["Regla SPA:<br/>try_files index.html"]
+                GZIP_COMP["Compresión Gzip<br/>activada"]
             end
 
             subgraph BACKEND_CONTAINER["Contenedor: techzone-backend"]
-                TEMURIN_JVM["Eclipse Temurin 25 JRE<br/>Usuario: spring (no root)"]
-                SPRING_APP["Spring Boot 4.1.1 API REST<br/>Puerto interno: 8080"]
-                ENV_INJECT["Inyección de variables de entorno (.env)"]
+                TEMURIN_JVM["Temurin 25 JRE<br/>Usuario: spring"]
+                SPRING_APP["Spring Boot API<br/>Puerto: 8080"]
+                ENV_INJECT["Variables .env<br/>inyectadas"]
             end
         end
 
-        HOST_4200["Puerto Host: 4200"] -->|Mapeo 4200:80| NGINX_SRV
-        HOST_8080["Puerto Host: 8080"] -->|Mapeo 8080:8080| SPRING_APP
+        HOST_4200["Puerto 4200<br/>(Host Web)"] -->|Mapeo 4200:80| NGINX_SRV
+        HOST_8080["Puerto 8080<br/>(Host API)"] -->|Mapeo 8080:8080| SPRING_APP
         
-        NGINX_SRV -->|Proxy inverso interno: location /api/| SPRING_APP
+        NGINX_SRV -->|Proxy inverso<br/>location /api/| SPRING_APP
     end
 
-    subgraph CLIENT["Navegador del Cliente"]
-        USER_PC["Usuario accede a http://localhost:4200"]
+    subgraph CLIENT["Navegador Web"]
+        USER_PC["Acceso del usuario<br/>localhost:4200"]
     end
 
-    subgraph CLOUD_SERVICES["Infraestructura Cloud Externa"]
-        SUPABASE_PG[("PostgreSQL en Supabase (Puerto 6543)")]
-        SUPABASE_BUCKET["Supabase Storage CDN (Imágenes)"]
+    subgraph CLOUD_SERVICES["Cloud Externa"]
+        SUPABASE_PG[("PostgreSQL en Supabase<br/>Puerto: 6543")]
+        SUPABASE_BUCKET["Supabase Storage<br/>(Imágenes CDN)"]
     end
 
     USER_PC --> HOST_4200
     SPRING_APP -->|JDBC SSL| SUPABASE_PG
-    SPRING_APP -->|Subida de archivos| SUPABASE_BUCKET
+    SPRING_APP -->|Upload CDN| SUPABASE_BUCKET
 ```
 
 **Detalle de la Red y Contenedores:**
