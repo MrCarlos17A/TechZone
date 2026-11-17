@@ -2,7 +2,6 @@ package com.tienda.backend_techzone.Service;
 
 import com.tienda.backend_techzone.Model.*;
 import com.tienda.backend_techzone.Repository.*;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +21,6 @@ public class EmpleadoService {
     private final UbigeoRepository ubigeoRepository;
     private final RolRepository rolRepository;
     private final PasswordEncoder passwordEncoder;
-    private final DatabaseBootstrapService databaseBootstrapService;
 
     public EmpleadoService(
             EmpleadoRepository empleadoRepository,
@@ -31,8 +29,7 @@ public class EmpleadoService {
             TipoDocumentoRepository tipoDocumentoRepository,
             UbigeoRepository ubigeoRepository,
             RolRepository rolRepository,
-            PasswordEncoder passwordEncoder,
-            DatabaseBootstrapService databaseBootstrapService) {
+            PasswordEncoder passwordEncoder) {
         this.empleadoRepository = empleadoRepository;
         this.personaRepository = personaRepository;
         this.usuarioRepository = usuarioRepository;
@@ -40,7 +37,6 @@ public class EmpleadoService {
         this.ubigeoRepository = ubigeoRepository;
         this.rolRepository = rolRepository;
         this.passwordEncoder = passwordEncoder;
-        this.databaseBootstrapService = databaseBootstrapService;
     }
 
     @Transactional
