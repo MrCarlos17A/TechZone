@@ -2,18 +2,15 @@ package com.tienda.backend_techzone.Service;
 
 import com.tienda.backend_techzone.Model.*;
 import com.tienda.backend_techzone.Repository.*;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -247,11 +244,10 @@ public class DatabaseBootstrapService implements ApplicationRunner {
                 Persona p = emp.getPersona();
                 if (p == null) continue;
 
-                Usuario usuarioExistente = usuarioRepository.findFirstByPersona(p)
-                        .or(() -> usuarioRepository.findByPersona_IdPersona(p.getIdPersona()))
-                        .orElse(null);
+                Optional<Usuario> usuarioOpt = usuarioRepository.findFirstByPersona(p)
+                        .or(() -> usuarioRepository.findByPersona_IdPersona(p.getIdPersona()));
 
-                if (usuarioExistente == null) {
+                if (usuarioOpt.isEmpty()) {
                     String baseCorreo = (p.getNombres() != null ? p.getNombres().trim().split("\\s+")[0].toLowerCase() : "colaborador")
                             + "." + (p.getApellidoPaterno() != null ? p.getApellidoPaterno().trim().toLowerCase() : "techzone")
                             + "@techzone.pe";
@@ -288,6 +284,7 @@ public class DatabaseBootstrapService implements ApplicationRunner {
                     usuarioRepository.save(nuevoU);
                     log.info("Cuenta generada automaticamente para colaborador #{}: {}", emp.getIdEmpleado(), correoFinal);
                 } else {
+                    Usuario usuarioExistente = usuarioOpt.get();
                     boolean modificado = false;
                     if (usuarioExistente.getRol() == null && rolTrabajador != null) {
                         usuarioExistente.setRol(rolTrabajador);
