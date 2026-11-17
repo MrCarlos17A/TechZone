@@ -470,21 +470,108 @@ export class AdminComponent implements OnInit {
     return this.authService.tienePermiso(modulo, accion);
   }
 
-  readonly MODULOS_SISTEMA = [
-    { clave: 'dashboard', label: 'Panel Dashboard' },
-    { clave: 'productos', label: 'Catálogo de Productos' },
-    { clave: 'categorias', label: 'Categorías' },
-    { clave: 'marcas', label: 'Marcas de Productos' },
-    { clave: 'imagenes', label: 'Galería de Imágenes' },
-    { clave: 'ventas', label: 'Ventas y Despachos' },
-    { clave: 'pagos', label: 'Transacciones y Pagos' },
-    { clave: 'usuarios', label: 'Usuarios y Accesos' },
-    { clave: 'empleados', label: 'Colaboradores y Nómina' },
-    { clave: 'clientes', label: 'Cartera de Clientes' },
-    { clave: 'roles', label: 'Roles y Permisos' },
-    { clave: 'configuracion', label: 'Configuración del Sitio' },
+  readonly MODULOS_SISTEMA: {
+    clave: string;
+    label: string;
+    soloLectura?: boolean;
+    acciones: ('ver' | 'crear' | 'editar' | 'eliminar')[];
+  }[] = [
+    { clave: 'dashboard', label: 'Panel Dashboard', soloLectura: true, acciones: ['ver'] },
+    { clave: 'productos', label: 'Catálogo de Productos', acciones: ['ver', 'crear', 'editar', 'eliminar'] },
+    { clave: 'categorias', label: 'Categorías', acciones: ['ver', 'crear', 'editar', 'eliminar'] },
+    { clave: 'marcas', label: 'Marcas de Productos', acciones: ['ver', 'crear', 'editar', 'eliminar'] },
+    { clave: 'imagenes', label: 'Galería de Imágenes', acciones: ['ver', 'crear', 'editar', 'eliminar'] },
+    { clave: 'ventas', label: 'Ventas y Despachos', acciones: ['ver', 'crear', 'editar', 'eliminar'] },
+    { clave: 'pagos', label: 'Transacciones y Pagos', acciones: ['ver', 'crear', 'editar', 'eliminar'] },
+    { clave: 'usuarios', label: 'Usuarios y Accesos', acciones: ['ver', 'crear', 'editar', 'eliminar'] },
+    { clave: 'empleados', label: 'Colaboradores y Nómina', acciones: ['ver', 'crear', 'editar', 'eliminar'] },
+    { clave: 'clientes', label: 'Cartera de Clientes', acciones: ['ver', 'crear', 'editar', 'eliminar'] },
+    { clave: 'roles', label: 'Roles y Permisos', acciones: ['ver', 'crear', 'editar', 'eliminar'] },
+    { clave: 'configuracion', label: 'Configuración del Sitio', acciones: ['ver', 'crear', 'editar', 'eliminar'] },
   ];
   readonly ACCIONES_PERMISO = ['ver', 'crear', 'editar', 'eliminar'] as const;
+
+  accionPermitidaEnModulo(modulo: string, accion: string): boolean {
+    const mod = this.MODULOS_SISTEMA.find(m => m.clave === modulo);
+    return mod ? mod.acciones.includes(accion as any) : true;
+  }
+
+  // ==========================================
+  // VALIDACIONES COMPUTADAS UNIVERSALES
+  // ==========================================
+  readonly formularioProductoValido = computed(() => {
+    const nombreVal = (this.nuevoNombre() || '').trim().length >= 3;
+    const precioVal = (this.nuevoPrecio() || 0) > 0;
+    const stockVal = (this.nuevoStock() || 0) >= 0;
+    const catVal = !!this.idCatSel() && this.idCatSel()! > 0;
+    const marcaVal = !!this.idMarcaSel() && this.idMarcaSel()! > 0;
+    const descVal = (this.nuevaDesc() || '').trim().length >= 5;
+    return nombreVal && precioVal && stockVal && catVal && marcaVal && descVal;
+  });
+
+  readonly formularioCategoriaValido = computed(() => {
+    return (this.nuevoNombreCat() || '').trim().length >= 2;
+  });
+
+  readonly formularioMarcaValido = computed(() => {
+    return (this.nuevoNombreMarca() || '').trim().length >= 2;
+  });
+
+  readonly formularioProveedorValido = computed(() => {
+    const razonVal = (this.nuevoProvRazon() || '').trim().length >= 3;
+    const rucVal = Validaciones.validarRuc(this.nuevoProvRuc()).valido;
+    const telVal = (this.nuevoProvTelefono() || '').trim().length >= 7;
+    const correoVal = Validaciones.validarCorreo(this.nuevoProvCorreo()).valido;
+    return razonVal && rucVal && telVal && correoVal;
+  });
+
+  readonly formularioRolValido = computed(() => {
+    const nombreVal = (this.formRolNombre() || '').trim().length >= 2;
+    if (!this.formRolEsAdministrativo()) {
+      return nombreVal;
+    }
+    const tienePermisos = Object.values(this.formRolPermisos()).some(arr => arr && arr.length > 0);
+    return nombreVal && tienePermisos;
+  });
+
+  readonly formularioNuevoEmpleadoValido = computed(() => {
+    const nombresVal = Validaciones.validarTextoNombre(this.formColabNombres(), 'Nombres').valido;
+    const apPatVal = Validaciones.validarTextoNombre(this.formColabApPaterno(), 'Apellido Paterno').valido;
+    const apMatVal = Validaciones.validarTextoNombre(this.formColabApMaterno(), 'Apellido Materno').valido;
+    const dniVal = Validaciones.validarDni(this.formColabDni()).valido;
+    const telVal = Validaciones.validarTelefono(this.formColabTelefono()).valido;
+    const nacVal = Validaciones.validarMayorDeEdad(this.formColabFechaNacimiento()).valido;
+    const dirVal = Validaciones.validarDireccion(this.formColabDireccion()).valido;
+    const ubigeoVal = Validaciones.validarUbigeo(this.formColabDistritoId()).valido;
+    const correoVal = Validaciones.validarCorreo(this.formColabCorreo()).valido;
+    const passVal = Validaciones.validarContrasena(this.formColabPassword()).valido;
+    const rolVal = !!this.formColabRolId() && this.formColabRolId() > 0;
+    const salarioVal = (this.formColabSalario() || 0) >= 1025;
+    const contrVal = Validaciones.validarFechaObligatoria(this.formColabFechaContrato(), 'Fecha de contrato').valido;
+
+    return nombresVal && apPatVal && apMatVal && dniVal && telVal && nacVal && dirVal && ubigeoVal && correoVal && passVal && rolVal && salarioVal && contrVal;
+  });
+
+  readonly formularioEditarEmpleadoValido = computed(() => {
+    const nombresVal = Validaciones.validarTextoNombre(this.formEditNombres(), 'Nombres').valido;
+    const apPatVal = Validaciones.validarTextoNombre(this.formEditApellidoPaterno(), 'Apellido Paterno').valido;
+    const apMatVal = Validaciones.validarTextoNombre(this.formEditApellidoMaterno(), 'Apellido Materno').valido;
+    const dniVal = Validaciones.validarDni(this.formEditNumeroDocumento()).valido;
+    const telVal = Validaciones.validarTelefono(this.formEditTelefono()).valido;
+    const nacVal = Validaciones.validarMayorDeEdad(this.formEditFechaNacimiento()).valido;
+    const dirVal = Validaciones.validarDireccion(this.formEditDireccion()).valido;
+    const ubigeoVal = Validaciones.validarUbigeo(this.formEditDistritoId()).valido;
+    const correoVal = Validaciones.validarCorreo(this.formEditCorreo()).valido;
+    const rolVal = !!this.formEditIdRol() && this.formEditIdRol()! > 0;
+    const salarioVal = (this.formEditSalario() || 0) >= 1025;
+    const contrVal = Validaciones.validarFechaObligatoria(this.formEditFechaContrato(), 'Fecha de contrato').valido;
+
+    let passVal = true;
+    if ((this.formEditPassword() || '').trim()) {
+      passVal = Validaciones.validarContrasena(this.formEditPassword()).valido;
+    }
+    return nombresVal && apPatVal && apMatVal && dniVal && telVal && nacVal && dirVal && ubigeoVal && correoVal && rolVal && salarioVal && contrVal && passVal;
+  });
 
   // ==========================================
   // MODAL EDICIÓN USUARIO
@@ -3296,23 +3383,36 @@ export class AdminComponent implements OnInit {
     const password = this.formColabPassword().trim();
     const telefono = this.formColabTelefono().trim();
 
-    if (!nombres || !apPat) {
-      this.toastService.advertencia('Nombres y apellido paterno son obligatorios');
-      return;
-    }
-    if (!dni || dni.length !== 8) {
-      this.toastService.advertencia('El DNI debe tener 8 dígitos numéricos');
-      return;
-    }
-    if (!correo || !correo.includes('@')) {
-      this.toastService.advertencia('Ingresa un correo electrónico corporativo válido');
-      return;
-    }
+    const valNombres = Validaciones.validarTextoNombre(nombres, 'Los nombres');
+    if (!valNombres.valido) { this.toastService.advertencia(valNombres.mensaje!); return; }
+    const valApPat = Validaciones.validarTextoNombre(apPat, 'El apellido paterno');
+    if (!valApPat.valido) { this.toastService.advertencia(valApPat.mensaje!); return; }
+    const valApMat = Validaciones.validarTextoNombre(apMat, 'El apellido materno');
+    if (!valApMat.valido) { this.toastService.advertencia(valApMat.mensaje!); return; }
+    const valDni = Validaciones.validarDni(dni);
+    if (!valDni.valido) { this.toastService.advertencia(valDni.mensaje!); return; }
+    const valTel = Validaciones.validarTelefono(telefono);
+    if (!valTel.valido) { this.toastService.advertencia(valTel.mensaje!); return; }
+    const valNac = Validaciones.validarMayorDeEdad(this.formColabFechaNacimiento());
+    if (!valNac.valido) { this.toastService.advertencia(valNac.mensaje!); return; }
+    const valUbigeo = Validaciones.validarUbigeo(this.formColabDistritoId());
+    if (!valUbigeo.valido) { this.toastService.advertencia(valUbigeo.mensaje!); return; }
+    const valDir = Validaciones.validarDireccion(this.formColabDireccion());
+    if (!valDir.valido) { this.toastService.advertencia(valDir.mensaje!); return; }
+    const valCorreo = Validaciones.validarCorreo(correo);
+    if (!valCorreo.valido) { this.toastService.advertencia(valCorreo.mensaje!); return; }
     const valPass = Validaciones.validarContrasena(password);
-    if (!valPass.valido) {
-      this.toastService.advertencia(valPass.mensaje!);
+    if (!valPass.valido) { this.toastService.advertencia(valPass.mensaje!); return; }
+    if (!this.formColabRolId()) {
+      this.toastService.advertencia('Selecciona el rol del colaborador');
       return;
     }
+    if ((this.formColabSalario() || 0) < 1025) {
+      this.toastService.advertencia('El salario debe ser mayor o igual a S/ 1,025.00');
+      return;
+    }
+    const valContr = Validaciones.validarFechaObligatoria(this.formColabFechaContrato(), 'La fecha de contrato');
+    if (!valContr.valido) { this.toastService.advertencia(valContr.mensaje!); return; }
 
     this.guardandoEmpleado.set(true);
 
@@ -3322,11 +3422,11 @@ export class AdminComponent implements OnInit {
       apellidoMaterno: apMat ? apMat.toUpperCase() : undefined,
       idTipoDocumento: 1, // DNI
       numeroDocumento: dni,
-      telefono: telefono || undefined,
-      fechaNacimiento: this.formColabFechaNacimiento() || undefined,
-      direccion: this.formColabDireccion().trim() || undefined,
+      telefono: telefono,
+      fechaNacimiento: this.formColabFechaNacimiento(),
+      direccion: this.formColabDireccion().trim(),
       referencia: this.formColabReferencia().trim() || undefined,
-      idUbigeo: this.formColabDistritoId() || undefined,
+      idUbigeo: this.formColabDistritoId(),
       correo: correo,
       password: password,
       idRol: this.formColabRolId() || 2,
@@ -3351,35 +3451,39 @@ export class AdminComponent implements OnInit {
 
   abrirModalEditarEmpleado(emp: EmpleadoAdmin): void {
     this.empleadoEditando.set(emp);
-    this.formEditNombres.set(emp.persona?.nombres || '');
-    this.formEditApellidoPaterno.set(emp.persona?.apellidoPaterno || '');
-    this.formEditApellidoMaterno.set(emp.persona?.apellidoMaterno || '');
-    this.formEditNumeroDocumento.set(emp.persona?.numeroDocumento || '');
-    this.formEditFechaNacimiento.set(emp.persona?.fechaNacimiento ? emp.persona.fechaNacimiento.substring(0, 10) : '');
-    this.formEditTelefono.set(emp.persona?.telefono || '');
-    this.formEditDireccion.set(emp.persona?.direccion || '');
-    this.formEditReferencia.set(emp.persona?.referencia || '');
+    const p = emp.persona || this.personas().find(x => x.idPersona === emp.persona?.idPersona);
+
+    this.formEditNombres.set(p?.nombres || '');
+    this.formEditApellidoPaterno.set(p?.apellidoPaterno || '');
+    this.formEditApellidoMaterno.set(p?.apellidoMaterno || '');
+    this.formEditNumeroDocumento.set(p?.numeroDocumento || '');
+    this.formEditFechaNacimiento.set(p?.fechaNacimiento ? p.fechaNacimiento.substring(0, 10) : '');
+    this.formEditTelefono.set(p?.telefono || '');
+    this.formEditDireccion.set(p?.direccion || '');
+    this.formEditReferencia.set(p?.referencia || '');
     this.formEditSalario.set(emp.salario || 1800);
     const fContr = emp.fechaContrato || emp.fechaContratacion;
-    this.formEditFechaContrato.set(fContr ? fContr.substring(0, 10) : '');
+    this.formEditFechaContrato.set(fContr ? fContr.substring(0, 10) : new Date().toISOString().substring(0, 10));
     this.formEditVigente.set(emp.vigente !== false);
     this.formEditPassword.set('');
 
     // Usuario vinculado
-    const usuarioAsoc = this.usuarios().find(u => u.persona?.idPersona === emp.persona?.idPersona);
+    const usuarioAsoc = this.usuarios().find(u => u.persona?.idPersona === p?.idPersona);
     if (usuarioAsoc) {
       this.formEditCorreo.set(usuarioAsoc.correo || '');
       this.formEditIdRol.set(usuarioAsoc.rol?.idRol || 2);
     } else {
-      this.formEditCorreo.set('');
+      const baseCorreo = `${(p?.nombres || 'colab').split(' ')[0].toLowerCase()}.${(p?.apellidoPaterno || 'techzone').toLowerCase()}@techzone.pe`;
+      this.formEditCorreo.set(baseCorreo);
       this.formEditIdRol.set(2);
     }
 
     // Ubigeo
-    if (emp.persona?.ubigeo) {
-      this.formEditDepartamento.set(emp.persona.ubigeo.departamento || '');
-      this.formEditProvincia.set(emp.persona.ubigeo.provincia || '');
-      this.formEditDistritoId.set(emp.persona.ubigeo.idUbigeo || null);
+    const ub = p?.ubigeo || this.ubigeos().find(u => u.idUbigeo === (p as any)?.idUbigeo);
+    if (ub) {
+      this.formEditDepartamento.set(ub.departamento || '');
+      this.formEditProvincia.set(ub.provincia || '');
+      this.formEditDistritoId.set(ub.idUbigeo || null);
     } else {
       this.formEditDepartamento.set('');
       this.formEditProvincia.set('');
@@ -3399,21 +3503,49 @@ export class AdminComponent implements OnInit {
     const emp = this.empleadoEditando();
     if (!emp) return;
 
-    if (!this.formEditNombres().trim()) {
-      this.toastService.advertencia('Los nombres son obligatorios');
-      return;
-    }
+    const valNombres = Validaciones.validarTextoNombre(this.formEditNombres(), 'Los nombres');
+    if (!valNombres.valido) { this.toastService.advertencia(valNombres.mensaje!); return; }
+
+    const valApPat = Validaciones.validarTextoNombre(this.formEditApellidoPaterno(), 'El apellido paterno');
+    if (!valApPat.valido) { this.toastService.advertencia(valApPat.mensaje!); return; }
+
+    const valApMat = Validaciones.validarTextoNombre(this.formEditApellidoMaterno(), 'El apellido materno');
+    if (!valApMat.valido) { this.toastService.advertencia(valApMat.mensaje!); return; }
+
     const valDni = Validaciones.validarDni(this.formEditNumeroDocumento());
-    if (!valDni.valido) {
-      this.toastService.advertencia(valDni.mensaje!);
+    if (!valDni.valido) { this.toastService.advertencia(valDni.mensaje!); return; }
+
+    const valTel = Validaciones.validarTelefono(this.formEditTelefono());
+    if (!valTel.valido) { this.toastService.advertencia(valTel.mensaje!); return; }
+
+    const valNac = Validaciones.validarMayorDeEdad(this.formEditFechaNacimiento());
+    if (!valNac.valido) { this.toastService.advertencia(valNac.mensaje!); return; }
+
+    const valUbi = Validaciones.validarUbigeo(this.formEditDistritoId());
+    if (!valUbi.valido) { this.toastService.advertencia(valUbi.mensaje!); return; }
+
+    const valDir = Validaciones.validarDireccion(this.formEditDireccion());
+    if (!valDir.valido) { this.toastService.advertencia(valDir.mensaje!); return; }
+
+    const valCorreo = Validaciones.validarCorreo(this.formEditCorreo());
+    if (!valCorreo.valido) { this.toastService.advertencia(valCorreo.mensaje!); return; }
+
+    if (!this.formEditIdRol()) {
+      this.toastService.advertencia('Selecciona el rol del colaborador');
       return;
     }
+
+    if ((this.formEditSalario() || 0) < 1025) {
+      this.toastService.advertencia('El salario debe ser mayor o igual a S/ 1,025.00');
+      return;
+    }
+
+    const valContr = Validaciones.validarFechaObligatoria(this.formEditFechaContrato(), 'La fecha de contrato');
+    if (!valContr.valido) { this.toastService.advertencia(valContr.mensaje!); return; }
+
     if (this.formEditPassword().trim()) {
       const valPass = Validaciones.validarContrasena(this.formEditPassword());
-      if (!valPass.valido) {
-        this.toastService.advertencia(valPass.mensaje!);
-        return;
-      }
+      if (!valPass.valido) { this.toastService.advertencia(valPass.mensaje!); return; }
     }
 
     this.guardandoEdicionEmpleado.set(true);
@@ -3421,18 +3553,18 @@ export class AdminComponent implements OnInit {
     const payload = {
       nombres: this.formEditNombres().trim().toUpperCase(),
       apellidoPaterno: this.formEditApellidoPaterno().trim().toUpperCase(),
-      apellidoMaterno: this.formEditApellidoMaterno().trim() ? this.formEditApellidoMaterno().trim().toUpperCase() : undefined,
+      apellidoMaterno: this.formEditApellidoMaterno().trim().toUpperCase(),
       idTipoDocumento: 1,
       numeroDocumento: this.formEditNumeroDocumento().trim(),
-      telefono: this.formEditTelefono().trim() || undefined,
-      fechaNacimiento: this.formEditFechaNacimiento() || undefined,
-      direccion: this.formEditDireccion().trim() || undefined,
+      telefono: this.formEditTelefono().trim(),
+      fechaNacimiento: this.formEditFechaNacimiento(),
+      direccion: this.formEditDireccion().trim(),
       referencia: this.formEditReferencia().trim() || undefined,
-      idUbigeo: this.formEditDistritoId() || undefined,
-      correo: this.formEditCorreo().trim().toLowerCase() || undefined,
+      idUbigeo: this.formEditDistritoId(),
+      correo: this.formEditCorreo().trim().toLowerCase(),
       password: this.formEditPassword().trim() || undefined,
       idRol: this.formEditIdRol(),
-      fechaContrato: this.formEditFechaContrato() || undefined,
+      fechaContrato: this.formEditFechaContrato(),
       salario: this.formEditSalario(),
       vigente: this.formEditVigente()
     };
@@ -3486,10 +3618,7 @@ export class AdminComponent implements OnInit {
     this.formRolNombre.set('');
     this.formRolVigente.set(true);
     this.formRolEsAdministrativo.set(false);
-    this.formRolPermisos.set({
-      dashboard: ['ver'],
-      productos: ['ver']
-    });
+    this.formRolPermisos.set({});
     this.mostrarModalRol.set(true);
   }
 
@@ -3498,7 +3627,10 @@ export class AdminComponent implements OnInit {
     this.idRolEditando.set(r.idRol);
     this.formRolNombre.set(r.nombre || '');
     this.formRolVigente.set(r.vigente !== false);
-    this.formRolEsAdministrativo.set(!!r.esAdministrativo);
+
+    const esAdminNombre = (r.nombre || '').toUpperCase().includes('ADMIN') || r.idRol === 1;
+    const esAdmin = esAdminNombre || !!(r.esAdministrativo ?? (r as any).es_administrativo);
+    this.formRolEsAdministrativo.set(esAdmin);
 
     let parsedPermisos: Record<string, string[]> = {};
     if (r.permisos) {
@@ -3508,8 +3640,33 @@ export class AdminComponent implements OnInit {
         parsedPermisos = {};
       }
     }
+    // Si es Administrador, garantizar acceso a todos los módulos y operaciones permitidas
+    if (esAdminNombre) {
+      for (const mod of this.MODULOS_SISTEMA) {
+        if (!parsedPermisos[mod.clave] || parsedPermisos[mod.clave].length === 0) {
+          parsedPermisos[mod.clave] = [...mod.acciones];
+        }
+      }
+    }
     this.formRolPermisos.set(parsedPermisos);
     this.mostrarModalRol.set(true);
+  }
+
+  cambiarRolEsAdministrativo(valor: boolean): void {
+    const esAdminNombre = (this.formRolNombre() || '').toUpperCase().includes('ADMIN') || this.idRolEditando() === 1;
+    if (this.esEdicionRol() && esAdminNombre && !valor) {
+      this.toastService.advertencia('El rol Administrador debe permanecer siempre de tipo administrativo');
+      return;
+    }
+    this.formRolEsAdministrativo.set(valor);
+    if (!valor) {
+      this.formRolPermisos.set({});
+    } else if (Object.keys(this.formRolPermisos()).length === 0) {
+      this.formRolPermisos.set({
+        dashboard: ['ver'],
+        productos: ['ver']
+      });
+    }
   }
 
   cerrarModalRol(): void {
@@ -3524,22 +3681,39 @@ export class AdminComponent implements OnInit {
   }
 
   togglePermisoRol(modulo: string, accion: string): void {
+    if (!this.accionPermitidaEnModulo(modulo, accion)) {
+      return;
+    }
     const actual = { ...this.formRolPermisos() };
     const lista = [...(actual[modulo] || [])];
     const idx = lista.indexOf(accion);
     if (idx >= 0) {
-      lista.splice(idx, 1);
+      if (accion === 'ver') {
+        // Desmarcar VER revoca todo el módulo
+        delete actual[modulo];
+      } else {
+        lista.splice(idx, 1);
+        if (lista.length === 0) {
+          delete actual[modulo];
+        } else {
+          actual[modulo] = lista;
+        }
+      }
     } else {
+      // Activar CREAR, EDITAR o ELIMINAR auto-marca VER
+      if (accion !== 'ver' && !lista.includes('ver')) {
+        lista.unshift('ver');
+      }
       lista.push(accion);
+      actual[modulo] = lista;
     }
-    actual[modulo] = lista;
     this.formRolPermisos.set(actual);
   }
 
   marcarTodosPermisosRol(): void {
     const nuevo: Record<string, string[]> = {};
     for (const mod of this.MODULOS_SISTEMA) {
-      nuevo[mod.clave] = ['ver', 'crear', 'editar', 'eliminar'];
+      nuevo[mod.clave] = [...mod.acciones];
     }
     this.formRolPermisos.set(nuevo);
   }
@@ -3554,12 +3728,16 @@ export class AdminComponent implements OnInit {
       this.toastService.advertencia('Ingresa el nombre del rol');
       return;
     }
-    if (nombre.length > 20) {
-      this.toastService.advertencia('El nombre del rol no debe superar 20 caracteres');
+    if (nombre.length < 2) {
+      this.toastService.advertencia('El nombre del rol debe tener al menos 2 caracteres');
+      return;
+    }
+    if (nombre.length > 50) {
+      this.toastService.advertencia('El nombre del rol no debe superar 50 caracteres');
       return;
     }
 
-    const permisosJson = JSON.stringify(this.formRolPermisos());
+    const permisosJson = this.formRolEsAdministrativo() ? JSON.stringify(this.formRolPermisos()) : '{}';
     const payload: Partial<RolAdmin> = {
       nombre,
       vigente: this.formRolVigente(),
@@ -3574,6 +3752,7 @@ export class AdminComponent implements OnInit {
           this.toastService.exito(`Rol "${nombre}" actualizado exitosamente`);
           this.cerrarModalRol();
           this.recargarRoles();
+          this.authService.validarSesionConServidor();
         },
         error: (err) => {
           this.toastService.error(err.error?.mensaje || 'Error al actualizar rol');
@@ -3585,6 +3764,7 @@ export class AdminComponent implements OnInit {
           this.toastService.exito(`Rol "${nombre}" creado exitosamente`);
           this.cerrarModalRol();
           this.recargarRoles();
+          this.authService.validarSesionConServidor();
         },
         error: (err) => {
           this.toastService.error(err.error?.mensaje || 'Error al crear rol');

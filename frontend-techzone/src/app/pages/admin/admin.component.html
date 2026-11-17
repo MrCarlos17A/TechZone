@@ -5790,7 +5790,10 @@
         </div>
 
         <div class="flex gap-3 pt-3">
-          <button (click)="guardarProducto()" class="glow-button flex-1 py-2.5 rounded-xl text-xs font-semibold text-white cursor-pointer">
+          <button
+            (click)="guardarProducto()"
+            [disabled]="!formularioProductoValido()"
+            class="glow-button flex-1 py-2.5 rounded-xl text-xs font-semibold text-white cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none">
             {{ esEdicionProducto() ? 'Actualizar Producto' : 'Guardar Producto' }}
           </button>
           <button (click)="cerrarModalProducto()" class="px-5 py-2.5 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-300 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 transition-colors cursor-pointer">
@@ -6076,7 +6079,12 @@
           />
         </div>
         <div class="flex gap-2 pt-2">
-          <button (click)="guardarCategoria()" class="glow-button flex-1 py-2 rounded-xl text-xs font-semibold text-white">Guardar</button>
+          <button
+            (click)="guardarCategoria()"
+            [disabled]="!formularioCategoriaValido()"
+            class="glow-button flex-1 py-2 rounded-xl text-xs font-semibold text-white disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none">
+            Guardar
+          </button>
           <button (click)="cerrarModalCategoria()" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-300 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 transition-colors cursor-pointer">Cancelar</button>
         </div>
       </div>
@@ -6145,8 +6153,8 @@
         <div class="flex gap-2 pt-2">
           <button
             (click)="guardarMarca()"
-            [disabled]="guardandoMarca()"
-            class="glow-button flex-1 py-2.5 rounded-xl text-xs font-semibold text-white flex items-center justify-center gap-1.5 disabled:opacity-50">
+            [disabled]="guardandoMarca() || !formularioMarcaValido()"
+            class="glow-button flex-1 py-2.5 rounded-xl text-xs font-semibold text-white flex items-center justify-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none">
             @if (guardandoMarca()) {
               <span class="material-symbols-outlined animate-spin text-sm">progress_activity</span>
               <span>Guardando...</span>
@@ -6192,7 +6200,12 @@
           <input type="email" [ngModel]="nuevoProvCorreo()" (ngModelChange)="nuevoProvCorreo.set($event)" class="w-full bg-slate-50 dark:bg-slate-950 text-xs text-slate-900 dark:text-slate-200 p-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500" />
         </div>
         <div class="flex gap-2 pt-2">
-          <button (click)="guardarProveedor()" class="glow-button flex-1 py-2 rounded-xl text-xs font-semibold text-white">Guardar</button>
+          <button
+            (click)="guardarProveedor()"
+            [disabled]="!formularioProveedorValido()"
+            class="glow-button flex-1 py-2 rounded-xl text-xs font-semibold text-white disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none">
+            Guardar
+          </button>
           <button (click)="cerrarModalProveedor()" class="px-4 py-2 rounded-xl text-xs text-slate-700 dark:text-slate-300 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 transition-colors cursor-pointer">Cancelar</button>
         </div>
       </div>
@@ -6569,8 +6582,8 @@
           <button
             type="button"
             (click)="guardarNuevoColaborador()"
-            [disabled]="guardandoEmpleado()"
-            class="px-5 py-2 rounded-xl text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 transition-all shadow-md shadow-blue-600/30 flex items-center gap-1.5 cursor-pointer disabled:opacity-50">
+            [disabled]="guardandoEmpleado() || !formularioNuevoEmpleadoValido()"
+            class="px-5 py-2 rounded-xl text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 transition-all shadow-md shadow-blue-600/30 flex items-center gap-1.5 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed">
             @if (guardandoEmpleado()) {
               <span class="material-symbols-outlined animate-spin text-sm">progress_activity</span>
             } @else {
@@ -6854,7 +6867,8 @@
           <button
             type="button"
             (click)="guardarEditarEmpleado()"
-            class="px-5 py-2 rounded-xl text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 transition-all shadow-md shadow-blue-600/30 flex items-center gap-1.5 cursor-pointer">
+            [disabled]="!formularioEditarEmpleadoValido()"
+            class="px-5 py-2 rounded-xl text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-md shadow-blue-600/30 flex items-center gap-1.5 cursor-pointer">
             <span class="material-symbols-outlined text-sm">save</span>
             <span>Guardar Cambios</span>
           </button>
@@ -6907,78 +6921,112 @@
                 />
                 <span class="text-xs font-semibold text-slate-800 dark:text-slate-200">Rol Activo</span>
               </label>
-              <label class="flex items-center gap-2 cursor-pointer bg-blue-50 dark:bg-blue-950/40 px-3 py-1.5 rounded-xl border border-blue-200 dark:border-blue-800/60">
+              <label
+                class="flex items-center gap-2 px-3 py-1.5 rounded-xl border transition-all"
+                [class.bg-blue-50]="formRolEsAdministrativo()"
+                [class.dark:bg-blue-950/40]="formRolEsAdministrativo()"
+                [class.border-blue-200]="formRolEsAdministrativo()"
+                [class.dark:border-blue-800/60]="formRolEsAdministrativo()"
+                [class.bg-slate-50]="!formRolEsAdministrativo()"
+                [class.dark:bg-slate-900]="!formRolEsAdministrativo()"
+                [class.border-slate-200]="!formRolEsAdministrativo()"
+                [class.dark:border-slate-800]="!formRolEsAdministrativo()"
+                [class.cursor-pointer]="!(esEdicionRol() && (formRolNombre().toUpperCase().includes('ADMIN') || idRolEditando() === 1))"
+                [class.cursor-not-allowed]="esEdicionRol() && (formRolNombre().toUpperCase().includes('ADMIN') || idRolEditando() === 1)">
                 <input
                   type="checkbox"
                   [checked]="formRolEsAdministrativo()"
-                  (change)="formRolEsAdministrativo.set(!formRolEsAdministrativo())"
-                  class="rounded border-blue-400 text-blue-600 focus:ring-blue-500"
+                  [disabled]="esEdicionRol() && (formRolNombre().toUpperCase().includes('ADMIN') || idRolEditando() === 1)"
+                  (change)="cambiarRolEsAdministrativo(!formRolEsAdministrativo())"
+                  class="rounded border-blue-400 text-blue-600 focus:ring-blue-500 disabled:opacity-60"
                 />
                 <span class="text-xs font-bold text-blue-700 dark:text-blue-300 flex items-center gap-1">
                   <span class="material-symbols-outlined text-sm">shield_person</span>
                   Rol de Tipo Administrativo (Acceso a /admin)
+                  @if (esEdicionRol() && (formRolNombre().toUpperCase().includes('ADMIN') || idRolEditando() === 1)) {
+                    <span class="text-[10px] font-mono font-normal text-amber-600 dark:text-amber-400 ml-1">(Rol Maestro Obligatorio)</span>
+                  }
                 </span>
               </label>
             </div>
           </div>
 
-          <!-- Matriz Interactiva de Permisos -->
-          <div class="space-y-2">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-              <label class="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 flex items-center gap-1.5">
-                <span class="material-symbols-outlined text-sm">lock_open</span> Matriz de Autorización por Módulo
-              </label>
-              <div class="flex items-center gap-2">
-                <button
-                  type="button"
-                  (click)="marcarTodosPermisosRol()"
-                  class="px-2.5 py-1 text-[11px] font-semibold text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/50 rounded-lg cursor-pointer">
-                  Seleccionar Todo
-                </button>
-                <button
-                  type="button"
-                  (click)="desmarcarTodosPermisosRol()"
-                  class="px-2.5 py-1 text-[11px] font-semibold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/50 rounded-lg cursor-pointer">
-                  Deseleccionar Todo
-                </button>
+          <!-- Matriz Interactiva de Permisos Condicional -->
+          @if (formRolEsAdministrativo()) {
+            <div class="space-y-2 animate-fadeIn">
+              <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                <label class="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 flex items-center gap-1.5">
+                  <span class="material-symbols-outlined text-sm">lock_open</span> Matriz de Autorización por Módulo
+                </label>
+                <div class="flex items-center gap-2">
+                  <button
+                    type="button"
+                    (click)="marcarTodosPermisosRol()"
+                    class="px-2.5 py-1 text-[11px] font-semibold text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/50 rounded-lg cursor-pointer">
+                    Seleccionar Todo
+                  </button>
+                  <button
+                    type="button"
+                    (click)="desmarcarTodosPermisosRol()"
+                    class="px-2.5 py-1 text-[11px] font-semibold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/50 rounded-lg cursor-pointer">
+                    Deseleccionar Todo
+                  </button>
+                </div>
+              </div>
+
+              <div class="border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden overflow-x-auto">
+                <table class="w-full text-left text-xs">
+                  <thead class="bg-slate-100/80 dark:bg-slate-950 text-slate-800 dark:text-slate-200 uppercase text-[10px] font-bold border-b border-slate-200 dark:border-slate-800">
+                    <tr>
+                      <th class="p-2.5">Módulo Funcional</th>
+                      <th class="p-2.5 text-center">Ver</th>
+                      <th class="p-2.5 text-center">Crear</th>
+                      <th class="p-2.5 text-center">Editar</th>
+                      <th class="p-2.5 text-center">Eliminar</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                    @for (mod of MODULOS_SISTEMA; track mod.clave) {
+                      <tr class="hover:bg-slate-50/70 dark:hover:bg-slate-800/30 transition-colors">
+                        <td class="p-2.5 font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+                          <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                          <span>{{ mod.label }}</span>
+                          <span class="text-[10px] font-mono text-slate-400">({{ mod.clave }})</span>
+                          @if (mod.soloLectura) {
+                            <span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-100 dark:bg-amber-950/50 text-amber-700 dark:text-amber-400 font-mono">Solo lectura</span>
+                          }
+                        </td>
+                        @for (acc of ACCIONES_PERMISO; track acc) {
+                          <td class="p-2.5 text-center">
+                            @if (accionPermitidaEnModulo(mod.clave, acc)) {
+                              <input
+                                type="checkbox"
+                                [checked]="tienePermisoRol(mod.clave, acc)"
+                                (change)="togglePermisoRol(mod.clave, acc)"
+                                class="rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                              />
+                            } @else {
+                              <span class="inline-block px-1.5 text-slate-300 dark:text-slate-700 font-mono font-bold select-none" title="Operación no disponible para este módulo">—</span>
+                            }
+                          </td>
+                        }
+                      </tr>
+                    }
+                  </tbody>
+                </table>
               </div>
             </div>
-
-            <div class="border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden overflow-x-auto">
-              <table class="w-full text-left text-xs">
-                <thead class="bg-slate-100/80 dark:bg-slate-950 text-slate-800 dark:text-slate-200 uppercase text-[10px] font-bold border-b border-slate-200 dark:border-slate-800">
-                  <tr>
-                    <th class="p-2.5">Módulo Funcional</th>
-                    <th class="p-2.5 text-center">Ver</th>
-                    <th class="p-2.5 text-center">Crear</th>
-                    <th class="p-2.5 text-center">Editar</th>
-                    <th class="p-2.5 text-center">Eliminar</th>
-                  </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
-                  @for (mod of MODULOS_SISTEMA; track mod.clave) {
-                    <tr class="hover:bg-slate-50/70 dark:hover:bg-slate-800/30 transition-colors">
-                      <td class="p-2.5 font-semibold text-slate-900 dark:text-white flex items-center gap-2">
-                        <span class="w-2 h-2 rounded-full bg-blue-500"></span>
-                        <span>{{ mod.label }}</span>
-                        <span class="text-[10px] font-mono text-slate-400">({{ mod.clave }})</span>
-                      </td>
-                      @for (acc of ACCIONES_PERMISO; track acc) {
-                        <td class="p-2.5 text-center">
-                          <input
-                            type="checkbox"
-                            [checked]="tienePermisoRol(mod.clave, acc)"
-                            (change)="togglePermisoRol(mod.clave, acc)"
-                            class="rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
-                          />
-                        </td>
-                      }
-                    </tr>
-                  }
-                </tbody>
-              </table>
+          } @else {
+            <div class="p-4 rounded-2xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/50 flex items-start gap-3 animate-fadeIn">
+              <span class="material-symbols-outlined text-amber-600 dark:text-amber-400 text-xl mt-0.5">info</span>
+              <div class="space-y-1">
+                <p class="text-xs font-bold text-amber-900 dark:text-amber-200">Rol Estándar / No Administrativo</p>
+                <p class="text-[11px] text-amber-700 dark:text-amber-400 leading-relaxed">
+                  Este rol no cuenta con acceso al panel administrativo (/admin). Solo los roles de tipo administrativo gestionan módulos internos y permisos de visualización o edición. Para configurar la matriz de permisos por módulo, activa la casilla superior de "Rol de Tipo Administrativo".
+                </p>
+              </div>
             </div>
-          </div>
+          }
         </div>
 
         <div class="flex gap-2 pt-2 justify-end border-t border-slate-200 dark:border-slate-800">
@@ -6991,7 +7039,8 @@
           <button
             type="button"
             (click)="guardarRol()"
-            class="px-5 py-2 rounded-xl text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 transition-all shadow-md shadow-blue-600/30 flex items-center gap-1.5 cursor-pointer">
+            [disabled]="!formularioRolValido()"
+            class="px-5 py-2 rounded-xl text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-md shadow-blue-600/30 flex items-center gap-1.5 cursor-pointer">
             <span class="material-symbols-outlined text-sm">save</span>
             <span>Guardar Rol y Permisos</span>
           </button>

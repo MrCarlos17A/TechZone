@@ -1,6 +1,7 @@
 package com.tienda.backend_techzone.Model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -30,6 +31,7 @@ public class Rol {
     private Boolean vigente = true;
 
     @Column(name = "es_administrativo")
+    @JsonProperty("esAdministrativo")
     @Builder.Default
     private Boolean esAdministrativo = false;
 
@@ -45,7 +47,9 @@ public class Rol {
     public Boolean getVigente() { return vigente; }
     public void setVigente(Boolean vigente) { this.vigente = vigente; }
 
+    @JsonProperty("esAdministrativo")
     public Boolean getEsAdministrativo() { return esAdministrativo; }
+    @JsonProperty("esAdministrativo")
     public void setEsAdministrativo(Boolean esAdministrativo) { this.esAdministrativo = esAdministrativo; }
 
     public String getPermisos() { return permisos; }

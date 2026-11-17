@@ -45,7 +45,6 @@ public class EmpleadoService {
 
     @Transactional
     public List<Empleado> ListarEmpleados() {
-        databaseBootstrapService.sincronizarTodo();
         List<Empleado> lista = empleadoRepository.findAllConRelaciones();
         for (Empleado emp : lista) {
             if (emp.getPersona() != null) {
@@ -304,15 +303,15 @@ public class EmpleadoService {
                 if (rolInicial == null) {
                     rolInicial = rolRepository.findById(2L).orElse(null);
                 }
-                usuario = Usuario.builder()
-                        .persona(persona)
-                        .rol(rolInicial)
-                        .correo(correoLimpio)
-                        .password(passwordEncoder.encode(passFinal))
-                        .estado(vigente != null && !vigente ? "inactivo" : "activo")
-                        .fechaCreacion(LocalDateTime.now())
-                        .intentosFallidos(0)
-                        .build();
+                usuario = new Usuario();
+                usuario.setPersona(persona);
+                usuario.setRol(rolInicial);
+                usuario.setCorreo(correoLimpio);
+                usuario.setPassword(passwordEncoder.encode(passFinal));
+                usuario.setContrasena(passwordEncoder.encode(passFinal));
+                usuario.setEstado(vigente != null && !vigente ? "inactivo" : "activo");
+                usuario.setFechaCreacion(LocalDateTime.now());
+                usuario.setIntentosFallidos(0);
             } else {
                 usuario.setPersona(persona);
                 usuario.setCorreo(correoLimpio);

@@ -2,21 +2,27 @@ package com.tienda.backend_techzone.Service;
 
 import com.tienda.backend_techzone.Model.Rol;
 import com.tienda.backend_techzone.Repository.RolRepository;
-import lombok.RequiredArgsConstructor;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
-@org.springframework.transaction.annotation.Transactional
+@Transactional
 public class RolService {
 
     private final RolRepository rolRepository;
-    private final DatabaseBootstrapService databaseBootstrapService;
+
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    public RolService(RolRepository rolRepository) {
+        this.rolRepository = rolRepository;
+    }
 
     public List<Rol> ListarRoles() {
-        databaseBootstrapService.sincronizarTodo();
         return rolRepository.findAll();
     }
 
@@ -24,10 +30,6 @@ public class RolService {
         return ListarRoles();
     }
 
-    @jakarta.persistence.PersistenceContext
-    private jakarta.persistence.EntityManager entityManager;
-
-    @org.springframework.transaction.annotation.Transactional
     public Rol CrearRol(Rol rol) {
         validarRol(rol);
         if (rol.getVigente() == null) {
@@ -50,6 +52,10 @@ public class RolService {
         return rol;
     }
 
+    public Rol crearRol(Rol rol) {
+        return CrearRol(rol);
+    }
+
     public Rol ActualizarRol(Long id, Rol rol) {
         Rol existente = rolRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Rol no encontrado con id: " + id));
@@ -65,6 +71,10 @@ public class RolService {
         return rolRepository.save(existente);
     }
 
+    public Rol actualizarRol(Long id, Rol rol) {
+        return ActualizarRol(id, rol);
+    }
+
     public void EliminarRol(Long id) {
         Rol rol = rolRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Rol no encontrado con id: " + id));
@@ -72,9 +82,17 @@ public class RolService {
         rolRepository.save(rol);
     }
 
+    public void eliminarRol(Long id) {
+        EliminarRol(id);
+    }
+
     public Rol ObtenerRolPorId(Long id) {
         return rolRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Rol no encontrado con id: " + id));
+    }
+
+    public Rol obtenerRolPorId(Long id) {
+        return ObtenerRolPorId(id);
     }
 
     private void validarRol(Rol rol) {

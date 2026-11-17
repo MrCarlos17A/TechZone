@@ -1,7 +1,7 @@
 /**
  * Reglas de validación unificadas para TechZone (Frontend)
  * Estas reglas coinciden exactamente con las restricciones de la base de datos
- * y las validaciones del Backend (AuthApiController, VentaApiController).
+ * y las validaciones del Backend.
  */
 
 export interface ResultadoValidacion {
@@ -30,10 +30,10 @@ export class Validaciones {
   static validarTelefono(telefono?: string | null): ResultadoValidacion {
     const valor = (telefono || '').trim();
     if (!valor) {
-      return { valido: false, mensaje: 'El número de teléfono es obligatorio' };
+      return { valido: false, mensaje: 'El número de teléfono móvil es obligatorio' };
     }
     if (!/^9\d{8}$/.test(valor)) {
-      return { valido: false, mensaje: 'El teléfono debe tener 9 dígitos y empezar con 9 (ej. 987654321)' };
+      return { valido: false, mensaje: 'El teléfono debe tener exactamente 9 dígitos y empezar con 9' };
     }
     return { valido: true };
   }
@@ -48,7 +48,7 @@ export class Validaciones {
     }
     const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (!regex.test(valor)) {
-      return { valido: false, mensaje: 'Ingresa un formato de correo electrónico válido (ej. usuario@dominio.com)' };
+      return { valido: false, mensaje: 'Ingresa un formato de correo electrónico válido' };
     }
     return { valido: true };
   }
@@ -71,15 +71,29 @@ export class Validaciones {
   }
 
   /**
-   * Dirección de entrega: mínimo 10 caracteres (calle/avenida y número).
+   * Texto general obligatorio con longitud mínima.
+   */
+  static validarTextoObligatorio(valor?: string | null, etiqueta: string = 'Este campo', minLen: number = 2): ResultadoValidacion {
+    const val = (valor || '').trim();
+    if (!val) {
+      return { valido: false, mensaje: `${etiqueta} es obligatorio` };
+    }
+    if (val.length < minLen) {
+      return { valido: false, mensaje: `${etiqueta} debe tener al menos ${minLen} caracteres` };
+    }
+    return { valido: true };
+  }
+
+  /**
+   * Dirección: mínimo 5 caracteres.
    */
   static validarDireccion(direccion?: string | null): ResultadoValidacion {
     const valor = (direccion || '').trim();
     if (!valor) {
-      return { valido: false, mensaje: 'La dirección exacta de entrega es obligatoria' };
+      return { valido: false, mensaje: 'La dirección exacta es obligatoria' };
     }
-    if (valor.length < 10) {
-      return { valido: false, mensaje: 'La dirección debe tener al menos 10 caracteres (ej: Av. Javier Prado 1234, Dpto 301)' };
+    if (valor.length < 5) {
+      return { valido: false, mensaje: 'La dirección debe tener al menos 5 caracteres' };
     }
     return { valido: true };
   }
@@ -90,7 +104,7 @@ export class Validaciones {
   static validarRuc(ruc?: string | null): ResultadoValidacion {
     const valor = (ruc || '').trim();
     if (!valor) {
-      return { valido: false, mensaje: 'El número de RUC es obligatorio para factura' };
+      return { valido: false, mensaje: 'El número de RUC es obligatorio' };
     }
     if (!/^(10|20)\d{9}$/.test(valor)) {
       return { valido: false, mensaje: 'El RUC debe tener 11 dígitos y empezar con 10 o 20' };
@@ -141,7 +155,65 @@ export class Validaciones {
    */
   static validarUbigeo(idUbigeo?: number | null): ResultadoValidacion {
     if (!idUbigeo || idUbigeo <= 0) {
-      return { valido: false, mensaje: 'Debes seleccionar el departamento, provincia y distrito de entrega' };
+      return { valido: false, mensaje: 'Debes seleccionar el departamento, provincia y distrito' };
+    }
+    return { valido: true };
+  }
+
+  /**
+   * Número positivo (> 0).
+   */
+  static validarNumeroPositivo(valor?: number | null, etiqueta: string = 'El valor'): ResultadoValidacion {
+    if (valor === null || valor === undefined || isNaN(valor) || valor <= 0) {
+      return { valido: false, mensaje: `${etiqueta} debe ser un número mayor a 0` };
+    }
+    return { valido: true };
+  }
+
+  /**
+   * Entero no negativo (>= 0).
+   */
+  static validarEnteroNoNegativo(valor?: number | null, etiqueta: string = 'El valor'): ResultadoValidacion {
+    if (valor === null || valor === undefined || isNaN(valor) || valor < 0 || !Number.isInteger(valor)) {
+      return { valido: false, mensaje: `${etiqueta} debe ser un número entero mayor o igual a 0` };
+    }
+    return { valido: true };
+  }
+
+  /**
+   * Fecha válida obligatoria.
+   */
+  static validarFechaObligatoria(fechaStr?: string | null, etiqueta: string = 'La fecha'): ResultadoValidacion {
+    const val = (fechaStr || '').trim();
+    if (!val) {
+      return { valido: false, mensaje: `${etiqueta} es obligatoria` };
+    }
+    const d = new Date(val);
+    if (isNaN(d.getTime())) {
+      return { valido: false, mensaje: `${etiqueta} no tiene un formato válido` };
+    }
+    return { valido: true };
+  }
+
+  /**
+   * Mayor de edad (>= 18 años).
+   */
+  static validarMayorDeEdad(fechaNacStr?: string | null): ResultadoValidacion {
+    const valFecha = this.validarFechaObligatoria(fechaNacStr, 'La fecha de nacimiento');
+    if (!valFecha.valido) return valFecha;
+
+    const nac = new Date(fechaNacStr!.trim());
+    const hoy = new Date();
+    let edad = hoy.getFullYear() - nac.getFullYear();
+    const m = hoy.getMonth() - nac.getMonth();
+    if (m < 0 || (m === 0 && hoy.getDate() < nac.getDate())) {
+      edad--;
+    }
+    if (edad < 18) {
+      return { valido: false, mensaje: 'El colaborador debe tener al menos 18 años de edad' };
+    }
+    if (edad > 90) {
+      return { valido: false, mensaje: 'Ingresa una fecha de nacimiento válida' };
     }
     return { valido: true };
   }
