@@ -92,6 +92,19 @@ public class DatabaseBootstrapService implements ApplicationRunner {
                 nuevoRol.setPermisos(permisos);
                 nuevoRol.setVigente(true);
                 rolRepository.save(nuevoRol);
+            } else {
+                boolean modificado = false;
+                if (rol.getEsAdministrativo() == null || (esAdministrativo && !Boolean.TRUE.equals(rol.getEsAdministrativo()))) {
+                    rol.setEsAdministrativo(esAdministrativo);
+                    modificado = true;
+                }
+                if (id == 1L && (rol.getPermisos() == null || rol.getPermisos().isBlank() || !rol.getPermisos().contains("dashboard"))) {
+                    rol.setPermisos(permisos);
+                    modificado = true;
+                }
+                if (modificado) {
+                    rolRepository.save(rol);
+                }
             }
         } catch (Exception e) {
             log.warn("No se pudo insertar rol inicial {}: {}", nombre, e.getMessage());

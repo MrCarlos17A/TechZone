@@ -26,11 +26,19 @@ export class AuthService {
 
   readonly esAdmin = computed(() => {
     const user = this.currentUser();
-    if (!user || !user.roles) return false;
-    return user.roles.some(r => {
-      const lower = (r || '').toLowerCase();
-      return lower.includes('admin') || lower.includes('gerente');
-    });
+    if (!user) return false;
+    if (user.roles && Array.isArray(user.roles)) {
+      const match = user.roles.some(r => {
+        const lower = (r || '').toLowerCase();
+        return lower.includes('admin') || lower.includes('gerente');
+      });
+      if (match) return true;
+    }
+    const correo = (user.correo || '').toLowerCase();
+    if (correo === 'admin@techzone.pe' || correo === 'admin@techzone.com') {
+      return true;
+    }
+    return false;
   });
 
   readonly esColaborador = computed(() => {
@@ -45,21 +53,27 @@ export class AuthService {
   readonly isStaff = computed(() => {
     const user = this.currentUser();
     if (!user) return false;
-    // Bloquear incondicionalmente a Cliente y Usuario sin rol administrador
+
+    // Si es Administrador por rol, nombre o correo admin, siempre es Staff
+    if (this.esAdmin()) return true;
+
     if (user.roles && Array.isArray(user.roles)) {
+      const esAdmin = user.roles.some(r => (r || '').toUpperCase().includes('ADMIN'));
+      if (esAdmin) return true;
+
       const esClienteOUsuario = user.roles.some(r => {
         const u = (r || '').toUpperCase();
         return u === 'ROLE_CLIENTE' || u === 'CLIENTE' || u === 'ROLE_USUARIO' || u === 'USUARIO';
       });
-      const esAdmin = user.roles.some(r => (r || '').toUpperCase().includes('ADMIN'));
-      if (esClienteOUsuario && !esAdmin) {
+      if (esClienteOUsuario) {
         return false;
       }
     }
-    if (user.esAdministrativo !== undefined) {
+
+    if (user.esAdministrativo !== undefined && user.esAdministrativo !== null) {
       return !!user.esAdministrativo;
     }
-    if (user.esStaff !== undefined) {
+    if (user.esStaff !== undefined && user.esStaff !== null) {
       return !!user.esStaff;
     }
     return false;
@@ -158,6 +172,8 @@ export class AuthService {
             nombre: info.nombre || actual.nombre,
             roles: info.roles || actual.roles,
             esStaff: info.esStaff !== undefined ? info.esStaff : actual.esStaff,
+            esAdministrativo: info.esAdministrativo !== undefined ? info.esAdministrativo : (actual as any).esAdministrativo,
+            permisos: info.permisos || actual.permisos,
             idUsuario: info.idUsuario || actual.idUsuario,
             correo: info.correo || actual.correo
           };

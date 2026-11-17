@@ -150,7 +150,11 @@ public class AuthApiController {
 
             String token = jwtService.generarToken(usuario.getCorreo(), roles, usuario.getIdUsuario());
 
-            boolean esAdmin = usuario.getRol() != null && Boolean.TRUE.equals(usuario.getRol().getEsAdministrativo());
+            boolean esAdmin = usuario.getRol() != null && (
+                    Boolean.TRUE.equals(usuario.getRol().getEsAdministrativo())
+                    || (usuario.getRol().getNombre() != null && usuario.getRol().getNombre().toUpperCase().contains("ADMIN"))
+                    || Long.valueOf(1L).equals(usuario.getRol().getIdRol())
+            );
             Map<String, Object> cuerpo = new LinkedHashMap<>();
             cuerpo.put("token", token);
             cuerpo.put("tipo", "Bearer");
@@ -325,7 +329,11 @@ public class AuthApiController {
             return respuesta(401, "Usuario no encontrado");
         }
 
-        boolean esAdmin = usuario.getRol() != null && Boolean.TRUE.equals(usuario.getRol().getEsAdministrativo());
+        boolean esAdmin = usuario.getRol() != null && (
+                Boolean.TRUE.equals(usuario.getRol().getEsAdministrativo())
+                || (usuario.getRol().getNombre() != null && usuario.getRol().getNombre().toUpperCase().contains("ADMIN"))
+                || Long.valueOf(1L).equals(usuario.getRol().getIdRol())
+        );
         List<String> roles = (detalles.getAuthorities() != null)
                 ? detalles.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList()
                 : List.of();
