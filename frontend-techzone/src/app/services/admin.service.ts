@@ -13,6 +13,8 @@ export interface PersonaAdmin {
   telefono?: string;
   direccion?: string;
   referencia?: string;
+  ubigeo?: UbigeoAdmin;
+  idUbigeo?: number;
   tipoDocumento?: { idTipoDocumento: number; descripcion: string };
   fechaNacimiento?: string;
   fechaRegistro?: string;
@@ -282,8 +284,20 @@ export class AdminService {
     });
   }
 
+  actualizarEmpleadoCompleto(id: number, datos: any): Observable<EmpleadoAdmin> {
+    return this.http.put<EmpleadoAdmin>(`${this.baseUrl}/admin/empleados/${id}/completo`, datos, {
+      headers: this.authService.getAuthHeaders()
+    });
+  }
+
   eliminarEmpleado(id: number): Observable<any> {
     return this.http.delete(`${this.baseUrl}/admin/empleados/${id}`, {
+      headers: this.authService.getAuthHeaders()
+    });
+  }
+
+  eliminarEmpleadoFisico(id: number): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/admin/empleados/${id}/fisico`, {
       headers: this.authService.getAuthHeaders()
     });
   }

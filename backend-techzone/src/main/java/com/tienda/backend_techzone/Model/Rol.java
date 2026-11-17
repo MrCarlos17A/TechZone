@@ -22,7 +22,7 @@ public class Rol {
     @Column(name = "id_rol", nullable = false)
     private Long idRol;
 
-    @Column(length = 20)
+    @Column(length = 50)
     private String nombre;
 
     @Column(name = "vigente")

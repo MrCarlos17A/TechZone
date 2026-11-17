@@ -50,21 +50,28 @@ public class EmpleadoService {
 
     private void asegurarAdministradorComoEmpleado() {
         try {
-            Usuario adminUsuario = usuarioRepository.findByCorreo("admin@techzone.com").orElse(null);
-            if (adminUsuario != null && adminUsuario.getPersona() != null) {
-                Persona adminPersona = adminUsuario.getPersona();
+            // 1. Intentar buscar persona con id 1 (Carlos Felipe Arroyo Vega)
+            Persona adminPersona = personaRepository.findById(1L).orElse(null);
+            if (adminPersona == null) {
+                Usuario adminUsuario = usuarioRepository.findByCorreo("admin@techzone.com").orElse(null);
+                if (adminUsuario != null) {
+                    adminPersona = adminUsuario.getPersona();
+                }
+            }
+            if (adminPersona != null) {
                 if (empleadoRepository.findFirstByPersona(adminPersona).isEmpty()) {
                     Empleado adminEmp = Empleado.builder()
                             .persona(adminPersona)
                             .fechaContrato(LocalDate.of(2026, 1, 1))
                             .salario(new BigDecimal("3500.00"))
                             .vigente(true)
+                            .cargo("ADMINISTRADOR GENERAL")
                             .build();
-                    adminEmp.setCargo("ADMINISTRADOR GENERAL");
                     empleadoRepository.save(adminEmp);
                 }
             }
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            System.err.println("Aviso al asegurar administrador como empleado: " + e.getMessage());
         }
     }
 
@@ -110,11 +117,12 @@ public class EmpleadoService {
         if (correo == null || !correo.matches("[^@\\s]+@[^@\\s]+\\.[^@\\s]+")) {
             throw new RuntimeException("Ingresa un correo valido que contenga @");
         }
-        if (password == null || password.length() < 6) {
-            throw new RuntimeException("La contrasena debe tener al menos 6 caracteres");
+        if (password == null || password.isBlank()) {
+            throw new RuntimeException("La contraseña es obligatoria para la cuenta del colaborador");
         }
+        UsuarioService.validarContrasenaSegura(password);
         if (idRol == null || !rolRepository.existsById(idRol)) {
-            throw new RuntimeException("Selecciona un rol valido registrado en el sistema");
+            throw new RuntimeException("Selecciona un rol válido registrado en el sistema");
         }
         validarSalario(salario);
 
@@ -227,6 +235,7 @@ public class EmpleadoService {
         }
         empleado.setFechaContrato(fechaContrato);
         empleado.setSalario(salario);
+        empleado.setCargo(rol.getNombre().toUpperCase());
         empleado.setVigente(true);
         return empleadoRepository.save(empleado);
     }
@@ -236,7 +245,7 @@ public class EmpleadoService {
             Long idTipoDocumento, String numeroDocumento, String telefono, LocalDate fechaNacimiento,
             String direccion, String referencia, Long idUbigeo,
             String correo, String password, Long idRol,
-            LocalDate fechaContrato, BigDecimal salario) {
+            LocalDate fechaContrato, BigDecimal salario, Boolean vigente) {
 
         Empleado empleado = empleadoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Empleado no encontrado con id: " + id));
@@ -255,10 +264,18 @@ public class EmpleadoService {
         if (idTipoDocumento != null) {
             persona.setTipoDocumento(tipoDocumentoRepository.findById(idTipoDocumento).orElse(persona.getTipoDocumento()));
         }
-        persona.setNumeroDocumento(numeroDocumento != null ? numeroDocumento : persona.getNumeroDocumento());
-        persona.setTelefono(telefono != null ? telefono : persona.getTelefono());
-        persona.setDireccion(direccion != null ? direccion : persona.getDireccion());
-        persona.setReferencia(referencia != null ? referencia : persona.getReferencia());
+        if (numeroDocumento != null && !numeroDocumento.isBlank()) {
+            persona.setNumeroDocumento(numeroDocumento.trim());
+        }
+        if (telefono != null) {
+            persona.setTelefono(telefono.trim());
+        }
+        if (direccion != null) {
+            persona.setDireccion(direccion.trim());
+        }
+        if (referencia != null) {
+            persona.setReferencia(referencia.trim());
+        }
         if (idUbigeo != null) {
             ubigeoRepository.findById(idUbigeo).ifPresent(persona::setUbigeo);
         }
@@ -267,9 +284,10 @@ public class EmpleadoService {
         }
         personaRepository.save(persona);
 
+        Usuario usuarioPropio = usuarioRepository.findFirstByPersona(persona).orElse(null);
+
         if (correo != null && !correo.isBlank()) {
-            String correoLimpio = correo.trim();
-            Usuario usuarioPropio = usuarioRepository.findFirstByPersona(persona).orElse(null);
+            String correoLimpio = correo.trim().toLowerCase();
             Usuario usuarioCorreo = usuarioRepository.findByCorreo(correoLimpio).orElse(null);
 
             // El correo no puede pertenecer a otra persona
@@ -281,13 +299,16 @@ public class EmpleadoService {
             Usuario usuario = usuarioCorreo != null ? usuarioCorreo : usuarioPropio;
             if (usuario == null) {
                 if (password == null || password.isBlank()) {
-                    throw new RuntimeException("La contrasena es obligatoria para crear la cuenta");
+                    throw new RuntimeException("La contraseña es obligatoria para aprovisionar la cuenta del colaborador");
                 }
-                if (password.length() < 6) {
-                    throw new RuntimeException("La contrasena debe tener al menos 6 caracteres");
+                UsuarioService.validarContrasenaSegura(password);
+                Rol rolInicial = idRol != null ? rolRepository.findById(idRol).orElse(null) : null;
+                if (rolInicial == null) {
+                    rolInicial = rolRepository.findById(2L).orElse(null);
                 }
                 usuario = Usuario.builder()
                         .persona(persona)
+                        .rol(rolInicial)
                         .correo(correoLimpio)
                         .password(passwordEncoder.encode(password))
                         .estado("activo")
@@ -296,30 +317,58 @@ public class EmpleadoService {
                 usuario.setPersona(persona);
                 usuario.setCorreo(correoLimpio);
                 if (password != null && !password.isBlank()) {
-                    if (password.length() < 6) {
-                        throw new RuntimeException("La contrasena debe tener al menos 6 caracteres");
-                    }
+                    UsuarioService.validarContrasenaSegura(password);
                     usuario.setPassword(passwordEncoder.encode(password));
                 }
                 usuario.setEstado("activo");
             }
-            if (idRol != null && (idRol == 1 || idRol == 2)) {
-                rolRepository.findById(idRol).ifPresent(usuario::setRol);
-            } else if (usuario.getRol() == null) {
-                throw new RuntimeException("Selecciona un rol valido (Administrador o Trabajador)");
+            if (idRol != null) {
+                Rol rolNuevo = rolRepository.findById(idRol)
+                        .orElseThrow(() -> new RuntimeException("El rol seleccionado no existe"));
+                usuario.setRol(rolNuevo);
+                empleado.setCargo(rolNuevo.getNombre().toUpperCase());
             }
             usuarioRepository.save(usuario);
+        } else if (idRol != null) {
+            Rol rolNuevo = rolRepository.findById(idRol)
+                    .orElseThrow(() -> new RuntimeException("El rol seleccionado no existe"));
+            if (usuarioPropio != null) {
+                usuarioPropio.setRol(rolNuevo);
+                usuarioRepository.save(usuarioPropio);
+            }
+            empleado.setCargo(rolNuevo.getNombre().toUpperCase());
         }
 
         if (fechaContrato != null && fechaContrato.isAfter(LocalDate.now())) {
             throw new RuntimeException("La fecha de contrato no puede ser futura");
         }
-        empleado.setFechaContrato(fechaContrato != null ? fechaContrato : empleado.getFechaContrato());
+        if (fechaContrato != null) {
+            empleado.setFechaContrato(fechaContrato);
+        }
         if (salario != null) {
             validarSalario(salario);
             empleado.setSalario(salario);
         }
+        if (vigente != null) {
+            empleado.setVigente(vigente);
+        }
         return empleadoRepository.save(empleado);
+    }
+
+    @Transactional
+    public void eliminarEmpleadoFisico(Long id) {
+        Empleado emp = empleadoRepository.findById(id).orElse(null);
+        if (emp != null) {
+            Persona persona = emp.getPersona();
+            empleadoRepository.delete(emp);
+            if (persona != null) {
+                usuarioRepository.findFirstByPersona(persona).ifPresent(usuarioRepository::delete);
+                try {
+                    personaRepository.delete(persona);
+                } catch (Exception ignored) {
+                }
+            }
+        }
     }
 
     @Transactional

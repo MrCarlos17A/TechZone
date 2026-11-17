@@ -28,24 +28,40 @@ public class RolService {
 
     private void asegurarRolesBase() {
         try {
-            insertarRolSiNoExiste(5L, "Supervisor de Ventas",
+            insertarRolSiNoExiste("Supervisor de Ventas",
                     "{\"dashboard\":[\"ver\"],\"ventas\":[\"ver\",\"crear\",\"editar\"],\"pagos\":[\"ver\"],\"clientes\":[\"ver\"]}");
-            insertarRolSiNoExiste(6L, "Logística y Almacén",
+            insertarRolSiNoExiste("Logística y Almacén",
                     "{\"productos\":[\"ver\",\"crear\",\"editar\"],\"categorias\":[\"ver\",\"crear\",\"editar\"],\"marcas\":[\"ver\",\"crear\",\"editar\"],\"imagenes\":[\"ver\",\"crear\",\"editar\"],\"ventas\":[\"ver\"]}");
-            insertarRolSiNoExiste(7L, "Soporte Técnico",
+            insertarRolSiNoExiste("Soporte Técnico",
                     "{\"productos\":[\"ver\"],\"ventas\":[\"ver\"],\"clientes\":[\"ver\"]}");
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            System.err.println("Aviso al asegurar roles base: " + e.getMessage());
         }
     }
 
-    private void insertarRolSiNoExiste(Long id, String nombre, String permisos) {
-        if (!rolRepository.existsById(id)) {
-            entityManager.createNativeQuery(
-                    "INSERT INTO rol (id_rol, nombre, vigente, permisos) VALUES (:id, :nombre, true, :permisos) ON CONFLICT (id_rol) DO NOTHING")
-                    .setParameter("id", id)
-                    .setParameter("nombre", nombre)
-                    .setParameter("permisos", permisos)
-                    .executeUpdate();
+    private void insertarRolSiNoExiste(String nombre, String permisos) {
+        boolean existe = rolRepository.findByNombre(nombre).isPresent();
+        if (!existe) {
+            try {
+                Long nextId = ((Number) entityManager.createNativeQuery(
+                        "SELECT COALESCE(MAX(id_rol), 0) + 1 FROM rol").getSingleResult()).longValue();
+                entityManager.createNativeQuery(
+                        "INSERT INTO rol (id_rol, nombre, vigente, permisos) VALUES (:id, :nombre, true, :permisos) ON CONFLICT (id_rol) DO NOTHING")
+                        .setParameter("id", nextId)
+                        .setParameter("nombre", nombre)
+                        .setParameter("permisos", permisos)
+                        .executeUpdate();
+            } catch (Exception ex) {
+                // Alternativa sin ID explicito en caso de secuencia activa
+                try {
+                    entityManager.createNativeQuery(
+                            "INSERT INTO rol (nombre, vigente, permisos) VALUES (:nombre, true, :permisos)")
+                            .setParameter("nombre", nombre)
+                            .setParameter("permisos", permisos)
+                            .executeUpdate();
+                } catch (Exception ignored) {
+                }
+            }
         }
     }
 
@@ -96,8 +112,8 @@ public class RolService {
         if (rol.getNombre() == null || rol.getNombre().isBlank()) {
             throw new RuntimeException("El nombre del rol es obligatorio");
         }
-        if (rol.getNombre().trim().length() > 20) {
-            throw new RuntimeException("El nombre no puede superar 20 caracteres");
+        if (rol.getNombre().trim().length() > 50) {
+            throw new RuntimeException("El nombre no puede superar 50 caracteres");
         }
     }
 }

@@ -35,12 +35,25 @@ public class UsuarioService {
         return ActualizarUsuario(id, usuario);
     }
 
+    public static void validarContrasenaSegura(String password) {
+        if (password == null || password.length() < 8) {
+            throw new RuntimeException("La contraseña debe tener al menos 8 caracteres");
+        }
+        if (!password.chars().anyMatch(Character::isUpperCase)) {
+            throw new RuntimeException("La contraseña debe incluir al menos una letra mayúscula (A-Z)");
+        }
+        if (!password.chars().anyMatch(Character::isDigit)) {
+            throw new RuntimeException("La contraseña debe incluir al menos un número (0-9)");
+        }
+        if (!password.matches(".*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?~`].*")) {
+            throw new RuntimeException("La contraseña debe incluir al menos un carácter especial (ej. ! @ # $ % * -)");
+        }
+    }
+
     public Usuario CrearUsuario(Usuario usuario) {
         validarUsuario(usuario, null);
         validarRolAsignable(usuario.getRol());
-        if (usuario.getPassword() == null || usuario.getPassword().length() < 6) {
-            throw new RuntimeException("La contrasena debe tener al menos 6 caracteres");
-        }
+        validarContrasenaSegura(usuario.getPassword());
         usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
         if (usuario.getEstado() == null) {
             usuario.setEstado("activo");
@@ -71,9 +84,7 @@ public class UsuarioService {
         }
         String nuevaClave = usuario.getPassword();
         if (nuevaClave != null && !nuevaClave.isBlank() && !nuevaClave.equals(existente.getPassword())) {
-            if (nuevaClave.length() < 6) {
-                throw new RuntimeException("La contrasena debe tener al menos 6 caracteres");
-            }
+            validarContrasenaSegura(nuevaClave);
             existente.setPassword(passwordEncoder.encode(nuevaClave));
         }
         return usuarioRepository.save(existente);
