@@ -199,20 +199,27 @@ public class EmpleadoService {
 
         // Se reusa la cuenta existente de esa misma persona si la tiene
         Usuario usuario;
+        String claveCodificada = passwordEncoder.encode(password);
         if (usuarioExistente != null) {
             usuario = usuarioExistente;
             usuario.setPersona(persona);
             usuario.setRol(rol);
-            usuario.setPassword(passwordEncoder.encode(password));
+            usuario.setPassword(claveCodificada);
+            usuario.setContrasena(claveCodificada);
             usuario.setEstado("activo");
+            usuario.setIntentosFallidos(0);
+            usuario.setBloqueadoHasta(null);
         } else {
-            usuario = Usuario.builder()
-                    .persona(persona)
-                    .rol(rol)
-                    .correo(correoLimpio)
-                    .password(passwordEncoder.encode(password))
-                    .estado("activo")
-                    .build();
+            usuario = new Usuario();
+            usuario.setPersona(persona);
+            usuario.setRol(rol);
+            usuario.setCorreo(correoLimpio);
+            usuario.setPassword(claveCodificada);
+            usuario.setContrasena(claveCodificada);
+            usuario.setEstado("activo");
+            usuario.setFechaCreacion(LocalDateTime.now());
+            usuario.setIntentosFallidos(0);
+            usuario.setBloqueadoHasta(null);
         }
         usuarioRepository.save(usuario);
 
@@ -313,10 +320,18 @@ public class EmpleadoService {
                 usuario.setCorreo(correoLimpio);
                 if (password != null && !password.isBlank()) {
                     UsuarioService.validarContrasenaSegura(password);
-                    usuario.setPassword(passwordEncoder.encode(password));
+                    String claveCod = passwordEncoder.encode(password);
+                    usuario.setPassword(claveCod);
+                    usuario.setContrasena(claveCod);
+                    usuario.setIntentosFallidos(0);
+                    usuario.setBloqueadoHasta(null);
                 }
                 if (vigente != null) {
                     usuario.setEstado(vigente ? "activo" : "inactivo");
+                    if (vigente) {
+                        usuario.setIntentosFallidos(0);
+                        usuario.setBloqueadoHasta(null);
+                    }
                 }
             }
             if (idRol != null) {

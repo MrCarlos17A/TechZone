@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -55,11 +56,17 @@ public class UsuarioService {
     public Usuario CrearUsuario(Usuario usuario) {
         validarUsuario(usuario, null);
         validarRolAsignable(usuario.getRol());
-        validarContrasenaSegura(usuario.getPassword());
-        usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
-        if (usuario.getEstado() == null) {
+        String clavePlana = usuario.getPassword() != null ? usuario.getPassword() : usuario.getContrasena();
+        validarContrasenaSegura(clavePlana);
+        String claveCodificada = passwordEncoder.encode(clavePlana);
+        usuario.setPassword(claveCodificada);
+        usuario.setContrasena(claveCodificada);
+        if (usuario.getEstado() == null || usuario.getEstado().isBlank()) {
             usuario.setEstado("activo");
         }
+        usuario.setFechaCreacion(LocalDateTime.now());
+        usuario.setIntentosFallidos(0);
+        usuario.setBloqueadoHasta(null);
         return usuarioRepository.save(usuario);
     }
 

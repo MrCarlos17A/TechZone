@@ -155,7 +155,36 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        BCryptPasswordEncoder bcrypt = new BCryptPasswordEncoder();
+        return new PasswordEncoder() {
+            @Override
+            public String encode(CharSequence rawPassword) {
+                return bcrypt.encode(rawPassword);
+            }
+
+            @Override
+            public boolean matches(CharSequence rawPassword, String encodedPassword) {
+                if (rawPassword == null || encodedPassword == null) {
+                    return false;
+                }
+                String stored = encodedPassword.trim();
+                if (stored.startsWith("$2a$") || stored.startsWith("$2b$") || stored.startsWith("$2y$")) {
+                    try {
+                        return bcrypt.matches(rawPassword, stored);
+                    } catch (Exception e) {
+                        return false;
+                    }
+                }
+                // Compatibilidad total con claves en texto plano y migraciones
+                return rawPassword.toString().equals(stored);
+            }
+
+            @Override
+            public boolean upgradeEncoding(String encodedPassword) {
+                if (encodedPassword == null) return true;
+                return !encodedPassword.startsWith("$2a$");
+            }
+        };
     }
 
     @Bean

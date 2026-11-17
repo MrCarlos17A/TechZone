@@ -31,10 +31,11 @@ public class UsuarioDetalleService implements UserDetailsService {
         Usuario usuario = usuarioRepository.findByCorreo(correo)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
 
-        if (usuario.getRol() == null || !Boolean.TRUE.equals(usuario.getRol().getVigente())) {
+        if (usuario.getRol() != null && Boolean.FALSE.equals(usuario.getRol().getVigente())) {
             throw new UsernameNotFoundException("Rol inactivo");
         }
-        if (usuario.getEstado() == null || !"activo".equalsIgnoreCase(usuario.getEstado())) {
+        String estado = usuario.getEstado() != null ? usuario.getEstado().trim() : "activo";
+        if (!"activo".equalsIgnoreCase(estado)) {
             throw new UsernameNotFoundException("Cuenta inactiva");
         }
         if (usuario.estaBloqueado()) {

@@ -120,15 +120,20 @@ public class AuthApiController {
 
         if (usuario.estaBloqueado()) {
             registrarAcceso(usuario, correoLimpio, ip, agente, false, "cuenta_bloqueada");
-            return respuesta(423, "Cuenta bloqueada temporalmente por intentos fallidos. Intenta más tarde.");
+            return respuesta(423, "Cuenta bloqueada temporalmente por 15 minutos debido a 5 intentos fallidos consecutivos.");
+        } else if (usuario.getBloqueadoHasta() != null && usuario.getBloqueadoHasta().isBefore(LocalDateTime.now())) {
+            usuario.setBloqueadoHasta(null);
+            usuario.setIntentosFallidos(0);
+            usuarioRepository.save(usuario);
         }
 
-        if (usuario.getEstado() != null && !"activo".equalsIgnoreCase(usuario.getEstado())) {
+        String estadoUsuario = usuario.getEstado() != null ? usuario.getEstado().trim() : "activo";
+        if (!"activo".equalsIgnoreCase(estadoUsuario)) {
             registrarAcceso(usuario, correoLimpio, ip, agente, false, "cuenta_inactiva");
             return ResponseEntity.status(403).body(Map.of("mensaje", "Tu cuenta se encuentra inactiva o suspendida. Contacta a administración."));
         }
 
-        if (usuario.getRol() == null || !Boolean.TRUE.equals(usuario.getRol().getVigente())) {
+        if (usuario.getRol() != null && Boolean.FALSE.equals(usuario.getRol().getVigente())) {
             registrarAcceso(usuario, correoLimpio, ip, agente, false, "rol_inactivo");
             return ResponseEntity.status(403).body(Map.of("mensaje", "El rol asignado a tu cuenta no se encuentra vigente."));
         }
@@ -140,6 +145,13 @@ public class AuthApiController {
             usuario.setFechaUltimoAcceso(LocalDateTime.now());
             usuario.setIntentosFallidos(0);
             usuario.setBloqueadoHasta(null);
+
+            // Auto-upgrade transparente de claves en texto plano a BCrypt
+            if (usuario.getPassword() != null && !usuario.getPassword().startsWith("$2")) {
+                String hashActualizado = passwordEncoder.encode(usuario.getPassword());
+                usuario.setPassword(hashActualizado);
+                usuario.setContrasena(hashActualizado);
+            }
             usuarioRepository.save(usuario);
 
             registrarAcceso(usuario, correoLimpio, ip, agente, true, "ok");
