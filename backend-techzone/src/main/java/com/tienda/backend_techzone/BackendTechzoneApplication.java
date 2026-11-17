@@ -42,7 +42,7 @@ public class BackendTechzoneApplication {
 				jdbcTemplate.execute("UPDATE configuracion_sitio SET web = 'www.techzone.com' WHERE web IS NULL OR web = ''");
 				jdbcTemplate.execute("UPDATE configuracion_sitio SET leyenda_fiscal = 'Autorizado mediante resolución SUNAT N° 034-005' WHERE leyenda_fiscal IS NULL OR leyenda_fiscal = ''");
 				jdbcTemplate.execute("UPDATE configuracion_sitio SET nombre_sitio = 'TechZone Gaming Store' WHERE nombre_sitio IS NULL OR nombre_sitio = ''");
-				jdbcTemplate.execute("UPDATE configuracion_sitio SET telefono = '+51 967 662 103' WHERE telefono IS NULL OR telefono = ''");
+				jdbcTemplate.execute("UPDATE configuracion_sitio SET telefono = '967662103' WHERE telefono IS NULL OR telefono = '' OR telefono LIKE '%+51%'");
 				jdbcTemplate.execute("UPDATE configuracion_sitio SET email = 'ventas@techzone.com' WHERE email IS NULL OR email = ''");
 				jdbcTemplate.execute("UPDATE configuracion_sitio SET tagline = 'Componentes Gamer y Tecnología de Última Generación' WHERE tagline IS NULL OR tagline = ''");
 				jdbcTemplate.execute("UPDATE configuracion_sitio SET horario = 'Lun - Dom: 09:00 a.m. - 21:00 p.m.' WHERE horario IS NULL OR horario = ''");

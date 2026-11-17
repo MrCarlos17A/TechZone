@@ -37,7 +37,7 @@ public class ConfiguracionSitioService {
             cfg.setDireccionFiscal("Av. Javier Prado Este 4200, Santiago de Surco - Lima");
         }
         if (cfg.getTelefono() == null || cfg.getTelefono().isBlank()) {
-            cfg.setTelefono("+51 967 662 103");
+            cfg.setTelefono("967662103");
         }
         if (cfg.getEmail() == null || cfg.getEmail().isBlank()) {
             cfg.setEmail("ventas@techzone.com");
@@ -71,20 +71,50 @@ public class ConfiguracionSitioService {
     public ConfiguracionSitio GuardarConfiguracion(ConfiguracionSitio config) {
         if (config.getNombreSitio() != null) {
             config.setNombreSitio(config.getNombreSitio().trim());
+            if (config.getNombreSitio().length() < 3) {
+                throw new RuntimeException("El nombre del sitio debe tener al menos 3 caracteres");
+            }
             if (config.getNombreSitio().length() > 80) {
                 throw new RuntimeException("El nombre del sitio no puede superar 80 caracteres");
             }
         }
         if (config.getEmail() != null && !config.getEmail().isBlank()) {
-            if (!config.getEmail().matches("[^@\\s]+@[^@\\s]+\\.[^@\\s]+")) {
-                throw new RuntimeException("El correo de contacto no es valido");
+            config.setEmail(config.getEmail().trim().toLowerCase());
+            if (!config.getEmail().matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")) {
+                throw new RuntimeException("Ingresa un formato de correo electrónico válido (ej. usuario@dominio.com)");
             }
             if (config.getEmail().length() > 100) {
                 throw new RuntimeException("El correo no puede superar 100 caracteres");
             }
         }
-        if (config.getTelefono() != null && config.getTelefono().length() > 20) {
-            throw new RuntimeException("El telefono no puede superar 20 caracteres");
+        if (config.getTelefono() != null && !config.getTelefono().isBlank()) {
+            String telLimpio = config.getTelefono().replaceAll("[^0-9]", "");
+            if (telLimpio.startsWith("51") && telLimpio.length() == 11) {
+                telLimpio = telLimpio.substring(2);
+            }
+            if (!telLimpio.matches("^9\\d{8}$")) {
+                throw new RuntimeException("El teléfono debe tener 9 dígitos y empezar con 9 (ej. 987654321)");
+            }
+            config.setTelefono(telLimpio);
+        }
+        if (config.getRuc() != null && !config.getRuc().isBlank()) {
+            String rucLimpio = config.getRuc().replaceAll("[^0-9]", "");
+            if (!rucLimpio.matches("^(10|20)\\d{9}$")) {
+                throw new RuntimeException("El RUC debe tener 11 dígitos y empezar con 10 o 20");
+            }
+            config.setRuc(rucLimpio);
+        }
+        if (config.getRazonSocial() != null && !config.getRazonSocial().isBlank()) {
+            config.setRazonSocial(config.getRazonSocial().trim());
+            if (config.getRazonSocial().length() < 3) {
+                throw new RuntimeException("La razón social oficial debe tener al menos 3 caracteres");
+            }
+        }
+        if (config.getDireccionFiscal() != null && !config.getDireccionFiscal().isBlank()) {
+            config.setDireccionFiscal(config.getDireccionFiscal().trim());
+            if (config.getDireccionFiscal().length() < 10) {
+                throw new RuntimeException("La dirección fiscal debe tener al menos 10 caracteres");
+            }
         }
         if (config.getWhatsapp() != null && config.getWhatsapp().length() > 20) {
             throw new RuntimeException("El WhatsApp no puede superar 20 caracteres");

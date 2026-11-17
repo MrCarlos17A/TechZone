@@ -29,6 +29,7 @@ import {
 import { ConfiguracionService } from '../../services/configuracion.service';
 import { ToastService } from '../../services/toast.service';
 import { TemaService } from '../../services/tema.service';
+import { Validaciones } from '../../utils/validaciones';
 import { ExcelExportService, VentaExportData, FiltrosExportInfo } from '../../services/excel-export.service';
 import { ConfiguracionSitio } from '../../models/configuracion.models';
 import { VentaResumen } from '../../models/venta.models';
@@ -3909,7 +3910,72 @@ export class AdminComponent implements OnInit {
     this.toastService.info('Se restauró el logo corporativo oficial. Haz clic en "Guardar Configuración" para confirmar.');
   }
 
+  onConfigTelefonoChange(valor: string): void {
+    this.configForm.telefono = (valor || '').replace(/\D/g, '').slice(0, 9);
+  }
+
+  onConfigRucChange(valor: string): void {
+    this.configForm.ruc = (valor || '').replace(/\D/g, '').slice(0, 11);
+  }
+
+  validarFormularioConfiguracion(): boolean {
+    const nombre = (this.configForm.nombreSitio || '').trim();
+    if (!nombre) {
+      this.toastService.error('El nombre comercial de la tienda es obligatorio');
+      return false;
+    }
+    if (nombre.length < 3) {
+      this.toastService.error('El nombre comercial debe tener al menos 3 caracteres');
+      return false;
+    }
+
+    const vTel = Validaciones.validarTelefono(this.configForm.telefono);
+    if (!vTel.valido) {
+      this.toastService.error(vTel.mensaje || 'El teléfono debe tener 9 dígitos y empezar con 9 (ej. 987654321)');
+      return false;
+    }
+
+    const vCorreo = Validaciones.validarCorreo(this.configForm.email);
+    if (!vCorreo.valido) {
+      this.toastService.error(vCorreo.mensaje || 'Ingresa un formato de correo electrónico válido (ej. ventas@techzone.com)');
+      return false;
+    }
+
+    const vRuc = Validaciones.validarRuc(this.configForm.ruc);
+    if (!vRuc.valido) {
+      this.toastService.error(vRuc.mensaje || 'El RUC debe tener 11 dígitos y empezar con 10 o 20');
+      return false;
+    }
+
+    const razon = (this.configForm.razonSocial || '').trim();
+    if (!razon) {
+      this.toastService.error('La razón social oficial es obligatoria para los comprobantes');
+      return false;
+    }
+    if (razon.length < 3) {
+      this.toastService.error('La razón social oficial debe tener al menos 3 caracteres');
+      return false;
+    }
+
+    const vDir = Validaciones.validarDireccion(this.configForm.direccionFiscal);
+    if (!vDir.valido) {
+      this.toastService.error('La dirección fiscal debe tener al menos 10 caracteres (calle/avenida y numeración)');
+      return false;
+    }
+
+    const web = (this.configForm.web || '').trim();
+    if (web && !/^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/.*)?$/.test(web)) {
+      this.toastService.error('El portal web oficial debe tener un formato de dominio o URL válido (ej. www.techzone.com)');
+      return false;
+    }
+
+    return true;
+  }
+
   guardarConfiguracion(): void {
+    if (!this.validarFormularioConfiguracion()) {
+      return;
+    }
     this.guardandoConfig.set(true);
     if (this.archivoLogoSitio || this.archivoLibroSitio) {
       const fd = new FormData();
@@ -3939,19 +4005,32 @@ export class AdminComponent implements OnInit {
   }
 
   aplicarConfiguracion(cfg: ConfiguracionSitio): void {
+    let tel = (cfg.telefono || '967662103').replace(/\D/g, '');
+    if (tel.startsWith('51') && tel.length === 11) {
+      tel = tel.slice(2);
+    }
+    if (!tel || tel.length !== 9) {
+      tel = '967662103';
+    }
+
+    let ruc = (cfg.ruc || '20608945123').replace(/\D/g, '').slice(0, 11);
+    if (!ruc || ruc.length !== 11) {
+      ruc = '20608945123';
+    }
+
     this.configForm = {
       ...cfg,
-      nombreSitio: cfg.nombreSitio || 'TechZone Gaming Store',
-      razonSocial: cfg.razonSocial || 'TECHZONE GAMING STORE S.A.C.',
-      ruc: cfg.ruc || '20608945123',
-      direccionFiscal: cfg.direccionFiscal || 'Av. Javier Prado Este 4200, Santiago de Surco - Lima',
-      telefono: cfg.telefono || '+51 967 662 103',
-      email: cfg.email || 'ventas@techzone.com',
-      tagline: cfg.tagline || 'Componentes Gamer y Tecnología de Última Generación',
-      horario: cfg.horario || 'Lun - Dom: 09:00 a.m. - 21:00 p.m.',
-      copyright: cfg.copyright || '© 2026 TechZone Gaming Store S.A.C. Todos los derechos reservados.',
-      web: cfg.web || 'www.techzone.com',
-      leyendaFiscal: cfg.leyendaFiscal || 'Autorizado mediante resolución SUNAT N° 034-005',
+      nombreSitio: (cfg.nombreSitio || 'TechZone Gaming Store').trim(),
+      razonSocial: (cfg.razonSocial || 'TECHZONE GAMING STORE S.A.C.').trim(),
+      ruc: ruc,
+      direccionFiscal: (cfg.direccionFiscal || 'Av. Javier Prado Este 4200, Santiago de Surco - Lima').trim(),
+      telefono: tel,
+      email: (cfg.email || 'ventas@techzone.com').trim().toLowerCase(),
+      tagline: (cfg.tagline || 'Componentes Gamer y Tecnología de Última Generación').trim(),
+      horario: (cfg.horario || 'Lun - Dom: 09:00 a.m. - 21:00 p.m.').trim(),
+      copyright: (cfg.copyright || '© 2026 TechZone Gaming Store S.A.C. Todos los derechos reservados.').trim(),
+      web: (cfg.web || 'www.techzone.com').trim(),
+      leyendaFiscal: (cfg.leyendaFiscal || 'Autorizado mediante resolución SUNAT N° 034-005').trim(),
       mostrarTiktok: cfg.mostrarTiktok ?? true,
       mostrarFacebook: cfg.mostrarFacebook ?? true,
       mostrarInstagram: cfg.mostrarInstagram ?? true,

@@ -4106,19 +4106,22 @@
                     [class.dark:bg-slate-950]="modoEdicionConfig()" />
                 </div>
                 <div>
-                  <label class="text-[11px] font-bold uppercase text-slate-600 dark:text-slate-400 block mb-1">Teléfono Principal de Soporte</label>
+                  <label class="text-[11px] font-bold uppercase text-slate-600 dark:text-slate-400 block mb-1">Teléfono Principal de Soporte *</label>
                   <input
                     type="text"
+                    maxlength="9"
                     [disabled]="!modoEdicionConfig()"
-                    [(ngModel)]="configForm.telefono"
-                    placeholder="Ej. +51 967 662 103"
-                    class="w-full text-xs px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500 text-slate-900 dark:text-white transition-all"
+                    [ngModel]="configForm.telefono"
+                    (ngModelChange)="onConfigTelefonoChange($event)"
+                    placeholder="Ej. 967662103"
+                    class="w-full text-xs px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500 font-mono text-slate-900 dark:text-white transition-all"
                     [class.bg-slate-100]="!modoEdicionConfig()"
                     [class.dark:bg-slate-900]="!modoEdicionConfig()"
                     [class.cursor-not-allowed]="!modoEdicionConfig()"
                     [class.opacity-80]="!modoEdicionConfig()"
                     [class.bg-white]="modoEdicionConfig()"
                     [class.dark:bg-slate-950]="modoEdicionConfig()" />
+                  <span class="text-[10px] text-slate-400 mt-1 block">9 dígitos iniciando con 9 (número celular Perú)</span>
                 </div>
                 <div>
                   <label class="text-[11px] font-bold uppercase text-slate-600 dark:text-slate-400 block mb-1">Correo Electrónico Institucional</label>
@@ -4205,7 +4208,8 @@
                     type="text"
                     maxlength="11"
                     [disabled]="!modoEdicionConfig()"
-                    [(ngModel)]="configForm.ruc"
+                    [ngModel]="configForm.ruc"
+                    (ngModelChange)="onConfigRucChange($event)"
                     placeholder="Ej. 20608945123"
                     class="w-full text-xs px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500 font-mono font-bold text-slate-900 dark:text-white transition-all"
                     [class.bg-slate-100]="!modoEdicionConfig()"
@@ -4214,6 +4218,7 @@
                     [class.opacity-80]="!modoEdicionConfig()"
                     [class.bg-white]="modoEdicionConfig()"
                     [class.dark:bg-slate-950]="modoEdicionConfig()" />
+                  <span class="text-[10px] text-slate-400 mt-1 block">11 dígitos iniciando con 10 o 20 (RUC Oficial SUNAT)</span>
                 </div>
                 <div>
                   <label class="text-[11px] font-bold uppercase text-slate-600 dark:text-slate-400 block mb-1">Razón Social Oficial Registrada *</label>
