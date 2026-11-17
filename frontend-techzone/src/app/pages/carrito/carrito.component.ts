@@ -21,15 +21,19 @@ export class CarritoComponent implements OnInit {
   productos = signal<Producto[]>([]);
 
   ngOnInit(): void {
-    if (!this.authService.isAuthenticated()) {
-      this.router.navigate(['/login'], { queryParams: { returnUrl: '/carrito' } });
-      return;
-    }
     this.carritoService.cargarCarrito();
     this.productoService.getProductos().subscribe({
       next: (prods) => this.productos.set(prods),
       error: () => {}
     });
+  }
+
+  procederAlPago(): void {
+    if (this.authService.isAuthenticated()) {
+      this.router.navigate(['/checkout']);
+    } else {
+      this.router.navigate(['/login'], { queryParams: { returnUrl: '/checkout' } });
+    }
   }
 
   obtenerImagenItem(item: any): string {

@@ -22,12 +22,14 @@ export class LoginComponent implements OnInit {
   mostrarPassword = signal(false);
   cargando = signal(false);
   error = signal<string | null>(null);
+  mensajeInfo = signal<string | null>(null);
 
   cerrarSesionActual(): void {
     this.authService.logout();
     this.username.set('');
     this.password.set('');
     this.error.set(null);
+    this.mensajeInfo.set(null);
   }
 
   toggleMostrarPassword(): void {
@@ -35,13 +37,18 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    if (this.route.snapshot.queryParams['sesionExpirada'] === 'true') {
+    if (this.route.snapshot.queryParams['inactividad'] === 'true') {
+      this.error.set('Tu sesión se cerró automáticamente tras 25 minutos de inactividad por motivos de seguridad.');
+      this.authService.logout();
+    } else if (this.route.snapshot.queryParams['sesionExpirada'] === 'true') {
       this.error.set('Tu sesión ha expirado por seguridad o el servidor se reinició. Inicia sesión nuevamente.');
       this.authService.logout();
     } else if (this.authService.isAuthenticated()) {
       // Si ya cuenta con sesion activa legitima, redirigir directamente sin parpadeos
       const returnUrl = this.route.snapshot.queryParams['returnUrl'] || (this.authService.isStaff() ? '/admin' : '/');
       this.router.navigateByUrl(returnUrl);
+    } else if (this.route.snapshot.queryParams['returnUrl'] === '/checkout') {
+      this.mensajeInfo.set('Inicia sesión o regístrate para completar el pago de tus productos.');
     }
   }
 

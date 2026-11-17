@@ -9,4 +9,35 @@
     <app-footer />
   }
   <app-toast-container />
+
+  @if (inactividadService.advertenciaActiva()) {
+    <div class="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-950/70 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+      <div class="bg-white dark:bg-slate-900 border border-amber-500/30 rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl text-center space-y-4">
+        <div class="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-500 mx-auto flex items-center justify-center">
+          <span class="material-symbols-outlined text-3xl">timer</span>
+        </div>
+        <div class="space-y-1">
+          <h3 class="text-lg font-bold text-slate-900 dark:text-white font-heading">
+            Sesión a punto de expirar
+          </h3>
+          <p class="text-xs text-slate-600 dark:text-slate-400">
+            Has estado inactivo en el panel administrativo. Tu sesión se cerrará automáticamente en:
+          </p>
+        </div>
+        <div class="py-2">
+          <span class="text-3xl font-black text-amber-500 font-mono tracking-wider">
+            {{ inactividadService.segundosRestantes() }}s
+          </span>
+        </div>
+        <div class="pt-2">
+          <button
+            type="button"
+            (click)="inactividadService.continuarSesion()"
+            class="w-full py-3 px-5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm transition-all shadow-lg shadow-blue-600/20 cursor-pointer">
+            Continuar trabajando
+          </button>
+        </div>
+      </div>
+    </div>
+  }
 </div>

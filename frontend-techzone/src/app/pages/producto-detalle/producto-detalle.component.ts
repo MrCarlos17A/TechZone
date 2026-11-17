@@ -131,12 +131,6 @@ export class ProductoDetalleComponent implements OnInit {
     const prod = this.producto();
     if (!prod) return;
 
-    if (!this.authService.isAuthenticated()) {
-      alert('Debes iniciar sesion para agregar productos al carrito.');
-      this.router.navigate(['/login']);
-      return;
-    }
-
     this.agregando.set(true);
     const imagenUrlParaCarrito = this.imagenSeleccionadaUrl() ||
       ((prod.imagenes && prod.imagenes.length > 0) ? (prod.imagenes.find(i => i.esPrincipal)?.urlImagen || prod.imagenes[0].urlImagen) : '');
@@ -155,7 +149,7 @@ export class ProductoDetalleComponent implements OnInit {
       },
       error: (err) => {
         this.agregando.set(false);
-        alert(err.error?.mensaje || 'No se pudo agregar al carrito');
+        alert(err?.error?.mensaje || 'No se pudo agregar al carrito');
       }
     });
   }
@@ -164,57 +158,50 @@ export class ProductoDetalleComponent implements OnInit {
     const prod = this.producto();
     if (!prod) return;
 
-    if (!this.authService.isAuthenticated()) {
-      alert('Debes iniciar sesion para realizar compras.');
-      this.router.navigate(['/login']);
-      return;
-    }
-
     const cantDeseada = this.cantidad();
     const existente = this.carritoService.items().find(it => it.idProducto === prod.idProducto);
 
-    // Si ya esta en el carrito con la cantidad exacta, navegar directamente a checkout
+    // Destino final del flujo de compra directa
+    const navegarADestino = () => {
+      if (this.authService.isAuthenticated()) {
+        this.router.navigate(['/checkout']);
+      } else {
+        this.router.navigate(['/login'], { queryParams: { returnUrl: '/checkout' } });
+      }
+    };
+
+    // Si ya esta en el carrito con la cantidad exacta, navegar directamente a checkout/login
     if (existente && existente.cantidad === cantDeseada) {
-      this.router.navigate(['/checkout']);
+      navegarADestino();
       return;
     }
 
-    this.procesandoCompra.set(true);
-
-    // Si ya esta pero con cantidad diferente, sincronizar cantidad a la seleccionada
-    if (existente) {
-      this.carritoService.actualizarCantidad(existente.idDetalle, cantDeseada).subscribe({
-        next: () => {
-          this.procesandoCompra.set(false);
-          this.router.navigate(['/checkout']);
-        },
-        error: (err) => {
-          this.procesandoCompra.set(false);
-          alert(err.error?.mensaje || 'No se pudo actualizar la cantidad en el carrito');
-        }
-      });
-      return;
-    }
-
-    // Si no esta en el carrito, agregarlo con la cantidad seleccionada
+    this.agregando.set(true);
     const imagenUrlParaCarrito = this.imagenSeleccionadaUrl() ||
       ((prod.imagenes && prod.imagenes.length > 0) ? (prod.imagenes.find(i => i.esPrincipal)?.urlImagen || prod.imagenes[0].urlImagen) : '');
 
-    this.carritoService.agregarProducto(prod.idProducto, cantDeseada, {
-      nombre: prod.nombre,
-      codigoSku: prod.codigoSku,
-      precioVenta: prod.precioVenta,
-      stock: prod.stock,
-      imagenUrl: imagenUrlParaCarrito
-    }).subscribe({
-      next: () => {
-        this.procesandoCompra.set(false);
-        this.router.navigate(['/checkout']);
-      },
-      error: (err) => {
-        this.procesandoCompra.set(false);
-        alert(err.error?.mensaje || 'No se pudo procesar la compra');
-      }
-    });
+    const cantidadAAgregar = existente ? (cantDeseada - existente.cantidad) : cantDeseada;
+
+    if (cantidadAAgregar > 0) {
+      this.carritoService.agregarProducto(prod.idProducto, cantidadAAgregar, {
+        nombre: prod.nombre,
+        codigoSku: prod.codigoSku,
+        precioVenta: prod.precioVenta,
+        stock: prod.stock,
+        imagenUrl: imagenUrlParaCarrito
+      }).subscribe({
+        next: () => {
+          this.agregando.set(false);
+          navegarADestino();
+        },
+        error: () => {
+          this.agregando.set(false);
+          navegarADestino();
+        }
+      });
+    } else {
+      this.agregando.set(false);
+      navegarADestino();
+    }
   }
 }

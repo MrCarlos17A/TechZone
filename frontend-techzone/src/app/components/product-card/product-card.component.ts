@@ -40,12 +40,6 @@ export class ProductCardComponent {
     event.stopPropagation();
     event.preventDefault();
 
-    if (!this.authService.isAuthenticated()) {
-      this.toastService.advertencia('Inicia sesión para agregar productos a tu carrito');
-      this.router.navigate(['/login']);
-      return;
-    }
-
     this.agregando = true;
     this.agregadoExitoso = true; // Feedback inmediato
 
@@ -61,10 +55,10 @@ export class ProductCardComponent {
         this.toastService.exito(`Se agregó "${this.producto.nombre}" al carrito`);
         setTimeout(() => this.agregadoExitoso = false, 2000);
       },
-      error: (err) => {
+      error: () => {
         this.agregando = false;
         this.agregadoExitoso = false;
-        this.toastService.error(err.error?.mensaje || 'No se pudo agregar el producto');
+        this.toastService.error('No se pudo agregar el producto al carrito');
       }
     });
   }

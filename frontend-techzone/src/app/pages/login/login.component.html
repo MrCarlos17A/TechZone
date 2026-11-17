@@ -48,6 +48,13 @@
       </div>
     }
 
+    @if (mensajeInfo()) {
+      <div class="p-3.5 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-400 text-xs flex items-center gap-2">
+        <span class="material-symbols-outlined text-base flex-shrink-0">shopping_cart</span>
+        <span>{{ mensajeInfo() }}</span>
+      </div>
+    }
+
     @if (error()) {
       <div class="p-3.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 text-xs flex items-center gap-2">
         <span class="material-symbols-outlined text-base flex-shrink-0">error</span>
