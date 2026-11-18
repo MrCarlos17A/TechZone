@@ -11,7 +11,8 @@ import { Validaciones } from '../../utils/validaciones';
   selector: 'app-registro',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink],
-  templateUrl: './registro.component.html'
+  templateUrl: './registro.component.html',
+  styleUrl: '../auth-form.css'
 })
 export class RegistroComponent implements OnInit {
   readonly authService = inject(AuthService);

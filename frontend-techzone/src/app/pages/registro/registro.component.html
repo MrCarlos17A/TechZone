@@ -1,5 +1,5 @@
-<div class="max-w-2xl mx-auto px-4 py-12">
-  <div class="glass-panel p-8 sm:p-10 rounded-3xl space-y-6 border border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/90 shadow-2xl transition-colors duration-300">
+<div class="max-w-2xl mx-auto px-4 py-6 sm:py-12">
+  <div class="glass-panel min-w-0 p-5 sm:p-10 rounded-3xl space-y-6 border border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/90 shadow-2xl transition-colors duration-300">
     
     <div class="text-center space-y-3">
       <!-- Logo Oficial de TechZone Gaming Store -->
@@ -19,19 +19,20 @@
       </a>
 
       <div>
-        <h2 class="text-2xl font-black text-slate-900 dark:text-white font-heading">Crear Cuenta en TechZone</h2>
+        <h1 id="registro-title" class="text-2xl font-black text-slate-900 dark:text-white font-heading">Crear Cuenta en TechZone</h1>
         <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Regístrate para comprar, guardar tus favoritos y seguir tus pedidos</p>
       </div>
     </div>
 
     @if (error()) {
-      <div class="p-3.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 text-xs flex items-center gap-2">
-        <span class="material-symbols-outlined text-base flex-shrink-0">error</span>
+      <div role="alert" class="p-3.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 text-xs flex items-center gap-2">
+        <span aria-hidden="true" class="material-symbols-outlined text-base flex-shrink-0">error</span>
         <span>{{ error() }}</span>
       </div>
     }
 
-    <form (ngSubmit)="onSubmit()" class="space-y-4">
+    <form (ngSubmit)="onSubmit()" aria-labelledby="registro-title" [attr.aria-busy]="cargando()" class="space-y-4">
+      <p class="text-xs text-slate-600 dark:text-slate-400">Los campos con * son obligatorios.</p>
       
       <!-- DNI Consulta Automática -->
       <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 space-y-3">
@@ -40,8 +41,9 @@
         </span>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
-            <label class="text-[11px] text-slate-500 dark:text-slate-400 block mb-1">Tipo Doc.</label>
+            <label for="registro-tipo-doc" class="text-xs text-slate-600 dark:text-slate-400 block mb-1">Tipo de documento</label>
             <select
+              id="registro-tipo-doc"
               [ngModel]="idTipoDoc()"
               (ngModelChange)="idTipoDoc.set($event)"
               name="tipoDoc"
@@ -53,41 +55,48 @@
           </div>
 
           <div class="sm:col-span-2">
-            <label class="text-[11px] text-slate-500 dark:text-slate-400 block mb-1">Número de Documento (DNI) *</label>
-            <div class="flex gap-2">
+            <label for="registro-dni" class="text-xs text-slate-600 dark:text-slate-400 block mb-1">Número de Documento (DNI) *</label>
+            <div class="flex flex-col min-[400px]:flex-row gap-2">
               <input
                 type="text"
+                id="registro-dni"
+                inputmode="numeric"
+                aria-describedby="registro-dni-help"
                 [ngModel]="numDoc()"
                 (ngModelChange)="onNumDocChange($event)"
                 name="numDoc"
                 maxlength="8"
                 required
                 placeholder="Ej. 72345678"
-                class="flex-1 bg-white dark:bg-slate-900 text-xs text-slate-800 dark:text-slate-200 px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500"
+                class="w-full min-w-0 flex-1 bg-white dark:bg-slate-900 text-xs text-slate-800 dark:text-slate-200 px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500"
               />
               <button
                 type="button"
                 (click)="consultarDni()"
                 [disabled]="consultandoDni()"
-                class="px-3 py-2 rounded-xl text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-1 disabled:opacity-50 cursor-pointer shadow-sm">
+                [attr.aria-busy]="consultandoDni()"
+                class="shrink-0 px-3 py-2 rounded-xl text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center gap-1 disabled:opacity-50 cursor-pointer shadow-sm">
                 @if (consultandoDni()) {
-                  <span class="material-symbols-outlined animate-spin text-sm">progress_activity</span>
+                  <span aria-hidden="true" class="material-symbols-outlined animate-spin text-sm">progress_activity</span>
                 } @else {
-                  <span class="material-symbols-outlined text-sm">search</span>
+                  <span aria-hidden="true" class="material-symbols-outlined text-sm">search</span>
                 }
-                <span>Consultar</span>
+                <span aria-live="polite">{{ consultandoDni() ? 'Consultando...' : 'Consultar' }}</span>
               </button>
             </div>
           </div>
         </div>
+        <p id="registro-dni-help" class="text-xs text-slate-600 dark:text-slate-400">Ingresa los 8 dígitos de tu DNI. Si la consulta no está disponible, puedes completar tus datos manualmente.</p>
       </div>
 
       <!-- Datos Personales -->
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
-          <label class="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Nombres *</label>
+          <label for="registro-nombres" class="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Nombres *</label>
           <input
             type="text"
+            id="registro-nombres"
+            autocomplete="given-name"
             [ngModel]="nombres()"
             (ngModelChange)="nombres.set($event)"
             name="nombres"
@@ -96,9 +105,10 @@
           />
         </div>
         <div>
-          <label class="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Apellido Paterno *</label>
+          <label for="registro-apellido-paterno" class="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Apellido Paterno *</label>
           <input
             type="text"
+            id="registro-apellido-paterno"
             [ngModel]="apellidoPaterno()"
             (ngModelChange)="apellidoPaterno.set($event)"
             name="apellidoPaterno"
@@ -107,9 +117,10 @@
           />
         </div>
         <div>
-          <label class="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Apellido Materno *</label>
+          <label for="registro-apellido-materno" class="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Apellido Materno *</label>
           <input
             type="text"
+            id="registro-apellido-materno"
             [ngModel]="apellidoMaterno()"
             (ngModelChange)="apellidoMaterno.set($event)"
             name="apellidoMaterno"
@@ -119,7 +130,7 @@
         </div>
         <div>
           <div class="flex items-center justify-between mb-1">
-            <label class="text-xs font-semibold text-slate-700 dark:text-slate-300">Fecha de Nacimiento</label>
+            <label for="registro-nacimiento" class="text-xs font-semibold text-slate-700 dark:text-slate-300">Fecha de Nacimiento</label>
             @if (fechaNacimiento()) {
               <span class="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 px-2 py-0.5 rounded-md border border-emerald-200 dark:border-emerald-800/50 flex items-center gap-1">
                 <span class="material-symbols-outlined text-[12px]">check_circle</span> RENIEC
@@ -128,6 +139,8 @@
           </div>
           <input
             type="date"
+            id="registro-nacimiento"
+            autocomplete="bday"
             [ngModel]="fechaNacimiento()"
             (ngModelChange)="fechaNacimiento.set($event)"
             name="fechaNacimiento"
@@ -139,9 +152,12 @@
       <!-- Contacto -->
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
-          <label class="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Correo Electrónico *</label>
+          <label for="registro-correo" class="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Correo Electrónico *</label>
           <input
             type="email"
+            id="registro-correo"
+            autocomplete="email"
+            autocapitalize="none"
             [ngModel]="correo()"
             (ngModelChange)="correo.set($event)"
             name="correo"
@@ -151,9 +167,12 @@
           />
         </div>
         <div>
-          <label class="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Teléfono / WhatsApp * (9 dígitos)</label>
+          <label for="registro-telefono" class="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Teléfono / WhatsApp * (9 dígitos)</label>
           <input
             type="tel"
+            id="registro-telefono"
+            autocomplete="tel-national"
+            inputmode="numeric"
             [ngModel]="telefono()"
             (ngModelChange)="onTelefonoChange($event)"
             name="telefono"
@@ -166,10 +185,12 @@
       </div>
 
       <!-- Dirección y Ubigeo -->
-      <div class="space-y-3 pt-2">
-        <label class="text-xs font-semibold text-slate-700 dark:text-slate-300 block">Ubicación y Dirección de Entrega</label>
+      <fieldset class="space-y-3 pt-2 min-w-0">
+        <legend class="text-xs font-semibold text-slate-700 dark:text-slate-300">Ubicación y Dirección de Entrega</legend>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <select
+            aria-label="Departamento"
+            autocomplete="address-level1"
             [ngModel]="departamentoSel()"
             (ngModelChange)="cambioDepartamento($event)"
             name="departamento"
@@ -181,6 +202,8 @@
           </select>
 
           <select
+            aria-label="Provincia"
+            autocomplete="address-level2"
             [ngModel]="provinciaSel()"
             (ngModelChange)="cambioProvincia($event)"
             name="provincia"
@@ -192,6 +215,8 @@
           </select>
 
           <select
+            aria-label="Distrito"
+            autocomplete="address-level3"
             [ngModel]="idUbigeoSel()"
             (ngModelChange)="idUbigeoSel.set($event)"
             name="distrito"
@@ -205,9 +230,11 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label class="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Dirección Exacta *</label>
+            <label for="registro-direccion" class="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Dirección Exacta *</label>
             <input
               type="text"
+              id="registro-direccion"
+              autocomplete="address-line1"
               [ngModel]="direccion()"
               (ngModelChange)="direccion.set($event)"
               name="direccion"
@@ -217,9 +244,10 @@
             />
           </div>
           <div>
-            <label class="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Referencia (Opcional)</label>
+            <label for="registro-referencia" class="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Referencia (Opcional)</label>
             <input
               type="text"
+              id="registro-referencia"
               [ngModel]="referencia()"
               (ngModelChange)="referencia.set($event)"
               name="referencia"
@@ -228,60 +256,69 @@
             />
           </div>
         </div>
-      </div>
+      </fieldset>
 
       <!-- Contraseñas -->
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
         <div>
-          <label class="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Contraseña Segura *</label>
+          <label for="registro-password" class="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Contraseña Segura *</label>
           <div class="relative">
             <input
               [type]="mostrarPassword() ? 'text' : 'password'"
+              id="registro-password"
+              autocomplete="new-password"
+              aria-describedby="registro-password-help"
               [ngModel]="password()"
               (ngModelChange)="password.set($event)"
               name="password"
               required
               placeholder="Ej. MiClave2026!"
-              class="w-full bg-slate-50 dark:bg-slate-950 text-xs text-slate-900 dark:text-white pl-3.5 pr-10 py-2.5 rounded-xl border border-slate-300 dark:border-slate-800 focus:border-blue-500 focus:outline-none"
+              class="w-full bg-slate-50 dark:bg-slate-950 text-xs text-slate-900 dark:text-white pl-3.5 pr-12 py-2.5 rounded-xl border border-slate-300 dark:border-slate-800 focus:border-blue-500 focus:outline-none"
             />
             <button
               type="button"
               (click)="mostrarPassword.set(!mostrarPassword())"
-              tabindex="-1"
-              class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors cursor-pointer flex items-center justify-center">
-              <span class="material-symbols-outlined text-base">{{ mostrarPassword() ? 'visibility_off' : 'visibility' }}</span>
+              aria-label="Mostrar contraseña"
+              aria-controls="registro-password"
+              [attr.aria-pressed]="mostrarPassword()"
+              class="password-toggle text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors cursor-pointer flex items-center justify-center">
+              <span aria-hidden="true" class="material-symbols-outlined text-base">{{ mostrarPassword() ? 'visibility_off' : 'visibility' }}</span>
             </button>
           </div>
         </div>
         <div>
-          <label class="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Confirmar Contraseña *</label>
+          <label for="registro-confirm-password" class="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Confirmar Contraseña *</label>
           <div class="relative">
             <input
               [type]="mostrarConfirmPassword() ? 'text' : 'password'"
+              id="registro-confirm-password"
+              autocomplete="new-password"
               [ngModel]="confirmPassword()"
               (ngModelChange)="confirmPassword.set($event)"
               name="confirmPassword"
               required
               placeholder="Repite tu contraseña"
-              class="w-full bg-slate-50 dark:bg-slate-950 text-xs text-slate-900 dark:text-white pl-3.5 pr-10 py-2.5 rounded-xl border border-slate-300 dark:border-slate-800 focus:border-blue-500 focus:outline-none"
+              class="w-full bg-slate-50 dark:bg-slate-950 text-xs text-slate-900 dark:text-white pl-3.5 pr-12 py-2.5 rounded-xl border border-slate-300 dark:border-slate-800 focus:border-blue-500 focus:outline-none"
             />
             <button
               type="button"
               (click)="mostrarConfirmPassword.set(!mostrarConfirmPassword())"
-              tabindex="-1"
-              class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors cursor-pointer flex items-center justify-center">
-              <span class="material-symbols-outlined text-base">{{ mostrarConfirmPassword() ? 'visibility_off' : 'visibility' }}</span>
+              aria-label="Mostrar confirmación de contraseña"
+              aria-controls="registro-confirm-password"
+              [attr.aria-pressed]="mostrarConfirmPassword()"
+              class="password-toggle text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors cursor-pointer flex items-center justify-center">
+              <span aria-hidden="true" class="material-symbols-outlined text-base">{{ mostrarConfirmPassword() ? 'visibility_off' : 'visibility' }}</span>
             </button>
           </div>
         </div>
       </div>
 
       <!-- Requisitos de Seguridad -->
-      <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-950/70 border border-slate-200 dark:border-slate-800/80">
+      <div id="registro-password-help" class="p-3 rounded-xl bg-slate-50 dark:bg-slate-950/70 border border-slate-200 dark:border-slate-800/80">
         <p class="text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-2 flex items-center gap-1.5">
           <span class="material-symbols-outlined text-sm text-blue-600 dark:text-blue-400">verified_user</span> Requisitos de Contraseña Segura:
         </p>
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+        <div class="grid grid-cols-1 min-[400px]:grid-cols-2 sm:grid-cols-4 gap-2">
           <div class="flex items-center gap-1.5 text-[10px] px-2 py-1 rounded-lg border transition-all"
                [class.bg-emerald-500/10]="criteriosPassword().longitud"
                [class.border-emerald-500/30]="criteriosPassword().longitud"
@@ -343,7 +380,7 @@
       <button
         type="submit"
         [disabled]="cargando()"
-        class="glow-button w-full py-3.5 rounded-xl font-bold text-white text-sm flex items-center justify-center gap-2 mt-4 disabled:opacity-50 cursor-pointer shadow-md">
+        class="glow-button w-full px-3 py-3.5 rounded-xl font-bold text-white text-sm flex items-center justify-center gap-2 mt-4 disabled:opacity-50 cursor-pointer shadow-md" aria-live="polite">
         @if (cargando()) {
           <span class="material-symbols-outlined animate-spin text-base">progress_activity</span> Creando Cuenta...
         } @else {

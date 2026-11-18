@@ -12,6 +12,7 @@ import { TemaService } from '../../services/tema.service';
   standalone: true,
   imports: [CommonModule, RouterLink, RouterLinkActive, FormsModule],
   templateUrl: './navbar.component.html',
+  styleUrl: './navbar.component.css',
   host: {
     class: 'sticky top-0 z-50 block w-full'
   }
@@ -30,6 +31,7 @@ export class NavbarComponent {
   buscar(): void {
     const q = this.busqueda().trim();
     if (q) {
+      this.menuAbierto.set(false);
       this.router.navigate(['/productos'], { queryParams: { q } });
     }
   }
