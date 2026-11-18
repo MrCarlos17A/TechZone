@@ -1,0 +1,22 @@
+:host {
+  min-width: 0;
+}
+
+.header-icon {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible {
+  outline: 2px solid #93c5fd;
+  outline-offset: 3px;
+}
+
+.mobile-menu a,
+.mobile-menu button,
+.mobile-menu input {
+  min-height: 44px;
+}

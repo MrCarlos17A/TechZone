@@ -1,25 +1,25 @@
 <header class="sticky top-0 z-50 border-b border-blue-500/30 bg-gradient-to-r from-[#070f26] via-[#0c1a40] to-[#070f26] backdrop-blur-xl shadow-lg shadow-blue-950/25 transition-colors duration-300">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex items-center justify-between h-20">
+    <div class="flex items-center justify-between gap-2 h-16 xl:h-20">
       
       <!-- Logo TechZone -->
-      <a routerLink="/" class="flex items-center gap-3 group select-none">
+      <a routerLink="/" aria-label="TechZone, ir al inicio" (click)="menuAbierto.set(false)" class="flex min-w-0 shrink-0 items-center gap-2 sm:gap-3 group select-none">
         <img
           [src]="configuracionService.configuracion()?.logoUrl || 'https://polvfrjaecmugwyzyuzm.supabase.co/storage/v1/object/public/imagenes/configurtacion_sitio/TechZone.webp'"
-          alt="TechZone Logo"
-          class="h-10 sm:h-12 w-auto max-h-12 object-contain rounded-xl p-1 bg-white/10 border border-blue-400/30 group-hover:scale-105 transition-all duration-300 drop-shadow"
+          alt=""
+          class="h-9 w-9 sm:h-12 sm:w-12 shrink-0 object-contain rounded-xl p-1 bg-white/10 border border-blue-400/30 group-hover:scale-105 transition-all duration-300 drop-shadow"
         />
         <div class="flex flex-col">
-          <div class="flex items-center font-black text-xl sm:text-2xl tracking-tight leading-none font-heading">
+          <div class="flex items-center whitespace-nowrap font-black text-lg sm:text-2xl tracking-tight leading-none font-heading">
             <span class="text-white">Tech</span>
             <span class="text-blue-400">Zone</span>
           </div>
-          <span class="text-[10px] sm:text-[11px] text-blue-300 font-bold tracking-[0.2em] uppercase mt-0.5">Gaming Store</span>
+          <span class="hidden sm:block whitespace-nowrap text-[11px] text-blue-300 font-bold tracking-[0.2em] uppercase mt-0.5">Gaming Store</span>
         </div>
       </a>
 
       <!-- Desktop Nav Links -->
-      <nav class="hidden md:flex items-center space-x-1 lg:space-x-2">
+      <nav aria-label="Navegación principal" class="hidden xl:flex shrink-0 items-center space-x-1">
         <a routerLink="/" routerLinkActive="text-white font-bold bg-blue-600 shadow-md shadow-blue-900/40" [routerLinkActiveOptions]="{exact: true}"
            class="px-3.5 py-1.5 rounded-xl text-sm font-semibold text-slate-200 hover:text-white hover:bg-white/10 transition-all">
           Inicio
@@ -39,53 +39,58 @@
       </nav>
 
       <!-- Search bar -->
-      <div class="hidden sm:block flex-1 max-w-xs mx-4">
-        <form (ngSubmit)="buscar()" class="relative">
+      <div class="hidden xl:block min-w-0 flex-1 max-w-xs mx-2">
+        <form (ngSubmit)="buscar()" role="search" aria-label="Buscar en la tienda" class="relative">
           <input
             type="text"
             [ngModel]="busqueda()"
             (ngModelChange)="busqueda.set($event)"
             name="search"
+            aria-label="Buscar productos"
             placeholder="Buscar componentes, periféricos..."
             class="w-full bg-white/10 text-sm text-white pl-10 pr-4 py-2 rounded-full border border-blue-400/30 focus:outline-none focus:border-blue-400 focus:bg-white/15 focus:ring-2 focus:ring-blue-400/30 placeholder-blue-200/60 shadow-inner transition-all"
           />
-          <button type="submit" class="absolute left-3 top-2 text-blue-300 hover:text-white flex items-center justify-center cursor-pointer">
-            <span class="material-symbols-outlined text-lg">search</span>
+          <button type="submit" aria-label="Buscar" class="absolute left-3 top-2 text-blue-300 hover:text-white flex items-center justify-center cursor-pointer">
+            <span aria-hidden="true" class="material-symbols-outlined text-lg">search</span>
           </button>
         </form>
       </div>
 
       <!-- Right actions (Theme Toggle, Cart & User) -->
-      <div class="flex items-center gap-2.5">
+      <div class="flex shrink-0 items-center gap-1 sm:gap-2.5">
         
         <!-- Toggle Modo Claro / Oscuro -->
         <button
           (click)="temaService.toggleTema()"
           type="button"
-          class="p-2.5 rounded-full bg-white/10 border border-blue-400/30 text-white hover:bg-white/20 hover:border-blue-400/60 transition-all shadow-xs flex items-center justify-center cursor-pointer"
+          class="header-icon rounded-full bg-white/10 border border-blue-400/30 text-white hover:bg-white/20 hover:border-blue-400/60 transition-all shadow-xs flex items-center justify-center cursor-pointer"
+          [attr.aria-label]="temaService.esModoOscuro() ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'"
           [title]="temaService.esModoOscuro() ? 'Cambiar a Modo Claro' : 'Cambiar a Modo Oscuro'">
           @if (temaService.esModoOscuro()) {
-            <span class="material-symbols-outlined text-amber-300 text-xl filled">light_mode</span>
+            <span aria-hidden="true" class="material-symbols-outlined text-amber-300 text-xl filled">light_mode</span>
           } @else {
-            <span class="material-symbols-outlined text-blue-300 text-xl filled">dark_mode</span>
+            <span aria-hidden="true" class="material-symbols-outlined text-blue-300 text-xl filled">dark_mode</span>
           }
         </button>
 
         <!-- Shopping Cart -->
-        <a routerLink="/carrito" class="relative p-2.5 rounded-full bg-white/10 border border-blue-400/30 hover:border-blue-400/60 text-white hover:bg-white/20 transition-all shadow-xs flex items-center justify-center">
-          <span class="material-symbols-outlined text-xl">shopping_cart</span>
+        <a routerLink="/carrito" (click)="menuAbierto.set(false)" [attr.aria-label]="'Carrito, ' + carritoService.cantidadTotal() + ' productos'" class="header-icon relative rounded-full bg-white/10 border border-blue-400/30 hover:border-blue-400/60 text-white hover:bg-white/20 transition-all shadow-xs flex items-center justify-center">
+          <span aria-hidden="true" class="material-symbols-outlined text-xl">shopping_cart</span>
           @if (carritoService.cantidadTotal() > 0) {
-            <span class="absolute -top-1.5 -right-1.5 bg-blue-500 text-white text-[11px] font-bold w-5 h-5 flex items-center justify-center rounded-full animate-pulse shadow-lg shadow-blue-500/50">
-              {{ carritoService.cantidadTotal() }}
+            <span aria-hidden="true" class="absolute -top-1 -right-1 bg-blue-500 text-white text-[11px] font-bold min-w-5 h-5 px-1 flex items-center justify-center rounded-full shadow-lg shadow-blue-500/50">
+              {{ carritoService.cantidadTotal() > 99 ? '99+' : carritoService.cantidadTotal() }}
             </span>
           }
         </a>
 
         <!-- Auth state (dropdown de usuario) -->
         @if (authService.isAuthenticated()) {
-          <div class="relative">
+          <div class="hidden xl:block relative">
             <button
               (click)="toggleUsuarioDropdown()"
+              type="button"
+              aria-label="Opciones de mi cuenta"
+              [attr.aria-expanded]="usuarioDropdownAbierto()"
               class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-blue-400/30 hover:border-blue-400/60 text-sm font-semibold text-white hover:bg-white/15 transition-all shadow-xs cursor-pointer">
               <div class="w-7 h-7 rounded-full bg-gradient-to-tr from-blue-500 to-indigo-500 flex items-center justify-center text-xs font-bold uppercase text-white shadow-sm">
                 {{ authService.currentUser()?.nombre?.charAt(0) || 'U' }}
@@ -127,7 +132,7 @@
             }
           </div>
         } @else {
-          <div class="flex items-center gap-2">
+          <div class="hidden xl:flex items-center gap-2">
             <a routerLink="/login" class="px-3.5 py-1.5 rounded-xl text-sm font-semibold text-slate-200 hover:text-white hover:bg-white/10 transition-colors">
               Ingresar
             </a>
@@ -138,8 +143,8 @@
         }
 
         <!-- Mobile hamburger -->
-        <button (click)="toggleMenu()" class="md:hidden p-2 text-blue-200 hover:text-white flex items-center justify-center cursor-pointer">
-          <span class="material-symbols-outlined text-2xl">{{ menuAbierto() ? 'close' : 'menu' }}</span>
+        <button #menuToggle type="button" (click)="toggleMenu()" (keydown.escape)="menuAbierto.set(false)" [attr.aria-expanded]="menuAbierto()" aria-controls="mobile-navigation" [attr.aria-label]="menuAbierto() ? 'Cerrar menú' : 'Abrir menú'" class="header-icon xl:hidden rounded-full text-blue-200 hover:text-white hover:bg-white/10 flex items-center justify-center cursor-pointer">
+          <span aria-hidden="true" class="material-symbols-outlined text-2xl">{{ menuAbierto() ? 'close' : 'menu' }}</span>
         </button>
       </div>
     </div>
@@ -147,21 +152,27 @@
 
   <!-- Mobile menu -->
   @if (menuAbierto()) {
-    <div class="md:hidden border-t border-blue-500/30 bg-gradient-to-b from-[#0c1a40] to-[#070f26] px-4 pt-3 pb-5 space-y-2 shadow-2xl">
-      <form (ngSubmit)="buscar(); toggleMenu()" class="mb-3">
+    <nav id="mobile-navigation" aria-label="Navegación móvil" (keydown.escape)="menuAbierto.set(false); menuToggle.focus(); $event.stopPropagation()" class="mobile-menu xl:hidden max-h-[calc(100dvh-4rem)] overflow-y-auto border-t border-blue-500/30 bg-gradient-to-b from-[#0c1a40] to-[#070f26] px-4 pt-3 pb-5 space-y-2 shadow-2xl">
+      <form (ngSubmit)="buscar()" role="search" aria-label="Buscar en la tienda" class="mb-3 flex gap-2">
         <input
           type="text"
           [ngModel]="busqueda()"
           (ngModelChange)="busqueda.set($event)"
           name="mobileSearch"
+          aria-label="Buscar productos"
           placeholder="Buscar productos..."
-          class="w-full bg-white/10 text-sm text-white px-4 py-2 rounded-xl border border-blue-400/30 focus:outline-none focus:border-blue-400 placeholder-blue-200/60 shadow-xs"
+          class="w-full min-w-0 bg-white/10 text-base text-white px-4 py-2 rounded-xl border border-blue-400/30 focus:outline-none focus:border-blue-400 placeholder-blue-200/60 shadow-xs"
         />
+        <button type="submit" aria-label="Buscar" class="header-icon flex items-center justify-center rounded-xl bg-blue-600 text-white hover:bg-blue-700 cursor-pointer">
+          <span aria-hidden="true" class="material-symbols-outlined text-xl">search</span>
+        </button>
       </form>
       <a (click)="toggleMenu()" routerLink="/" class="block px-3 py-2 rounded-md text-base text-slate-200 hover:text-white hover:bg-white/10">Inicio</a>
       <a (click)="toggleMenu()" routerLink="/productos" class="block px-3 py-2 rounded-md text-base text-slate-200 hover:text-white hover:bg-white/10">Productos</a>
       <a (click)="toggleMenu()" routerLink="/novedades" class="block px-3 py-2 rounded-md text-base text-slate-200 hover:text-white hover:bg-white/10">Novedades</a>
       <a (click)="toggleMenu()" routerLink="/marcas" class="block px-3 py-2 rounded-md text-base text-slate-200 hover:text-white hover:bg-white/10">Marcas</a>
+      <div class="border-t border-blue-500/30 pt-3 mt-3">
+        <p class="px-3 pb-2 text-xs font-semibold uppercase tracking-wider text-blue-300">Mi cuenta</p>
       @if (authService.isAuthenticated()) {
         <a (click)="toggleMenu()" routerLink="/perfil" class="flex items-center gap-2 px-3 py-2 rounded-md text-base text-blue-300 font-semibold hover:bg-white/10">
           <span class="material-symbols-outlined text-xl">manage_accounts</span> Mi Perfil
@@ -178,7 +189,13 @@
         <button (click)="cerrarSesion(); toggleMenu()" class="w-full text-left flex items-center gap-2 px-3 py-2 rounded-md text-base text-red-400 font-semibold hover:bg-red-950/40 cursor-pointer">
           <span class="material-symbols-outlined text-xl">logout</span> Cerrar Sesión
         </button>
+      } @else {
+        <div class="grid grid-cols-1 min-[360px]:grid-cols-2 gap-2">
+          <a (click)="menuAbierto.set(false)" routerLink="/login" class="flex items-center justify-center rounded-xl border border-blue-400/40 px-3 py-2 text-sm font-semibold text-white hover:bg-white/10">Ingresar</a>
+          <a (click)="menuAbierto.set(false)" routerLink="/registro" class="glow-button flex items-center justify-center rounded-xl px-3 py-2 text-sm font-semibold text-white">Registrarse</a>
+        </div>
       }
-    </div>
+      </div>
+    </nav>
   }
 </header>
