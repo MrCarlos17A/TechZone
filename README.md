@@ -482,27 +482,61 @@ flowchart TD
 ## Sistema Dinámico de Roles y Control de Acceso Granular (RBAC)
 
 TechZone cuenta con un sistema de autorización granular dinámico basado en dos niveles de evaluación:
-1. **Acceso al Entorno Administrativo (`esAdministrativo` / `es_administrativo`):** Define si un rol tiene autorización para iniciar sesión o navegar en el backoffice (`/admin`). Si el rol no es administrativo (como Clientes o Usuarios estándar), los módulos de gestión interna quedan completamente ocultos e inaccesibles.
-2. **Matriz de Autorización por Módulo (JSON):** Cada rol administrativo define un esquema de operaciones permitidas (`ver`, `crear`, `editar`, `eliminar`) sobre 12 módulos funcionales del sistema:
+1. **Acceso al Entorno Administrativo (`esAdministrativo` / `es_administrativo`):** Define si un rol tiene autorización para iniciar sesión o navegar en el backoffice (`/admin`). De los 7 roles del sistema, **únicamente 5 roles tienen acceso al panel administrativo**, mientras que los roles de cliente y usuario final quedan confinados a la tienda pública.
+2. **Matriz de Autorización por Módulo (JSON):** Cada rol administrativo define un esquema de operaciones permitidas (`ver`, `crear`, `editar`, `eliminar`) sobre los módulos funcionales del sistema.
 
-| Módulo Funcional | Clave Técnica | Operaciones Disponibles | Propósito Operativo |
-| :--- | :--- | :---: | :--- |
-| **Panel Dashboard** | `dashboard` | `ver` (solo lectura) | Métricas en tiempo real, KPIs de ventas, productos destacados y alertas. |
-| **Catálogo de Productos** | `productos` | `ver`, `crear`, `editar`, `eliminar` | Control de inventario, precios, stock, SKU y fijado de novedades. |
-| **Categorías** | `categorias` | `ver`, `crear`, `editar`, `eliminar` | Clasificación de hardware y líneas de productos. |
-| **Marcas de Productos** | `marcas` | `ver`, `crear`, `editar`, `eliminar` | Gestión de fabricantes y logotipos optimizados en formato WebP. |
-| **Galería de Imágenes** | `imagenes` | `ver`, `crear`, `editar`, `eliminar` | Carga multimedia sincronizada con Supabase Storage CDN. |
-| **Ventas y Despachos** | `ventas` | `ver`, `crear`, `editar`, `eliminar` | Trazabilidad de pedidos, estados de entrega y comprobantes SUNAT. |
-| **Transacciones y Pagos** | `pagos` | `ver`, `crear`, `editar` | Verificación de operaciones bancarias (Yape, Plin, Tarjetas, Transferencias). |
-| **Usuarios y Accesos** | `usuarios` | `ver`, `crear`, `editar`, `eliminar` | Bitácora de cuentas, reseteo de intentos fallidos y estados de acceso. |
-| **Colaboradores & Nómina** | `empleados` | `ver`, `crear`, `editar`, `eliminar` | Personal corporativo, salarios, contratos y cuentas `@techzone.pe`. |
-| **Cartera de Clientes** | `clientes` | `ver`, `crear`, `editar`, `eliminar` | Clientes registrados, historial de compras acumulado y DNI/RUC. |
-| **Roles y Permisos** | `roles` | `ver`, `crear`, `editar`, `eliminar` | Configuración dinámica de la matriz RBAC por módulo. |
-| **Configuración del Sitio** | `configuracion` | `ver`, `crear`, `editar`, `eliminar` | Razón social, RUC emisor, dirección fiscal y leyenda oficial SUNAT. |
+### Catálogo Oficial de Roles del Sistema
 
-### Blindaje y Políticas de Seguridad en Roles
-* **Rol Maestro Administrador:** Cuenta de forma obligatoria con el flag `esAdministrativo = true` y acceso total irrestricto a todas las operaciones de los 12 módulos funcionales, impidiendo bloqueos accidentales del sistema.
-* **Persistencia Desacoplada:** Los roles personalizados configurados desde el backoffice persisten de forma definitiva en la base de datos sin ser sobrescritos por ejecuciones posteriores del servidor.
+| ID Rol | Nombre del Rol | Acceso a `/admin` | Estado | Perfil Operativo y Alcance de Módulos |
+| :---: | :--- | :---: | :---: | :--- |
+| **#1** | **Administrador** | **SÍ** | **ACTIVO** | Acceso total e irrestricto a todos los módulos: Dashboard, Catálogo, Personas, Ventas, Carrito, Configuración, Roles, Documentos, Ubigeos y Auditoría. |
+| **#2** | **Trabajador** | **SÍ** | **ACTIVO** | Operación diaria de tienda: Dashboard, Productos, Categorías, Marcas, Imágenes, Ventas, Pagos, Clientes y Centro de Ayuda. **Módulos restringidos y ocultos:** Usuarios, Colaboradores, Proveedores, Medios de Pago, Carritos, Configuración del Sitio, Roles, Tipos de Documento, Ubigeos y Auditoría. |
+| **#3** | **Usuario** | **NO** | **ACTIVO** | Usuario registrado estándar de la plataforma web sin privilegios de gestión. |
+| **#4** | **Cliente** | **NO** | **ACTIVO** | Comprador de la tienda online con acceso a su perfil, carrito híbrido e historial de pedidos. |
+| **#5** | **Supervisor de Ventas** | **SÍ** | **ACTIVO** | Gestión comercial: Dashboard, Ventas, Pagos, Clientes y consulta de Productos. |
+| **#6** | **Logística y Almacén** | **SÍ** | **ACTIVO** | Control logístico: Dashboard, Productos, Categorías, Marcas, Galería de Imágenes y seguimiento de Ventas. |
+| **#7** | **Soporte Técnico** | **SÍ** | **ACTIVO** | Asistencia técnica y auditoría: Dashboard, Usuarios, Clientes, Productos, Ventas y Auditoría de accesos. |
+
+---
+
+## Cuentas y Credenciales de Prueba (Entorno de Sustentación)
+
+| Rol Asignado | Nombre Completo | Correo Institucional | Contraseña | Perfil y Restricciones |
+| :--- | :--- | :--- | :--- | :--- |
+| **Administrador General** | Administrador TechZone | `admin@techzone.pe` | `Admin123*` | Superadministrador con insignia azul `ADMINISTRADOR`. Visualiza todos los gestores y configuraciones fiscales. |
+| **Trabajador** | Gabriel Arturo Ipanaque Bravo | `gabriel.ipanaque@techzone.pe` | `Gabriel123**` | Colaborador operativo con insignia verde `TRABAJADOR`. Barra lateral filtrada estrictamente a sus permisos autorizados. |
+| **Colaborador Nómina** | Carlos Felipe Arroyo Vega | `carlos.arroyo@techzone.pe` | `TechZone2026*` | Personal de operaciones comerciales y soporte. |
+| **Cliente Tienda** | Cliente Comprador | `cliente@techzone.pe` | `Cliente123*` | Comprador con acceso a pasarela de pagos, carrito y comprobantes SUNAT. |
+
+---
+
+## Matriz de Navegación Visual en Barra Lateral (Trabajador vs Administrador)
+
+| Categoría | Módulo | Administrador (#1) | Trabajador (#2) | Acción ante Acceso Directo por URL |
+| :--- | :--- | :---: | :---: | :--- |
+| **Principal** | Dashboard General | Visible | Visible | Permitido (`dashboard:ver`) |
+| **Catálogo** | Productos | Visible | Visible | Permitido (`productos:ver,crear,editar`) |
+| **Catálogo** | Categorías | Visible | Visible | Permitido (`categorias:ver`) |
+| **Catálogo** | Marcas | Visible | Visible | Permitido (`marcas:ver`) |
+| **Catálogo** | Galería de Imágenes | Visible | Visible | Permitido (`imagenes:ver`) |
+| **Catálogo** | Producto - Proveedor | Visible | **Oculto** | Toast de restricción y bloqueo |
+| **Personas** | Personas | Visible | **Oculto** | Toast de restricción y bloqueo |
+| **Personas** | Clientes | Visible | Visible | Permitido (`clientes:ver,crear,editar`) |
+| **Personas** | Colaboradores (Nómina) | Visible | **Oculto** | Toast de restricción y bloqueo |
+| **Personas** | Proveedores | Visible | **Oculto** | Toast de restricción y bloqueo |
+| **Personas** | Usuarios del Sistema | Visible | **Oculto** | Toast de restricción y bloqueo |
+| **Ventas** | Registro de Ventas | Visible | Visible | Permitido (`ventas:ver,crear,editar`) |
+| **Ventas** | Detalle de Venta | Visible | **Oculto** | Toast de restricción y bloqueo |
+| **Ventas** | Pagos y Pasarelas | Visible | Visible | Permitido (`pagos:ver`) |
+| **Ventas** | Medios de Pago | Visible | **Oculto** | Toast de restricción y bloqueo |
+| **Carrito** | Carritos Activos | Visible | **Oculto** | Bloque completo de Carrito oculto |
+| **Carrito** | Detalle de Carrito | Visible | **Oculto** | Bloque completo de Carrito oculto |
+| **Configuración** | Configuración Sitio Web | Visible | **Oculto** | Bloque completo de Configuración oculto |
+| **Configuración** | Roles y Permisos | Visible | **Oculto** | Bloque completo de Configuración oculto |
+| **Configuración** | Tipos de Documento | Visible | **Oculto** | Bloque completo de Configuración oculto |
+| **Configuración** | Ubigeos | Visible | **Oculto** | Bloque completo de Configuración oculto |
+| **Configuración** | Auditoría y Trazabilidad | Visible | **Oculto** | Bloque completo de Configuración oculto |
+| **Ayuda** | Centro de Ayuda & Manual | Visible | Visible | Acceso libre a guías interactivas |
 
 ---
 

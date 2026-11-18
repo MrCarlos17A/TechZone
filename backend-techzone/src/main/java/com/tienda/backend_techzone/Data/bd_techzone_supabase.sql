@@ -515,13 +515,13 @@ INSERT INTO tipo_documento (id_tipo_documento, nombre, vigente) VALUES
 
 -- Roles del sistema con matriz de permisos RBAC y tipo administrativo
 INSERT INTO rol (id_rol, nombre, vigente, es_administrativo, permisos) VALUES
-(1, 'Administrador', TRUE, TRUE, '{"dashboard":["ver"],"productos":["ver","crear","editar","eliminar"],"categorias":["ver","crear","editar","eliminar"],"marcas":["ver","crear","editar","eliminar"],"imagenes":["ver","crear","editar","eliminar"],"ventas":["ver","crear","editar","eliminar"],"pagos":["ver","crear","editar","eliminar"],"usuarios":["ver","crear","editar","eliminar"],"empleados":["ver","crear","editar","eliminar"],"clientes":["ver","crear","editar","eliminar"],"roles":["ver","crear","editar","eliminar"],"configuracion":["ver","crear","editar","eliminar"]}'),
-(2, 'Trabajador', TRUE, TRUE, '{"dashboard":["ver"],"productos":["ver","crear","editar"],"categorias":["ver"],"marcas":["ver"],"imagenes":["ver","crear","editar"],"ventas":["ver","crear","editar"],"pagos":["ver","crear","editar"],"usuarios":["ver"],"empleados":["ver"],"clientes":["ver","crear","editar"]}'),
+(1, 'Administrador', TRUE, TRUE, '{"dashboard":["ver"],"productos":["ver","crear","editar","eliminar"],"categorias":["ver","crear","editar","eliminar"],"marcas":["ver","crear","editar","eliminar"],"imagenes":["ver","crear","editar","eliminar"],"ventas":["ver","crear","editar","eliminar"],"pagos":["ver","crear","editar","eliminar"],"usuarios":["ver","crear","editar","eliminar"],"empleados":["ver","crear","editar","eliminar"],"clientes":["ver","crear","editar","eliminar"],"roles":["ver","crear","editar","eliminar"],"configuracion":["ver","crear","editar","eliminar"],"auditoria":["ver"],"ayuda":["ver","crear","editar","eliminar"]}'),
+(2, 'Trabajador', TRUE, TRUE, '{"dashboard":["ver"],"productos":["ver","crear","editar"],"categorias":["ver"],"marcas":["ver"],"imagenes":["ver"],"ventas":["ver","crear","editar"],"pagos":["ver"],"clientes":["ver","crear","editar"]}'),
 (3, 'Usuario', TRUE, FALSE, '{"productos":["ver"]}'),
 (4, 'Cliente', TRUE, FALSE, '{"productos":["ver"]}'),
-(5, 'Cajero', TRUE, TRUE, '{"dashboard":["ver"],"ventas":["ver","crear","editar"],"pagos":["ver","crear","editar"],"clientes":["ver"]}'),
-(6, 'Almacenero', TRUE, TRUE, '{"dashboard":["ver"],"productos":["ver","crear","editar"],"categorias":["ver"],"marcas":["ver"],"imagenes":["ver","crear"]}'),
-(7, 'Soporte Técnico', TRUE, TRUE, '{"dashboard":["ver"],"usuarios":["ver"],"clientes":["ver"]}');
+(5, 'Supervisor de Ventas', TRUE, TRUE, '{"dashboard":["ver"],"ventas":["ver","crear","editar"],"pagos":["ver","crear","editar"],"clientes":["ver","crear","editar"],"productos":["ver"]}'),
+(6, 'Logística y Almacén', TRUE, TRUE, '{"dashboard":["ver"],"productos":["ver","crear","editar"],"categorias":["ver","crear","editar"],"marcas":["ver","crear","editar"],"imagenes":["ver","crear","editar"],"ventas":["ver"]}'),
+(7, 'Soporte Técnico', TRUE, TRUE, '{"dashboard":["ver"],"usuarios":["ver"],"clientes":["ver"],"productos":["ver"],"ventas":["ver"],"auditoria":["ver"]}');
 
 -- Medios de pago (exclusivamente pasarelas y pagos en línea, sin efectivo)
 INSERT INTO medio_pago (id_medio_pago, nombre, instrucciones, vigente) VALUES
@@ -982,7 +982,10 @@ ON CONFLICT (id_empleado) DO UPDATE SET
 
 -- Cuentas de Usuario (Contraseña inicial hasheada con BCrypt)
 -- admin@techzone.pe -> AdminTechzone2026*
--- *.techzone.pe     -> TechZone2026*
+-- Cuentas de usuario y colaboradores:
+-- admin@techzone.pe             -> Admin123*
+-- gabriel.ipanaque@techzone.pe   -> Gabriel123**
+-- *.techzone.pe (demás equipo)   -> TechZone2026*
 INSERT INTO usuario (id_usuario, id_persona, id_rol, correo,
     contrasena, fecha_ultimo_acceso, estado,
     fecha_creacion, intentos_fallidos, bloqueado_hasta) VALUES
@@ -990,7 +993,7 @@ INSERT INTO usuario (id_usuario, id_persona, id_rol, correo,
     '$2a$10$cxaeON97QlnXDP8R1FJH/eyPk27GK01Xtx8eKhI8JCW0MXCPEAT5S', NULL, 'activo',
     now(), 0, NULL),
 (2, 2, 2, 'gabriel.ipanaque@techzone.pe',
-    '$2a$10$cxaeON97QlnXDP8R1FJH/eyPk27GK01Xtx8eKhI8JCW0MXCPEAT5S', NULL, 'activo',
+    '$2a$10$q6s/iKvxOB4Hn/JaNYe1rOwDNT2gtD39VQKxwwnschu7nOgK6AD6q', NULL, 'activo',
     now(), 0, NULL),
 (3, 3, 2, 'jesus.delacruz@techzone.pe',
     '$2a$10$cxaeON97QlnXDP8R1FJH/eyPk27GK01Xtx8eKhI8JCW0MXCPEAT5S', NULL, 'activo',
