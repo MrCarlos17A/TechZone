@@ -499,17 +499,6 @@ TechZone cuenta con un sistema de autorización granular dinámico basado en dos
 
 ---
 
-## Cuentas y Credenciales de Prueba (Entorno de Sustentación)
-
-| Rol Asignado | Nombre Completo | Correo Institucional | Contraseña | Perfil y Restricciones |
-| :--- | :--- | :--- | :--- | :--- |
-| **Administrador General** | Administrador TechZone | `admin@techzone.pe` | `Admin123*` | Superadministrador con insignia azul `ADMINISTRADOR`. Visualiza todos los gestores y configuraciones fiscales. |
-| **Trabajador** | Gabriel Arturo Ipanaque Bravo | `gabriel.ipanaque@techzone.pe` | `Gabriel123**` | Colaborador operativo con insignia verde `TRABAJADOR`. Barra lateral filtrada estrictamente a sus permisos autorizados. |
-| **Colaborador Nómina** | Carlos Felipe Arroyo Vega | `carlos.arroyo@techzone.pe` | `TechZone2026*` | Personal de operaciones comerciales y soporte. |
-| **Cliente Tienda** | Cliente Comprador | `cliente@techzone.pe` | `Cliente123*` | Comprador con acceso a pasarela de pagos, carrito y comprobantes SUNAT. |
-
----
-
 ## Matriz de Navegación Visual en Barra Lateral (Trabajador vs Administrador)
 
 | Categoría | Módulo | Administrador (#1) | Trabajador (#2) | Acción ante Acceso Directo por URL |
