@@ -176,15 +176,16 @@ public class DatabaseBootstrapService implements ApplicationRunner {
                     .orElse(null);
 
             if (adminUsuario == null) {
-                adminUsuario = Usuario.builder()
-                        .persona(adminPersona)
-                        .rol(rolAdmin)
-                        .correo("admin@techzone.pe")
-                        .password(passwordEncoder.encode("Admin123*"))
-                        .estado("activo")
-                        .fechaCreacion(LocalDateTime.now())
-                        .intentosFallidos(0)
-                        .build();
+                adminUsuario = new Usuario();
+                adminUsuario.setPersona(adminPersona);
+                adminUsuario.setRol(rolAdmin);
+                adminUsuario.setCorreo("admin@techzone.pe");
+                String claveAdmin = passwordEncoder.encode("Admin123*");
+                adminUsuario.setPassword(claveAdmin);
+                adminUsuario.setContrasena(claveAdmin);
+                adminUsuario.setEstado("activo");
+                adminUsuario.setFechaCreacion(LocalDateTime.now());
+                adminUsuario.setIntentosFallidos(0);
                 usuarioRepository.save(adminUsuario);
                 log.info("Usuario Administrador General creado con correo {}", adminUsuario.getCorreo());
             } else {
