@@ -9,7 +9,8 @@ import { ConfiguracionService } from '../../services/configuracion.service';
   selector: 'app-login',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink],
-  templateUrl: './login.component.html'
+  templateUrl: './login.component.html',
+  styleUrl: '../auth-form.css'
 })
 export class LoginComponent implements OnInit {
   readonly authService = inject(AuthService);
