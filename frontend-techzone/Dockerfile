@@ -23,15 +23,18 @@ RUN npm run build
 # Etapa 2: Servidor web ultraligero con Nginx
 FROM nginx:alpine AS runner
 
+# Eliminar archivos predeterminados de Nginx para evitar que se muestre "Welcome to nginx!"
+RUN rm -rf /usr/share/nginx/html/*
+
 # Copiar configuracion optimizada de Nginx con soporte SPA y proxy
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Copiar artefactos web generados por Angular
 COPY --from=builder /app/dist/frontend-techzone/browser /usr/share/nginx/html
 
-# Garantizar compatibilidad con index.csr.html si es generado por Angular SSR/CSR
-RUN if [ -f /usr/share/nginx/html/index.csr.html ] && [ ! -f /usr/share/nginx/html/index.html ]; then \
-        cp /usr/share/nginx/html/index.csr.html /usr/share/nginx/html/index.html; \
+# Garantizar que index.html exista copiando index.csr.html si es necesario
+RUN if [ -f /usr/share/nginx/html/index.csr.html ]; then \
+        cp -f /usr/share/nginx/html/index.csr.html /usr/share/nginx/html/index.html; \
     fi
 
 # Exponer el puerto HTTP estandar
