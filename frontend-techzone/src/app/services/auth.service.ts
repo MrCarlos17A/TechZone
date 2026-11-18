@@ -27,25 +27,27 @@ export class AuthService {
   readonly esAdmin = computed(() => {
     const user = this.currentUser();
     if (!user) return false;
-    if (user.esAdmin !== undefined && user.esAdmin !== null) {
-      return !!user.esAdmin;
-    }
     const correo = (user.correo || '').toLowerCase().trim();
+    // 1. REGLA DE ORO: Solo el Administrador general puede ser esAdmin
     if (correo === 'admin@techzone.pe' || correo === 'admin@techzone.com') {
       return true;
     }
+    // Si es Gabriel o colaborador/trabajador, NUNCA es admin
+    if (correo.includes('gabriel') || (user.rol && user.rol.toLowerCase().includes('trabajador'))) {
+      return false;
+    }
+    if (user.esAdmin !== undefined && user.esAdmin !== null) {
+      return !!user.esAdmin;
+    }
     if (user.rol) {
       const r = user.rol.toLowerCase().trim();
-      if (r === 'administrador' || r === 'admin' || r === 'gerente') {
-        return true;
-      }
+      return r === 'administrador' || r === 'admin' || r === 'gerente';
     }
     if (user.roles && Array.isArray(user.roles)) {
-      const match = user.roles.some(r => {
+      return user.roles.some(r => {
         const lower = (r || '').toLowerCase().trim();
-        return lower === 'role_administrador' || lower === 'role_admin' || lower === 'administrador' || lower === 'gerente' || lower === 'role_gerente';
+        return lower === 'role_administrador' || lower === 'role_admin' || lower === 'administrador' || lower === 'gerente';
       });
-      if (match) return true;
     }
     return false;
   });
@@ -53,6 +55,13 @@ export class AuthService {
   readonly rolUsuarioActual = computed(() => {
     const user = this.currentUser();
     if (!user) return 'Invitado';
+    const correo = (user.correo || '').toLowerCase().trim();
+    if (correo === 'admin@techzone.pe' || correo === 'admin@techzone.com') {
+      return 'Administrador';
+    }
+    if (correo.includes('gabriel')) {
+      return 'Trabajador';
+    }
     if (user.rol && user.rol.trim()) {
       return user.rol.trim();
     }
@@ -260,6 +269,16 @@ export class AuthService {
           sessionStorage.removeItem('techzone_user');
         } catch {}
         return null;
+      }
+      // Saneamiento de sesion en cache de navegador para colaboradores
+      const correo = (data.correo || '').toLowerCase().trim();
+      if (correo.includes('gabriel')) {
+        data.rol = 'Trabajador';
+        data.esAdmin = false;
+        data.esStaff = true;
+        if (data.roles && Array.isArray(data.roles)) {
+          data.roles = data.roles.filter(r => (r || '').toUpperCase() !== 'ROLE_ADMINISTRATIVO');
+        }
       }
       return data;
     } catch {

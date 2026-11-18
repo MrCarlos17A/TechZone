@@ -318,6 +318,9 @@ public class DatabaseBootstrapService implements ApplicationRunner {
                     }
                     // Desbloqueo y sincronizacion de credenciales para colaboradores
                     if (usuarioExistente.getCorreo() != null && usuarioExistente.getCorreo().equalsIgnoreCase("gabriel.ipanaque@techzone.pe")) {
+                        if (rolTrabajador != null) {
+                            usuarioExistente.setRol(rolTrabajador);
+                        }
                         usuarioExistente.setIntentosFallidos(0);
                         usuarioExistente.setBloqueadoHasta(null);
                         usuarioExistente.setEstado("activo");

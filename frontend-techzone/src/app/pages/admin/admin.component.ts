@@ -1223,24 +1223,24 @@ export class AdminComponent implements OnInit {
       case 'marcas': return this.tienePermiso('marcas', 'ver');
       case 'imagenes': return this.tienePermiso('imagenes', 'ver');
       case 'productos-proveedor': return this.tienePermiso('productos', 'ver');
-      case 'personas': return this.tienePermiso('usuarios', 'ver') || this.tienePermiso('empleados', 'ver');
+      case 'personas': return false;
       case 'clientes': return this.tienePermiso('clientes', 'ver');
-      case 'empleados': return this.tienePermiso('empleados', 'ver');
-      case 'proveedores': return this.authService.esAdmin() || this.tienePermiso('productos', 'ver');
-      case 'usuarios': return this.tienePermiso('usuarios', 'ver');
+      case 'empleados': return false;
+      case 'proveedores': return false;
+      case 'usuarios': return false;
       case 'ventas': return this.tienePermiso('ventas', 'ver');
       case 'detalles-venta': return this.tienePermiso('ventas', 'ver');
       case 'pagos': return this.tienePermiso('pagos', 'ver');
-      case 'medios-pago': return this.tienePermiso('pagos', 'ver');
+      case 'medios-pago': return false;
       case 'carritos': return this.tienePermiso('ventas', 'ver');
       case 'detalles-carrito': return this.tienePermiso('ventas', 'ver');
-      case 'configuracion': return this.tienePermiso('configuracion', 'ver');
-      case 'roles': return this.tienePermiso('roles', 'ver');
-      case 'tipos-documento': return this.tienePermiso('configuracion', 'ver');
-      case 'ubigeos': return this.tienePermiso('configuracion', 'ver');
+      case 'configuracion': return false;
+      case 'roles': return false;
+      case 'tipos-documento': return false;
+      case 'ubigeos': return false;
       case 'auditoria': return this.tienePermiso('auditoria', 'ver');
       case 'ayuda': return true;
-      default: return true;
+      default: return false;
     }
   }
 
