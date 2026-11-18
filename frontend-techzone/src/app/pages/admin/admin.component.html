@@ -98,7 +98,7 @@
                     [class.bg-blue-500/15]="authService.esAdmin()" [class.text-blue-600]="authService.esAdmin()" [class.dark:text-blue-300]="authService.esAdmin()" [class.border-blue-500/30]="authService.esAdmin()"
                     [class.bg-emerald-500/15]="!authService.esAdmin()" [class.text-emerald-600]="!authService.esAdmin()" [class.dark:text-emerald-300]="!authService.esAdmin()" [class.border-emerald-500/30]="!authService.esAdmin()">
                 <span class="material-symbols-outlined text-[10px]">{{ authService.esAdmin() ? 'admin_panel_settings' : 'badge' }}</span>
-                {{ authService.esAdmin() ? 'Administrador' : 'Colaborador' }}
+                {{ authService.rolUsuarioActual() }}
               </span>
               <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse ml-auto" title="En línea"></span>
             </div>
@@ -111,418 +111,440 @@
     <div class="flex-1 overflow-y-auto p-3 space-y-5 custom-scrollbar">
 
       <!-- ================= 1. PRINCIPAL ================= -->
-      <div class="space-y-1">
-        @if (!sidebarContraido()) {
-          <span class="text-[11px] font-black uppercase tracking-wider text-slate-700 dark:text-slate-400 px-3">Principal</span>
-        }
-        <button
-          (click)="cambiarTab('dashboard')"
-          class="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold transition-all group border cursor-pointer" [class.justify-center]="sidebarContraido()" [class.px-2]="sidebarContraido()"
-          [class.bg-blue-700]="tabActiva() === 'dashboard'" [class.dark:bg-blue-600]="tabActiva() === 'dashboard'" [class.shadow-md]="tabActiva() === 'dashboard'" [class.shadow-blue-900/30]="tabActiva() === 'dashboard'" [class.border-blue-700]="tabActiva() === 'dashboard'"
-          [class.text-white]="tabActiva() === 'dashboard'"
-          [class.shadow-lg]="tabActiva() === 'dashboard'"
-          [class.shadow-blue-600/25]="tabActiva() === 'dashboard'"
-          [class.text-slate-700]="tabActiva() !== 'dashboard'" [class.dark:text-slate-200]="tabActiva() !== 'dashboard'" [class.bg-white/70]="tabActiva() !== 'dashboard'" [class.dark:bg-slate-900/50]="tabActiva() !== 'dashboard'" [class.border-blue-200/60]="tabActiva() !== 'dashboard'" [class.dark:border-blue-900/40]="tabActiva() !== 'dashboard'" [class.hover:bg-blue-100/70]="tabActiva() !== 'dashboard'" [class.dark:hover:bg-slate-800/80]="tabActiva() !== 'dashboard'"
-          [class.hover:bg-slate-100] [class.dark:hover:bg-slate-800/60]="tabActiva() !== 'dashboard'"
-          [class.hover:text-slate-200]="tabActiva() !== 'dashboard'"
-          title="Dashboard">
-          <span class="material-symbols-outlined text-base flex-shrink-0 group-hover:scale-110 transition-transform">dashboard</span>
-          @if (!sidebarContraido()) { <span class="truncate">Dashboard</span> }
-        </button>
-      </div>
+      @if (puedeVerTab('dashboard')) {
+        <div class="space-y-1">
+          @if (!sidebarContraido()) {
+            <span class="text-[11px] font-black uppercase tracking-wider text-slate-700 dark:text-slate-400 px-3">Principal</span>
+          }
+          <button
+            (click)="cambiarTab('dashboard')"
+            class="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold transition-all group border cursor-pointer" [class.justify-center]="sidebarContraido()" [class.px-2]="sidebarContraido()"
+            [class.bg-blue-700]="tabActiva() === 'dashboard'" [class.dark:bg-blue-600]="tabActiva() === 'dashboard'" [class.shadow-md]="tabActiva() === 'dashboard'" [class.shadow-blue-900/30]="tabActiva() === 'dashboard'" [class.border-blue-700]="tabActiva() === 'dashboard'"
+            [class.text-white]="tabActiva() === 'dashboard'"
+            [class.shadow-lg]="tabActiva() === 'dashboard'"
+            [class.shadow-blue-600/25]="tabActiva() === 'dashboard'"
+            [class.text-slate-700]="tabActiva() !== 'dashboard'" [class.dark:text-slate-200]="tabActiva() !== 'dashboard'" [class.bg-white/70]="tabActiva() !== 'dashboard'" [class.dark:bg-slate-900/50]="tabActiva() !== 'dashboard'" [class.border-blue-200/60]="tabActiva() !== 'dashboard'" [class.dark:border-blue-900/40]="tabActiva() !== 'dashboard'" [class.hover:bg-blue-100/70]="tabActiva() !== 'dashboard'" [class.dark:hover:bg-slate-800/80]="tabActiva() !== 'dashboard'"
+            title="Dashboard">
+            <span class="material-symbols-outlined text-base flex-shrink-0 group-hover:scale-110 transition-transform">dashboard</span>
+            @if (!sidebarContraido()) { <span class="truncate">Dashboard</span> }
+          </button>
+        </div>
+      }
 
       <!-- ================= 2. CATÁLOGO ================= -->
-      <div class="space-y-1">
-        @if (!sidebarContraido()) {
-          <span class="text-[11px] font-black uppercase tracking-wider text-slate-700 dark:text-slate-400 px-3">Catálogo</span>
-        }
-        <button
-          (click)="cambiarTab('productos')"
-          class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all group border cursor-pointer" [class.justify-center]="sidebarContraido()" [class.px-2]="sidebarContraido()"
-          [class.bg-blue-700]="tabActiva() === 'productos'" [class.dark:bg-blue-600]="tabActiva() === 'productos'" [class.shadow-md]="tabActiva() === 'productos'" [class.shadow-blue-900/30]="tabActiva() === 'productos'" [class.border-blue-700]="tabActiva() === 'productos'"
-          [class.text-white]="tabActiva() === 'productos'"
-          [class.text-slate-700]="tabActiva() !== 'productos'" [class.dark:text-slate-200]="tabActiva() !== 'productos'" [class.bg-white/70]="tabActiva() !== 'productos'" [class.dark:bg-slate-900/50]="tabActiva() !== 'productos'" [class.border-blue-200/60]="tabActiva() !== 'productos'" [class.dark:border-blue-900/40]="tabActiva() !== 'productos'" [class.hover:bg-blue-100/70]="tabActiva() !== 'productos'" [class.dark:hover:bg-slate-800/80]="tabActiva() !== 'productos'"
-          [class.hover:bg-slate-100] [class.dark:hover:bg-slate-800/60]="tabActiva() !== 'productos'"
-          title="Productos">
-          <div class="flex items-center gap-3 min-w-0">
-            <span class="material-symbols-outlined text-base flex-shrink-0 group-hover:scale-110 transition-transform">inventory_2</span>
-            @if (!sidebarContraido()) { <span class="truncate">Productos</span> }
-          </div>
-          @if (!sidebarContraido() && productos().length > 0) {
-            <span class="px-1.5 py-0.5 rounded text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-mono">{{ productos().length }}</span>
-          }
-        </button>
-
-        <button
-          (click)="cambiarTab('categorias')"
-          class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all group border cursor-pointer" [class.justify-center]="sidebarContraido()" [class.px-2]="sidebarContraido()"
-          [class.bg-blue-700]="tabActiva() === 'categorias'" [class.dark:bg-blue-600]="tabActiva() === 'categorias'" [class.shadow-md]="tabActiva() === 'categorias'" [class.shadow-blue-900/30]="tabActiva() === 'categorias'" [class.border-blue-700]="tabActiva() === 'categorias'"
-          [class.text-white]="tabActiva() === 'categorias'"
-          [class.text-slate-700]="tabActiva() !== 'categorias'" [class.dark:text-slate-200]="tabActiva() !== 'categorias'" [class.bg-white/70]="tabActiva() !== 'categorias'" [class.dark:bg-slate-900/50]="tabActiva() !== 'categorias'" [class.border-blue-200/60]="tabActiva() !== 'categorias'" [class.dark:border-blue-900/40]="tabActiva() !== 'categorias'" [class.hover:bg-blue-100/70]="tabActiva() !== 'categorias'" [class.dark:hover:bg-slate-800/80]="tabActiva() !== 'categorias'"
-          [class.hover:bg-slate-100] [class.dark:hover:bg-slate-800/60]="tabActiva() !== 'categorias'"
-          title="Categorías">
-          <div class="flex items-center gap-3 min-w-0">
-            <span class="material-symbols-outlined text-base flex-shrink-0 group-hover:scale-110 transition-transform">label</span>
-            @if (!sidebarContraido()) { <span class="truncate">Categorías</span> }
-          </div>
-          @if (!sidebarContraido() && categorias().length > 0) {
-            <span class="px-1.5 py-0.5 rounded text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-mono">{{ categorias().length }}</span>
-          }
-        </button>
-
-        <button
-          (click)="cambiarTab('marcas')"
-          class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all group border cursor-pointer" [class.justify-center]="sidebarContraido()" [class.px-2]="sidebarContraido()"
-          [class.bg-blue-700]="tabActiva() === 'marcas'" [class.dark:bg-blue-600]="tabActiva() === 'marcas'" [class.shadow-md]="tabActiva() === 'marcas'" [class.shadow-blue-900/30]="tabActiva() === 'marcas'" [class.border-blue-700]="tabActiva() === 'marcas'"
-          [class.text-white]="tabActiva() === 'marcas'"
-          [class.text-slate-700]="tabActiva() !== 'marcas'" [class.dark:text-slate-200]="tabActiva() !== 'marcas'" [class.bg-white/70]="tabActiva() !== 'marcas'" [class.dark:bg-slate-900/50]="tabActiva() !== 'marcas'" [class.border-blue-200/60]="tabActiva() !== 'marcas'" [class.dark:border-blue-900/40]="tabActiva() !== 'marcas'" [class.hover:bg-blue-100/70]="tabActiva() !== 'marcas'" [class.dark:hover:bg-slate-800/80]="tabActiva() !== 'marcas'"
-          [class.hover:bg-slate-100] [class.dark:hover:bg-slate-800/60]="tabActiva() !== 'marcas'"
-          title="Marcas">
-          <div class="flex items-center gap-3 min-w-0">
-            <span class="material-symbols-outlined text-base flex-shrink-0 group-hover:scale-110 transition-transform">domain</span>
-            @if (!sidebarContraido()) { <span class="truncate">Marcas</span> }
-          </div>
-          @if (!sidebarContraido() && marcas().length > 0) {
-            <span class="px-1.5 py-0.5 rounded text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-mono">{{ marcas().length }}</span>
-          }
-        </button>
-
-        <button
-          (click)="cambiarTab('imagenes')"
-          class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all group border cursor-pointer" [class.justify-center]="sidebarContraido()" [class.px-2]="sidebarContraido()"
-          [class.bg-blue-700]="tabActiva() === 'imagenes'" [class.dark:bg-blue-600]="tabActiva() === 'imagenes'" [class.shadow-md]="tabActiva() === 'imagenes'" [class.shadow-blue-900/30]="tabActiva() === 'imagenes'" [class.border-blue-700]="tabActiva() === 'imagenes'"
-          [class.text-white]="tabActiva() === 'imagenes'"
-          [class.text-slate-700]="tabActiva() !== 'imagenes'" [class.dark:text-slate-200]="tabActiva() !== 'imagenes'" [class.bg-white/70]="tabActiva() !== 'imagenes'" [class.dark:bg-slate-900/50]="tabActiva() !== 'imagenes'" [class.border-blue-200/60]="tabActiva() !== 'imagenes'" [class.dark:border-blue-900/40]="tabActiva() !== 'imagenes'" [class.hover:bg-blue-100/70]="tabActiva() !== 'imagenes'" [class.dark:hover:bg-slate-800/80]="tabActiva() !== 'imagenes'"
-          [class.hover:bg-slate-100] [class.dark:hover:bg-slate-800/60]="tabActiva() !== 'imagenes'"
-          title="Imágenes de Producto">
-          <div class="flex items-center gap-3 min-w-0">
-            <span class="material-symbols-outlined text-base flex-shrink-0 group-hover:scale-110 transition-transform">photo_library</span>
-            @if (!sidebarContraido()) { <span class="truncate">Imágenes</span> }
-          </div>
-          @if (!sidebarContraido() && imagenes().length > 0) {
-            <span class="px-1.5 py-0.5 rounded text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-mono">{{ imagenes().length }}</span>
-          }
-        </button>
-
-      @if (authService.esAdmin() || tienePermiso('productos', 'ver')) {
-        <button
-          (click)="cambiarTab('productos-proveedor')"
-          class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all group border cursor-pointer" [class.justify-center]="sidebarContraido()" [class.px-2]="sidebarContraido()"
-          [class.bg-blue-700]="tabActiva() === 'productos-proveedor'" [class.dark:bg-blue-600]="tabActiva() === 'productos-proveedor'" [class.shadow-md]="tabActiva() === 'productos-proveedor'" [class.shadow-blue-900/30]="tabActiva() === 'productos-proveedor'" [class.border-blue-700]="tabActiva() === 'productos-proveedor'"
-          [class.text-white]="tabActiva() === 'productos-proveedor'"
-          [class.text-slate-700]="tabActiva() !== 'productos-proveedor'" [class.dark:text-slate-200]="tabActiva() !== 'productos-proveedor'" [class.bg-white/70]="tabActiva() !== 'productos-proveedor'" [class.dark:bg-slate-900/50]="tabActiva() !== 'productos-proveedor'" [class.border-blue-200/60]="tabActiva() !== 'productos-proveedor'" [class.dark:border-blue-900/40]="tabActiva() !== 'productos-proveedor'" [class.hover:bg-blue-100/70]="tabActiva() !== 'productos-proveedor'" [class.dark:hover:bg-slate-800/80]="tabActiva() !== 'productos-proveedor'"
-          [class.hover:bg-slate-100] [class.dark:hover:bg-slate-800/60]="tabActiva() !== 'productos-proveedor'"
-          title="Producto - Proveedor">
-          <div class="flex items-center gap-3 min-w-0">
-            <span class="material-symbols-outlined text-base flex-shrink-0 group-hover:scale-110 transition-transform">package_2</span>
-            @if (!sidebarContraido()) { <span class="truncate">Prod. Proveedor</span> }
-          </div>
+      @if (puedeVerTab('productos') || puedeVerTab('categorias') || puedeVerTab('marcas') || puedeVerTab('imagenes') || puedeVerTab('productos-proveedor')) {
+        <div class="space-y-1">
           @if (!sidebarContraido()) {
-            <span class="px-1.5 py-0.5 rounded text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-mono">{{ productosProveedor().length }}</span>
+            <span class="text-[11px] font-black uppercase tracking-wider text-slate-700 dark:text-slate-400 px-3">Catálogo</span>
           }
-        </button>
+          @if (puedeVerTab('productos')) {
+            <button
+              (click)="cambiarTab('productos')"
+              class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all group border cursor-pointer" [class.justify-center]="sidebarContraido()" [class.px-2]="sidebarContraido()"
+              [class.bg-blue-700]="tabActiva() === 'productos'" [class.dark:bg-blue-600]="tabActiva() === 'productos'" [class.shadow-md]="tabActiva() === 'productos'" [class.shadow-blue-900/30]="tabActiva() === 'productos'" [class.border-blue-700]="tabActiva() === 'productos'"
+              [class.text-white]="tabActiva() === 'productos'"
+              [class.text-slate-700]="tabActiva() !== 'productos'" [class.dark:text-slate-200]="tabActiva() !== 'productos'" [class.bg-white/70]="tabActiva() !== 'productos'" [class.dark:bg-slate-900/50]="tabActiva() !== 'productos'" [class.border-blue-200/60]="tabActiva() !== 'productos'" [class.dark:border-blue-900/40]="tabActiva() !== 'productos'" [class.hover:bg-blue-100/70]="tabActiva() !== 'productos'" [class.dark:hover:bg-slate-800/80]="tabActiva() !== 'productos'"
+              title="Productos">
+              <div class="flex items-center gap-3 min-w-0">
+                <span class="material-symbols-outlined text-base flex-shrink-0 group-hover:scale-110 transition-transform">inventory_2</span>
+                @if (!sidebarContraido()) { <span class="truncate">Productos</span> }
+              </div>
+              @if (!sidebarContraido() && productos().length > 0) {
+                <span class="px-1.5 py-0.5 rounded text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-mono">{{ productos().length }}</span>
+              }
+            </button>
+          }
+
+          @if (puedeVerTab('categorias')) {
+            <button
+              (click)="cambiarTab('categorias')"
+              class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all group border cursor-pointer" [class.justify-center]="sidebarContraido()" [class.px-2]="sidebarContraido()"
+              [class.bg-blue-700]="tabActiva() === 'categorias'" [class.dark:bg-blue-600]="tabActiva() === 'categorias'" [class.shadow-md]="tabActiva() === 'categorias'" [class.shadow-blue-900/30]="tabActiva() === 'categorias'" [class.border-blue-700]="tabActiva() === 'categorias'"
+              [class.text-white]="tabActiva() === 'categorias'"
+              [class.text-slate-700]="tabActiva() !== 'categorias'" [class.dark:text-slate-200]="tabActiva() !== 'categorias'" [class.bg-white/70]="tabActiva() !== 'categorias'" [class.dark:bg-slate-900/50]="tabActiva() !== 'categorias'" [class.border-blue-200/60]="tabActiva() !== 'categorias'" [class.dark:border-blue-900/40]="tabActiva() !== 'categorias'" [class.hover:bg-blue-100/70]="tabActiva() !== 'categorias'" [class.dark:hover:bg-slate-800/80]="tabActiva() !== 'categorias'"
+              title="Categorías">
+              <div class="flex items-center gap-3 min-w-0">
+                <span class="material-symbols-outlined text-base flex-shrink-0 group-hover:scale-110 transition-transform">label</span>
+                @if (!sidebarContraido()) { <span class="truncate">Categorías</span> }
+              </div>
+              @if (!sidebarContraido() && categorias().length > 0) {
+                <span class="px-1.5 py-0.5 rounded text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-mono">{{ categorias().length }}</span>
+              }
+            </button>
+          }
+
+          @if (puedeVerTab('marcas')) {
+            <button
+              (click)="cambiarTab('marcas')"
+              class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all group border cursor-pointer" [class.justify-center]="sidebarContraido()" [class.px-2]="sidebarContraido()"
+              [class.bg-blue-700]="tabActiva() === 'marcas'" [class.dark:bg-blue-600]="tabActiva() === 'marcas'" [class.shadow-md]="tabActiva() === 'marcas'" [class.shadow-blue-900/30]="tabActiva() === 'marcas'" [class.border-blue-700]="tabActiva() === 'marcas'"
+              [class.text-white]="tabActiva() === 'marcas'"
+              [class.text-slate-700]="tabActiva() !== 'marcas'" [class.dark:text-slate-200]="tabActiva() !== 'marcas'" [class.bg-white/70]="tabActiva() !== 'marcas'" [class.dark:bg-slate-900/50]="tabActiva() !== 'marcas'" [class.border-blue-200/60]="tabActiva() !== 'marcas'" [class.dark:border-blue-900/40]="tabActiva() !== 'marcas'" [class.hover:bg-blue-100/70]="tabActiva() !== 'marcas'" [class.dark:hover:bg-slate-800/80]="tabActiva() !== 'marcas'"
+              title="Marcas">
+              <div class="flex items-center gap-3 min-w-0">
+                <span class="material-symbols-outlined text-base flex-shrink-0 group-hover:scale-110 transition-transform">domain</span>
+                @if (!sidebarContraido()) { <span class="truncate">Marcas</span> }
+              </div>
+              @if (!sidebarContraido() && marcas().length > 0) {
+                <span class="px-1.5 py-0.5 rounded text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-mono">{{ marcas().length }}</span>
+              }
+            </button>
+          }
+
+          @if (puedeVerTab('imagenes')) {
+            <button
+              (click)="cambiarTab('imagenes')"
+              class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all group border cursor-pointer" [class.justify-center]="sidebarContraido()" [class.px-2]="sidebarContraido()"
+              [class.bg-blue-700]="tabActiva() === 'imagenes'" [class.dark:bg-blue-600]="tabActiva() === 'imagenes'" [class.shadow-md]="tabActiva() === 'imagenes'" [class.shadow-blue-900/30]="tabActiva() === 'imagenes'" [class.border-blue-700]="tabActiva() === 'imagenes'"
+              [class.text-white]="tabActiva() === 'imagenes'"
+              [class.text-slate-700]="tabActiva() !== 'imagenes'" [class.dark:text-slate-200]="tabActiva() !== 'imagenes'" [class.bg-white/70]="tabActiva() !== 'imagenes'" [class.dark:bg-slate-900/50]="tabActiva() !== 'imagenes'" [class.border-blue-200/60]="tabActiva() !== 'imagenes'" [class.dark:border-blue-900/40]="tabActiva() !== 'imagenes'" [class.hover:bg-blue-100/70]="tabActiva() !== 'imagenes'" [class.dark:hover:bg-slate-800/80]="tabActiva() !== 'imagenes'"
+              title="Imágenes de Producto">
+              <div class="flex items-center gap-3 min-w-0">
+                <span class="material-symbols-outlined text-base flex-shrink-0 group-hover:scale-110 transition-transform">photo_library</span>
+                @if (!sidebarContraido()) { <span class="truncate">Imágenes</span> }
+              </div>
+              @if (!sidebarContraido() && imagenes().length > 0) {
+                <span class="px-1.5 py-0.5 rounded text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-mono">{{ imagenes().length }}</span>
+              }
+            </button>
+          }
+
+          @if (puedeVerTab('productos-proveedor')) {
+            <button
+              (click)="cambiarTab('productos-proveedor')"
+              class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all group border cursor-pointer" [class.justify-center]="sidebarContraido()" [class.px-2]="sidebarContraido()"
+              [class.bg-blue-700]="tabActiva() === 'productos-proveedor'" [class.dark:bg-blue-600]="tabActiva() === 'productos-proveedor'" [class.shadow-md]="tabActiva() === 'productos-proveedor'" [class.shadow-blue-900/30]="tabActiva() === 'productos-proveedor'" [class.border-blue-700]="tabActiva() === 'productos-proveedor'"
+              [class.text-white]="tabActiva() === 'productos-proveedor'"
+              [class.text-slate-700]="tabActiva() !== 'productos-proveedor'" [class.dark:text-slate-200]="tabActiva() !== 'productos-proveedor'" [class.bg-white/70]="tabActiva() !== 'productos-proveedor'" [class.dark:bg-slate-900/50]="tabActiva() !== 'productos-proveedor'" [class.border-blue-200/60]="tabActiva() !== 'productos-proveedor'" [class.dark:border-blue-900/40]="tabActiva() !== 'productos-proveedor'" [class.hover:bg-blue-100/70]="tabActiva() !== 'productos-proveedor'" [class.dark:hover:bg-slate-800/80]="tabActiva() !== 'productos-proveedor'"
+              title="Producto - Proveedor">
+              <div class="flex items-center gap-3 min-w-0">
+                <span class="material-symbols-outlined text-base flex-shrink-0 group-hover:scale-110 transition-transform">package_2</span>
+                @if (!sidebarContraido()) { <span class="truncate">Prod. Proveedor</span> }
+              </div>
+              @if (!sidebarContraido()) {
+                <span class="px-1.5 py-0.5 rounded text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-mono">{{ productosProveedor().length }}</span>
+              }
+            </button>
+          }
+        </div>
       }
-      </div>
 
       <!-- ================= 3. PERSONAS ================= -->
-      <div class="space-y-1">
-        @if (!sidebarContraido()) {
-          <span class="text-[11px] font-black uppercase tracking-wider text-slate-700 dark:text-slate-400 px-3">Personas</span>
-        }
-        <button
-          (click)="cambiarTab('personas')"
-          class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all group border cursor-pointer" [class.justify-center]="sidebarContraido()" [class.px-2]="sidebarContraido()"
-          [class.bg-blue-700]="tabActiva() === 'personas'" [class.dark:bg-blue-600]="tabActiva() === 'personas'" [class.shadow-md]="tabActiva() === 'personas'" [class.shadow-blue-900/30]="tabActiva() === 'personas'" [class.border-blue-700]="tabActiva() === 'personas'"
-          [class.text-white]="tabActiva() === 'personas'"
-          [class.text-slate-700]="tabActiva() !== 'personas'" [class.dark:text-slate-200]="tabActiva() !== 'personas'" [class.bg-white/70]="tabActiva() !== 'personas'" [class.dark:bg-slate-900/50]="tabActiva() !== 'personas'" [class.border-blue-200/60]="tabActiva() !== 'personas'" [class.dark:border-blue-900/40]="tabActiva() !== 'personas'" [class.hover:bg-blue-100/70]="tabActiva() !== 'personas'" [class.dark:hover:bg-slate-800/80]="tabActiva() !== 'personas'"
-          [class.hover:bg-slate-100] [class.dark:hover:bg-slate-800/60]="tabActiva() !== 'personas'"
-          title="Personas">
-          <div class="flex items-center gap-3 min-w-0">
-            <span class="material-symbols-outlined text-base flex-shrink-0 group-hover:scale-110 transition-transform">person</span>
-            @if (!sidebarContraido()) { <span class="truncate">Personas</span> }
-          </div>
-          @if (!sidebarContraido() && personas().length > 0) {
-            <span class="px-1.5 py-0.5 rounded text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-mono">{{ personas().length }}</span>
-          }
-        </button>
-
-        <button
-          (click)="cambiarTab('clientes')"
-          class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all group border cursor-pointer" [class.justify-center]="sidebarContraido()" [class.px-2]="sidebarContraido()"
-          [class.bg-blue-700]="tabActiva() === 'clientes'" [class.dark:bg-blue-600]="tabActiva() === 'clientes'" [class.shadow-md]="tabActiva() === 'clientes'" [class.shadow-blue-900/30]="tabActiva() === 'clientes'" [class.border-blue-700]="tabActiva() === 'clientes'"
-          [class.text-white]="tabActiva() === 'clientes'"
-          [class.text-slate-700]="tabActiva() !== 'clientes'" [class.dark:text-slate-200]="tabActiva() !== 'clientes'" [class.bg-white/70]="tabActiva() !== 'clientes'" [class.dark:bg-slate-900/50]="tabActiva() !== 'clientes'" [class.border-blue-200/60]="tabActiva() !== 'clientes'" [class.dark:border-blue-900/40]="tabActiva() !== 'clientes'" [class.hover:bg-blue-100/70]="tabActiva() !== 'clientes'" [class.dark:hover:bg-slate-800/80]="tabActiva() !== 'clientes'"
-          [class.hover:bg-slate-100] [class.dark:hover:bg-slate-800/60]="tabActiva() !== 'clientes'"
-          title="Clientes">
-          <div class="flex items-center gap-3 min-w-0">
-            <span class="material-symbols-outlined text-base flex-shrink-0 group-hover:scale-110 transition-transform">badge</span>
-            @if (!sidebarContraido()) { <span class="truncate">Clientes</span> }
-          </div>
-          @if (!sidebarContraido() && clientes().length > 0) {
-            <span class="px-1.5 py-0.5 rounded text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-mono">{{ clientes().length }}</span>
-          }
-        </button>
-
-      @if (authService.esAdmin() || tienePermiso('empleados', 'ver')) {
-        <button
-          (click)="cambiarTab('empleados')"
-          class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all group border cursor-pointer" [class.justify-center]="sidebarContraido()" [class.px-2]="sidebarContraido()"
-          [class.bg-blue-700]="tabActiva() === 'empleados'" [class.dark:bg-blue-600]="tabActiva() === 'empleados'" [class.shadow-md]="tabActiva() === 'empleados'" [class.shadow-blue-900/30]="tabActiva() === 'empleados'" [class.border-blue-700]="tabActiva() === 'empleados'"
-          [class.text-white]="tabActiva() === 'empleados'"
-          [class.text-slate-700]="tabActiva() !== 'empleados'" [class.dark:text-slate-200]="tabActiva() !== 'empleados'" [class.bg-white/70]="tabActiva() !== 'empleados'" [class.dark:bg-slate-900/50]="tabActiva() !== 'empleados'" [class.border-blue-200/60]="tabActiva() !== 'empleados'" [class.dark:border-blue-900/40]="tabActiva() !== 'empleados'" [class.hover:bg-blue-100/70]="tabActiva() !== 'empleados'" [class.dark:hover:bg-slate-800/80]="tabActiva() !== 'empleados'"
-          [class.hover:bg-slate-100] [class.dark:hover:bg-slate-800/60]="tabActiva() !== 'empleados'"
-          title="Colaboradores">
-          <div class="flex items-center gap-3 min-w-0">
-            <span class="material-symbols-outlined text-base flex-shrink-0 group-hover:scale-110 transition-transform">diversity_3</span>
-            @if (!sidebarContraido()) { <span class="truncate">Colaboradores</span> }
-          </div>
+      @if (puedeVerTab('personas') || puedeVerTab('clientes') || puedeVerTab('empleados') || puedeVerTab('proveedores') || puedeVerTab('usuarios')) {
+        <div class="space-y-1">
           @if (!sidebarContraido()) {
-            <span class="px-1.5 py-0.5 rounded text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-mono">{{ empleados().length }}</span>
+            <span class="text-[11px] font-black uppercase tracking-wider text-slate-700 dark:text-slate-400 px-3">Personas</span>
           }
-        </button>
-      }
+          @if (puedeVerTab('personas')) {
+            <button
+              (click)="cambiarTab('personas')"
+              class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all group border cursor-pointer" [class.justify-center]="sidebarContraido()" [class.px-2]="sidebarContraido()"
+              [class.bg-blue-700]="tabActiva() === 'personas'" [class.dark:bg-blue-600]="tabActiva() === 'personas'" [class.shadow-md]="tabActiva() === 'personas'" [class.shadow-blue-900/30]="tabActiva() === 'personas'" [class.border-blue-700]="tabActiva() === 'personas'"
+              [class.text-white]="tabActiva() === 'personas'"
+              [class.text-slate-700]="tabActiva() !== 'personas'" [class.dark:text-slate-200]="tabActiva() !== 'personas'" [class.bg-white/70]="tabActiva() !== 'personas'" [class.dark:bg-slate-900/50]="tabActiva() !== 'personas'" [class.border-blue-200/60]="tabActiva() !== 'personas'" [class.dark:border-blue-900/40]="tabActiva() !== 'personas'" [class.hover:bg-blue-100/70]="tabActiva() !== 'personas'" [class.dark:hover:bg-slate-800/80]="tabActiva() !== 'personas'"
+              title="Personas">
+              <div class="flex items-center gap-3 min-w-0">
+                <span class="material-symbols-outlined text-base flex-shrink-0 group-hover:scale-110 transition-transform">person</span>
+                @if (!sidebarContraido()) { <span class="truncate">Personas</span> }
+              </div>
+              @if (!sidebarContraido() && personas().length > 0) {
+                <span class="px-1.5 py-0.5 rounded text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-mono">{{ personas().length }}</span>
+              }
+            </button>
+          }
 
-        <button
-          (click)="cambiarTab('proveedores')"
-          class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all group border cursor-pointer" [class.justify-center]="sidebarContraido()" [class.px-2]="sidebarContraido()"
-          [class.bg-blue-700]="tabActiva() === 'proveedores'" [class.dark:bg-blue-600]="tabActiva() === 'proveedores'" [class.shadow-md]="tabActiva() === 'proveedores'" [class.shadow-blue-900/30]="tabActiva() === 'proveedores'" [class.border-blue-700]="tabActiva() === 'proveedores'"
-          [class.text-white]="tabActiva() === 'proveedores'"
-          [class.text-slate-700]="tabActiva() !== 'proveedores'" [class.dark:text-slate-200]="tabActiva() !== 'proveedores'" [class.bg-white/70]="tabActiva() !== 'proveedores'" [class.dark:bg-slate-900/50]="tabActiva() !== 'proveedores'" [class.border-blue-200/60]="tabActiva() !== 'proveedores'" [class.dark:border-blue-900/40]="tabActiva() !== 'proveedores'" [class.hover:bg-blue-100/70]="tabActiva() !== 'proveedores'" [class.dark:hover:bg-slate-800/80]="tabActiva() !== 'proveedores'"
-          [class.hover:bg-slate-100] [class.dark:hover:bg-slate-800/60]="tabActiva() !== 'proveedores'"
-          title="Proveedores">
-          <div class="flex items-center gap-3 min-w-0">
-            <span class="material-symbols-outlined text-base flex-shrink-0 group-hover:scale-110 transition-transform">local_shipping</span>
-            @if (!sidebarContraido()) { <span class="truncate">Proveedores</span> }
-          </div>
-          @if (!sidebarContraido() && proveedores().length > 0) {
-            <span class="px-1.5 py-0.5 rounded text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-mono">{{ proveedores().length }}</span>
+          @if (puedeVerTab('clientes')) {
+            <button
+              (click)="cambiarTab('clientes')"
+              class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all group border cursor-pointer" [class.justify-center]="sidebarContraido()" [class.px-2]="sidebarContraido()"
+              [class.bg-blue-700]="tabActiva() === 'clientes'" [class.dark:bg-blue-600]="tabActiva() === 'clientes'" [class.shadow-md]="tabActiva() === 'clientes'" [class.shadow-blue-900/30]="tabActiva() === 'clientes'" [class.border-blue-700]="tabActiva() === 'clientes'"
+              [class.text-white]="tabActiva() === 'clientes'"
+              [class.text-slate-700]="tabActiva() !== 'clientes'" [class.dark:text-slate-200]="tabActiva() !== 'clientes'" [class.bg-white/70]="tabActiva() !== 'clientes'" [class.dark:bg-slate-900/50]="tabActiva() !== 'clientes'" [class.border-blue-200/60]="tabActiva() !== 'clientes'" [class.dark:border-blue-900/40]="tabActiva() !== 'clientes'" [class.hover:bg-blue-100/70]="tabActiva() !== 'clientes'" [class.dark:hover:bg-slate-800/80]="tabActiva() !== 'clientes'"
+              title="Clientes">
+              <div class="flex items-center gap-3 min-w-0">
+                <span class="material-symbols-outlined text-base flex-shrink-0 group-hover:scale-110 transition-transform">badge</span>
+                @if (!sidebarContraido()) { <span class="truncate">Clientes</span> }
+              </div>
+              @if (!sidebarContraido() && clientes().length > 0) {
+                <span class="px-1.5 py-0.5 rounded text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-mono">{{ clientes().length }}</span>
+              }
+            </button>
           }
-        </button>
 
-      @if (authService.esAdmin() || tienePermiso('usuarios', 'ver')) {
-        <button
-          (click)="cambiarTab('usuarios')"
-          class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all group border cursor-pointer" [class.justify-center]="sidebarContraido()" [class.px-2]="sidebarContraido()"
-          [class.bg-blue-700]="tabActiva() === 'usuarios'" [class.dark:bg-blue-600]="tabActiva() === 'usuarios'" [class.shadow-md]="tabActiva() === 'usuarios'" [class.shadow-blue-900/30]="tabActiva() === 'usuarios'" [class.border-blue-700]="tabActiva() === 'usuarios'"
-          [class.text-white]="tabActiva() === 'usuarios'"
-          [class.text-slate-700]="tabActiva() !== 'usuarios'" [class.dark:text-slate-200]="tabActiva() !== 'usuarios'" [class.bg-white/70]="tabActiva() !== 'usuarios'" [class.dark:bg-slate-900/50]="tabActiva() !== 'usuarios'" [class.border-blue-200/60]="tabActiva() !== 'usuarios'" [class.dark:border-blue-900/40]="tabActiva() !== 'usuarios'" [class.hover:bg-blue-100/70]="tabActiva() !== 'usuarios'" [class.dark:hover:bg-slate-800/80]="tabActiva() !== 'usuarios'"
-          [class.hover:bg-slate-100] [class.dark:hover:bg-slate-800/60]="tabActiva() !== 'usuarios'"
-          title="Usuarios">
-          <div class="flex items-center gap-3 min-w-0">
-            <span class="material-symbols-outlined text-base flex-shrink-0 group-hover:scale-110 transition-transform">group</span>
-            @if (!sidebarContraido()) { <span class="truncate">Usuarios</span> }
-          </div>
-          @if (!sidebarContraido() && usuarios().length > 0) {
-            <span class="px-1.5 py-0.5 rounded text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-mono">{{ usuarios().length }}</span>
+          @if (puedeVerTab('empleados')) {
+            <button
+              (click)="cambiarTab('empleados')"
+              class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all group border cursor-pointer" [class.justify-center]="sidebarContraido()" [class.px-2]="sidebarContraido()"
+              [class.bg-blue-700]="tabActiva() === 'empleados'" [class.dark:bg-blue-600]="tabActiva() === 'empleados'" [class.shadow-md]="tabActiva() === 'empleados'" [class.shadow-blue-900/30]="tabActiva() === 'empleados'" [class.border-blue-700]="tabActiva() === 'empleados'"
+              [class.text-white]="tabActiva() === 'empleados'"
+              [class.text-slate-700]="tabActiva() !== 'empleados'" [class.dark:text-slate-200]="tabActiva() !== 'empleados'" [class.bg-white/70]="tabActiva() !== 'empleados'" [class.dark:bg-slate-900/50]="tabActiva() !== 'empleados'" [class.border-blue-200/60]="tabActiva() !== 'empleados'" [class.dark:border-blue-900/40]="tabActiva() !== 'empleados'" [class.hover:bg-blue-100/70]="tabActiva() !== 'empleados'" [class.dark:hover:bg-slate-800/80]="tabActiva() !== 'empleados'"
+              title="Colaboradores">
+              <div class="flex items-center gap-3 min-w-0">
+                <span class="material-symbols-outlined text-base flex-shrink-0 group-hover:scale-110 transition-transform">diversity_3</span>
+                @if (!sidebarContraido()) { <span class="truncate">Colaboradores</span> }
+              </div>
+              @if (!sidebarContraido()) {
+                <span class="px-1.5 py-0.5 rounded text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-mono">{{ empleados().length }}</span>
+              }
+            </button>
           }
-        </button>
+
+          @if (puedeVerTab('proveedores')) {
+            <button
+              (click)="cambiarTab('proveedores')"
+              class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all group border cursor-pointer" [class.justify-center]="sidebarContraido()" [class.px-2]="sidebarContraido()"
+              [class.bg-blue-700]="tabActiva() === 'proveedores'" [class.dark:bg-blue-600]="tabActiva() === 'proveedores'" [class.shadow-md]="tabActiva() === 'proveedores'" [class.shadow-blue-900/30]="tabActiva() === 'proveedores'" [class.border-blue-700]="tabActiva() === 'proveedores'"
+              [class.text-white]="tabActiva() === 'proveedores'"
+              [class.text-slate-700]="tabActiva() !== 'proveedores'" [class.dark:text-slate-200]="tabActiva() !== 'proveedores'" [class.bg-white/70]="tabActiva() !== 'proveedores'" [class.dark:bg-slate-900/50]="tabActiva() !== 'proveedores'" [class.border-blue-200/60]="tabActiva() !== 'proveedores'" [class.dark:border-blue-900/40]="tabActiva() !== 'proveedores'" [class.hover:bg-blue-100/70]="tabActiva() !== 'proveedores'" [class.dark:hover:bg-slate-800/80]="tabActiva() !== 'proveedores'"
+              title="Proveedores">
+              <div class="flex items-center gap-3 min-w-0">
+                <span class="material-symbols-outlined text-base flex-shrink-0 group-hover:scale-110 transition-transform">local_shipping</span>
+                @if (!sidebarContraido()) { <span class="truncate">Proveedores</span> }
+              </div>
+              @if (!sidebarContraido() && proveedores().length > 0) {
+                <span class="px-1.5 py-0.5 rounded text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-mono">{{ proveedores().length }}</span>
+              }
+            </button>
+          }
+
+          @if (puedeVerTab('usuarios')) {
+            <button
+              (click)="cambiarTab('usuarios')"
+              class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all group border cursor-pointer" [class.justify-center]="sidebarContraido()" [class.px-2]="sidebarContraido()"
+              [class.bg-blue-700]="tabActiva() === 'usuarios'" [class.dark:bg-blue-600]="tabActiva() === 'usuarios'" [class.shadow-md]="tabActiva() === 'usuarios'" [class.shadow-blue-900/30]="tabActiva() === 'usuarios'" [class.border-blue-700]="tabActiva() === 'usuarios'"
+              [class.text-white]="tabActiva() === 'usuarios'"
+              [class.text-slate-700]="tabActiva() !== 'usuarios'" [class.dark:text-slate-200]="tabActiva() !== 'usuarios'" [class.bg-white/70]="tabActiva() !== 'usuarios'" [class.dark:bg-slate-900/50]="tabActiva() !== 'usuarios'" [class.border-blue-200/60]="tabActiva() !== 'usuarios'" [class.dark:border-blue-900/40]="tabActiva() !== 'usuarios'" [class.hover:bg-blue-100/70]="tabActiva() !== 'usuarios'" [class.dark:hover:bg-slate-800/80]="tabActiva() !== 'usuarios'"
+              title="Usuarios">
+              <div class="flex items-center gap-3 min-w-0">
+                <span class="material-symbols-outlined text-base flex-shrink-0 group-hover:scale-110 transition-transform">group</span>
+                @if (!sidebarContraido()) { <span class="truncate">Usuarios</span> }
+              </div>
+              @if (!sidebarContraido() && usuarios().length > 0) {
+                <span class="px-1.5 py-0.5 rounded text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-mono">{{ usuarios().length }}</span>
+              }
+            </button>
+          }
+        </div>
       }
-      </div>
 
       <!-- ================= 4. VENTAS ================= -->
-      <div class="space-y-1">
-        @if (!sidebarContraido()) {
-          <span class="text-[11px] font-black uppercase tracking-wider text-slate-700 dark:text-slate-400 px-3">Ventas</span>
-        }
-        <button
-          (click)="cambiarTab('ventas')"
-          class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all group border cursor-pointer" [class.justify-center]="sidebarContraido()" [class.px-2]="sidebarContraido()"
-          [class.bg-blue-700]="tabActiva() === 'ventas'" [class.dark:bg-blue-600]="tabActiva() === 'ventas'" [class.shadow-md]="tabActiva() === 'ventas'" [class.shadow-blue-900/30]="tabActiva() === 'ventas'" [class.border-blue-700]="tabActiva() === 'ventas'"
-          [class.text-white]="tabActiva() === 'ventas'"
-          [class.text-slate-700]="tabActiva() !== 'ventas'" [class.dark:text-slate-200]="tabActiva() !== 'ventas'" [class.bg-white/70]="tabActiva() !== 'ventas'" [class.dark:bg-slate-900/50]="tabActiva() !== 'ventas'" [class.border-blue-200/60]="tabActiva() !== 'ventas'" [class.dark:border-blue-900/40]="tabActiva() !== 'ventas'" [class.hover:bg-blue-100/70]="tabActiva() !== 'ventas'" [class.dark:hover:bg-slate-800/80]="tabActiva() !== 'ventas'"
-          [class.hover:bg-slate-100] [class.dark:hover:bg-slate-800/60]="tabActiva() !== 'ventas'"
-          title="Ventas">
-          <div class="flex items-center gap-3 min-w-0">
-            <span class="material-symbols-outlined text-base flex-shrink-0 group-hover:scale-110 transition-transform">receipt_long</span>
-            @if (!sidebarContraido()) { <span class="truncate">Ventas</span> }
-          </div>
+      @if (puedeVerTab('ventas') || puedeVerTab('detalles-venta') || puedeVerTab('pagos') || puedeVerTab('medios-pago')) {
+        <div class="space-y-1">
           @if (!sidebarContraido()) {
-            <div class="flex items-center gap-1.5">
-              @if (ventasPendientesCount > 0) {
-                <span class="px-1.5 py-0.5 rounded text-[10px] bg-amber-500/20 text-amber-500 border border-amber-500/30 font-bold" title="Ventas pendientes">
-                  {{ ventasPendientesCount }}
-                </span>
+            <span class="text-[11px] font-black uppercase tracking-wider text-slate-700 dark:text-slate-400 px-3">Ventas</span>
+          }
+          @if (puedeVerTab('ventas')) {
+            <button
+              (click)="cambiarTab('ventas')"
+              class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all group border cursor-pointer" [class.justify-center]="sidebarContraido()" [class.px-2]="sidebarContraido()"
+              [class.bg-blue-700]="tabActiva() === 'ventas'" [class.dark:bg-blue-600]="tabActiva() === 'ventas'" [class.shadow-md]="tabActiva() === 'ventas'" [class.shadow-blue-900/30]="tabActiva() === 'ventas'" [class.border-blue-700]="tabActiva() === 'ventas'"
+              [class.text-white]="tabActiva() === 'ventas'"
+              [class.text-slate-700]="tabActiva() !== 'ventas'" [class.dark:text-slate-200]="tabActiva() !== 'ventas'" [class.bg-white/70]="tabActiva() !== 'ventas'" [class.dark:bg-slate-900/50]="tabActiva() !== 'ventas'" [class.border-blue-200/60]="tabActiva() !== 'ventas'" [class.dark:border-blue-900/40]="tabActiva() !== 'ventas'" [class.hover:bg-blue-100/70]="tabActiva() !== 'ventas'" [class.dark:hover:bg-slate-800/80]="tabActiva() !== 'ventas'"
+              title="Ventas">
+              <div class="flex items-center gap-3 min-w-0">
+                <span class="material-symbols-outlined text-base flex-shrink-0 group-hover:scale-110 transition-transform">receipt_long</span>
+                @if (!sidebarContraido()) { <span class="truncate">Ventas</span> }
+              </div>
+              @if (!sidebarContraido()) {
+                <div class="flex items-center gap-1.5">
+                  @if (ventasPendientesCount > 0) {
+                    <span class="px-1.5 py-0.5 rounded text-[10px] bg-amber-500/20 text-amber-500 border border-amber-500/30 font-bold" title="Ventas pendientes">
+                      {{ ventasPendientesCount }}
+                    </span>
+                  }
+                  <span class="px-1.5 py-0.5 rounded text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-mono">{{ ventas().length }}</span>
+                </div>
               }
-              <span class="px-1.5 py-0.5 rounded text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-mono">{{ ventas().length }}</span>
-            </div>
+            </button>
           }
-        </button>
 
-        <button
-          (click)="cambiarTab('detalles-venta')"
-          class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all group border cursor-pointer" [class.justify-center]="sidebarContraido()" [class.px-2]="sidebarContraido()"
-          [class.bg-blue-700]="tabActiva() === 'detalles-venta'" [class.dark:bg-blue-600]="tabActiva() === 'detalles-venta'" [class.shadow-md]="tabActiva() === 'detalles-venta'" [class.shadow-blue-900/30]="tabActiva() === 'detalles-venta'" [class.border-blue-700]="tabActiva() === 'detalles-venta'"
-          [class.text-white]="tabActiva() === 'detalles-venta'"
-          [class.text-slate-700]="tabActiva() !== 'detalles-venta'" [class.dark:text-slate-200]="tabActiva() !== 'detalles-venta'" [class.bg-white/70]="tabActiva() !== 'detalles-venta'" [class.dark:bg-slate-900/50]="tabActiva() !== 'detalles-venta'" [class.border-blue-200/60]="tabActiva() !== 'detalles-venta'" [class.dark:border-blue-900/40]="tabActiva() !== 'detalles-venta'" [class.hover:bg-blue-100/70]="tabActiva() !== 'detalles-venta'" [class.dark:hover:bg-slate-800/80]="tabActiva() !== 'detalles-venta'"
-          [class.hover:bg-slate-100] [class.dark:hover:bg-slate-800/60]="tabActiva() !== 'detalles-venta'"
-          title="Detalles de Venta">
-          <div class="flex items-center gap-3 min-w-0">
-            <span class="material-symbols-outlined text-base flex-shrink-0 group-hover:scale-110 transition-transform">fact_check</span>
-            @if (!sidebarContraido()) { <span class="truncate">Det. Venta</span> }
-          </div>
-          @if (!sidebarContraido()) {
-            <span class="px-1.5 py-0.5 rounded text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-mono">{{ detallesVenta().length }}</span>
+          @if (puedeVerTab('detalles-venta')) {
+            <button
+              (click)="cambiarTab('detalles-venta')"
+              class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all group border cursor-pointer" [class.justify-center]="sidebarContraido()" [class.px-2]="sidebarContraido()"
+              [class.bg-blue-700]="tabActiva() === 'detalles-venta'" [class.dark:bg-blue-600]="tabActiva() === 'detalles-venta'" [class.shadow-md]="tabActiva() === 'detalles-venta'" [class.shadow-blue-900/30]="tabActiva() === 'detalles-venta'" [class.border-blue-700]="tabActiva() === 'detalles-venta'"
+              [class.text-white]="tabActiva() === 'detalles-venta'"
+              [class.text-slate-700]="tabActiva() !== 'detalles-venta'" [class.dark:text-slate-200]="tabActiva() !== 'detalles-venta'" [class.bg-white/70]="tabActiva() !== 'detalles-venta'" [class.dark:bg-slate-900/50]="tabActiva() !== 'detalles-venta'" [class.border-blue-200/60]="tabActiva() !== 'detalles-venta'" [class.dark:border-blue-900/40]="tabActiva() !== 'detalles-venta'" [class.hover:bg-blue-100/70]="tabActiva() !== 'detalles-venta'" [class.dark:hover:bg-slate-800/80]="tabActiva() !== 'detalles-venta'"
+              title="Detalles de Venta">
+              <div class="flex items-center gap-3 min-w-0">
+                <span class="material-symbols-outlined text-base flex-shrink-0 group-hover:scale-110 transition-transform">fact_check</span>
+                @if (!sidebarContraido()) { <span class="truncate">Det. Venta</span> }
+              </div>
+              @if (!sidebarContraido()) {
+                <span class="px-1.5 py-0.5 rounded text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-mono">{{ detallesVenta().length }}</span>
+              }
+            </button>
           }
-        </button>
 
-        <button
-          (click)="cambiarTab('pagos')"
-          class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all group border cursor-pointer" [class.justify-center]="sidebarContraido()" [class.px-2]="sidebarContraido()"
-          [class.bg-blue-700]="tabActiva() === 'pagos'" [class.dark:bg-blue-600]="tabActiva() === 'pagos'" [class.shadow-md]="tabActiva() === 'pagos'" [class.shadow-blue-900/30]="tabActiva() === 'pagos'" [class.border-blue-700]="tabActiva() === 'pagos'"
-          [class.text-white]="tabActiva() === 'pagos'"
-          [class.text-slate-700]="tabActiva() !== 'pagos'" [class.dark:text-slate-200]="tabActiva() !== 'pagos'" [class.bg-white/70]="tabActiva() !== 'pagos'" [class.dark:bg-slate-900/50]="tabActiva() !== 'pagos'" [class.border-blue-200/60]="tabActiva() !== 'pagos'" [class.dark:border-blue-900/40]="tabActiva() !== 'pagos'" [class.hover:bg-blue-100/70]="tabActiva() !== 'pagos'" [class.dark:hover:bg-slate-800/80]="tabActiva() !== 'pagos'"
-          [class.hover:bg-slate-100] [class.dark:hover:bg-slate-800/60]="tabActiva() !== 'pagos'"
-          title="Pagos">
-          <div class="flex items-center gap-3 min-w-0">
-            <span class="material-symbols-outlined text-base flex-shrink-0 group-hover:scale-110 transition-transform">credit_card</span>
-            @if (!sidebarContraido()) { <span class="truncate">Pagos</span> }
-          </div>
-          @if (!sidebarContraido()) {
-            <span class="px-1.5 py-0.5 rounded text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-mono">{{ pagos().length }}</span>
+          @if (puedeVerTab('pagos')) {
+            <button
+              (click)="cambiarTab('pagos')"
+              class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all group border cursor-pointer" [class.justify-center]="sidebarContraido()" [class.px-2]="sidebarContraido()"
+              [class.bg-blue-700]="tabActiva() === 'pagos'" [class.dark:bg-blue-600]="tabActiva() === 'pagos'" [class.shadow-md]="tabActiva() === 'pagos'" [class.shadow-blue-900/30]="tabActiva() === 'pagos'" [class.border-blue-700]="tabActiva() === 'pagos'"
+              [class.text-white]="tabActiva() === 'pagos'"
+              [class.text-slate-700]="tabActiva() !== 'pagos'" [class.dark:text-slate-200]="tabActiva() !== 'pagos'" [class.bg-white/70]="tabActiva() !== 'pagos'" [class.dark:bg-slate-900/50]="tabActiva() !== 'pagos'" [class.border-blue-200/60]="tabActiva() !== 'pagos'" [class.dark:border-blue-900/40]="tabActiva() !== 'pagos'" [class.hover:bg-blue-100/70]="tabActiva() !== 'pagos'" [class.dark:hover:bg-slate-800/80]="tabActiva() !== 'pagos'"
+              title="Pagos">
+              <div class="flex items-center gap-3 min-w-0">
+                <span class="material-symbols-outlined text-base flex-shrink-0 group-hover:scale-110 transition-transform">credit_card</span>
+                @if (!sidebarContraido()) { <span class="truncate">Pagos</span> }
+              </div>
+              @if (!sidebarContraido()) {
+                <span class="px-1.5 py-0.5 rounded text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-mono">{{ pagos().length }}</span>
+              }
+            </button>
           }
-        </button>
 
-        <button
-          (click)="cambiarTab('medios-pago')"
-          class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all group border cursor-pointer" [class.justify-center]="sidebarContraido()" [class.px-2]="sidebarContraido()"
-          [class.bg-blue-700]="tabActiva() === 'medios-pago'" [class.dark:bg-blue-600]="tabActiva() === 'medios-pago'" [class.shadow-md]="tabActiva() === 'medios-pago'" [class.shadow-blue-900/30]="tabActiva() === 'medios-pago'" [class.border-blue-700]="tabActiva() === 'medios-pago'"
-          [class.text-white]="tabActiva() === 'medios-pago'"
-          [class.text-slate-700]="tabActiva() !== 'medios-pago'" [class.dark:text-slate-200]="tabActiva() !== 'medios-pago'" [class.bg-white/70]="tabActiva() !== 'medios-pago'" [class.dark:bg-slate-900/50]="tabActiva() !== 'medios-pago'" [class.border-blue-200/60]="tabActiva() !== 'medios-pago'" [class.dark:border-blue-900/40]="tabActiva() !== 'medios-pago'" [class.hover:bg-blue-100/70]="tabActiva() !== 'medios-pago'" [class.dark:hover:bg-slate-800/80]="tabActiva() !== 'medios-pago'"
-          [class.hover:bg-slate-100] [class.dark:hover:bg-slate-800/60]="tabActiva() !== 'medios-pago'"
-          title="Medios de Pago">
-          <div class="flex items-center gap-3 min-w-0">
-            <span class="material-symbols-outlined text-base flex-shrink-0 group-hover:scale-110 transition-transform">account_balance_wallet</span>
-            @if (!sidebarContraido()) { <span class="truncate">Medios Pago</span> }
-          </div>
-          @if (!sidebarContraido()) {
-            <span class="px-1.5 py-0.5 rounded text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-mono">{{ mediosPago().length }}</span>
+          @if (puedeVerTab('medios-pago')) {
+            <button
+              (click)="cambiarTab('medios-pago')"
+              class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all group border cursor-pointer" [class.justify-center]="sidebarContraido()" [class.px-2]="sidebarContraido()"
+              [class.bg-blue-700]="tabActiva() === 'medios-pago'" [class.dark:bg-blue-600]="tabActiva() === 'medios-pago'" [class.shadow-md]="tabActiva() === 'medios-pago'" [class.shadow-blue-900/30]="tabActiva() === 'medios-pago'" [class.border-blue-700]="tabActiva() === 'medios-pago'"
+              [class.text-white]="tabActiva() === 'medios-pago'"
+              [class.text-slate-700]="tabActiva() !== 'medios-pago'" [class.dark:text-slate-200]="tabActiva() !== 'medios-pago'" [class.bg-white/70]="tabActiva() !== 'medios-pago'" [class.dark:bg-slate-900/50]="tabActiva() !== 'medios-pago'" [class.border-blue-200/60]="tabActiva() !== 'medios-pago'" [class.dark:border-blue-900/40]="tabActiva() !== 'medios-pago'" [class.hover:bg-blue-100/70]="tabActiva() !== 'medios-pago'" [class.dark:hover:bg-slate-800/80]="tabActiva() !== 'medios-pago'"
+              title="Medios de Pago">
+              <div class="flex items-center gap-3 min-w-0">
+                <span class="material-symbols-outlined text-base flex-shrink-0 group-hover:scale-110 transition-transform">account_balance_wallet</span>
+                @if (!sidebarContraido()) { <span class="truncate">Medios Pago</span> }
+              </div>
+              @if (!sidebarContraido()) {
+                <span class="px-1.5 py-0.5 rounded text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-mono">{{ mediosPago().length }}</span>
+              }
+            </button>
           }
-        </button>
-      </div>
+        </div>
+      }
 
       <!-- ================= 5. CARRITO ================= -->
-      <div class="space-y-1">
-        @if (!sidebarContraido()) {
-          <span class="text-[11px] font-black uppercase tracking-wider text-slate-700 dark:text-slate-400 px-3">Carrito</span>
-        }
-        <button
-          (click)="cambiarTab('carritos')"
-          class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all group border cursor-pointer" [class.justify-center]="sidebarContraido()" [class.px-2]="sidebarContraido()"
-          [class.bg-blue-700]="tabActiva() === 'carritos'" [class.dark:bg-blue-600]="tabActiva() === 'carritos'" [class.shadow-md]="tabActiva() === 'carritos'" [class.shadow-blue-900/30]="tabActiva() === 'carritos'" [class.border-blue-700]="tabActiva() === 'carritos'"
-          [class.text-white]="tabActiva() === 'carritos'"
-          [class.text-slate-700]="tabActiva() !== 'carritos'" [class.dark:text-slate-200]="tabActiva() !== 'carritos'" [class.bg-white/70]="tabActiva() !== 'carritos'" [class.dark:bg-slate-900/50]="tabActiva() !== 'carritos'" [class.border-blue-200/60]="tabActiva() !== 'carritos'" [class.dark:border-blue-900/40]="tabActiva() !== 'carritos'" [class.hover:bg-blue-100/70]="tabActiva() !== 'carritos'" [class.dark:hover:bg-slate-800/80]="tabActiva() !== 'carritos'"
-          [class.hover:bg-slate-100] [class.dark:hover:bg-slate-800/60]="tabActiva() !== 'carritos'"
-          title="Carritos de Compra">
-          <div class="flex items-center gap-3 min-w-0">
-            <span class="material-symbols-outlined text-base flex-shrink-0 group-hover:scale-110 transition-transform">shopping_cart</span>
-            @if (!sidebarContraido()) { <span class="truncate">Carritos</span> }
-          </div>
+      @if (puedeVerTab('carritos') || puedeVerTab('detalles-carrito')) {
+        <div class="space-y-1">
           @if (!sidebarContraido()) {
-            <span class="px-1.5 py-0.5 rounded text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-mono">{{ carritos().length }}</span>
+            <span class="text-[11px] font-black uppercase tracking-wider text-slate-700 dark:text-slate-400 px-3">Carrito</span>
           }
-        </button>
+          @if (puedeVerTab('carritos')) {
+            <button
+              (click)="cambiarTab('carritos')"
+              class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all group border cursor-pointer" [class.justify-center]="sidebarContraido()" [class.px-2]="sidebarContraido()"
+              [class.bg-blue-700]="tabActiva() === 'carritos'" [class.dark:bg-blue-600]="tabActiva() === 'carritos'" [class.shadow-md]="tabActiva() === 'carritos'" [class.shadow-blue-900/30]="tabActiva() === 'carritos'" [class.border-blue-700]="tabActiva() === 'carritos'"
+              [class.text-white]="tabActiva() === 'carritos'"
+              [class.text-slate-700]="tabActiva() !== 'carritos'" [class.dark:text-slate-200]="tabActiva() !== 'carritos'" [class.bg-white/70]="tabActiva() !== 'carritos'" [class.dark:bg-slate-900/50]="tabActiva() !== 'carritos'" [class.border-blue-200/60]="tabActiva() !== 'carritos'" [class.dark:border-blue-900/40]="tabActiva() !== 'carritos'" [class.hover:bg-blue-100/70]="tabActiva() !== 'carritos'" [class.dark:hover:bg-slate-800/80]="tabActiva() !== 'carritos'"
+              title="Carritos de Compra">
+              <div class="flex items-center gap-3 min-w-0">
+                <span class="material-symbols-outlined text-base flex-shrink-0 group-hover:scale-110 transition-transform">shopping_cart</span>
+                @if (!sidebarContraido()) { <span class="truncate">Carritos</span> }
+              </div>
+              @if (!sidebarContraido()) {
+                <span class="px-1.5 py-0.5 rounded text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-mono">{{ carritos().length }}</span>
+              }
+            </button>
+          }
 
-        <button
-          (click)="cambiarTab('detalles-carrito')"
-          class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all group border cursor-pointer" [class.justify-center]="sidebarContraido()" [class.px-2]="sidebarContraido()"
-          [class.bg-blue-700]="tabActiva() === 'detalles-carrito'" [class.dark:bg-blue-600]="tabActiva() === 'detalles-carrito'" [class.shadow-md]="tabActiva() === 'detalles-carrito'" [class.shadow-blue-900/30]="tabActiva() === 'detalles-carrito'" [class.border-blue-700]="tabActiva() === 'detalles-carrito'"
-          [class.text-white]="tabActiva() === 'detalles-carrito'"
-          [class.text-slate-700]="tabActiva() !== 'detalles-carrito'" [class.dark:text-slate-200]="tabActiva() !== 'detalles-carrito'" [class.bg-white/70]="tabActiva() !== 'detalles-carrito'" [class.dark:bg-slate-900/50]="tabActiva() !== 'detalles-carrito'" [class.border-blue-200/60]="tabActiva() !== 'detalles-carrito'" [class.dark:border-blue-900/40]="tabActiva() !== 'detalles-carrito'" [class.hover:bg-blue-100/70]="tabActiva() !== 'detalles-carrito'" [class.dark:hover:bg-slate-800/80]="tabActiva() !== 'detalles-carrito'"
-          [class.hover:bg-slate-100] [class.dark:hover:bg-slate-800/60]="tabActiva() !== 'detalles-carrito'"
-          title="Detalles de Carrito">
-          <div class="flex items-center gap-3 min-w-0">
-            <span class="material-symbols-outlined text-base flex-shrink-0 group-hover:scale-110 transition-transform">remove_shopping_cart</span>
-            @if (!sidebarContraido()) { <span class="truncate">Det. Carrito</span> }
-          </div>
-          @if (!sidebarContraido()) {
-            <span class="px-1.5 py-0.5 rounded text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-mono">{{ detallesCarrito().length }}</span>
+          @if (puedeVerTab('detalles-carrito')) {
+            <button
+              (click)="cambiarTab('detalles-carrito')"
+              class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all group border cursor-pointer" [class.justify-center]="sidebarContraido()" [class.px-2]="sidebarContraido()"
+              [class.bg-blue-700]="tabActiva() === 'detalles-carrito'" [class.dark:bg-blue-600]="tabActiva() === 'detalles-carrito'" [class.shadow-md]="tabActiva() === 'detalles-carrito'" [class.shadow-blue-900/30]="tabActiva() === 'detalles-carrito'" [class.border-blue-700]="tabActiva() === 'detalles-carrito'"
+              [class.text-white]="tabActiva() === 'detalles-carrito'"
+              [class.text-slate-700]="tabActiva() !== 'detalles-carrito'" [class.dark:text-slate-200]="tabActiva() !== 'detalles-carrito'" [class.bg-white/70]="tabActiva() !== 'detalles-carrito'" [class.dark:bg-slate-900/50]="tabActiva() !== 'detalles-carrito'" [class.border-blue-200/60]="tabActiva() !== 'detalles-carrito'" [class.dark:border-blue-900/40]="tabActiva() !== 'detalles-carrito'" [class.hover:bg-blue-100/70]="tabActiva() !== 'detalles-carrito'" [class.dark:hover:bg-slate-800/80]="tabActiva() !== 'detalles-carrito'"
+              title="Detalles de Carrito">
+              <div class="flex items-center gap-3 min-w-0">
+                <span class="material-symbols-outlined text-base flex-shrink-0 group-hover:scale-110 transition-transform">remove_shopping_cart</span>
+                @if (!sidebarContraido()) { <span class="truncate">Det. Carrito</span> }
+              </div>
+              @if (!sidebarContraido()) {
+                <span class="px-1.5 py-0.5 rounded text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-mono">{{ detallesCarrito().length }}</span>
+              }
+            </button>
           }
-        </button>
-      </div>
+        </div>
+      }
 
       <!-- ================= 6. CONFIGURACIÓN ================= -->
+      @if (puedeVerTab('configuracion') || puedeVerTab('roles') || puedeVerTab('tipos-documento') || puedeVerTab('ubigeos') || puedeVerTab('auditoria')) {
+        <div class="space-y-1">
+          @if (!sidebarContraido()) {
+            <span class="text-[11px] font-black uppercase tracking-wider text-slate-700 dark:text-slate-400 px-3">Configuración</span>
+          }
+          @if (puedeVerTab('configuracion')) {
+            <button
+              (click)="cambiarTab('configuracion')"
+              class="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold transition-all group border cursor-pointer" [class.justify-center]="sidebarContraido()" [class.px-2]="sidebarContraido()"
+              [class.bg-blue-700]="tabActiva() === 'configuracion'" [class.dark:bg-blue-600]="tabActiva() === 'configuracion'" [class.shadow-md]="tabActiva() === 'configuracion'" [class.shadow-blue-900/30]="tabActiva() === 'configuracion'" [class.border-blue-700]="tabActiva() === 'configuracion'"
+              [class.text-white]="tabActiva() === 'configuracion'"
+              [class.text-slate-700]="tabActiva() !== 'configuracion'" [class.dark:text-slate-200]="tabActiva() !== 'configuracion'" [class.bg-white/70]="tabActiva() !== 'configuracion'" [class.dark:bg-slate-900/50]="tabActiva() !== 'configuracion'" [class.border-blue-200/60]="tabActiva() !== 'configuracion'" [class.dark:border-blue-900/40]="tabActiva() !== 'configuracion'" [class.hover:bg-blue-100/70]="tabActiva() !== 'configuracion'" [class.dark:hover:bg-slate-800/80]="tabActiva() !== 'configuracion'"
+              title="Configuración del Sitio">
+              <span class="material-symbols-outlined text-base flex-shrink-0 group-hover:scale-110 transition-transform">tune</span>
+              @if (!sidebarContraido()) { <span class="truncate">Sitio Web</span> }
+            </button>
+          }
+
+          @if (puedeVerTab('roles')) {
+            <button
+              (click)="cambiarTab('roles')"
+              class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all group border cursor-pointer" [class.justify-center]="sidebarContraido()" [class.px-2]="sidebarContraido()"
+              [class.bg-blue-700]="tabActiva() === 'roles'" [class.dark:bg-blue-600]="tabActiva() === 'roles'" [class.shadow-md]="tabActiva() === 'roles'" [class.shadow-blue-900/30]="tabActiva() === 'roles'" [class.border-blue-700]="tabActiva() === 'roles'"
+              [class.text-white]="tabActiva() === 'roles'"
+              [class.text-slate-700]="tabActiva() !== 'roles'" [class.dark:text-slate-200]="tabActiva() !== 'roles'" [class.bg-white/70]="tabActiva() !== 'roles'" [class.dark:bg-slate-900/50]="tabActiva() !== 'roles'" [class.border-blue-200/60]="tabActiva() !== 'roles'" [class.dark:border-blue-900/40]="tabActiva() !== 'roles'" [class.hover:bg-blue-100/70]="tabActiva() !== 'roles'" [class.dark:hover:bg-slate-800/80]="tabActiva() !== 'roles'"
+              title="Roles">
+              <div class="flex items-center gap-3 min-w-0">
+                <span class="material-symbols-outlined text-base flex-shrink-0 group-hover:scale-110 transition-transform">security</span>
+                @if (!sidebarContraido()) { <span class="truncate">Roles</span> }
+              </div>
+              @if (!sidebarContraido() && roles().length > 0) {
+                <span class="px-1.5 py-0.5 rounded text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-mono">{{ roles().length }}</span>
+              }
+            </button>
+          }
+
+          @if (puedeVerTab('tipos-documento')) {
+            <button
+              (click)="cambiarTab('tipos-documento')"
+              class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all group border cursor-pointer" [class.justify-center]="sidebarContraido()" [class.px-2]="sidebarContraido()"
+              [class.bg-blue-700]="tabActiva() === 'tipos-documento'" [class.dark:bg-blue-600]="tabActiva() === 'tipos-documento'" [class.shadow-md]="tabActiva() === 'tipos-documento'" [class.shadow-blue-900/30]="tabActiva() === 'tipos-documento'" [class.border-blue-700]="tabActiva() === 'tipos-documento'"
+              [class.text-white]="tabActiva() === 'tipos-documento'"
+              [class.text-slate-700]="tabActiva() !== 'tipos-documento'" [class.dark:text-slate-200]="tabActiva() !== 'tipos-documento'" [class.bg-white/70]="tabActiva() !== 'tipos-documento'" [class.dark:bg-slate-900/50]="tabActiva() !== 'tipos-documento'" [class.border-blue-200/60]="tabActiva() !== 'tipos-documento'" [class.dark:border-blue-900/40]="tabActiva() !== 'tipos-documento'" [class.hover:bg-blue-100/70]="tabActiva() !== 'tipos-documento'" [class.dark:hover:bg-slate-800/80]="tabActiva() !== 'tipos-documento'"
+              title="Tipos de Documento">
+              <div class="flex items-center gap-3 min-w-0">
+                <span class="material-symbols-outlined text-base flex-shrink-0 group-hover:scale-110 transition-transform">description</span>
+                @if (!sidebarContraido()) { <span class="truncate">Tipos Doc.</span> }
+              </div>
+            </button>
+          }
+
+          @if (puedeVerTab('ubigeos')) {
+            <button
+              (click)="cambiarTab('ubigeos')"
+              class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all group border cursor-pointer" [class.justify-center]="sidebarContraido()" [class.px-2]="sidebarContraido()"
+              [class.bg-blue-700]="tabActiva() === 'ubigeos'" [class.dark:bg-blue-600]="tabActiva() === 'ubigeos'" [class.shadow-md]="tabActiva() === 'ubigeos'" [class.shadow-blue-900/30]="tabActiva() === 'ubigeos'" [class.border-blue-700]="tabActiva() === 'ubigeos'"
+              [class.text-white]="tabActiva() === 'ubigeos'"
+              [class.text-slate-700]="tabActiva() !== 'ubigeos'" [class.dark:text-slate-200]="tabActiva() !== 'ubigeos'" [class.bg-white/70]="tabActiva() !== 'ubigeos'" [class.dark:bg-slate-900/50]="tabActiva() !== 'ubigeos'" [class.border-blue-200/60]="tabActiva() !== 'ubigeos'" [class.dark:border-blue-900/40]="tabActiva() !== 'ubigeos'" [class.hover:bg-blue-100/70]="tabActiva() !== 'ubigeos'" [class.dark:hover:bg-slate-800/80]="tabActiva() !== 'ubigeos'"
+              title="Ubigeos">
+              <div class="flex items-center gap-3 min-w-0">
+                <span class="material-symbols-outlined text-base flex-shrink-0 group-hover:scale-110 transition-transform">location_on</span>
+                @if (!sidebarContraido()) { <span class="truncate">Ubigeos</span> }
+              </div>
+              @if (!sidebarContraido() && ubigeos().length > 0) {
+                <span class="px-1.5 py-0.5 rounded text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-mono">{{ ubigeos().length }}</span>
+              }
+            </button>
+          }
+
+          @if (puedeVerTab('auditoria')) {
+            <button
+              (click)="cambiarTab('auditoria')"
+              class="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold transition-all group border cursor-pointer" [class.justify-center]="sidebarContraido()" [class.px-2]="sidebarContraido()"
+              [class.bg-blue-700]="tabActiva() === 'auditoria'" [class.dark:bg-blue-600]="tabActiva() === 'auditoria'" [class.shadow-md]="tabActiva() === 'auditoria'" [class.shadow-blue-900/30]="tabActiva() === 'auditoria'" [class.border-blue-700]="tabActiva() === 'auditoria'"
+              [class.text-white]="tabActiva() === 'auditoria'"
+              [class.text-slate-700]="tabActiva() !== 'auditoria'" [class.dark:text-slate-200]="tabActiva() !== 'auditoria'" [class.bg-white/70]="tabActiva() !== 'auditoria'" [class.dark:bg-slate-900/50]="tabActiva() !== 'auditoria'" [class.border-blue-200/60]="tabActiva() !== 'auditoria'" [class.dark:border-blue-900/40]="tabActiva() !== 'auditoria'" [class.hover:bg-blue-100/70]="tabActiva() !== 'auditoria'" [class.dark:hover:bg-slate-800/80]="tabActiva() !== 'auditoria'"
+              title="Auditoría">
+              <span class="material-symbols-outlined text-base flex-shrink-0 group-hover:scale-110 transition-transform">history</span>
+              @if (!sidebarContraido()) { <span class="truncate">Auditoría</span> }
+            </button>
+          }
+        </div>
+      }
+
+      <!-- ================= 7. AYUDA ================= -->
       <div class="space-y-1">
-        @if (!sidebarContraido()) {
-          <span class="text-[11px] font-black uppercase tracking-wider text-slate-700 dark:text-slate-400 px-3">Configuración</span>
-        }
-      @if (authService.esAdmin() || tienePermiso('configuracion', 'ver')) {
-        <button
-          (click)="cambiarTab('configuracion')"
-          class="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold transition-all group border cursor-pointer" [class.justify-center]="sidebarContraido()" [class.px-2]="sidebarContraido()"
-          [class.bg-blue-700]="tabActiva() === 'configuracion'" [class.dark:bg-blue-600]="tabActiva() === 'configuracion'" [class.shadow-md]="tabActiva() === 'configuracion'" [class.shadow-blue-900/30]="tabActiva() === 'configuracion'" [class.border-blue-700]="tabActiva() === 'configuracion'"
-          [class.text-white]="tabActiva() === 'configuracion'"
-          [class.text-slate-700]="tabActiva() !== 'configuracion'" [class.dark:text-slate-200]="tabActiva() !== 'configuracion'" [class.bg-white/70]="tabActiva() !== 'configuracion'" [class.dark:bg-slate-900/50]="tabActiva() !== 'configuracion'" [class.border-blue-200/60]="tabActiva() !== 'configuracion'" [class.dark:border-blue-900/40]="tabActiva() !== 'configuracion'" [class.hover:bg-blue-100/70]="tabActiva() !== 'configuracion'" [class.dark:hover:bg-slate-800/80]="tabActiva() !== 'configuracion'"
-          [class.hover:bg-slate-100] [class.dark:hover:bg-slate-800/60]="tabActiva() !== 'configuracion'"
-          title="Configuración del Sitio">
-          <span class="material-symbols-outlined text-base flex-shrink-0 group-hover:scale-110 transition-transform">tune</span>
-          @if (!sidebarContraido()) { <span class="truncate">Sitio Web</span> }
-        </button>
-      }
-
-      @if (authService.esAdmin() || tienePermiso('roles', 'ver')) {
-        <button
-          (click)="cambiarTab('roles')"
-          class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all group border cursor-pointer" [class.justify-center]="sidebarContraido()" [class.px-2]="sidebarContraido()"
-          [class.bg-blue-700]="tabActiva() === 'roles'" [class.dark:bg-blue-600]="tabActiva() === 'roles'" [class.shadow-md]="tabActiva() === 'roles'" [class.shadow-blue-900/30]="tabActiva() === 'roles'" [class.border-blue-700]="tabActiva() === 'roles'"
-          [class.text-white]="tabActiva() === 'roles'"
-          [class.text-slate-700]="tabActiva() !== 'roles'" [class.dark:text-slate-200]="tabActiva() !== 'roles'" [class.bg-white/70]="tabActiva() !== 'roles'" [class.dark:bg-slate-900/50]="tabActiva() !== 'roles'" [class.border-blue-200/60]="tabActiva() !== 'roles'" [class.dark:border-blue-900/40]="tabActiva() !== 'roles'" [class.hover:bg-blue-100/70]="tabActiva() !== 'roles'" [class.dark:hover:bg-slate-800/80]="tabActiva() !== 'roles'"
-          [class.hover:bg-slate-100] [class.dark:hover:bg-slate-800/60]="tabActiva() !== 'roles'"
-          title="Roles">
-          <div class="flex items-center gap-3 min-w-0">
-            <span class="material-symbols-outlined text-base flex-shrink-0 group-hover:scale-110 transition-transform">security</span>
-            @if (!sidebarContraido()) { <span class="truncate">Roles</span> }
-          </div>
-          @if (!sidebarContraido() && roles().length > 0) {
-            <span class="px-1.5 py-0.5 rounded text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-mono">{{ roles().length }}</span>
-          }
-        </button>
-      }
-
-        <button
-          (click)="cambiarTab('tipos-documento')"
-          class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all group border cursor-pointer" [class.justify-center]="sidebarContraido()" [class.px-2]="sidebarContraido()"
-          [class.bg-blue-700]="tabActiva() === 'tipos-documento'" [class.dark:bg-blue-600]="tabActiva() === 'tipos-documento'" [class.shadow-md]="tabActiva() === 'tipos-documento'" [class.shadow-blue-900/30]="tabActiva() === 'tipos-documento'" [class.border-blue-700]="tabActiva() === 'tipos-documento'"
-          [class.text-white]="tabActiva() === 'tipos-documento'"
-          [class.text-slate-700]="tabActiva() !== 'tipos-documento'" [class.dark:text-slate-200]="tabActiva() !== 'tipos-documento'" [class.bg-white/70]="tabActiva() !== 'tipos-documento'" [class.dark:bg-slate-900/50]="tabActiva() !== 'tipos-documento'" [class.border-blue-200/60]="tabActiva() !== 'tipos-documento'" [class.dark:border-blue-900/40]="tabActiva() !== 'tipos-documento'" [class.hover:bg-blue-100/70]="tabActiva() !== 'tipos-documento'" [class.dark:hover:bg-slate-800/80]="tabActiva() !== 'tipos-documento'"
-          [class.hover:bg-slate-100] [class.dark:hover:bg-slate-800/60]="tabActiva() !== 'tipos-documento'"
-          title="Tipos de Documento">
-          <div class="flex items-center gap-3 min-w-0">
-            <span class="material-symbols-outlined text-base flex-shrink-0 group-hover:scale-110 transition-transform">description</span>
-            @if (!sidebarContraido()) { <span class="truncate">Tipos Doc.</span> }
-          </div>
-        </button>
-
-        <button
-          (click)="cambiarTab('ubigeos')"
-          class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all group border cursor-pointer" [class.justify-center]="sidebarContraido()" [class.px-2]="sidebarContraido()"
-          [class.bg-blue-700]="tabActiva() === 'ubigeos'" [class.dark:bg-blue-600]="tabActiva() === 'ubigeos'" [class.shadow-md]="tabActiva() === 'ubigeos'" [class.shadow-blue-900/30]="tabActiva() === 'ubigeos'" [class.border-blue-700]="tabActiva() === 'ubigeos'"
-          [class.text-white]="tabActiva() === 'ubigeos'"
-          [class.text-slate-700]="tabActiva() !== 'ubigeos'" [class.dark:text-slate-200]="tabActiva() !== 'ubigeos'" [class.bg-white/70]="tabActiva() !== 'ubigeos'" [class.dark:bg-slate-900/50]="tabActiva() !== 'ubigeos'" [class.border-blue-200/60]="tabActiva() !== 'ubigeos'" [class.dark:border-blue-900/40]="tabActiva() !== 'ubigeos'" [class.hover:bg-blue-100/70]="tabActiva() !== 'ubigeos'" [class.dark:hover:bg-slate-800/80]="tabActiva() !== 'ubigeos'"
-          [class.hover:bg-slate-100] [class.dark:hover:bg-slate-800/60]="tabActiva() !== 'ubigeos'"
-          title="Ubigeos">
-          <div class="flex items-center gap-3 min-w-0">
-            <span class="material-symbols-outlined text-base flex-shrink-0 group-hover:scale-110 transition-transform">location_on</span>
-            @if (!sidebarContraido()) { <span class="truncate">Ubigeos</span> }
-          </div>
-          @if (!sidebarContraido() && ubigeos().length > 0) {
-            <span class="px-1.5 py-0.5 rounded text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-mono">{{ ubigeos().length }}</span>
-          }
-        </button>
-
-      @if (authService.esAdmin() || tienePermiso('auditoria', 'ver')) {
-        <button
-          (click)="cambiarTab('auditoria')"
-          class="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold transition-all group border cursor-pointer" [class.justify-center]="sidebarContraido()" [class.px-2]="sidebarContraido()"
-          [class.bg-blue-700]="tabActiva() === 'auditoria'" [class.dark:bg-blue-600]="tabActiva() === 'auditoria'" [class.shadow-md]="tabActiva() === 'auditoria'" [class.shadow-blue-900/30]="tabActiva() === 'auditoria'" [class.border-blue-700]="tabActiva() === 'auditoria'"
-          [class.text-white]="tabActiva() === 'auditoria'"
-          [class.text-slate-700]="tabActiva() !== 'auditoria'" [class.dark:text-slate-200]="tabActiva() !== 'auditoria'" [class.bg-white/70]="tabActiva() !== 'auditoria'" [class.dark:bg-slate-900/50]="tabActiva() !== 'auditoria'" [class.border-blue-200/60]="tabActiva() !== 'auditoria'" [class.dark:border-blue-900/40]="tabActiva() !== 'auditoria'" [class.hover:bg-blue-100/70]="tabActiva() !== 'auditoria'" [class.dark:hover:bg-slate-800/80]="tabActiva() !== 'auditoria'"
-          [class.hover:bg-slate-100] [class.dark:hover:bg-slate-800/60]="tabActiva() !== 'auditoria'"
-          title="Auditoría">
-          <span class="material-symbols-outlined text-base flex-shrink-0 group-hover:scale-110 transition-transform">history</span>
-          @if (!sidebarContraido()) { <span class="truncate">Auditoría</span> }
-        </button>
-      }
-
         <button
           (click)="cambiarTab('ayuda')"
           class="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold transition-all group border cursor-pointer" [class.justify-center]="sidebarContraido()" [class.px-2]="sidebarContraido()"

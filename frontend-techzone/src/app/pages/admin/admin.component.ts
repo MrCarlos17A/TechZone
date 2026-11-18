@@ -1222,11 +1222,11 @@ export class AdminComponent implements OnInit {
       case 'categorias': return this.tienePermiso('categorias', 'ver');
       case 'marcas': return this.tienePermiso('marcas', 'ver');
       case 'imagenes': return this.tienePermiso('imagenes', 'ver');
-      case 'productos-proveedor': return this.authService.esAdmin() || this.tienePermiso('productos', 'ver');
-      case 'personas': return this.tienePermiso('usuarios', 'ver') || this.tienePermiso('clientes', 'ver') || this.tienePermiso('empleados', 'ver');
+      case 'productos-proveedor': return this.tienePermiso('productos', 'ver');
+      case 'personas': return this.tienePermiso('usuarios', 'ver') || this.tienePermiso('empleados', 'ver');
       case 'clientes': return this.tienePermiso('clientes', 'ver');
       case 'empleados': return this.tienePermiso('empleados', 'ver');
-      case 'proveedores': return this.tienePermiso('productos', 'ver');
+      case 'proveedores': return this.authService.esAdmin() || this.tienePermiso('productos', 'ver');
       case 'usuarios': return this.tienePermiso('usuarios', 'ver');
       case 'ventas': return this.tienePermiso('ventas', 'ver');
       case 'detalles-venta': return this.tienePermiso('ventas', 'ver');
@@ -1238,7 +1238,7 @@ export class AdminComponent implements OnInit {
       case 'roles': return this.tienePermiso('roles', 'ver');
       case 'tipos-documento': return this.tienePermiso('configuracion', 'ver');
       case 'ubigeos': return this.tienePermiso('configuracion', 'ver');
-      case 'auditoria': return this.authService.esAdmin() || this.tienePermiso('auditoria', 'ver');
+      case 'auditoria': return this.tienePermiso('auditoria', 'ver');
       case 'ayuda': return true;
       default: return true;
     }

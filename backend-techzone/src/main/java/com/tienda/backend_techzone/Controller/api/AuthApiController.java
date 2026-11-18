@@ -167,19 +167,29 @@ public class AuthApiController {
 
             String token = jwtService.generarToken(usuario.getCorreo(), roles, usuario.getIdUsuario());
 
+            String rolNombre = (usuario.getRol() != null && usuario.getRol().getNombre() != null)
+                    ? usuario.getRol().getNombre()
+                    : "Usuario";
+
             boolean esAdmin = usuario.getRol() != null && (
-                    Boolean.TRUE.equals(usuario.getRol().getEsAdministrativo())
-                    || (usuario.getRol().getNombre() != null && usuario.getRol().getNombre().toUpperCase().contains("ADMIN"))
-                    || Long.valueOf(1L).equals(usuario.getRol().getIdRol())
+                    Long.valueOf(1L).equals(usuario.getRol().getIdRol())
+                    || "Administrador".equalsIgnoreCase(usuario.getRol().getNombre())
+                    || "Gerente".equalsIgnoreCase(usuario.getRol().getNombre())
+                    || "admin@techzone.pe".equalsIgnoreCase(usuario.getCorreo())
+                    || "admin@techzone.com".equalsIgnoreCase(usuario.getCorreo())
             );
+            boolean esStaff = esAdmin || (usuario.getRol() != null && Boolean.TRUE.equals(usuario.getRol().getEsAdministrativo()));
+
             Map<String, Object> cuerpo = new LinkedHashMap<>();
             cuerpo.put("token", token);
             cuerpo.put("tipo", "Bearer");
             cuerpo.put("idUsuario", usuario.getIdUsuario());
             cuerpo.put("correo", usuario.getCorreo());
+            cuerpo.put("rol", rolNombre);
             cuerpo.put("roles", roles);
-            cuerpo.put("esStaff", esAdmin);
-            cuerpo.put("esAdministrativo", esAdmin);
+            cuerpo.put("esAdmin", esAdmin);
+            cuerpo.put("esStaff", esStaff);
+            cuerpo.put("esAdministrativo", esStaff);
             cuerpo.put("permisos", usuario.getRol() != null ? usuario.getRol().getPermisos() : null);
             cuerpo.put("nombre", nombreCompleto(usuario));
             return ResponseEntity.ok(cuerpo);
@@ -328,7 +338,9 @@ public class AuthApiController {
         cuerpo.put("tipo", "Bearer");
         cuerpo.put("idUsuario", usuario.getIdUsuario());
         cuerpo.put("correo", usuario.getCorreo());
+        cuerpo.put("rol", "Usuario");
         cuerpo.put("roles", roles);
+        cuerpo.put("esAdmin", false);
         cuerpo.put("esStaff", false);
         cuerpo.put("esAdministrativo", false);
         cuerpo.put("permisos", "{\"productos\":[\"ver\"]}");
@@ -346,11 +358,19 @@ public class AuthApiController {
             return respuesta(401, "Usuario no encontrado");
         }
 
+        String rolNombre = (usuario.getRol() != null && usuario.getRol().getNombre() != null)
+                ? usuario.getRol().getNombre()
+                : "Usuario";
+
         boolean esAdmin = usuario.getRol() != null && (
-                Boolean.TRUE.equals(usuario.getRol().getEsAdministrativo())
-                || (usuario.getRol().getNombre() != null && usuario.getRol().getNombre().toUpperCase().contains("ADMIN"))
-                || Long.valueOf(1L).equals(usuario.getRol().getIdRol())
+                Long.valueOf(1L).equals(usuario.getRol().getIdRol())
+                || "Administrador".equalsIgnoreCase(usuario.getRol().getNombre())
+                || "Gerente".equalsIgnoreCase(usuario.getRol().getNombre())
+                || "admin@techzone.pe".equalsIgnoreCase(usuario.getCorreo())
+                || "admin@techzone.com".equalsIgnoreCase(usuario.getCorreo())
         );
+        boolean esStaff = esAdmin || (usuario.getRol() != null && Boolean.TRUE.equals(usuario.getRol().getEsAdministrativo()));
+
         List<String> roles = (detalles.getAuthorities() != null)
                 ? detalles.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList()
                 : List.of();
@@ -361,9 +381,11 @@ public class AuthApiController {
         Map<String, Object> cuerpo = new LinkedHashMap<>();
         cuerpo.put("idUsuario", usuario.getIdUsuario());
         cuerpo.put("correo", usuario.getCorreo());
+        cuerpo.put("rol", rolNombre);
         cuerpo.put("roles", roles);
-        cuerpo.put("esStaff", esAdmin);
-        cuerpo.put("esAdministrativo", esAdmin);
+        cuerpo.put("esAdmin", esAdmin);
+        cuerpo.put("esStaff", esStaff);
+        cuerpo.put("esAdministrativo", esStaff);
         cuerpo.put("permisos", permisos);
         cuerpo.put("nombre", nombreCompleto(usuario));
         return ResponseEntity.ok(cuerpo);

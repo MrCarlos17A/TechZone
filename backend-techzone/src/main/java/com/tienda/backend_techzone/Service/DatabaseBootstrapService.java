@@ -106,7 +106,7 @@ public class DatabaseBootstrapService implements ApplicationRunner {
                     rol.setEsAdministrativo(esAdministrativo);
                     modificado = true;
                 }
-                if (id == 1L && (rol.getPermisos() == null || rol.getPermisos().isBlank() || !rol.getPermisos().contains("dashboard"))) {
+                if (rol.getPermisos() == null || rol.getPermisos().isBlank() || (esAdministrativo && !rol.getPermisos().contains("dashboard"))) {
                     rol.setPermisos(permisos);
                     modificado = true;
                 }

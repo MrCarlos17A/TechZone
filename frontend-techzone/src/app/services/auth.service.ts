@@ -27,18 +27,38 @@ export class AuthService {
   readonly esAdmin = computed(() => {
     const user = this.currentUser();
     if (!user) return false;
-    if (user.roles && Array.isArray(user.roles)) {
-      const match = user.roles.some(r => {
-        const lower = (r || '').toLowerCase();
-        return lower.includes('admin') || lower.includes('gerente');
-      });
-      if (match) return true;
+    if (user.esAdmin !== undefined && user.esAdmin !== null) {
+      return !!user.esAdmin;
     }
-    const correo = (user.correo || '').toLowerCase();
+    const correo = (user.correo || '').toLowerCase().trim();
     if (correo === 'admin@techzone.pe' || correo === 'admin@techzone.com') {
       return true;
     }
+    if (user.rol) {
+      const r = user.rol.toLowerCase().trim();
+      if (r === 'administrador' || r === 'admin' || r === 'gerente') {
+        return true;
+      }
+    }
+    if (user.roles && Array.isArray(user.roles)) {
+      const match = user.roles.some(r => {
+        const lower = (r || '').toLowerCase().trim();
+        return lower === 'role_administrador' || lower === 'role_admin' || lower === 'administrador' || lower === 'gerente' || lower === 'role_gerente';
+      });
+      if (match) return true;
+    }
     return false;
+  });
+
+  readonly rolUsuarioActual = computed(() => {
+    const user = this.currentUser();
+    if (!user) return 'Invitado';
+    if (user.rol && user.rol.trim()) {
+      return user.rol.trim();
+    }
+    if (this.esAdmin()) return 'Administrador';
+    if (this.isStaff()) return 'Colaborador';
+    return 'Cliente';
   });
 
   readonly esColaborador = computed(() => {
@@ -57,12 +77,22 @@ export class AuthService {
     // Si es Administrador por rol, nombre o correo admin, siempre es Staff
     if (this.esAdmin()) return true;
 
+    if (user.esStaff !== undefined && user.esStaff !== null) {
+      return !!user.esStaff;
+    }
+    if (user.esAdministrativo !== undefined && user.esAdministrativo !== null) {
+      return !!user.esAdministrativo;
+    }
+
     if (user.roles && Array.isArray(user.roles)) {
-      const esAdmin = user.roles.some(r => (r || '').toUpperCase().includes('ADMIN'));
-      if (esAdmin) return true;
+      const tieneStaffAuthority = user.roles.some(r => {
+        const u = (r || '').toUpperCase().trim();
+        return u === 'ROLE_STAFF' || u === 'ROLE_TRABAJADOR' || u === 'ROLE_SUPERVISOR DE VENTAS' || u === 'ROLE_LOGÍSTICA Y ALMACÉN' || u === 'ROLE_SOPORTE TÉCNICO';
+      });
+      if (tieneStaffAuthority) return true;
 
       const esClienteOUsuario = user.roles.some(r => {
-        const u = (r || '').toUpperCase();
+        const u = (r || '').toUpperCase().trim();
         return u === 'ROLE_CLIENTE' || u === 'CLIENTE' || u === 'ROLE_USUARIO' || u === 'USUARIO';
       });
       if (esClienteOUsuario) {
@@ -70,12 +100,6 @@ export class AuthService {
       }
     }
 
-    if (user.esAdministrativo !== undefined && user.esAdministrativo !== null) {
-      return !!user.esAdministrativo;
-    }
-    if (user.esStaff !== undefined && user.esStaff !== null) {
-      return !!user.esStaff;
-    }
     return false;
   });
 
@@ -99,8 +123,9 @@ export class AuthService {
     }
 
     if (!permisosObj) {
-      // Si no tiene matriz explícita pero es staff, permitir solo lectura
-      return accion === 'ver' && this.isStaff();
+      // Si no tiene matriz explícita y es staff, dar acceso básico a catálogo y dashboard únicamente
+      const modulosBasicosStaff = ['dashboard', 'productos', 'categorias', 'marcas', 'imagenes'];
+      return accion === 'ver' && this.isStaff() && modulosBasicosStaff.includes(modulo.toLowerCase());
     }
 
     const accionesModulo = permisosObj[modulo.toLowerCase()];
@@ -170,7 +195,9 @@ export class AuthService {
           const actualizado: AuthResponse = {
             ...actual,
             nombre: info.nombre || actual.nombre,
+            rol: info.rol || actual.rol,
             roles: info.roles || actual.roles,
+            esAdmin: info.esAdmin !== undefined ? info.esAdmin : actual.esAdmin,
             esStaff: info.esStaff !== undefined ? info.esStaff : actual.esStaff,
             esAdministrativo: info.esAdministrativo !== undefined ? info.esAdministrativo : (actual as any).esAdministrativo,
             permisos: info.permisos || actual.permisos,

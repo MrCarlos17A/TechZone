@@ -48,7 +48,7 @@ public class UsuarioDetalleService implements UserDetailsService {
             autoridades.add(new SimpleGrantedAuthority("ROLE_" + rolNombre));
             autoridades.add(new SimpleGrantedAuthority("ROLE_" + rolNombre.toUpperCase()));
             if (Boolean.TRUE.equals(usuario.getRol().getEsAdministrativo())) {
-                autoridades.add(new SimpleGrantedAuthority("ROLE_ADMINISTRATIVO"));
+                autoridades.add(new SimpleGrantedAuthority("ROLE_STAFF"));
             }
         }
 

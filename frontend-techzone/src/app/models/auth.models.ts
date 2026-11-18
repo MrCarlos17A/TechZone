@@ -23,7 +23,9 @@ export interface AuthResponse {
   tipo: string;
   idUsuario: number;
   correo: string;
+  rol?: string;
   roles: string[];
+  esAdmin?: boolean;
   esStaff: boolean;
   esAdministrativo?: boolean;
   permisos?: Record<string, string[]> | string | null;
