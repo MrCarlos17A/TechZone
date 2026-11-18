@@ -1,3 +1,5 @@
+name: techzone
+
 services:
   backend:
     build:
