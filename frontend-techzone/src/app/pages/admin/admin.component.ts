@@ -1222,23 +1222,23 @@ export class AdminComponent implements OnInit {
       case 'categorias': return this.tienePermiso('categorias', 'ver');
       case 'marcas': return this.tienePermiso('marcas', 'ver');
       case 'imagenes': return this.tienePermiso('imagenes', 'ver');
-      case 'productos-proveedor': return this.tienePermiso('productos', 'ver');
+      case 'productos-proveedor': return false;
       case 'personas': return false;
       case 'clientes': return this.tienePermiso('clientes', 'ver');
       case 'empleados': return false;
       case 'proveedores': return false;
       case 'usuarios': return false;
       case 'ventas': return this.tienePermiso('ventas', 'ver');
-      case 'detalles-venta': return this.tienePermiso('ventas', 'ver');
+      case 'detalles-venta': return false;
       case 'pagos': return this.tienePermiso('pagos', 'ver');
       case 'medios-pago': return false;
-      case 'carritos': return this.tienePermiso('ventas', 'ver');
-      case 'detalles-carrito': return this.tienePermiso('ventas', 'ver');
+      case 'carritos': return false;
+      case 'detalles-carrito': return false;
       case 'configuracion': return false;
       case 'roles': return false;
       case 'tipos-documento': return false;
       case 'ubigeos': return false;
-      case 'auditoria': return this.tienePermiso('auditoria', 'ver');
+      case 'auditoria': return false;
       case 'ayuda': return true;
       default: return false;
     }
