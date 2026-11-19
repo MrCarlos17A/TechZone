@@ -3,7 +3,7 @@
 **Curso:** Desarrollo Web Integrado  
 **Ciclo Académico:** 2026-2 · Ciclo VIII  
 **Repositorio Oficial:** [https://github.com/MrCarlos17A/TechZone.git](https://github.com/MrCarlos17A/TechZone.git)  
-**Estado del Pipeline CI:** [![TechZone CI](https://github.com/MrCarlos17A/TechZone/actions/workflows/ci.yml/badge.svg)](https://github.com/MrCarlos17A/TechZone/actions/workflows/ci.yml)  
+**Estado del Pipeline CI:** [![TechZone CI](https://github.com/MrCarlos17A/TechZone/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/MrCarlos17A/TechZone/actions/workflows/ci.yml)  
 
 ---
 
@@ -31,34 +31,10 @@ El proyecto está diseñado bajo una arquitectura desacoplada de dos capas (Mono
 
 ---
 
-## Documentación Técnica Oficial para Sustentación
-
-Para una comprensión exhaustiva de la arquitectura, flujos técnicos, código fuente y defensa oral del proyecto, se dispone de guías especializadas en el directorio [`documentacion/`](file:///d:/UTP/CICLO%20VIII/DESARROLLO%20WEB%20INTEGRADO/PROYECTO/AVANCE%20II/documentacion/):
-
-| N° | Documento Oficial | Descripción Técnica |
-| :---: | :--- | :--- |
-| **00** | [00_INDICE_SUSTENTACION.md](file:///d:/UTP/CICLO%20VIII/DESARROLLO%20WEB%20INTEGRADO/PROYECTO/AVANCE%20II/documentacion/00_INDICE_SUSTENTACION.md) | Índice maestro, mapa conceptual, flujos y guía rápida de exposición. |
-| **01** | [01_ARQUITECTURA_Y_DOCKER.md](file:///d:/UTP/CICLO%20VIII/DESARROLLO%20WEB%20INTEGRADO/PROYECTO/AVANCE%20II/documentacion/01_ARQUITECTURA_Y_DOCKER.md) | Arquitectura SPA, servidor Nginx (`try_files`), proxy inverso, Dockerfile y red interna. |
-| **02** | [02_BACKEND_SPRING_BOOT.md](file:///d:/UTP/CICLO%20VIII/DESARROLLO%20WEB%20INTEGRADO/PROYECTO/AVANCE%20II/documentacion/02_BACKEND_SPRING_BOOT.md) | API REST en Java 25, 18 controladores, transacciones atómicas ACID y servicios. |
-| **03** | [03_SEGURIDAD_JWT_Y_RBAC.md](file:///d:/UTP/CICLO%20VIII/DESARROLLO%20WEB%20INTEGRADO/PROYECTO/AVANCE%20II/documentacion/03_SEGURIDAD_JWT_Y_RBAC.md) | Seguridad defensiva, JWT con Server Boot Signature, matriz RBAC y bloqueo contra fuerza bruta. |
-| **04** | [04_FRONTEND_ANGULAR_SSR.md](file:///d:/UTP/CICLO%20VIII/DESARROLLO%20WEB%20INTEGRADO/PROYECTO/AVANCE%20II/documentacion/04_FRONTEND_ANGULAR_SSR.md) | Angular 21, Signals, tokens de diseño en español, 18 gestores CRUD y modo oscuro. |
-| **05** | [05_BASE_DE_DATOS_SUPABASE_POSTGRESQL.md](file:///d:/UTP/CICLO%20VIII/DESARROLLO%20WEB%20INTEGRADO/PROYECTO/AVANCE%20II/documentacion/05_BASE_DE_DATOS_SUPABASE_POSTGRESQL.md) | PostgreSQL en Supabase, Transaction Pooler (puerto 6543), HikariCP y esquema relacional. |
-| **06** | [06_PREGUNTAS_Y_RESPUESTAS_SUSTENTACION.md](file:///d:/UTP/CICLO%20VIII/DESARROLLO%20WEB%20INTEGRADO/PROYECTO/AVANCE%20II/documentacion/06_PREGUNTAS_Y_RESPUESTAS_SUSTENTACION.md) | Banco de más de 30 preguntas y respuestas críticas para la defensa académica. |
-
----
-
 ## Estructura del Repositorio (Monorepo)
 
 ```text
 TechZone/
-├── documentacion/                              # Guías técnicas oficiales y manuales de sustentación
-│   ├── 00_INDICE_SUSTENTACION.md               # Índice maestro y mapa conceptual de sustentación
-│   ├── 01_ARQUITECTURA_Y_DOCKER.md             # Arquitectura fullstack, Docker, Nginx SPA y red
-│   ├── 02_BACKEND_SPRING_BOOT.md               # API REST, controladores, servicios y transacciones
-│   ├── 03_SEGURIDAD_JWT_Y_RBAC.md              # Seguridad defensiva, JWT con Boot ID y matriz RBAC
-│   ├── 04_FRONTEND_ANGULAR_SSR.md              # Angular 21, Signals, tokens de diseño y 18 gestores
-│   ├── 05_BASE_DE_DATOS_SUPABASE_POSTGRESQL.md # Conexión Supabase (puerto 6543), HikariCP y esquema
-│   └── 06_PREGUNTAS_Y_RESPUESTAS_SUSTENTACION.md # Banco de preguntas y respuestas para la defensa
 ├── docker-compose.yml                          # Orquestación de contenedores (Frontend Nginx + Backend Spring Boot)
 ├── backend-techzone/                           # API REST - Spring Boot (Java 25)
 │   ├── Dockerfile                              # Multi-stage build con Eclipse Temurin (JDK 25 compilador + JRE 25 ejecutor)
