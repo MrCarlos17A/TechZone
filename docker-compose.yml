@@ -1,32 +1,39 @@
+# ==============================================================
+# TechZone - Orquestacion de Contenedores Docker Compose
+# Define y ejecuta los servicios backend y frontend en red aislada
+# ==============================================================
 name: techzone
 
 services:
+  # Servicio Backend: API REST desarrollada en Spring Boot 4 y Java 25
   backend:
     build:
-      context: ./backend-techzone
-      dockerfile: Dockerfile
-    container_name: techzone-backend
-    restart: unless-stopped
+      context: ./backend-techzone       # Directorio base del proyecto backend
+      dockerfile: Dockerfile            # Construccion multi-stage (Maven compilador -> JRE runtime)
+    container_name: techzone-backend    # Nombre asignado al contenedor en ejecucion
+    restart: unless-stopped             # Reinicio automatico ante caidas o reinicio del host
     ports:
-      - "8080:8080"
+      - "8080:8080"                     # Mapeo: Puerto 8080 del host -> Puerto 8080 del contenedor
     env_file:
-      - ./backend-techzone/.env
+      - ./backend-techzone/.env         # Variables de entorno inyectadas (credenciales Supabase, JWT, APIs)
     networks:
-      - techzone-net
+      - techzone-net                    # Conexion a la red interna compartida
 
+  # Servicio Frontend: Aplicacion SPA en Angular 21 servida por Nginx
   frontend:
     build:
-      context: ./frontend-techzone
-      dockerfile: Dockerfile
-    container_name: techzone-frontend
-    restart: unless-stopped
+      context: ./frontend-techzone      # Directorio base del proyecto frontend
+      dockerfile: Dockerfile            # Construccion multi-stage (Node.js build -> Nginx alpine)
+    container_name: techzone-frontend   # Nombre asignado al contenedor en ejecucion
+    restart: unless-stopped             # Reinicio automatico ante fallos
     ports:
-      - "4200:80"
+      - "4200:80"                       # Mapeo: Acceso web http://localhost:4200 -> Puerto 80 interno Nginx
     depends_on:
-      - backend
+      - backend                         # Orden de inicio: crea el backend antes de levantar el frontend
     networks:
-      - techzone-net
+      - techzone-net                    # Permite al proxy inverso de Nginx comunicarse con http://backend:8080
 
+# Red privada virtual tipo bridge para la comunicacion segura entre contenedores
 networks:
   techzone-net:
     driver: bridge

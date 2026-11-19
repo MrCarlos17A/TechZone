@@ -837,14 +837,14 @@
                       <defs>
                         <!-- Gradiente de área bajo la curva -->
                         <linearGradient id="areaGradientLineal" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stop-color="#f43f5e" stop-opacity="0.35" />
-                          <stop offset="50%" stop-color="#f43f5e" stop-opacity="0.12" />
-                          <stop offset="100%" stop-color="#f43f5e" stop-opacity="0.0" />
+                          <stop offset="0%" stop-color="var(--grafico-linea-ingresos, #1d4ed8)" stop-opacity="0.30" />
+                          <stop offset="50%" stop-color="var(--grafico-linea-ingresos, #1d4ed8)" stop-opacity="0.10" />
+                          <stop offset="100%" stop-color="var(--grafico-linea-ingresos, #1d4ed8)" stop-opacity="0.0" />
                         </linearGradient>
 
                         <!-- Filtro de sombra suave para la línea -->
                         <filter id="glowCurva" x="-20%" y="-20%" width="140%" height="140%">
-                          <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#f43f5e" flood-opacity="0.3" />
+                          <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="var(--grafico-linea-ingresos, #1d4ed8)" flood-opacity="0.25" />
                         </filter>
                       </defs>
 
@@ -877,7 +877,7 @@
                         <path
                           [attr.d]="datosLineal().pathLine"
                           fill="none"
-                          stroke="#f43f5e"
+                          stroke="var(--grafico-linea-ingresos, #1d4ed8)"
                           stroke-width="3"
                           stroke-linecap="round"
                           stroke-linejoin="round"
@@ -888,9 +888,9 @@
                       @for (pt of datosLineal().puntosConVentas; track pt.fecha) {
                         <g class="cursor-pointer group">
                           <!-- Anillo pulsante de fondo -->
-                          <circle [attr.cx]="pt.x" [attr.cy]="pt.y" r="8" fill="#f43f5e" fill-opacity="0.25" stroke="#f43f5e" stroke-width="1.5" class="animate-pulse" />
+                          <circle [attr.cx]="pt.x" [attr.cy]="pt.y" r="8" fill="var(--grafico-linea-ingresos, #1d4ed8)" fill-opacity="0.25" stroke="var(--grafico-linea-ingresos, #1d4ed8)" stroke-width="1.5" class="animate-pulse" />
                           <!-- Punto central sólido -->
-                          <circle [attr.cx]="pt.x" [attr.cy]="pt.y" r="4.5" fill="#f43f5e" stroke="#ffffff" stroke-width="2" />
+                          <circle [attr.cx]="pt.x" [attr.cy]="pt.y" r="4.5" fill="var(--grafico-linea-ingresos, #1d4ed8)" stroke="#ffffff" stroke-width="2" />
 
                           <!-- Badge flotante con el monto exacto -->
                           <g class="transition-transform group-hover:scale-105">
@@ -901,7 +901,7 @@
                               height="22"
                               rx="6"
                               fill="#090d16"
-                              stroke="#f43f5e"
+                              stroke="var(--grafico-linea-ingresos, #1d4ed8)"
                               stroke-width="1.2" />
                             <text
                               [attr.x]="pt.x"
@@ -1276,7 +1276,9 @@
         </div>
       }
 
-      <!-- ================= 2. PRODUCTOS (Con Paginación + Edición) ================= -->
+      <!-- ============================================================== -->
+      <!-- CRUD DE GESTOR PRODUCTOS -->
+      <!-- ============================================================== -->
       @if (tabActiva() === 'productos') {
         <div class="space-y-4 animate-fadeIn">
           <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
@@ -1619,7 +1621,9 @@
         </div>
       }
 
-      <!-- ================= 4. CATEGORÍAS ================= -->
+      <!-- ============================================================== -->
+      <!-- CRUD DE GESTOR CATEGORIAS -->
+      <!-- ============================================================== -->
       @if (tabActiva() === 'categorias') {
         <div class="space-y-4 animate-fadeIn">
           <div class="flex justify-between items-center">
@@ -1661,7 +1665,9 @@
         </div>
       }
 
-      <!-- ================= 5. MARCAS ================= -->
+      <!-- ============================================================== -->
+      <!-- CRUD DE GESTOR MARCAS -->
+      <!-- ============================================================== -->
       @if (tabActiva() === 'marcas') {
         <div class="space-y-4 animate-fadeIn">
           <div class="flex justify-between items-center">
@@ -1723,7 +1729,9 @@
         </div>
       }
 
-      <!-- ================= 6. IMÁGENES ================= -->
+      <!-- ============================================================== -->
+      <!-- CRUD DE GESTOR IMAGENES -->
+      <!-- ============================================================== -->
       @if (tabActiva() === 'imagenes') {
         <div class="space-y-4 animate-fadeIn">
           <!-- Encabezado y Selector de Modo de Vista -->
@@ -2238,7 +2246,9 @@
         </div>
       }
 
-      <!-- ================= PRODUCTOS - PROVEEDOR (Abastecimiento y Costos) ================= -->
+      <!-- ============================================================== -->
+      <!-- CRUD DE GESTOR PRODUCTO PROVEEDOR -->
+      <!-- ============================================================== -->
       @if (tabActiva() === 'productos-proveedor') {
         <div class="space-y-6 animate-fadeIn">
           <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -2391,7 +2401,9 @@
         </div>
       }
 
-      <!-- ================= PERSONAS (Directorio Unificado) ================= -->
+      <!-- ============================================================== -->
+      <!-- CRUD DE GESTOR PERSONAS -->
+      <!-- ============================================================== -->
       @if (tabActiva() === 'personas') {
         <div class="space-y-6 animate-fadeIn">
           <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -2513,7 +2525,9 @@
         </div>
       }
 
-      <!-- ================= CLIENTES ================= -->
+      <!-- ============================================================== -->
+      <!-- CRUD DE GESTOR CLIENTES -->
+      <!-- ============================================================== -->
       @if (tabActiva() === 'clientes') {
         <div class="space-y-6 animate-fadeIn">
           <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -2635,7 +2649,9 @@
         </div>
       }
 
-      <!-- ================= EMPLEADOS ================= -->
+      <!-- ============================================================== -->
+      <!-- CRUD DE GESTOR EMPLEADOS -->
+      <!-- ============================================================== -->
       @if (tabActiva() === 'empleados') {
         <div class="space-y-6 animate-fadeIn">
           <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -2788,7 +2804,9 @@
         </div>
       }
 
-      <!-- ================= 7. PROVEEDORES ================= -->
+      <!-- ============================================================== -->
+      <!-- CRUD DE GESTOR PROVEEDORES -->
+      <!-- ============================================================== -->
       @if (tabActiva() === 'proveedores') {
         <div class="space-y-4 animate-fadeIn">
           <div class="flex justify-between items-center">
@@ -2840,7 +2858,9 @@
         </div>
       }
 
-      <!-- ================= USUARIOS (Cuentas y Seguridad) ================= -->
+      <!-- ============================================================== -->
+      <!-- CRUD DE GESTOR USUARIOS -->
+      <!-- ============================================================== -->
       @if (tabActiva() === 'usuarios') {
         <div class="space-y-6 animate-fadeIn">
           <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -2990,7 +3010,9 @@
         </div>
       }
 
-      <!-- ================= 8. VENTAS (Pedidos) ================= -->
+      <!-- ============================================================== -->
+      <!-- CRUD DE GESTOR VENTAS -->
+      <!-- ============================================================== -->
       @if (tabActiva() === 'ventas') {
   <div class="space-y-4 animate-fadeIn">
     <!-- Encabezado con Botón de Exportación Excel Avanzado -->
@@ -3346,6 +3368,9 @@
   </div>
 }
 
+      <!-- ============================================================== -->
+      <!-- CRUD DE GESTOR DETALLES DE VENTA -->
+      <!-- ============================================================== -->
       @if (tabActiva() === 'detalles-venta') {
   <div class="space-y-4 animate-fadeIn">
     <!-- Encabezado con Botón de Exportación -->
@@ -3616,7 +3641,9 @@
   </div>
 }
 
-      <!-- ================= 10. PAGOS ================= -->
+      <!-- ============================================================== -->
+      <!-- CRUD DE GESTOR PAGOS -->
+      <!-- ============================================================== -->
       @if (tabActiva() === 'pagos') {
         <div class="space-y-4 animate-fadeIn">
           <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -3801,7 +3828,9 @@
         </div>
       }
 
-      <!-- ================= 11. MEDIOS DE PAGO ================= -->
+      <!-- ============================================================== -->
+      <!-- CRUD DE GESTOR MEDIOS DE PAGO -->
+      <!-- ============================================================== -->
       @if (tabActiva() === 'medios-pago') {
         <div class="space-y-4 animate-fadeIn">
           <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -3868,7 +3897,9 @@
         </div>
       }
 
-      <!-- ================= 12. CARRITOS ACTIVOS ================= -->
+      <!-- ============================================================== -->
+      <!-- CRUD DE GESTOR CARRITOS -->
+      <!-- ============================================================== -->
       @if (tabActiva() === 'carritos') {
         <div class="space-y-4 animate-fadeIn">
           <div>
@@ -3903,6 +3934,9 @@
         </div>
       }
 
+      <!-- ============================================================== -->
+      <!-- CRUD DE GESTOR DETALLES DE CARRITO -->
+      <!-- ============================================================== -->
       @if (tabActiva() === 'detalles-carrito') {
         <div class="space-y-4 animate-fadeIn">
           <h2 class="text-xl font-black text-slate-900 dark:text-white font-heading"><span class="material-symbols-outlined text-blue-600 dark:text-blue-400">remove_shopping_cart</span> Detalles de Carrito</h2>
@@ -4856,7 +4890,9 @@
         </div>
       }
 
-      <!-- ================= 14. ROLES Y PERMISOS ================= -->
+      <!-- ============================================================== -->
+      <!-- CRUD DE GESTOR ROLES -->
+      <!-- ============================================================== -->
       @if (tabActiva() === 'roles') {
         <div class="space-y-6 animate-fadeIn">
           <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -4923,7 +4959,9 @@
         </div>
       }
 
-      <!-- ================= 15. TIPOS DE DOCUMENTO ================= -->
+      <!-- ============================================================== -->
+      <!-- CRUD DE GESTOR TIPOS DE DOCUMENTO -->
+      <!-- ============================================================== -->
       @if (tabActiva() === 'tipos-documento') {
         <div class="space-y-6 animate-fadeIn">
           <div class="flex justify-between items-center">
@@ -4965,7 +5003,9 @@
         </div>
       }
 
-      <!-- ================= 16. UBIGEOS (Gestor Oficial de Cobertura) ================= -->
+      <!-- ============================================================== -->
+      <!-- CRUD DE GESTOR UBIGEOS -->
+      <!-- ============================================================== -->
       @if (tabActiva() === 'ubigeos') {
         <div class="space-y-4 animate-fadeIn">
           <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
@@ -7576,7 +7616,7 @@
   <!-- ============================================================== -->
   @if (mostrarModalEditarImagen()) {
     <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 dark:bg-slate-950/80 backdrop-blur-sm animate-fadeIn">
-      <div class="glass-panel w-full max-w-md rounded-3xl p-6 space-y-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white shadow-2xl">
+      <div class="glass-panel w-full max-w-lg rounded-3xl p-6 space-y-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white shadow-2xl">
         <div class="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3">
           <h3 class="text-base font-bold text-slate-900 dark:text-white font-heading flex items-center gap-2">
             <span class="material-symbols-outlined text-indigo-600 dark:text-indigo-400">edit</span>
@@ -7587,15 +7627,88 @@
           </button>
         </div>
 
-        <div class="space-y-3">
+        <div class="space-y-3.5">
+          <!-- Ubicación actual informativa -->
+          @if (productoActualEditandoImagen(); as prodActual) {
+            <div class="p-3 rounded-2xl bg-slate-100/90 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 text-xs space-y-1.5">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] uppercase font-bold tracking-wider text-slate-500 dark:text-slate-400">Ubicación actual de la imagen</span>
+                <span class="text-[10px] text-slate-500 dark:text-slate-400 font-mono">ID: {{ prodActual.idProducto }}</span>
+              </div>
+              <div class="flex flex-wrap items-center gap-1.5 text-xs">
+                <span class="px-2 py-0.5 rounded-md bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 font-semibold border border-blue-200 dark:border-blue-800">
+                  {{ prodActual.categoria?.nombre || 'Sin Categoría' }}
+                </span>
+                <span class="text-slate-400 font-bold">›</span>
+                <span class="px-2 py-0.5 rounded-md bg-indigo-100 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 font-semibold border border-indigo-200 dark:border-indigo-800">
+                  {{ prodActual.marca?.nombre || 'Sin Marca' }}
+                </span>
+                <span class="text-slate-400 font-bold">›</span>
+                <span class="font-bold text-slate-900 dark:text-white truncate max-w-[200px]" [title]="prodActual.nombre">
+                  {{ prodActual.nombre }}
+                </span>
+              </div>
+            </div>
+          }
+
+          <!-- Filtros opcionales para facilitar la reubicación -->
+          <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-2">
+            <div class="flex items-center justify-between">
+              <label class="text-[11px] font-bold uppercase text-slate-600 dark:text-slate-400 flex items-center gap-1">
+                <span class="material-symbols-outlined text-sm text-blue-600 dark:text-blue-400">filter_alt</span>
+                Reasignar ubicación (Opcional)
+              </label>
+              @if (categoriaFiltroEditarImagen() || marcaFiltroEditarImagen()) {
+                <button
+                  type="button"
+                  (click)="limpiarFiltrosEditarImagen()"
+                  class="text-[10px] font-semibold text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 hover:underline cursor-pointer flex items-center gap-0.5">
+                  <span class="material-symbols-outlined text-xs">clear_all</span>
+                  Ver todos los productos
+                </button>
+              }
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <div>
+                <label class="text-[10px] text-slate-500 dark:text-slate-400 block mb-1">Filtrar por Categoría</label>
+                <select
+                  [ngModel]="categoriaFiltroEditarImagen()"
+                  (ngModelChange)="categoriaFiltroEditarImagen.set($event)"
+                  class="w-full bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-slate-200 px-2.5 py-1.5 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500">
+                  <option [ngValue]="null">Todas las categorías</option>
+                  @for (c of categorias(); track c.idCategoria) {
+                    <option [ngValue]="c.idCategoria">{{ c.nombre }}</option>
+                  }
+                </select>
+              </div>
+              <div>
+                <label class="text-[10px] text-slate-500 dark:text-slate-400 block mb-1">Filtrar por Marca</label>
+                <select
+                  [ngModel]="marcaFiltroEditarImagen()"
+                  (ngModelChange)="marcaFiltroEditarImagen.set($event)"
+                  class="w-full bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-slate-200 px-2.5 py-1.5 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500">
+                  <option [ngValue]="null">Todas las marcas</option>
+                  @for (m of marcas(); track m.idMarca) {
+                    <option [ngValue]="m.idMarca">{{ m.nombre }}</option>
+                  }
+                </select>
+              </div>
+            </div>
+          </div>
+
           <div>
-            <label class="text-[11px] font-bold uppercase text-slate-600 dark:text-slate-400 block mb-1">Producto Asignado *</label>
+            <div class="flex items-center justify-between mb-1">
+              <label class="text-[11px] font-bold uppercase text-slate-600 dark:text-slate-400">Producto Asignado *</label>
+              <span class="text-[10px] text-slate-500 dark:text-slate-400 font-medium">
+                {{ productosFiltradosEditarImagen().length }} productos disponibles
+              </span>
+            </div>
             <select
               [ngModel]="idProductoEditandoImagen()"
               (ngModelChange)="idProductoEditandoImagen.set($event)"
               class="w-full bg-slate-50 dark:bg-slate-950 text-xs text-slate-900 dark:text-slate-200 px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-800 focus:outline-none focus:border-blue-500">
               <option [ngValue]="null">Selecciona un producto...</option>
-              @for (p of productos(); track p.idProducto) {
+              @for (p of productosFiltradosEditarImagen(); track p.idProducto) {
                 <option [ngValue]="p.idProducto">{{ p.nombre }} ({{ p.marca?.nombre || 'Marca' }})</option>
               }
             </select>

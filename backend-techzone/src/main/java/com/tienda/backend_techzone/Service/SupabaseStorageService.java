@@ -181,7 +181,9 @@ public class SupabaseStorageService {
         if (nombreCategoria == null || nombreCategoria.isBlank()) {
             return "productos";
         }
-        String slug = nombreCategoria.toLowerCase(Locale.ROOT)
+        String normalizado = java.text.Normalizer.normalize(nombreCategoria, java.text.Normalizer.Form.NFD)
+                .replaceAll("\\p{M}", "");
+        String slug = normalizado.toLowerCase(Locale.ROOT)
                 .replaceAll("[^a-z0-9]+", "-")
                 .replaceAll("(^-|-$)", "");
         return "productos/" + (slug.isBlank() ? "otros" : slug);
@@ -191,8 +193,10 @@ public class SupabaseStorageService {
         String prefijo = (carpeta == null || carpeta.isBlank())
                 ? ""
                 : carpeta.trim().replaceAll("^/+", "").replaceAll("/+$", "") + "/";
+        String normalizadoNombre = java.text.Normalizer.normalize(nombreOriginal, java.text.Normalizer.Form.NFD)
+                .replaceAll("\\p{M}", "");
         String nombreUnico = System.currentTimeMillis() + "_"
-                + nombreOriginal.replaceAll("[^a-zA-Z0-9._-]", "_");
+                + normalizadoNombre.replaceAll("[^a-zA-Z0-9._-]", "_");
         return prefijo + nombreUnico;
     }
 

@@ -14,6 +14,9 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+// ==============================================================
+// CRUD DE GESTOR IMAGENES
+// ==============================================================
 @RestController
 public class ProductoImagenApiController {
 

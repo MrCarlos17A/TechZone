@@ -197,11 +197,37 @@ export class AdminComponent implements OnInit {
   mostrarModalEditarImagen = signal(false);
   idImagenEditando = signal<number | null>(null);
   idProductoEditandoImagen = signal<number | null>(null);
+  categoriaFiltroEditarImagen = signal<number | null>(null);
+  marcaFiltroEditarImagen = signal<number | null>(null);
   urlEditandoImagen = signal('');
   archivoEditandoImagen: File | null = null;
   previewEditandoImagen = signal<string | null>(null);
   esPrincipalEditandoImagen = signal(false);
   guardandoEdicionImagen = signal(false);
+
+  productoActualEditandoImagen = computed(() => {
+    const id = this.idProductoEditandoImagen();
+    if (!id) return null;
+    return this.productos().find(p => p.idProducto === Number(id)) || null;
+  });
+
+  productosFiltradosEditarImagen = computed(() => {
+    const cat = this.categoriaFiltroEditarImagen();
+    const marca = this.marcaFiltroEditarImagen();
+    const lista = this.productos().filter(p => {
+      if (cat && p.categoria?.idCategoria !== cat) return false;
+      if (marca && p.marca?.idMarca !== marca) return false;
+      return true;
+    });
+    const idSel = this.idProductoEditandoImagen();
+    if (idSel && !lista.some(p => p.idProducto === Number(idSel))) {
+      const prodSel = this.productos().find(p => p.idProducto === Number(idSel));
+      if (prodSel) {
+        return [prodSel, ...lista];
+      }
+    }
+    return lista;
+  });
 
   imagenesFiltradas = computed(() => {
     const filtro = this.filtroProductoImagen();
@@ -1128,7 +1154,9 @@ export class AdminComponent implements OnInit {
     });
   }
 
-  // Gestor y Conciliación de Pagos
+  // ==============================================================
+  // CRUD DE GESTOR PAGOS
+  // ==============================================================
   mostrarModalConciliarPago = signal(false);
   pagoSeleccionadoParaConciliar = signal<PagoAdmin | null>(null);
   nuevoEstadoPago = signal<string>('CONFIRMADO');
@@ -1467,7 +1495,7 @@ export class AdminComponent implements OnInit {
   // Cálculo del Gráfico Circular / Donut (Categorías & Productos)
   datosCircular = computed(() => {
     const modo = this.vistaCircular();
-    const colores = ['#f43f5e', '#f59e0b', '#8b5cf6', '#0ea5e9', '#10b981', '#ec4899', '#6366f1'];
+    const colores = ['#1d4ed8', '#0284c7', '#38bdf8', '#22c55e', '#475569'];
     const C = 2 * Math.PI * 72; // ~452.39 (Radio = 72 para mejor presencia visual)
 
     if (modo === 'ventas_cat') {
@@ -1702,7 +1730,7 @@ export class AdminComponent implements OnInit {
     }
 
     const totalCount = items.reduce((a, b) => a + b.count, 0);
-    const colores = ['#0ea5e9', '#8b5cf6', '#10b981', '#f59e0b', '#f43f5e'];
+    const colores = ['#1d4ed8', '#0284c7', '#38bdf8', '#22c55e', '#475569'];
 
     return items.map((it, idx) => ({
       ...it,
@@ -2196,9 +2224,9 @@ export class AdminComponent implements OnInit {
     return Math.max(1, Math.ceil(this.accesos().length / this.tamanoAccesos()));
   });
 
-  // ==========================================
-  // OPERACIONES: UBIGEOS (Validado + Feedback)
-  // ==========================================
+  // ==============================================================
+  // CRUD DE GESTOR UBIGEOS
+  // ==============================================================
   abrirModalUbigeo(u?: UbigeoAdmin): void {
     if (u) {
       this.esEdicionUbigeo.set(true);
@@ -2313,9 +2341,9 @@ export class AdminComponent implements OnInit {
     );
   }
 
-  // ==========================================
-  // OPERACIONES: PRODUCTOS (Crear / Editar)
-  // ==========================================
+  // ==============================================================
+  // CRUD DE GESTOR PRODUCTOS
+  // ==============================================================
   abrirModalProducto(p?: Producto): void {
     if (p) {
       this.esEdicionProducto.set(true);
@@ -2725,9 +2753,9 @@ export class AdminComponent implements OnInit {
     );
   }
 
-  // ==========================================
-  // OPERACIONES: CATEGORÍAS (Crear / Editar)
-  // ==========================================
+  // ==============================================================
+  // CRUD DE GESTOR CATEGORIAS
+  // ==============================================================
   abrirModalCategoria(c?: Categoria): void {
     if (c) {
       this.esEdicionCategoria.set(true);
@@ -2789,9 +2817,9 @@ export class AdminComponent implements OnInit {
     );
   }
 
-  // ==========================================
-  // OPERACIONES: MARCAS (Crear / Editar)
-  // ==========================================
+  // ==============================================================
+  // CRUD DE GESTOR MARCAS
+  // ==============================================================
   abrirModalMarca(m?: Marca): void {
     if (m) {
       this.esEdicionMarca.set(true);
@@ -2932,9 +2960,9 @@ export class AdminComponent implements OnInit {
     );
   }
 
-  // ==========================================
-  // OPERACIONES: PROVEEDORES (Crear / Editar)
-  // ==========================================
+  // ==============================================================
+  // CRUD DE GESTOR PROVEEDORES
+  // ==============================================================
   abrirModalProveedor(p?: ProveedorAdmin): void {
     if (p) {
       this.esEdicionProveedor.set(true);
@@ -3012,9 +3040,9 @@ export class AdminComponent implements OnInit {
     );
   }
 
-  // ==========================================
-  // OPERACIONES: MEDIOS DE PAGO (Crear / Editar)
-  // ==========================================
+  // ==============================================================
+  // CRUD DE GESTOR MEDIOS DE PAGO
+  // ==============================================================
   getInstruccionesMedioPago(mp: any): string {
     if (mp?.instrucciones && mp.instrucciones.trim()) {
       return mp.instrucciones;
@@ -3155,12 +3183,12 @@ export class AdminComponent implements OnInit {
 
   obtenerClasesBadgeRol(nombreRol?: string): string {
     const r = (nombreRol || '').toUpperCase();
-    if (r.includes('ADMIN')) return 'bg-purple-100 text-purple-800 dark:bg-purple-950/60 dark:text-purple-300 border border-purple-200 dark:border-purple-800';
-    if (r.includes('SUPERVISOR')) return 'bg-indigo-100 text-indigo-800 dark:bg-indigo-950/60 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800';
-    if (r.includes('LOGISTICA') || r.includes('LOGÍSTICA') || r.includes('ALMACEN') || r.includes('ALMACÉN')) return 'bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-200 dark:border-amber-800';
-    if (r.includes('SOPORTE')) return 'bg-cyan-100 text-cyan-800 dark:bg-cyan-950/60 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-800';
-    if (r.includes('TRABAJADOR') || r.includes('EMPLEADO')) return 'bg-blue-100 text-blue-800 dark:bg-blue-950/60 dark:text-blue-300 border border-blue-200 dark:border-blue-800';
-    if (r.includes('CLIENTE')) return 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800';
+    if (r.includes('ADMIN')) return 'bg-blue-100 text-blue-900 dark:bg-blue-950/60 dark:text-blue-300 border border-blue-300 dark:border-blue-800';
+    if (r.includes('SUPERVISOR')) return 'bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-300 border border-slate-300 dark:border-slate-700';
+    if (r.includes('LOGISTICA') || r.includes('LOGÍSTICA') || r.includes('ALMACEN') || r.includes('ALMACÉN')) return 'bg-amber-100 text-amber-900 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-300 dark:border-amber-800';
+    if (r.includes('SOPORTE')) return 'bg-cyan-100 text-cyan-900 dark:bg-cyan-950/60 dark:text-cyan-300 border border-cyan-300 dark:border-cyan-800';
+    if (r.includes('TRABAJADOR') || r.includes('EMPLEADO')) return 'bg-sky-100 text-sky-900 dark:bg-sky-950/60 dark:text-sky-300 border border-sky-300 dark:border-sky-800';
+    if (r.includes('CLIENTE')) return 'bg-emerald-100 text-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800';
     return 'bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-300 border border-slate-200 dark:border-slate-700';
   }
 
@@ -3197,6 +3225,9 @@ export class AdminComponent implements OnInit {
     return { sunat: '-', longitud: 'Variable' };
   }
 
+  // ==============================================================
+  // CRUD DE GESTOR TIPOS DE DOCUMENTO
+  // ==============================================================
   abrirModalTipoDoc(td?: TipoDocumentoAdmin): void {
     if (td) {
       this.esEdicionTipoDoc.set(true);
@@ -3274,9 +3305,9 @@ export class AdminComponent implements OnInit {
     );
   }
 
-  // ==========================================
-  // MÉTODOS MODAL NUEVO COLABORADOR (RENIEC)
-  // ==========================================
+  // ==============================================================
+  // CRUD DE GESTOR EMPLEADOS
+  // ==============================================================
   abrirModalNuevoEmpleado(): void {
     this.formColabDni.set('');
     this.formColabNombres.set('');
@@ -3609,9 +3640,9 @@ export class AdminComponent implements OnInit {
     );
   }
 
-  // ==========================================
-  // OPERACIONES: ROLES & MATRIZ DE PERMISOS
-  // ==========================================
+  // ==============================================================
+  // CRUD DE GESTOR ROLES
+  // ==============================================================
   abrirModalNuevoRol(): void {
     this.esEdicionRol.set(false);
     this.idRolEditando.set(null);
@@ -3773,9 +3804,9 @@ export class AdminComponent implements OnInit {
     }
   }
 
-  // ==========================================
-  // OPERACIONES: EDICIÓN DE USUARIOS
-  // ==========================================
+  // ==============================================================
+  // CRUD DE GESTOR USUARIOS
+  // ==============================================================
   abrirModalEditarUsuario(u: UsuarioAdmin): void {
     this.usuarioEditando.set(u);
     this.formUsuarioRolId.set(u.rol?.idRol || null);
@@ -4190,6 +4221,9 @@ export class AdminComponent implements OnInit {
       .replace(/^-+|-+$/g, '');
   }
 
+  // ==============================================================
+  // CRUD DE GESTOR IMAGENES
+  // ==============================================================
   abrirModalNuevaImagen(idProducto?: number): void {
     let prodTarget: Producto | null = null;
     if (idProducto) {
@@ -4549,6 +4583,8 @@ export class AdminComponent implements OnInit {
     const prod = this.getProductoDeImagen(img);
     this.idImagenEditando.set(img.idProductoImagen);
     this.idProductoEditandoImagen.set(prod ? prod.idProducto : (img.producto?.idProducto || img.idProducto || null));
+    this.categoriaFiltroEditarImagen.set(prod?.categoria?.idCategoria ?? null);
+    this.marcaFiltroEditarImagen.set(prod?.marca?.idMarca ?? null);
     this.urlEditandoImagen.set(img.urlImagen || '');
     this.previewEditandoImagen.set(img.urlImagen || null);
     this.archivoEditandoImagen = null;
@@ -4560,10 +4596,18 @@ export class AdminComponent implements OnInit {
   cerrarModalEditarImagen(): void {
     this.mostrarModalEditarImagen.set(false);
     this.idImagenEditando.set(null);
+    this.idProductoEditandoImagen.set(null);
+    this.categoriaFiltroEditarImagen.set(null);
+    this.marcaFiltroEditarImagen.set(null);
     this.archivoEditandoImagen = null;
     this.urlEditandoImagen.set('');
     this.previewEditandoImagen.set(null);
     this.guardandoEdicionImagen.set(false);
+  }
+
+  limpiarFiltrosEditarImagen(): void {
+    this.categoriaFiltroEditarImagen.set(null);
+    this.marcaFiltroEditarImagen.set(null);
   }
 
   onUrlEditandoImagenChange(url: string): void {
@@ -4692,6 +4736,9 @@ export class AdminComponent implements OnInit {
     );
   }
 
+  // ==============================================================
+  // CRUD DE GESTOR DETALLES DE CARRITO
+  // ==============================================================
   eliminarDetalleCarrito(id: number): void {
     this.solicitarConfirmacion(
       '¿Eliminar Ítem del Carrito?',

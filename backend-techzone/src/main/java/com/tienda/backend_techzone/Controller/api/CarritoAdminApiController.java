@@ -7,6 +7,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+// ==============================================================
+// CRUD DE GESTOR CARRITOS
+// ==============================================================
 @RestController
 @RequestMapping("/api/admin/carritos")
 public class CarritoAdminApiController {

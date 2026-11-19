@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+// ==============================================================
+// CRUD DE GESTOR PRODUCTO PROVEEDOR
+// ==============================================================
 @RestController
 @RequestMapping("/api/admin/productos-proveedor")
 public class ProductoProveedorAdminApiController {

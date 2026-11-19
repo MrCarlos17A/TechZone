@@ -25,9 +25,25 @@
 TechZone es una plataforma web integral de comercio electrónico y gestión empresarial (ERP/E-Commerce B2C/B2B) orientada a la comercialización, distribución mayorista/minorista y control logístico de hardware gamer de alta gama (tarjetas gráficas serie RTX 50, monitores OLED/QHD de alta tasa de refresco, procesadores, periféricos y accesorios profesionales).
 
 El proyecto está diseñado bajo una arquitectura desacoplada de dos capas (Monorepo Fullstack) con soporte integral para despliegue containerizado en Docker:
-1. **Frontend SPA / SSR:** Interfaz moderna, reactiva y optimizada construida con Angular 19 (Server-Side Rendering), gestión de estado granular basada en Signals, maquetación profesional con Tailwind CSS, soporte integral para Modo Claro / Modo Oscuro, validaciones de formularios en tiempo real con deshabilitación condicional de botones, matriz interactiva de autorización por módulo, carrito híbrido con persistencia local aislada por usuario, temporizador de inactividad de 25 minutos para personal administrativo y suite de pruebas unitarias con Vitest.
+1. **Frontend SPA / SSR:** Interfaz moderna, reactiva y optimizada construida con Angular 21 (Server-Side Rendering), gestión de estado granular basada en Signals, maquetación profesional con Tailwind CSS, sistema de tokens de diseño en español (`:root` y `html.light`), soporte integral para Modo Claro / Modo Oscuro, validaciones de formularios en tiempo real con deshabilitación condicional de botones, matriz interactiva de autorización por módulo, carrito híbrido con persistencia local aislada por usuario, temporizador de inactividad de 25 minutos para personal administrativo y suite de pruebas unitarias con Vitest.
 2. **Backend API REST:** Servidor robusto y escalable desarrollado en Java 25 con Spring Boot, arquitectura de seguridad basada en Spring Security con autenticación stateless mediante JWT y firma de ciclo de vida de instancia del servidor (Server Boot Signature), sistema dinámico de control de acceso por roles (RBAC) con permisos granulares por módulo, hashing de contraseñas con BCrypt, gestión de parámetros fiscales SUNAT, persistencia transaccional sobre PostgreSQL en Supabase, almacenamiento multimedia seguro en Supabase Storage y suite de pruebas unitarias con JUnit 5 y Mockito.
 3. **Orquestación en Contenedores:** Configuración completa mediante Docker y Docker Compose para levantar frontend (Nginx) y backend (JVM Temurin) con un único comando sin requerir dependencias locales.
+
+---
+
+## Documentación Técnica Oficial para Sustentación
+
+Para una comprensión exhaustiva de la arquitectura, flujos técnicos, código fuente y defensa oral del proyecto, se dispone de guías especializadas en el directorio [`documentacion/`](file:///d:/UTP/CICLO%20VIII/DESARROLLO%20WEB%20INTEGRADO/PROYECTO/AVANCE%20II/documentacion/):
+
+| N° | Documento Oficial | Descripción Técnica |
+| :---: | :--- | :--- |
+| **00** | [00_INDICE_SUSTENTACION.md](file:///d:/UTP/CICLO%20VIII/DESARROLLO%20WEB%20INTEGRADO/PROYECTO/AVANCE%20II/documentacion/00_INDICE_SUSTENTACION.md) | Índice maestro, mapa conceptual, flujos y guía rápida de exposición. |
+| **01** | [01_ARQUITECTURA_Y_DOCKER.md](file:///d:/UTP/CICLO%20VIII/DESARROLLO%20WEB%20INTEGRADO/PROYECTO/AVANCE%20II/documentacion/01_ARQUITECTURA_Y_DOCKER.md) | Arquitectura SPA, servidor Nginx (`try_files`), proxy inverso, Dockerfile y red interna. |
+| **02** | [02_BACKEND_SPRING_BOOT.md](file:///d:/UTP/CICLO%20VIII/DESARROLLO%20WEB%20INTEGRADO/PROYECTO/AVANCE%20II/documentacion/02_BACKEND_SPRING_BOOT.md) | API REST en Java 25, 18 controladores, transacciones atómicas ACID y servicios. |
+| **03** | [03_SEGURIDAD_JWT_Y_RBAC.md](file:///d:/UTP/CICLO%20VIII/DESARROLLO%20WEB%20INTEGRADO/PROYECTO/AVANCE%20II/documentacion/03_SEGURIDAD_JWT_Y_RBAC.md) | Seguridad defensiva, JWT con Server Boot Signature, matriz RBAC y bloqueo contra fuerza bruta. |
+| **04** | [04_FRONTEND_ANGULAR_SSR.md](file:///d:/UTP/CICLO%20VIII/DESARROLLO%20WEB%20INTEGRADO/PROYECTO/AVANCE%20II/documentacion/04_FRONTEND_ANGULAR_SSR.md) | Angular 21, Signals, tokens de diseño en español, 18 gestores CRUD y modo oscuro. |
+| **05** | [05_BASE_DE_DATOS_SUPABASE_POSTGRESQL.md](file:///d:/UTP/CICLO%20VIII/DESARROLLO%20WEB%20INTEGRADO/PROYECTO/AVANCE%20II/documentacion/05_BASE_DE_DATOS_SUPABASE_POSTGRESQL.md) | PostgreSQL en Supabase, Transaction Pooler (puerto 6543), HikariCP y esquema relacional. |
+| **06** | [06_PREGUNTAS_Y_RESPUESTAS_SUSTENTACION.md](file:///d:/UTP/CICLO%20VIII/DESARROLLO%20WEB%20INTEGRADO/PROYECTO/AVANCE%20II/documentacion/06_PREGUNTAS_Y_RESPUESTAS_SUSTENTACION.md) | Banco de más de 30 preguntas y respuestas críticas para la defensa académica. |
 
 ---
 
@@ -35,15 +51,23 @@ El proyecto está diseñado bajo una arquitectura desacoplada de dos capas (Mono
 
 ```text
 TechZone/
+├── documentacion/                              # Guías técnicas oficiales y manuales de sustentación
+│   ├── 00_INDICE_SUSTENTACION.md               # Índice maestro y mapa conceptual de sustentación
+│   ├── 01_ARQUITECTURA_Y_DOCKER.md             # Arquitectura fullstack, Docker, Nginx SPA y red
+│   ├── 02_BACKEND_SPRING_BOOT.md               # API REST, controladores, servicios y transacciones
+│   ├── 03_SEGURIDAD_JWT_Y_RBAC.md              # Seguridad defensiva, JWT con Boot ID y matriz RBAC
+│   ├── 04_FRONTEND_ANGULAR_SSR.md              # Angular 21, Signals, tokens de diseño y 18 gestores
+│   ├── 05_BASE_DE_DATOS_SUPABASE_POSTGRESQL.md # Conexión Supabase (puerto 6543), HikariCP y esquema
+│   └── 06_PREGUNTAS_Y_RESPUESTAS_SUSTENTACION.md # Banco de preguntas y respuestas para la defensa
 ├── docker-compose.yml                          # Orquestación de contenedores (Frontend Nginx + Backend Spring Boot)
 ├── backend-techzone/                           # API REST - Spring Boot (Java 25)
 │   ├── Dockerfile                              # Multi-stage build con Eclipse Temurin (JDK 25 compilador + JRE 25 ejecutor)
 │   ├── .dockerignore                           # Exclusión de artefactos compilados, .env y temporales
 │   ├── src/main/java/com/tienda/backend_techzone/
-│   │   ├── Controller/                         # Endpoints REST agrupados en /api (Auth, Producto, Venta, DNI, Carrito, Admin)
-│   │   ├── Model/                              # Entidades JPA (Persona, Usuario, Cliente, Empleado, Producto, Venta, Pago, ConfiguracionSitio)
+│   │   ├── Controller/api/                     # 18 Controladores REST con encabezados uniformes de gestores
+│   │   ├── Model/                              # Entidades JPA (Persona, Usuario, Cliente, Empleado, Producto, Venta, Pago, etc.)
 │   │   ├── Repository/                         # Acceso a datos Spring Data JPA y consultas especializadas
-│   │   ├── Service/                            # Lógica de negocio, novedades híbridas, ventas, configuración y transacciones ACID
+│   │   ├── Service/                            # Lógica de negocio, novedades híbridas, ventas, Supabase Storage y transacciones ACID
 │   │   ├── Security/                           # Spring Security, filtros JWT con Server Boot ID, hashing BCrypt y control RBAC
 │   │   └── BackendTechzoneApplication.java     # Clase principal de arranque de Spring Boot
 │   ├── src/test/java/com/tienda/backend_techzone/
@@ -53,7 +77,7 @@ TechZone/
 │   │       ├── ProductoServiceTest.java        # Pruebas de catálogo, destacados y novedades
 │   │       └── VentaServiceTest.java           # Pruebas de órdenes, totales, IGV y ciclo de estados
 │   ├── src/main/resources/
-│   │   └── application.properties              # Configuración de base de datos Supabase, pool Hikari y JWT
+│   │   └── application.properties              # Configuración de base de datos Supabase (puerto 6543), pool Hikari y JWT
 │   ├── src/test/resources/
 │   │   └── application.properties              # Configuración aislada con H2 en memoria para pruebas
 │   ├── iniciar.ps1                             # Script de arranque automatizado local con detección de Java 25
@@ -76,7 +100,7 @@ TechZone/
 │   │   │   ├── registro/                       # Alta de nuevos clientes con verificación de identidad
 │   │   │   ├── perfil/                         # Gestión de datos personales del usuario autenticado
 │   │   │   ├── mis-pedidos/                    # Historial de compras y visor de comprobantes oficiales SUNAT
-│   │   │   └── admin/                          # Panel backoffice con gestión fiscal, inventario y conteos en tiempo real
+│   │   │   └── admin/                          # Panel backoffice con 18 gestores CRUD, métricas y Signals
 │   │   ├── components/                         # Componentes reutilizables de UI (Navbar, Footer, Tarjetas, Toasts)
 │   │   ├── services/                           # Servicios HTTP reactivos y estado global con Signals
 │   │   │   ├── auth.service.ts                 # Autenticación, sesión volátil en sessionStorage y handshake /me
@@ -88,7 +112,7 @@ TechZone/
 │   │   └── models/                             # Interfaces TypeScript y tipado estricto del dominio
 │   ├── src/app/pages/mis-pedidos/
 │   │   └── mis-pedidos.component.spec.ts       # Pruebas unitarias de comprobantes electrónicos con Vitest
-│   ├── src/styles.css                          # Estilos globales y reglas de impresión oficial (@media print)
+│   ├── src/styles.css                          # Tokens de diseño en español (:root, html.light) y reglas @media print
 │   ├── package.json                            # Dependencias npm (Angular 21, Tailwind CSS, Vitest)
 │   └── angular.json                            # Configuración de compilación de Angular
 │
@@ -529,6 +553,82 @@ TechZone cuenta con un sistema de autorización granular dinámico basado en dos
 
 ---
 
+## Catálogo de los 18 Gestores CRUD del Backoffice Administrativo
+
+El panel administrativo de TechZone (`/admin`) integra **18 gestores CRUD completos** agrupados en 6 módulos funcionales. Para facilitar la identificación rápida y sustentación de cada operación sin distracciones ni dudas, **cada gestor cuenta con un encabezado prominente y uniforme en el código fuente** (tanto en los controladores Java como en la plantilla Angular):
+
+```text
+// ==============================================================
+// CRUD DE GESTOR [NOMBRE DEL GESTOR]
+// ==============================================================
+```
+
+| N° | Módulo Funcional | Gestor CRUD | Controlador Backend (API REST) | Operaciones Principales |
+| :---: | :--- | :--- | :--- | :--- |
+| **01** | **Principal** | Gestor Dashboard General | [VentaApiController.java](file:///d:/UTP/CICLO%20VIII/DESARROLLO%20WEB%20INTEGRADO/PROYECTO/AVANCE%20II/backend-techzone/src/main/java/com/tienda/backend_techzone/Controller/api/VentaApiController.java) | Métricas en tiempo real, ingresos, gráficos y conteos. |
+| **02** | **Catálogo** | Gestor Productos | [ProductoApiController.java](file:///d:/UTP/CICLO%20VIII/DESARROLLO%20WEB%20INTEGRADO/PROYECTO/AVANCE%20II/backend-techzone/src/main/java/com/tienda/backend_techzone/Controller/api/ProductoApiController.java) | Alta, edición, stock, precio, destacados y novedades. |
+| **03** | **Catálogo** | Gestor Categorías | [CategoriaApiController.java](file:///d:/UTP/CICLO%20VIII/DESARROLLO%20WEB%20INTEGRADO/PROYECTO/AVANCE%20II/backend-techzone/src/main/java/com/tienda/backend_techzone/Controller/api/CategoriaApiController.java) | Clasificación de hardware gamer y slugs para CDN. |
+| **04** | **Catálogo** | Gestor Marcas | [MarcaApiController.java](file:///d:/UTP/CICLO%20VIII/DESARROLLO%20WEB%20INTEGRADO/PROYECTO/AVANCE%20II/backend-techzone/src/main/java/com/tienda/backend_techzone/Controller/api/MarcaApiController.java) | Fabricantes oficiales (ASUS, MSI, HyperX, etc.). |
+| **05** | **Catálogo** | Gestor Imágenes | [ProductoImagenApiController.java](file:///d:/UTP/CICLO%20VIII/DESARROLLO%20WEB%20INTEGRADO/PROYECTO/AVANCE%20II/backend-techzone/src/main/java/com/tienda/backend_techzone/Controller/api/ProductoImagenApiController.java) | Galería CDN, reubicación asistida y asignación principal. |
+| **06** | **Catálogo** | Gestor Producto-Proveedor | [ProductoProveedorAdminApiController.java](file:///d:/UTP/CICLO%20VIII/DESARROLLO%20WEB%20INTEGRADO/PROYECTO/AVANCE%20II/backend-techzone/src/main/java/com/tienda/backend_techzone/Controller/api/ProductoProveedorAdminApiController.java) | Precios de compra, costo unitario y abastecimiento. |
+| **07** | **Personas** | Gestor Personas | [PersonaAdminApiController.java](file:///d:/UTP/CICLO%20VIII/DESARROLLO%20WEB%20INTEGRADO/PROYECTO/AVANCE%20II/backend-techzone/src/main/java/com/tienda/backend_techzone/Controller/api/PersonaAdminApiController.java) | Padrón maestro civil con validación DNI y ubigeo. |
+| **08** | **Personas** | Gestor Clientes | [ClienteAdminApiController.java](file:///d:/UTP/CICLO%20VIII/DESARROLLO%20WEB%20INTEGRADO/PROYECTO/AVANCE%20II/backend-techzone/src/main/java/com/tienda/backend_techzone/Controller/api/ClienteAdminApiController.java) | Historial comercial, estado activo y compras. |
+| **09** | **Personas** | Gestor Empleados | [EmpleadoAdminApiController.java](file:///d:/UTP/CICLO%20VIII/DESARROLLO%20WEB%20INTEGRADO/PROYECTO/AVANCE%20II/backend-techzone/src/main/java/com/tienda/backend_techzone/Controller/api/EmpleadoAdminApiController.java) | Nómina, salarios, contratos y cuenta corporativa. |
+| **10** | **Personas** | Gestor Proveedores | [ProveedorAdminApiController.java](file:///d:/UTP/CICLO%20VIII/DESARROLLO%20WEB%20INTEGRADO/PROYECTO/AVANCE%20II/backend-techzone/src/main/java/com/tienda/backend_techzone/Controller/api/ProveedorAdminApiController.java) | Mayoristas de componentes, RUC y contactos. |
+| **11** | **Personas** | Gestor Usuarios | [UsuarioAdminApiController.java](file:///d:/UTP/CICLO%20VIII/DESARROLLO%20WEB%20INTEGRADO/PROYECTO/AVANCE%20II/backend-techzone/src/main/java/com/tienda/backend_techzone/Controller/api/UsuarioAdminApiController.java) | Cuentas, asignación de rol y desbloqueo de acceso. |
+| **12** | **Ventas** | Gestor Ventas | [VentaApiController.java](file:///d:/UTP/CICLO%20VIII/DESARROLLO%20WEB%20INTEGRADO/PROYECTO/AVANCE%20II/backend-techzone/src/main/java/com/tienda/backend_techzone/Controller/api/VentaApiController.java) | Control de pedidos, estados de entrega y comprobantes. |
+| **13** | **Ventas** | Gestor Detalle de Venta | [DetalleVentaAdminApiController.java](file:///d:/UTP/CICLO%20VIII/DESARROLLO%20WEB%20INTEGRADO/PROYECTO/AVANCE%20II/backend-techzone/src/main/java/com/tienda/backend_techzone/Controller/api/DetalleVentaAdminApiController.java) | Ítems facturados, precios históricos e inventario. |
+| **14** | **Ventas** | Gestor Pagos | [PagoAdminApiController.java](file:///d:/UTP/CICLO%20VIII/DESARROLLO%20WEB%20INTEGRADO/PROYECTO/AVANCE%20II/backend-techzone/src/main/java/com/tienda/backend_techzone/Controller/api/PagoAdminApiController.java) | Verificación de cobros, transacciones y estados. |
+| **15** | **Ventas** | Gestor Medios de Pago | [MedioPagoApiController.java](file:///d:/UTP/CICLO%20VIII/DESARROLLO%20WEB%20INTEGRADO/PROYECTO/AVANCE%20II/backend-techzone/src/main/java/com/tienda/backend_techzone/Controller/api/MedioPagoApiController.java) | Pasarelas activas (Tarjeta, Yape/Plin, Transferencia). |
+| **16** | **Carrito** | Gestor Carritos | [CarritoAdminApiController.java](file:///d:/UTP/CICLO%20VIII/DESARROLLO%20WEB%20INTEGRADO/PROYECTO/AVANCE%20II/backend-techzone/src/main/java/com/tienda/backend_techzone/Controller/api/CarritoAdminApiController.java) | Carritos activos de compradores y control de abandono. |
+| **17** | **Carrito** | Gestor Detalle de Carrito | [DetalleCarritoAdminApiController.java](file:///d:/UTP/CICLO%20VIII/DESARROLLO%20WEB%20INTEGRADO/PROYECTO/AVANCE%20II/backend-techzone/src/main/java/com/tienda/backend_techzone/Controller/api/DetalleCarritoAdminApiController.java) | Ítems agregados y subtotales en tiempo real. |
+| **18** | **Configuración**| Gestor Configuración | [ConfiguracionSitioApiController.java](file:///d:/UTP/CICLO%20VIII/DESARROLLO%20WEB%20INTEGRADO/PROYECTO/AVANCE%20II/backend-techzone/src/main/java/com/tienda/backend_techzone/Controller/api/ConfiguracionSitioApiController.java) | Parámetros tributarios SUNAT, RUC y datos de empresa. |
+
+---
+
+## Sistema de Tokens de Diseño en Español (`:root` y `html.light`)
+
+Para garantizar una interfaz profesional, sobria y orientada al sector gamer de alta gama, se eliminaron los colores extravagantes y se centralizó el 100% de los estilos visuales mediante **tokens de diseño en español** en [styles.css](file:///d:/UTP/CICLO%20VIII/DESARROLLO%20WEB%20INTEGRADO/PROYECTO/AVANCE%20II/frontend-techzone/src/styles.css):
+
+* **Identidad Corporativa Sobria:** Azul cobalto profundo (`--marca-primario: #1d4ed8`), índigo tecnológico (`--marca-secundario: #4338ca`) y acentos de realce (`--marca-acento: #38bdf8`), evitando estridencias para proyectar seriedad comercial.
+* **Superficies y Fondos:** `--fondo-pagina`, `--fondo-tarjeta`, `--fondo-panel-elevado`, adaptados automáticamente a Modo Claro y Modo Oscuro.
+* **Estados Logísticos del Pedido:** `--pedido-pendiente`, `--pedido-pagado`, `--pedido-preparacion`, `--pedido-enviado`, `--pedido-entregado`, `--pedido-cancelado`.
+* **Estados de Pasarela de Pago:** `--pago-completado`, `--pago-pendiente`, `--pago-fallido`, `--pago-reembolsado`.
+* **Control de Inventario y Stock:** `--stock-disponible`, `--stock-bajo`, `--stock-agotado`.
+* **Distintivos de Rol (RBAC):** `--rol-admin`, `--rol-trabajador`, `--rol-supervisor`, `--rol-logistica`, `--rol-soporte`, `--rol-cliente`.
+* **Analítica Visual:** `--grafico-linea-ingresos`, `--grafico-barra-ventas`, `--grafico-dona-segmento-*`.
+
+Esta arquitectura elimina valores arbitrarios en el código HTML, facilitando explicar de dónde proviene cada color durante la sustentación.
+
+---
+
+## Almacenamiento Multimedia en Supabase Storage CDN y Sanitización de Slugs
+
+El almacenamiento de las imágenes oficiales de productos y marcas se gestiona en la nube a través de **Supabase Storage** bajo el bucket `imagenes`:
+
+1. **Jerarquía Estructurada de Carpetas:** Las imágenes se clasifican automáticamente en subdirectorios por categoría:  
+   `imagenes/productos/{slug-categoria}/{timestamp}_{nombre_archivo}`
+2. **Normalización y Sanitización de Slugs (Solución de Diacríticos):**  
+   Para evitar la duplicación de carpetas (por ejemplo, `perif-ricos-gaming` vs `perifericos-gaming`), el backend implementa en [SupabaseStorageService.java](file:///d:/UTP/CICLO%20VIII/DESARROLLO%20WEB%20INTEGRADO/PROYECTO/AVANCE%20II/backend-techzone/src/main/java/com/tienda/backend_techzone/Service/SupabaseStorageService.java#L180-L199) la descomposición Unicode `Form.NFD` y remoción de acentos con la expresión `\\p{M}`. De este modo, `"Periféricos Gaming"` se transforma de forma garantizada en `perifericos-gaming`.
+3. **Modal "Editar Imagen" con Asistente de Reasignación:**  
+   Al editar cualquier imagen desde el panel backoffice, el usuario dispone de:
+   * **Ficha de Ubicación Actual:** Visualiza la ruta `[ Categoría ] › [ Marca ] › [ Producto ]` y el ID del producto al que pertenece la imagen.
+   * **Filtros Opcionales en Cascada:** Selectores de Categoría y Marca para filtrar dinámicamente la lista de productos y cambiar la imagen de producto en un clic si fue vinculada erróneamente.
+   * **Selector Reactivo:** Lista de productos filtrada con contador de coincidencias en tiempo real y opción rápida de "Ver todos los productos".
+
+---
+
+## Conexión a Base de Datos PostgreSQL en Supabase (Puerto 6543)
+
+La persistencia del sistema opera sobre una base de datos **PostgreSQL hospedada en Supabase**:
+
+* **Transaction Pooler (PgBouncer - Puerto 6543):** Se utiliza la conexión vía pooler transaccional en el puerto `6543` (en lugar del puerto directo 5432). Esto garantiza compatibilidad universal en redes IPv4 e IPv6, y permite reutilizar conexiones eficientemente bajo alta concurrencia.
+* **Pool de Conexiones HikariCP:** Configurado con un tamaño máximo de 10 conexiones (`maximum-pool-size: 10`) y un mínimo de 2 conexiones ociosas, con tiempo de espera de conexión de 30 segundos.
+* **Seguridad de Transporte:** Conexión cifrada obligatoria con parámetro `sslmode=require`.
+* **Configuración Centralizada:** Definida en [application.properties](file:///d:/UTP/CICLO%20VIII/DESARROLLO%20WEB%20INTEGRADO/PROYECTO/AVANCE%20II/backend-techzone/src/main/resources/application.properties), soportando inyección de variables de entorno seguras (`SPRING_DATASOURCE_URL`, `SPRING_DATASOURCE_USERNAME`, `SPRING_DATASOURCE_PASSWORD`).
+
+---
+
 ## Matriz de Sesión y Políticas de Inactividad
 
 | Perfil de Usuario | Entorno de Uso | Política de Inactividad | Mecanismo de Protección |
@@ -596,7 +696,7 @@ El repositorio cuenta con integración continua automatizada mediante **GitHub A
   * `ProductoServiceTest`: Filtrado de productos vigentes, listado de novedades y toggle de estado.
   * `VentaServiceTest`: Registro de compras, cálculo de subtotal, IGV (18%), total y ciclo de estados.
   * *Resultado:* 16 pruebas ejecutadas exitosamente con base de datos H2 en memoria.
-* **Frontend (Angular 19 + Vitest):**
+* **Frontend (Angular 21 + Vitest):**
   * `mis-pedidos.component.spec.ts`: Detección de Boleta vs Factura, carga de comprobante y generación de hash digital.
   * `producto-detalle.component.spec.ts`: Inicialización de componentes, galería de fotos y navegación.
   * `toast.service.spec.ts` y `tema.service.spec.ts`: Gestión de notificaciones y cambio de tema Claro / Oscuro.

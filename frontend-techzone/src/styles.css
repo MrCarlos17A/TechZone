@@ -4,27 +4,517 @@
 
 @layer base {
   :root {
-    --primary: #2563eb;
-    --primary-hover: #1d4ed8;
-    --accent: #0284c7;
-    --cyan-glow: #06b6d4;
-    --bg-main: #070c18;
-    --bg-card: rgba(15, 23, 42, 0.75);
-    --border-subtle: rgba(255, 255, 255, 0.08);
-    --text-main: #f8fafc;
-    --text-muted: #94a3b8;
+    /* ============================================================
+       1. IDENTIDAD DE MARCA (Colores principales de TechZone)
+       ============================================================ */
+    --marca-primario: #1d4ed8;            /* Azul principal de la marca */
+    --marca-primario-hover: #1e40af;      /* Azul al pasar el cursor */
+    --marca-secundario: #0284c7;          /* Azul acero para elementos complementarios */
+    --marca-secundario-hover: #0369a1;    /* Azul acero al pasar el cursor */
+    --marca-resalte: #38bdf8;             /* Azul claro para selecciones activas */
+
+    /* Variables de compatibilidad directa */
+    --primary: var(--marca-primario);
+    --primary-hover: var(--marca-primario-hover);
+    --accent: var(--marca-secundario);
+    --cyan-glow: #0284c7;
+    --bg-main: var(--fondo-pagina);
+    --bg-card: var(--fondo-tarjeta);
+    --border-subtle: var(--borde-tarjeta);
+    --text-main: var(--texto-titulo);
+    --text-muted: var(--texto-secundario);
+
+    /* ============================================================
+       2. ESTRUCTURA GENERAL Y SUPERFICIES (Fondos y contenedores)
+       ============================================================ */
+    --fondo-pagina: #0b1120;              /* Fondo general de la aplicacion */
+    --fondo-tarjeta: #0f172a;             /* Fondo de tarjetas, paneles y modales */
+    --fondo-tarjeta-hover: #1e293b;       /* Fondo de tarjeta al pasar el cursor */
+    --fondo-bloque-interno: #080d1a;      /* Fondo de secciones anidadas y filtros */
+    --fondo-superposicion: rgba(11, 17, 32, 0.80); /* Fondo oscuro detras de modales */
+
+    /* ============================================================
+       3. BORDES Y SEPARADORES (Lineas de division)
+       ============================================================ */
+    --borde-tarjeta: #1e293b;             /* Borde de tarjetas y paneles */
+    --borde-tarjeta-hover: #3b82f6;       /* Borde al resaltar una tarjeta */
+    --borde-divisor: #1e293b;             /* Lineas divisorias internas */
+    --borde-foco: #3b82f6;                /* Borde de seleccion activa */
+
+    /* ============================================================
+       4. TIPOGRAFIA Y TEXTOS (Jerarquia de lectura)
+       ============================================================ */
+    --texto-titulo: #f8fafc;              /* Titulos principales de secciones */
+    --texto-cuerpo: #cbd5e1;              /* Contenido de parrafos y tablas */
+    --texto-secundario: #94a3b8;          /* Subtitulos, fechas y etiquetas */
+    --texto-atenuado: #64748b;            /* Textos de ayuda y placeholders */
+    --texto-invertido: #ffffff;           /* Texto blanco sobre botones de color */
+
+    /* ============================================================
+       5. BOTONES Y ACCIONES DEL SISTEMA
+       ============================================================ */
+    /* Boton Primario (Guardar, Confirmar, Nuevo) */
+    --boton-primario-fondo: #1d4ed8;
+    --boton-primario-hover: #1e40af;
+    --boton-primario-texto: #ffffff;
+
+    /* Boton Secundario (Cancelar, Volver, Filtros) */
+    --boton-secundario-fondo: #1e293b;
+    --boton-secundario-hover: #334155;
+    --boton-secundario-texto: #e2e8f0;
+    --boton-secundario-borde: #334155;
+
+    /* Boton de Peligro (Eliminar, Anular, Cerrar sesion) */
+    --boton-peligro-fondo: rgba(220, 38, 38, 0.15);
+    --boton-peligro-hover: rgba(220, 38, 38, 0.25);
+    --boton-peligro-texto: #f87171;
+    --boton-peligro-borde: rgba(239, 68, 68, 0.30);
+
+    /* Boton de Exito (Aprobar, Conciliar, Pagar) */
+    --boton-exito-fondo: rgba(22, 163, 74, 0.15);
+    --boton-exito-hover: rgba(22, 163, 74, 0.25);
+    --boton-exito-texto: #4ade80;
+    --boton-exito-borde: rgba(34, 197, 94, 0.30);
+
+    /* ============================================================
+       6. CAMPOS DE FORMULARIO (Inputs, Selects y Textareas)
+       ============================================================ */
+    --campo-fondo: #0b1120;               /* Fondo interior del input */
+    --campo-fondo-deshabilitado: #1e293b;  /* Fondo de input bloqueado */
+    --campo-borde: #334155;               /* Borde en estado normal */
+    --campo-borde-foco: #3b82f6;          /* Borde al hacer clic */
+    --campo-anillo-foco: rgba(59, 130, 246, 0.25); /* Sombra exterior al enfocar */
+    --campo-texto: #f8fafc;               /* Texto escrito por el usuario */
+    --campo-marcador: #64748b;            /* Texto placeholder */
+    --campo-error-borde: #ef4444;         /* Borde ante validacion fallida */
+    --campo-error-texto: #f87171;         /* Mensaje de error de validacion */
+
+    /* ============================================================
+       7. TABLAS DE DATOS (Cabeceras, filas y estados)
+       ============================================================ */
+    --tabla-cabecera-fondo: #0f172a;       /* Fondo de títulos de columna */
+    --tabla-cabecera-texto: #94a3b8;       /* Texto de títulos de columna */
+    --tabla-fila-borde: #1e293b;           /* Linea de separacion entre filas */
+    --tabla-fila-hover: rgba(30, 41, 59, 0.50); /* Resalte al pasar el cursor */
+    --tabla-fila-par: #0b1120;             /* Fila par */
+    --tabla-fila-impar: #0f172a;           /* Fila impar */
+
+    /* ============================================================
+       8. BARRA LATERAL DE NAVEGACION (Sidebar)
+       ============================================================ */
+    --barra-lateral-fondo: #080d1a;       /* Fondo de la barra lateral */
+    --barra-lateral-borde: #1e293b;       /* Borde divisorio derecho */
+    --barra-lateral-item-activo-fondo: #1d4ed8; /* Opcion seleccionada */
+    --barra-lateral-item-activo-texto: #ffffff; /* Texto de opcion seleccionada */
+    --barra-lateral-item-inactivo-texto: #94a3b8; /* Texto de opciones no activas */
+    --barra-lateral-item-hover-fondo: rgba(30, 41, 59, 0.70); /* Hover en opcion */
+    --barra-lateral-pildora-fondo: #1e293b; /* Contador numerico de registros */
+    --barra-lateral-pildora-texto: #cbd5e1; /* Texto del contador numerico */
+
+    /* ============================================================
+       9. CABECERA SUPERIOR (Header / Navbar)
+       ============================================================ */
+    --cabecera-fondo: #080d1a;            /* Fondo de la barra superior */
+    --cabecera-borde: #1e293b;            /* Borde inferior */
+    --cabecera-perfil-fondo: #0f172a;     /* Pildora con nombre del usuario */
+    --cabecera-perfil-borde: #1e293b;     /* Borde de la pildora de usuario */
+
+    /* ============================================================
+       10. TARJETAS DE RESUMEN DEL DASHBOARD (Metricas principales)
+       ============================================================ */
+    --metrica-ingresos-fondo-icono: rgba(22, 163, 74, 0.15);
+    --metrica-ingresos-icono: #22c55e;
+
+    --metrica-pedidos-fondo-icono: rgba(2, 132, 199, 0.15);
+    --metrica-pedidos-icono: #38bdf8;
+
+    --metrica-pendientes-fondo-icono: rgba(217, 119, 6, 0.15);
+    --metrica-pendientes-icono: #fbbf24;
+
+    --metrica-productos-fondo-icono: rgba(29, 78, 216, 0.15);
+    --metrica-productos-icono: #60a5fa;
+
+    /* ============================================================
+       11. ESTADOS DEL PEDIDO Y LOGISTICA (Badges de 3 capas)
+       ============================================================ */
+    /* ENTREGADO: Pedido completado */
+    --pedido-entregado-fondo: rgba(22, 163, 74, 0.12);
+    --pedido-entregado-texto: #22c55e;
+    --pedido-entregado-borde: rgba(34, 197, 94, 0.25);
+
+    /* EN CAMINO: Pedido en ruta */
+    --pedido-en-camino-fondo: rgba(2, 132, 199, 0.12);
+    --pedido-en-camino-texto: #38bdf8;
+    --pedido-en-camino-borde: rgba(56, 189, 248, 0.25);
+
+    /* PENDIENTE: Pedido en almacen */
+    --pedido-pendiente-fondo: rgba(217, 119, 6, 0.12);
+    --pedido-pendiente-texto: #fbbf24;
+    --pedido-pendiente-borde: rgba(251, 191, 36, 0.25);
+
+    /* CANCELADA: Pedido anulado */
+    --pedido-cancelado-fondo: rgba(220, 38, 38, 0.12);
+    --pedido-cancelado-texto: #f87171;
+    --pedido-cancelado-borde: rgba(248, 113, 113, 0.25);
+
+    /* ============================================================
+       12. ESTADOS DE PAGO Y CONCILIACION
+       ============================================================ */
+    /* CONFIRMADO / APROBADO: Pago validado */
+    --pago-confirmado-fondo: rgba(22, 163, 74, 0.12);
+    --pago-confirmado-texto: #22c55e;
+    --pago-confirmado-borde: rgba(34, 197, 94, 0.25);
+
+    /* PENDIENTE: Por verificar */
+    --pago-pendiente-fondo: rgba(217, 119, 6, 0.12);
+    --pago-pendiente-texto: #fbbf24;
+    --pago-pendiente-borde: rgba(251, 191, 36, 0.25);
+
+    /* RECHAZADO: Pago rechazado */
+    --pago-rechazado-fondo: rgba(220, 38, 38, 0.12);
+    --pago-rechazado-texto: #f87171;
+    --pago-rechazado-borde: rgba(248, 113, 113, 0.25);
+
+    /* ============================================================
+       13. NIVELES DE INVENTARIO Y STOCK
+       ============================================================ */
+    /* OPTIMO: Mayor a 5 unidades */
+    --stock-optimo-fondo: rgba(22, 163, 74, 0.12);
+    --stock-optimo-texto: #22c55e;
+    --stock-optimo-borde: rgba(34, 197, 94, 0.25);
+
+    /* CRITICO: De 1 a 5 unidades */
+    --stock-critico-fondo: rgba(217, 119, 6, 0.12);
+    --stock-critico-texto: #fbbf24;
+    --stock-critico-borde: rgba(251, 191, 36, 0.25);
+
+    /* AGOTADO: 0 unidades */
+    --stock-agotado-fondo: rgba(220, 38, 38, 0.12);
+    --stock-agotado-texto: #f87171;
+    --stock-agotado-borde: rgba(248, 113, 113, 0.25);
+
+    /* ============================================================
+       14. ESTADO DE USUARIOS Y VIGENCIA (Clientes, personal, ubigeos)
+       ============================================================ */
+    /* ACTIVO / VIGENTE */
+    --estado-activo-fondo: rgba(22, 163, 74, 0.12);
+    --estado-activo-texto: #22c55e;
+    --estado-activo-borde: rgba(34, 197, 94, 0.25);
+
+    /* INACTIVO / BLOQUEADO */
+    --estado-inactivo-fondo: rgba(148, 163, 184, 0.12);
+    --estado-inactivo-texto: #94a3b8;
+    --estado-inactivo-borde: rgba(148, 163, 184, 0.25);
+
+    /* ============================================================
+       15. ROLES DE USUARIO (Gestion de seguridad RBAC)
+       ============================================================ */
+    --rol-administrador-fondo: rgba(29, 78, 216, 0.15);
+    --rol-administrador-texto: #93c5fd;
+    --rol-administrador-borde: rgba(59, 130, 246, 0.30);
+
+    --rol-supervisor-fondo: rgba(51, 65, 85, 0.40);
+    --rol-supervisor-texto: #cbd5e1;
+    --rol-supervisor-borde: rgba(100, 116, 139, 0.30);
+
+    --rol-trabajador-fondo: rgba(2, 132, 199, 0.15);
+    --rol-trabajador-texto: #38bdf8;
+    --rol-trabajador-borde: rgba(56, 189, 248, 0.30);
+
+    --rol-logistica-fondo: rgba(71, 85, 105, 0.40);
+    --rol-logistica-texto: #e2e8f0;
+    --rol-logistica-borde: rgba(148, 163, 184, 0.30);
+
+    --rol-soporte-fondo: rgba(8, 145, 178, 0.15);
+    --rol-soporte-texto: #22d3ee;
+    --rol-soporte-borde: rgba(34, 211, 238, 0.30);
+
+    --rol-cliente-fondo: rgba(22, 163, 74, 0.15);
+    --rol-cliente-texto: #4ade80;
+    --rol-cliente-borde: rgba(34, 197, 94, 0.30);
+
+    /* ============================================================
+       16. METODOS DE PAGO
+       ============================================================ */
+    --metodo-yape-fondo: rgba(59, 130, 246, 0.15);
+    --metodo-yape-texto: #60a5fa;
+
+    --metodo-plin-fondo: rgba(2, 132, 199, 0.15);
+    --metodo-plin-texto: #38bdf8;
+
+    --metodo-tarjeta-fondo: rgba(29, 78, 216, 0.15);
+    --metodo-tarjeta-texto: #93c5fd;
+
+    --metodo-transferencia-fondo: rgba(51, 65, 85, 0.30);
+    --metodo-transferencia-texto: #cbd5e1;
+
+    /* ============================================================
+       17. AUDITORIA Y TRAZABILIDAD (Historial de acciones)
+       ============================================================ */
+    --auditoria-crear: #22c55e;           /* Registro creado */
+    --auditoria-modificar: #38bdf8;       /* Registro editado */
+    --auditoria-eliminar: #f87171;        /* Registro borrado */
+    --auditoria-sesion: #60a5fa;          /* Inicio de sesion */
+
+    /* ============================================================
+       18. VISUALIZACION DE DATOS Y GRAFICOS
+       ============================================================ */
+    --grafico-linea-ingresos: #1d4ed8;    /* Trazo principal de la curva de ventas */
+    --grafico-area-gradiente-inicio: rgba(29, 78, 216, 0.30); /* Gradiente superior */
+    --grafico-area-gradiente-fin: rgba(29, 78, 216, 0.00);    /* Gradiente inferior */
+    --grafico-guia-horizontal: #1e293b;   /* Lineas horizontales del grafico */
+    --grafico-texto-ejes: #64748b;        /* Montos en escala vertical y fechas */
+
+    --grafico-sector-1: #1d4ed8;          /* Categoria 1 en grafico circular */
+    --grafico-sector-2: #0284c7;          /* Categoria 2 en grafico circular */
+    --grafico-sector-3: #38bdf8;          /* Categoria 3 en grafico circular */
+    --grafico-sector-4: #22c55e;          /* Categoria 4 en grafico circular */
+    --grafico-sector-5: #475569;          /* Categoria 5 en grafico circular */
+
+    /* ============================================================
+       19. MENSAJES DE ALERTA Y NOTIFICACIONES (Toasts)
+       ============================================================ */
+    --alerta-exito-fondo: #0f291e;
+    --alerta-exito-borde: rgba(34, 197, 94, 0.30);
+    --alerta-exito-texto: #4ade80;
+
+    --alerta-advertencia-fondo: #2e1d08;
+    --alerta-advertencia-borde: rgba(251, 191, 36, 0.30);
+    --alerta-advertencia-texto: #fde047;
+
+    --alerta-error-fondo: #2b1113;
+    --alerta-error-borde: rgba(248, 113, 113, 0.30);
+    --alerta-error-texto: #fca5a5;
+
+    --alerta-info-fondo: #0c1a30;
+    --alerta-info-borde: rgba(56, 189, 248, 0.30);
+    --alerta-info-texto: #7dd3fc;
+
+    /* ============================================================
+       20. ELEMENTOS DE SISTEMA (Scrollbar y seleccion de texto)
+       ============================================================ */
+    --barra-desplazamiento-fondo: #0b1120;
+    --barra-desplazamiento-cursor: #334155;
+    --barra-desplazamiento-cursor-hover: #1d4ed8;
+    --texto-seleccion-fondo: #1d4ed8;
+    --texto-seleccion-color: #ffffff;
   }
 
+  /* ============================================================
+     ADAPTACION EXACTA A MODO CLARO (html.light)
+     ============================================================ */
   html.light {
-    --primary: #2563eb;
-    --primary-hover: #1d4ed8;
+    --fondo-pagina: #f8fafc;
+    --fondo-tarjeta: #ffffff;
+    --fondo-tarjeta-hover: #f1f5f9;
+    --fondo-bloque-interno: #f8fafc;
+    --fondo-superposicion: rgba(15, 23, 42, 0.40);
+
+    --primary: #1d4ed8;
+    --primary-hover: #1e40af;
     --accent: #0284c7;
     --cyan-glow: #0891b2;
     --bg-main: #f8fafc;
     --bg-card: #ffffff;
-    --border-subtle: rgba(15, 23, 42, 0.08);
+    --border-subtle: #e2e8f0;
     --text-main: #0f172a;
     --text-muted: #64748b;
+
+    --borde-tarjeta: #e2e8f0;
+    --borde-tarjeta-hover: #1d4ed8;
+    --borde-divisor: #e2e8f0;
+    --borde-foco: #1d4ed8;
+
+    --texto-titulo: #0f172a;
+    --texto-cuerpo: #334155;
+    --texto-secundario: #475569;
+    --texto-atenuado: #94a3b8;
+    --texto-invertido: #ffffff;
+
+    --boton-primario-fondo: #1d4ed8;
+    --boton-primario-hover: #1e40af;
+    --boton-primario-texto: #ffffff;
+
+    --boton-secundario-fondo: #f1f5f9;
+    --boton-secundario-hover: #e2e8f0;
+    --boton-secundario-texto: #1e293b;
+    --boton-secundario-borde: #cbd5e1;
+
+    --boton-peligro-fondo: #fef2f2;
+    --boton-peligro-hover: #fee2e2;
+    --boton-peligro-texto: #b91c1c;
+    --boton-peligro-borde: #fecaca;
+
+    --boton-exito-fondo: #f0fdf4;
+    --boton-exito-hover: #dcfce7;
+    --boton-exito-texto: #15803d;
+    --boton-exito-borde: #bbf7d0;
+
+    --campo-fondo: #ffffff;
+    --campo-fondo-deshabilitado: #f1f5f9;
+    --campo-borde: #cbd5e1;
+    --campo-borde-foco: #1d4ed8;
+    --campo-anillo-foco: rgba(29, 78, 216, 0.15);
+    --campo-texto: #0f172a;
+    --campo-marcador: #94a3b8;
+    --campo-error-borde: #dc2626;
+    --campo-error-texto: #b91c1c;
+
+    --tabla-cabecera-fondo: #f8fafc;
+    --tabla-cabecera-texto: #475569;
+    --tabla-fila-borde: #e2e8f0;
+    --tabla-fila-hover: #f1f5f9;
+    --tabla-fila-par: #ffffff;
+    --tabla-fila-impar: #f8fafc;
+
+    --barra-lateral-fondo: #ffffff;
+    --barra-lateral-borde: #e2e8f0;
+    --barra-lateral-item-activo-fondo: #1d4ed8;
+    --barra-lateral-item-activo-texto: #ffffff;
+    --barra-lateral-item-inactivo-texto: #475569;
+    --barra-lateral-item-hover-fondo: #f1f5f9;
+    --barra-lateral-pildora-fondo: #e2e8f0;
+    --barra-lateral-pildora-texto: #334155;
+
+    --cabecera-fondo: #ffffff;
+    --cabecera-borde: #e2e8f0;
+    --cabecera-perfil-fondo: #f8fafc;
+    --cabecera-perfil-borde: #e2e8f0;
+
+    --metrica-ingresos-fondo-icono: #f0fdf4;
+    --metrica-ingresos-icono: #15803d;
+
+    --metrica-pedidos-fondo-icono: #f0f9ff;
+    --metrica-pedidos-icono: #0369a1;
+
+    --metrica-pendientes-fondo-icono: #fffbeb;
+    --metrica-pendientes-icono: #b45309;
+
+    --metrica-productos-fondo-icono: #eff6ff;
+    --metrica-productos-icono: #1d4ed8;
+
+    --pedido-entregado-fondo: #f0fdf4;
+    --pedido-entregado-texto: #15803d;
+    --pedido-entregado-borde: #bbf7d0;
+
+    --pedido-en-camino-fondo: #f0f9ff;
+    --pedido-en-camino-texto: #0369a1;
+    --pedido-en-camino-borde: #bae6fd;
+
+    --pedido-pendiente-fondo: #fffbeb;
+    --pedido-pendiente-texto: #b45309;
+    --pedido-pendiente-borde: #fde68a;
+
+    --pedido-cancelado-fondo: #fef2f2;
+    --pedido-cancelado-texto: #b91c1c;
+    --pedido-cancelado-borde: #fecaca;
+
+    --pago-confirmado-fondo: #f0fdf4;
+    --pago-confirmado-texto: #15803d;
+    --pago-confirmado-borde: #bbf7d0;
+
+    --pago-pendiente-fondo: #fffbeb;
+    --pago-pendiente-texto: #b45309;
+    --pago-pendiente-borde: #fde68a;
+
+    --pago-rechazado-fondo: #fef2f2;
+    --pago-rechazado-texto: #b91c1c;
+    --pago-rechazado-borde: #fecaca;
+
+    --stock-optimo-fondo: #f0fdf4;
+    --stock-optimo-texto: #15803d;
+    --stock-optimo-borde: #bbf7d0;
+
+    --stock-critico-fondo: #fffbeb;
+    --stock-critico-texto: #b45309;
+    --stock-critico-borde: #fde68a;
+
+    --stock-agotado-fondo: #fef2f2;
+    --stock-agotado-texto: #b91c1c;
+    --stock-agotado-borde: #fecaca;
+
+    --estado-activo-fondo: #f0fdf4;
+    --estado-activo-texto: #15803d;
+    --estado-activo-borde: #bbf7d0;
+
+    --estado-inactivo-fondo: #f1f5f9;
+    --estado-inactivo-texto: #475569;
+    --estado-inactivo-borde: #cbd5e1;
+
+    --rol-administrador-fondo: #eff6ff;
+    --rol-administrador-texto: #1e40af;
+    --rol-administrador-borde: #bfdbfe;
+
+    --rol-supervisor-fondo: #f1f5f9;
+    --rol-supervisor-texto: #334155;
+    --rol-supervisor-borde: #cbd5e1;
+
+    --rol-trabajador-fondo: #f0f9ff;
+    --rol-trabajador-texto: #0369a1;
+    --rol-trabajador-borde: #bae6fd;
+
+    --rol-logistica-fondo: #f8fafc;
+    --rol-logistica-texto: #475569;
+    --rol-logistica-borde: #cbd5e1;
+
+    --rol-soporte-fondo: #ecfeff;
+    --rol-soporte-texto: #0e7490;
+    --rol-soporte-borde: #a5f3fc;
+
+    --rol-cliente-fondo: #f0fdf4;
+    --rol-cliente-texto: #15803d;
+    --rol-cliente-borde: #bbf7d0;
+
+    --metodo-yape-fondo: #eff6ff;
+    --metodo-yape-texto: #1d4ed8;
+
+    --metodo-plin-fondo: #f0f9ff;
+    --metodo-plin-texto: #0369a1;
+
+    --metodo-tarjeta-fondo: #eff6ff;
+    --metodo-tarjeta-texto: #1e40af;
+
+    --metodo-transferencia-fondo: #f1f5f9;
+    --metodo-transferencia-texto: #334155;
+
+    --auditoria-crear: #15803d;
+    --auditoria-modificar: #0369a1;
+    --auditoria-eliminar: #b91c1c;
+    --auditoria-sesion: #1d4ed8;
+
+    --grafico-linea-ingresos: #1d4ed8;
+    --grafico-area-gradiente-inicio: rgba(29, 78, 216, 0.20);
+    --grafico-area-gradiente-fin: rgba(29, 78, 216, 0.00);
+    --grafico-guia-horizontal: #e2e8f0;
+    --grafico-texto-ejes: #94a3b8;
+
+    --grafico-sector-1: #1d4ed8;
+    --grafico-sector-2: #0284c7;
+    --grafico-sector-3: #0ea5e9;
+    --grafico-sector-4: #15803d;
+    --grafico-sector-5: #64748b;
+
+    --alerta-exito-fondo: #f0fdf4;
+    --alerta-exito-borde: #bbf7d0;
+    --alerta-exito-texto: #15803d;
+
+    --alerta-advertencia-fondo: #fffbeb;
+    --alerta-advertencia-borde: #fde68a;
+    --alerta-advertencia-texto: #b45309;
+
+    --alerta-error-fondo: #fef2f2;
+    --alerta-error-borde: #fecaca;
+    --alerta-error-texto: #b91c1c;
+
+    --alerta-info-fondo: #f0f9ff;
+    --alerta-info-borde: #bae6fd;
+    --alerta-info-texto: #0369a1;
+
+    --barra-desplazamiento-fondo: #f8fafc;
+    --barra-desplazamiento-cursor: #cbd5e1;
+    --barra-desplazamiento-cursor-hover: #1d4ed8;
+    --texto-seleccion-fondo: #1d4ed8;
+    --texto-seleccion-color: #ffffff;
   }
 
   body {

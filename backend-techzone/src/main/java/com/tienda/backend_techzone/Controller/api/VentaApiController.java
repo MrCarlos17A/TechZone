@@ -13,6 +13,9 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
 
+// ==============================================================
+// CRUD DE GESTOR VENTAS
+// ==============================================================
 @RestController
 public class VentaApiController {
 

@@ -12,6 +12,9 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
+// ==============================================================
+// CRUD DE GESTOR EMPLEADOS
+// ==============================================================
 @RestController
 @RequestMapping("/api/admin/empleados")
 public class EmpleadoAdminApiController {

@@ -7,6 +7,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+// ==============================================================
+// CRUD DE GESTOR DETALLES DE VENTA
+// ==============================================================
 @RestController
 @RequestMapping("/api/admin/detalles-venta")
 public class DetalleVentaAdminApiController {

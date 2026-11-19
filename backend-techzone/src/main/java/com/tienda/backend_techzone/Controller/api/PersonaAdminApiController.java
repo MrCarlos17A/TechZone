@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+// ==============================================================
+// CRUD DE GESTOR PERSONAS
+// ==============================================================
 @RestController
 @RequestMapping("/api/admin/personas")
 public class PersonaAdminApiController {
